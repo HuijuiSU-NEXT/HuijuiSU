@@ -3,4 +3,5 @@
 build.sh
 *.code-workspace
 .trae
-/userspace/ksud/.lkm_image_bootstrap.okeystore.properties
+/userspace/ksud/.lkm_image_bootstrap.ok
+keystore.properties
