@@ -207,7 +207,10 @@ jobs:
           if [ "${{ github.event_name }}" == "pull_request" ]; then
             ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PIS_PR_BUILD=true $BUILD_EXTRA_ARGS
           else
-            ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} $BUILD_EXTRA_ARGS
+            # HuijuiSU: force custom name + package
+            KSU_NAME="HuijuiSU"
+            KSU_PACKAGE_NAME="com.huijuisu.huijuisu"
+            ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PKSU_NAME=$KSU_NAME -PKSU_PACKAGE_NAME=$KSU_PACKAGE_NAME
           fi
 
       - name: Upload artifact
