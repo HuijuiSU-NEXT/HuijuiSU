@@ -44,13 +44,13 @@ class ThemeRepository(
         return settings.getInt("theme_seed_color", defaultSeedColor())
     }
 
-    fun defaultSeedColor(): Int = monetCompatColorSource.seedColor()
+    fun defaultSeedColor(): Int = 0xFF39C5BB.toInt()
 
     fun saveDynamicColorState(enabled: Boolean) {
         settings.putBoolean("use_dynamic_color", enabled)
     }
 
-    fun loadDynamicColorState(): Boolean = settings.getBoolean("use_dynamic_color", true)
+    fun loadDynamicColorState(): Boolean = settings.getBoolean("use_dynamic_color", false)
 
     fun saveDynamicColorSpec(
         spec: ColorSpec.SpecVersion,

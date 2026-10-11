@@ -13,6 +13,11 @@
 #define EXPECTED_SIZE_KOWX712 0x375
 #define EXPECTED_HASH_KOWX712 "484fcba6e6c43b1fb09700633bf2fb4758f13cb0b2f4457b80d075084b26c588"
 
+
+// HuijuiSU/HuijuiSU custom
+#define EXPECTED_SIZE_HUIJUI 0x373
+#define EXPECTED_HASH_HUIJUI "1bbd97016572623c143b9585d8abe3074836a9a6aedc28c977cd154b86ef6bed"
+
 typedef struct {
     unsigned size;
     const char *sha256;
