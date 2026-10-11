@@ -58,9 +58,8 @@ fun getGitCommitCount(): Int = providers.exec {
 }.standardOutput.asText.get().trim().toInt()
 
 fun getGitDescribe(): String {
-    val desc = providers.exec {
-        commandLine("git", "describe", "--tags", "--always", "--abbrev=0")
-    }.standardOutput.asText.get().trim()
+    // HuijuiSU: fixed version instead of git describe
+    val desc = "v1.0.0"
     if (isSpoofedBuild) {
         return "$desc-spoofed"
     }

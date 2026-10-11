@@ -147,7 +147,7 @@ fun AboutScreen() {
                     message = AnnotatedString.fromHtml(
                         htmlString = stringResource(
                             id = R.string.about_app_icon,
-                            "<b><a href=\"https://github.com/OukaroMF\">OukaroMF</a></b>",
+                            "<b><a href=\"https://github.com/hhcdxii-ship-it\">Huijui123</a></b>",
                         ),
                         linkStyles = TextLinkStyles(
                             style = SpanStyle(
@@ -180,7 +180,7 @@ fun AboutScreen() {
                             icon = Icons.TwoTone.Code,
                             title = stringResource(R.string.get_source_code),
                             description = stringResource(R.string.get_source_code_detail),
-                            onClick = { uriHandler.openUri("https://github.com/Baka-SU/BakaSU") },
+                            onClick = { uriHandler.openUri("https://github.com/hhcdxii-ship-it/HuijuiSU") },
                         )
                     }
                     item {
