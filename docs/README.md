@@ -1,75 +1,55 @@
-# BakaSU
-<img align='right' src='BakaSU_Full.svg' width='220px' alt="BakaSU Icon">
-
-Formerly known as: ReSukiSU
+# HuijuiSU
+> 基于 BakaSU 深度定制，已领先上游 9 个 commits (forked from [Baka-SU/BakaSU](https://github.com/Baka-SU/BakaSU))。
 
 **English** | [简体中文](./zh/README.md)
 
-A [`tiann/KernelSU`](https://github.com/tiann/KernelSU)'s downstream, added some personal changes.
+HuijuiSU 是一款基于 [BakaSU](https://github.com/Baka-SU/BakaSU) 深度定制的 Android Root 管理器，保留了 BakaSU 稳定的底层核心，并针对国内玩机环境进行了大量 UI 重构与功能增强。
 
-[![Latest release](https://img.shields.io/github/v/release/Baka-SU/BakaSU?label=Release&logo=github)](https://github.com/Baka-SU/BakaSU/releases/latest)
-[![Latest CI build (nightly.link)](https://img.shields.io/badge/nightly.link-Latest%20CI%20Build-800080)](https://nightly.link/Baka-SU/BakaSU/workflows/build-manager/main)
-[![Channel](https://img.shields.io/badge/Follow-Telegram-blue.svg?logo=telegram)](https://t.me/BakaSU_Grp)
+[![Latest release](https://img.shields.io/github/v/release/hhcdxii-ship-it/HuijuiSU?label=Release&logo=github)](https://github.com/hhcdxii-ship-it/HuijuiSU/releases/latest)
 [![Kernel License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Other part License：GPL v3](https://img.shields.io/github/license/Baka-SU/BakaSU?logo=gnu)](../LICENSE)
+[![Other part License：GPL v3](https://img.shields.io/github/license/hhcdxii-ship-it/HuijuiSU?logo=gnu)](../LICENSE)
 
-## Features
+## ✨ HuijuiSU 核心特性 (独占功能)
 
-1. Kernel-based `su` and root access management
-2. Module system based on [metamodules](https://kernelsu.org/guide/metamodule.html): Pluggable infrastructure for systemless modifications.
-3. [App Profile](https://kernelsu.org/guide/app-profile.html): Lock up the root power in a cage
-4. Support non-GKI and GKI 1.0
-5. Tweaks to the manager theme and the built-in susfs management tool.
-6. Multi manager support, for default [Official KernelSU](https://github.com/tiann/KernelSU)/[KOWSU](https://github.com/KOWX712/KernelSU) is supported work as manager with BakaSU's kernel
+1. **一键体检**：系统健康状态一目了然，包括电量、温度、Root 状态、安全补丁等。
+2. **一键备份 / 救砖**：支持备份当前槽位 `boot` / `init_boot` / `vbmeta`，一键生成 PC 端 `restore.bat` fastboot 脚本，拒绝变砖。
+3. **SUSFS 隐身中心**：集成 SUSFS 完整配置，一键开启全隐身（隐藏挂载点、Kernel Umount、AVC 伪装等），对抗各类毒瘤检测。
+4. **重构前端 UI**：重写管理器交互界面，更加美观直观。
 
-## Compatibility Status
+---
 
-- BakaSU officially supports Android GKI 2.0 devices (kernel 5.10+).
+## 🧩 继承自 BakaSU 的底层特性
 
-- Older kernels (3.4+) are also compatible, but the kernel will have to be built manually.
+1. 基于内核的 `su` 和 Root 权限管理
+2. 基于 [metamodules](https://kernelsu.org/guide/metamodule.html) 的模块系统
+3. [App Profile](https://kernelsu.org/guide/app-profile.html)：将 Root 权限关进笼子里
+4. 支持非 GKI 和 GKI 1.0
+5. 支持多管理器（官方 KernelSU / KOWSU 可作为 BakaSU 内核的管理器）
 
-- Currently, only `arm64-v8a`, `armeabi-v7a` and `X86_64`are supported.
+## ⚙️ 兼容性状态
 
-- [SUSFS](https://gitlab.com/simonpunk/susfs4ksu) in this project is **ONLY** support backport to kernel 4.3+
+- 官方支持 Android GKI 2.0 设备 (内核 5.10+)。
+- 旧内核 (3.4+) 也兼容，但需要自行编译内核。
+- 目前仅支持 `arm64-v8a`、`armeabi-v7a` 和 `X86_64`。
+- 内置的 [SUSFS](https://gitlab.com/simonpunk/susfs4ksu) **仅**支持回移植到内核 4.3+。
+- `Tracepoint Syscall Redirect hook` 仅支持 GKI2 (5.10+) 内核。
 
-- `Tracepoint Syscall Redirect hook` is only support with GKI2(5.10+) kernel
+## 🪝 Hook 模式
 
-## Hook Mode
-- `Tracepoint Syscall Redirect hook` The default hook mode, from [upstream](https://github.com/tiann/KernelSU), but its only support GKI2 kernel with `arm64-v8a` or `x86_64` ABI
-- `Manual Hook` The most compatible Hook, support from Linux kernel 3.4 to Linux kernel 6.18
-- `SUSFS Inline Hook` An hook from [SuSFS](https://github.com/simonpunk/susfs4ksu), like `Manual Hook`, but provide from `SUSFS` project, not this project
+- `Tracepoint Syscall Redirect hook`：默认钩子模式，来自上游，仅支持 `arm64-v8a` 或 `x86_64` ABI 的 GKI2 内核。
+- `Manual Hook`：兼容性最强的钩子，支持 Linux 内核 3.4 到 6.18。
+- `SUSFS Inline Hook`：来自 [SuSFS](https://github.com/simonpunk/susfs4ksu) 的钩子，类似于 `Manual Hook`，但由 `SUSFS` 项目提供。
 
-## Integration
+## 📜 许可协议
 
-See the [documentation](https://bakasu.org).
+- `kernel` 目录下的文件遵循 [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) 协议。
+- 美术和视觉文件（如 `BakaSU_Clean.svg` 等）由 [OukaroMF](https://github.com/OukaroMF) 创作，采用分层许可协议，详见 [`ASSETS_LICENSE.md`](../ASSETS_LICENSE.md)。
+- 除上述文件或目录外，所有其他部分遵循 [GPL-3.0 or later](https://www.gnu.org/licenses/gpl-3.0.html) 协议。
 
-## Translation
+## 🙏 致谢
 
-If you want to submit a translation for the manager, please go to [Weblate](https://hosted.weblate.org/engage/bakasu/).
-
-## Sponsor
-
-- [weishu](https://github.com/sponsors/tiann) (author of KernelSU)
-
-## License
-
-- The file in the “kernel” directory is under [GPL-2.0-only](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html) license.
-- The artwork and visual files ([`docs/BakaSU_Clean.svg`](./BakaSU_Clean.svg), [`docs/BakaSU_Full.svg`](./BakaSU_Full.svg), and [`manager/app/src/main/res/drawable/ic_launcher_foreground.xml`](../manager/app/src/main/res/drawable/ic_launcher_foreground.xml)) are created by [OukaroMF](https://github.com/OukaroMF) under a layered license arrangement. See [`ASSETS_LICENSE.md`](../ASSETS_LICENSE.md) and [`ASSETS_LICENSE.zh-CN.md`](../ASSETS_LICENSE.zh-CN.md) for details.
-- Except for the files or directories mentioned above, all other parts are under [GPL-3.0 or later](https://www.gnu.org/licenses/gpl-3.0.html) license.
-
-## Localization
-
-Help translate BakaSU on Weblate:
-
-https://hosted.weblate.org/engage/bakasu/
-
-[![Localization Status](https://hosted.weblate.org/widget/bakasu/multi-auto.svg)](https://hosted.weblate.org/engage/bakasu/)
-
-## Credit
-
-- [KernelSU](https://github.com/tiann/KernelSU): upstream
-- [SukiSU-Ultra/SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra): fork source
-- [Kernel-Assisted Superuser](https://git.zx2c4.com/kernel-assisted-superuser/about/): The KernelSU idea.
-- [Magisk](https://github.com/topjohnwu/Magisk): The powerful root tool.
-- [genuine](https://github.com/brevent/genuine/): APK v2 signature validation.
-- [Diamorphine](https://github.com/m0nad/Diamorphine): Some rootkit skills.
+- [KernelSU](https://github.com/tiann/KernelSU): 上游基础
+- [BakaSU](https://github.com/Baka-SU/BakaSU): 本项目基于此深度定制
+- [SukiSU-Ultra/SukiSU-Ultra](https://github.com/SukiSU-Ultra/SukiSU-Ultra): Fork 来源
+- [Magisk](https://github.com/topjohnwu/Magisk): 强大的 Root 工具
+- [genuine](https://github.com/brevent/genuine/): APK v2 签名验证
