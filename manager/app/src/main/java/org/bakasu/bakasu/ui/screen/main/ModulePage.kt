@@ -167,6 +167,8 @@ import org.bakasu.bakasu.ui.viewmodel.ModuleViewModel
 import org.bakasu.bakasu.ui.webui.WebUIActivity
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.unit.sp
 
 enum class ShortcutType {
     Action,
@@ -1008,8 +1010,11 @@ private fun ModuleList(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .size(100.dp)
-                        .clip(ContinuousRoundedRectangle(25.dp)),
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .clip(ContinuousRoundedRectangle(20.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .padding(vertical = 20.dp, horizontal = 12.dp),
                 ) {
                     val preview = shortcutPreviewIcon.value
                     if (preview != null) {
@@ -1019,15 +1024,14 @@ private fun ModuleList(
                             contentDescription = null,
                         )
                     } else {
-                        Box(
-                            modifier = Modifier
-                                .size(100.dp)
-                                .background(Color.White),
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_launcher_foreground),
-                            contentDescription = null,
-                            contentScale = FixedScale(1.5f),
+                        Text(
+                            text = stringResource(R.string.huijui_ascii_logo),
+                            fontFamily = FontFamily.Monospace,
+                            fontSize = 6.sp,
+                            lineHeight = 7.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     }
                 }

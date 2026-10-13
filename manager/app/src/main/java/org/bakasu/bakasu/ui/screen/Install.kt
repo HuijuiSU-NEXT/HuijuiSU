@@ -250,6 +250,18 @@ private fun LKMInstallPage(
     var lkmInstallMethod by remember { mutableStateOf<InstallMethod?>(null) }
     var lkmSelection by remember { mutableStateOf<LkmSelection>(LkmSelection.KmiNone) }
     var lkmFileName by remember { mutableStateOf<String?>(null) }
+
+    // 自动匹配 KMI：当 currentKmi 非空且属于 supportedKmis 时，自动设置 lkmSelection
+    LaunchedEffect(currentKmi, supportedKmis, isGKI) {
+        if (
+            isGKI &&
+            currentKmi.isNotBlank() &&
+            lkmSelection == LkmSelection.KmiNone &&
+            supportedKmis.contains(currentKmi)
+        ) {
+            lkmSelection = LkmSelection.KmiString(currentKmi)
+        }
+    }
     var allowShell by remember { mutableStateOf(false) }
     var enableAdb by remember { mutableStateOf(false) }
     var forceBackup by remember { mutableStateOf(false) }

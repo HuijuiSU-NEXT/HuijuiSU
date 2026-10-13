@@ -88,7 +88,7 @@ int ksu_handle_dynamic_manager(struct ksu_dynamic_manager_cmd *cmd)
             track_throne(TRACK_THRONE_FORCE_SYNCHRONOUS);
         else
             track_throne(0);
-        pr_info("dynamic manager updated: size=0x%x, hash=%.16s\n", cmd->size, cmd->hash);
+        pr_debug("dynamic manager updated: size=0x%x, hash=%.16s\n", cmd->size, cmd->hash);
         break;
 
     case DYNAMIC_MANAGER_OP_GET:
@@ -106,7 +106,7 @@ int ksu_handle_dynamic_manager(struct ksu_dynamic_manager_cmd *cmd)
         dynamic_manager.is_set = 0;
         ret = 0;
         ksu_unregister_manager_by_signature_index(KSU_SIGNATURE_INDEX_DYNAMIC_MANAGER);
-        pr_info("dynamic manager kernel settings reseted");
+        pr_debug("dynamic manager kernel settings reseted");
         break;
 
     default:

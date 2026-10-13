@@ -48,7 +48,7 @@ static int do_grant_root(void __user *arg)
     __u32 audit_uid = ksu_get_uid_t(current_uid());
     __u32 audit_euid = ksu_get_uid_t(current_euid());
 
-    pr_info("allow root for: %d\n", audit_uid);
+    pr_debug("allow root for: %d\n", audit_uid);
     ret = escape_with_root_profile();
     ksu_sulog_emit_grant_root(ret, audit_uid, audit_euid, GFP_KERNEL);
 
@@ -154,9 +154,9 @@ static int do_report_event(void __user *arg)
         if (!post_fs_data_lock) {
             post_fs_data_lock = true;
             if (ksu_late_loaded) {
-                pr_info("post-fs-data skipped (late load)\n");
+                pr_debug("post-fs-data skipped (late load)\n");
             } else {
-                pr_info("post-fs-data triggered\n");
+                pr_debug("post-fs-data triggered\n");
                 on_post_fs_data();
             }
         }
@@ -167,9 +167,9 @@ static int do_report_event(void __user *arg)
         if (!boot_complete_lock) {
             boot_complete_lock = true;
             if (ksu_late_loaded) {
-                pr_info("boot_complete skipped (late load)\n");
+                pr_debug("boot_complete skipped (late load)\n");
             } else {
-                pr_info("boot_complete triggered\n");
+                pr_debug("boot_complete triggered\n");
                 on_boot_completed();
 #ifdef CONFIG_KSU_SUSFS
                 susfs_start_sdcard_monitor_fn();
@@ -179,17 +179,17 @@ static int do_report_event(void __user *arg)
         break;
     }
     case EVENT_MODULE_MOUNTED: {
-        pr_info("module mounted!\n");
+        pr_debug("module mounted!\n");
         on_module_mounted();
         break;
     }
     case EVENT_SERVICES: {
         if (services_started) {
-            pr_info("services already started, skipping\n");
+            pr_debug("services already started, skipping\n");
             return 0;
         }
         services_started = true;
-        pr_info("services triggered\n");
+        pr_debug("services triggered\n");
         return 1;
     }
     default:
@@ -543,7 +543,7 @@ static int do_manage_mark(void __user *arg)
         } else {
             ret = 1; // SYSCALL_TRACEPOINT is flagged
         }
-        pr_info("manage_mark: ret for pid %d: %d\n", cmd.pid, ret);
+        pr_debug("manage_mark: ret for pid %d: %d\n", cmd.pid, ret);
         cmd.result = (u32)ret;
 #else
         cmd.result = 0;
@@ -589,9 +589,9 @@ static int do_manage_mark(void __user *arg)
     case KSU_MARK_REFRESH: {
 #ifdef CONFIG_KSU_TRACEPOINT_HOOK
         ksu_mark_running_process();
-        pr_info("manage_mark: refreshed running processes\n");
+        pr_debug("manage_mark: refreshed running processes\n");
 #else
-        pr_info("manual_hook: cmd: KSU_MARK_REFRESH: do nothing\n");
+        pr_debug("manual_hook: cmd: KSU_MARK_REFRESH: do nothing\n");
 #endif
         break;
     }
@@ -635,7 +635,7 @@ static int do_nuke_ext4_sysfs(void __user *arg)
         return -ENAMETOOLONG;
     }
 
-    pr_info("do_nuke_ext4_sysfs: %s\n", mnt);
+    pr_debug("do_nuke_ext4_sysfs: %s\n", mnt);
 
     return nuke_ext4_sysfs(mnt);
 }
@@ -664,7 +664,7 @@ static int ksu_umount_list_getsize(struct ksu_manage_try_umount_cmd *cmd, bool l
     up_read(&mount_list_lock);
 
     // debug
-    pr_info("cmd_manage_try_umount: total_size: %zu\n", total_size);
+    pr_debug("cmd_manage_try_umount: total_size: %zu\n", total_size);
 
     if (copy_to_user((size_t __user *)cmd->arg, &total_size, sizeof(total_size)))
         return -EFAULT;
@@ -721,7 +721,7 @@ static int manage_try_umount(void __user *arg)
         struct mount_entry *entry, *tmp;
         down_write(&mount_list_lock);
         list_for_each_entry_safe (entry, tmp, &mount_list, list) {
-            pr_info("wipe_umount_list: removing entry: %s\n", entry->umountable);
+            pr_debug("wipe_umount_list: removing entry: %s\n", entry->umountable);
             list_del(&entry->list);
             kfree(entry->umountable);
             kfree(entry);
@@ -754,7 +754,7 @@ static int manage_try_umount(void __user *arg)
         // if this gets too many, we can consider moving this whole task to a kthread
         list_for_each_entry (entry, &mount_list, list) {
             if (!strcmp(entry->umountable, buf)) {
-                pr_info("cmd_manage_try_umount: %s is already here!\n", buf);
+                pr_debug("cmd_manage_try_umount: %s is already here!\n", buf);
                 up_write(&mount_list_lock);
                 kfree(new_entry->umountable);
                 kfree(new_entry);
@@ -772,7 +772,7 @@ static int manage_try_umount(void __user *arg)
         // debug
         list_add(&new_entry->list, &mount_list);
         up_write(&mount_list_lock);
-        pr_info("cmd_manage_try_umount: %s added!\n", buf);
+        pr_debug("cmd_manage_try_umount: %s added!\n", buf);
 
         return 0;
     }
@@ -788,7 +788,7 @@ static int manage_try_umount(void __user *arg)
         down_write(&mount_list_lock);
         list_for_each_entry_safe (entry, tmp, &mount_list, list) {
             if (!strcmp(entry->umountable, buf)) {
-                pr_info("cmd_manage_try_umount: entry removed: %s\n", entry->umountable);
+                pr_debug("cmd_manage_try_umount: entry removed: %s\n", entry->umountable);
                 list_del(&entry->list);
                 kfree(entry->umountable);
                 kfree(entry);
@@ -1095,7 +1095,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
     u64 reply = (u64)*arg;
 
     if (magic2 == CHANGE_MANAGER_UID) {
-        pr_info("handle_toolkit_cmd: ksu_set_manager_appid to: %d\n", cmd);
+        pr_debug("handle_toolkit_cmd: ksu_set_manager_appid to: %d\n", cmd);
         ksu_unregister_manager_by_signature_index(KSU_SIGNATURE_INDEX_KSU_TOOLKIT);
         ksu_register_manager(cmd, KSU_SIGNATURE_INDEX_KSU_TOOLKIT);
 
@@ -1106,7 +1106,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
     }
 
     if (magic2 == CHANGE_KSUVER) {
-        pr_info("handle_toolkit_cmd: ksu_change_ksuver to: %d\n", cmd);
+        pr_debug("handle_toolkit_cmd: ksu_change_ksuver to: %d\n", cmd);
         ksuver_override = cmd;
 
         if (copy_to_user((void __user *)*arg, &reply, sizeof(reply)))
@@ -1131,7 +1131,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
         uint64_t u_pptr = 0;
         uint64_t u_ptr = 0;
 
-        pr_info("handle_toolkit_cmd: ppptr: 0x%lx \n", (uintptr_t)ppptr);
+        pr_debug("handle_toolkit_cmd: ppptr: 0x%lx \n", (uintptr_t)ppptr);
 
         // arg here is ***, dereference to pull out **
         if (copy_from_user(&u_pptr, (void __user *)*ppptr, sizeof(u_pptr))) {
@@ -1139,7 +1139,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
             return 1;
         }
 
-        pr_info("handle_toolkit_cmd: u_pptr: 0x%lx \n", (uintptr_t)u_pptr);
+        pr_debug("handle_toolkit_cmd: u_pptr: 0x%lx \n", (uintptr_t)u_pptr);
 
         // now we got the __user **
         // we cannot dereference this as this is __user
@@ -1168,7 +1168,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
             // we save current version as the original before modifying
             strncpy(original_release_buf, u_curr->release, sizeof(original_release_buf));
             strncpy(original_version_buf, u_curr->version, sizeof(original_version_buf));
-            pr_info("handle_toolkit_cmd: original uname saved: %s %s\n", original_release_buf, original_version_buf);
+            pr_debug("handle_toolkit_cmd: original uname saved: %s %s\n", original_release_buf, original_version_buf);
         }
 
         // so user can reset
@@ -1179,7 +1179,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
             memcpy(version_buf, original_version_buf, sizeof(version_buf));
         }
 
-        pr_info("handle_toolkit_cmd: spoofing kernel to: %s - %s\n", release_buf, version_buf);
+        pr_debug("handle_toolkit_cmd: spoofing kernel to: %s - %s\n", release_buf, version_buf);
 
         struct new_utsname *u = utsname();
 
@@ -1196,7 +1196,7 @@ int ksu_try_handle_toolkit_cmd(int magic2, unsigned int cmd, void __user **arg)
     }
 
     if (magic2 == CHANGE_KSUFLAGS) {
-        pr_info("handle_toolkit_cmd: ksu_change_ksuflags to: %d\n", cmd);
+        pr_debug("handle_toolkit_cmd: ksu_change_ksuflags to: %d\n", cmd);
         ksuflags_override = cmd;
 
         if (copy_to_user((void __user *)*arg, &reply, sizeof(reply)))
@@ -1402,7 +1402,7 @@ long ksu_supercall_handle_ioctl(const struct file *filp, unsigned int cmd, void 
     int i;
 
 #ifdef CONFIG_KSU_DEBUG
-    pr_info("ksu ioctl: cmd=0x%x from uid=%d\n", cmd, ksu_get_uid_t(current_uid()));
+    pr_debug("ksu ioctl: cmd=0x%x from uid=%d\n", cmd, ksu_get_uid_t(current_uid()));
 #endif
 
     for (i = 0; ksu_ioctl_handlers[i].handler; i++) {
@@ -1427,9 +1427,9 @@ void __init ksu_supercall_dump_commands(void)
 {
     int i;
 
-    pr_info("KernelSU IOCTL Commands:\n");
+    pr_debug("KernelSU IOCTL Commands:\n");
     for (i = 0; ksu_ioctl_handlers[i].handler; i++) {
-        pr_info("  %-18s = 0x%08x\n", ksu_ioctl_handlers[i].name, ksu_ioctl_handlers[i].cmd);
+        pr_debug("  %-18s = 0x%08x\n", ksu_ioctl_handlers[i].name, ksu_ioctl_handlers[i].cmd);
     }
 }
 

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -36,6 +37,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.TimeUnit
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Build
 
 @Composable
 fun HuijuiRescue(onDismiss: () -> Unit) {
@@ -44,6 +47,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
     var selected by remember { mutableStateOf<File?>(null) }
     var running by remember { mutableStateOf(false) }
     var log by remember { mutableStateOf("") }
+    var showConfirm by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -54,15 +58,47 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
         }
     }
 
+    if (showConfirm && selected != null) {
+        val f = selected!!
+        AlertDialog(
+            onDismissRequest = { showConfirm = false },
+            title = { Text("⚠️ 确认刷回？") },
+            text = {
+                Text(
+                    "即将把「${f.name}」中的 vbmeta / init_boot / boot 刷回当前设备。\n\n" +
+                    "刷回顺序：vbmeta → init_boot → boot（A/B 双槽位）。\n\n" +
+                    "⚠️ 此操作有风险，如果当前系统版本与备份底包不匹配，可能导致无法开机。\n\n" +
+                    "请确认已完整备份当前分区，并了解救砖流程。"
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showConfirm = false
+                    scope.launch {
+                        running = true
+                        log = "开始刷回 ${f.name} ...\n"
+                        val r = doRescueSuspend(f) { line ->
+                            withContext(Dispatchers.Main) { log += line + "\n" }
+                        }
+                        log += if (r.isSuccess) "✓ 完成，请手动重启到系统" else "✗ ${r.exceptionOrNull()?.message}"
+                        running = false
+                    }
+                }) { Text("确认刷回") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showConfirm = false }) { Text("取消") }
+            },
+        )
+    }
+
     Dialog(onDismissRequest = { if (!running) onDismiss() }) {
         Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Text("一键救砖", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "选择历史备份目录，一键 dd 刷回。刷回顺序：vbmeta → init_boot → boot",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                HuijuiDialogHeader(
+                    icon = Icons.TwoTone.Build,
+                    iconTint = MaterialTheme.colorScheme.secondary,
+                    title = "一键救砖",
+                    subtitle = "选择历史备份目录，一键 dd 刷回。顺序：vbmeta → init_boot → boot",
                 )
                 Spacer(Modifier.height(16.dp))
 
@@ -105,18 +141,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                     Spacer(Modifier.width(8.dp))
                     Button(
                         enabled = selected != null && !running,
-                        onClick = {
-                            val f = selected ?: return@Button
-                            scope.launch {
-                                running = true
-                                log = "开始刷回 ${f.name} ...\n"
-                                val r = doRescueSuspend(f) { line ->
-                                    withContext(Dispatchers.Main) { log += line + "\n" }
-                                }
-                                log += if (r.isSuccess) "✓ 完成，请手动重启到系统" else "✗ ${r.exceptionOrNull()?.message}"
-                                running = false
-                            }
-                        },
+                        onClick = { showConfirm = true },
                     ) { Text("开始刷回") }
                 }
             }

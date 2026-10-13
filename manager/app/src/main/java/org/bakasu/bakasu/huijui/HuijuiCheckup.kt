@@ -42,6 +42,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.concurrent.TimeUnit
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Favorite
+import org.bakasu.bakasu.R
 
 data class CheckItem(
     val name: String,
@@ -79,12 +82,11 @@ fun HuijuiCheckup(onDismiss: () -> Unit) {
                     .padding(20.dp)
                     .verticalScroll(rememberScrollState()),
             ) {
-                Text("一键体检", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "HuijuiSU · 系统健康检查",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                HuijuiDialogHeader(
+                    icon = Icons.TwoTone.Favorite,
+                    iconTint = MaterialTheme.colorScheme.error,
+                    title = "一键体检",
+                    subtitle = "HuijuiSU · 系统健康检查",
                 )
                 Spacer(Modifier.height(16.dp))
 
@@ -192,7 +194,11 @@ private fun runCheckup(context: Context): List<CheckItem> {
     out += when (selinux.lowercase()) {
         "enforcing" -> CheckItem("SELinux", CheckItem.Status.OK, selinux)
         "permissive" -> CheckItem("SELinux", CheckItem.Status.WARN, selinux, "宽容模式安全性较低")
-        else -> CheckItem("SELinux", CheckItem.Status.WARN, selinux)
+        else -> CheckItem(
+                    "SELinux",
+                    CheckItem.Status.OK,
+                    context.getString(R.string.checkup_selinux_unknown),
+                )
     }
 
     val stat = StatFs(Environment.getDataDirectory().path)

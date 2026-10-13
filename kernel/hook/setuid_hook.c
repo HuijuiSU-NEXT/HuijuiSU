@@ -73,10 +73,10 @@ static inline void ksu_set_ksud_status(uid_t new_uid)
     int signature_index = ksu_get_manager_signature_index_by_appid(appid);
     if (signature_index != 255) {
         ksu_set_file_immutable("/data/adb/ksud", false);
-        pr_info("Mark /data/adb/ksud read write");
+        pr_debug("Mark /data/adb/ksud read write");
     } else {
         ksu_set_file_immutable("/data/adb/ksud", true);
-        pr_info("Mark /data/adb/ksud read only");
+        pr_debug("Mark /data/adb/ksud read only");
     }
 }
 
@@ -147,7 +147,7 @@ int ksu_handle_setuid(uid_t new_uid, uid_t old_uid)
     }
 
     if (old_uid != new_uid) {
-        pr_info("handle_setresuid from %d to %d\n", old_uid, new_uid);
+        pr_debug("handle_setresuid from %d to %d\n", old_uid, new_uid);
     }
 
     if (ksu_is_allow_uid_for_current(new_uid)) {
@@ -162,7 +162,7 @@ int ksu_handle_setuid(uid_t new_uid, uid_t old_uid)
 #endif
         ksu_clear_current_proc_unprivillege();
         if (ksu_is_manager_uid(new_uid)) {
-            pr_info("install fd for ksu manager(uid=%d)\n", new_uid);
+            pr_debug("install fd for ksu manager(uid=%d)\n", new_uid);
             ksu_mark_manager(new_uid);
             ksu_set_ksud_status(new_uid);
             ksu_install_fd();
@@ -195,6 +195,6 @@ void __init ksu_setuid_hook_init(void)
 
 void __exit ksu_setuid_hook_exit(void)
 {
-    pr_info("ksu_setuid_hook_exit\n");
+    pr_debug("ksu_setuid_hook_exit\n");
     ksu_kernel_umount_exit();
 }

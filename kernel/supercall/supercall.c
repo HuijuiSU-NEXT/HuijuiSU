@@ -30,7 +30,7 @@ struct ksu_driver_context {
 static int anon_ksu_release(struct inode *inode, struct file *filp)
 {
     kfree(filp->private_data);
-    pr_info("ksu fd released\n");
+    pr_debug("ksu fd released\n");
     return 0;
 }
 
@@ -81,7 +81,7 @@ static int ksu_install_fd_with_permissions(unsigned int fd_flags, unsigned long 
     // Install fd
     fd_install(fd, filp);
 
-    pr_info("ksu fd installed: %d, name: %s, for pid %d\n", fd, name, current->pid);
+    pr_debug("ksu fd installed: %d, name: %s, for pid %d\n", fd, name, current->pid);
 
     return fd;
 }
@@ -119,13 +119,13 @@ int ksu_handle_sys_reboot(int magic1, int magic2, unsigned int cmd, void __user 
         return -EINVAL;
 
 #ifdef CONFIG_KSU_DEBUG
-    pr_info("sys_reboot: intercepted call! magic: 0x%x id: %d\n", magic1, magic2);
+    pr_debug("sys_reboot: intercepted call! magic: 0x%x id: %d\n", magic1, magic2);
 #endif
 
     // Check if this is a request to install KSU fd
     if (magic2 == KSU_INSTALL_MAGIC2) {
         int fd = ksu_install_fd();
-        pr_info("[%d] install ksu fd: %d\n", current->pid, fd);
+        pr_debug("[%d] install ksu fd: %d\n", current->pid, fd);
 
         if (copy_to_user((int __user *)*arg, &fd, sizeof(fd))) {
             pr_err("install ksu fd reply err\n");
@@ -190,7 +190,7 @@ void __init ksu_supercalls_init(void)
     if (rc) {
         pr_err("reboot kprobe failed: %d\n", rc);
     } else {
-        pr_info("reboot kprobe registered successfully\n");
+        pr_debug("reboot kprobe registered successfully\n");
     }
 #endif
 }

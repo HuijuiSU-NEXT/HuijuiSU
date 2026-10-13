@@ -214,7 +214,7 @@ int ksu_handle_init_module(const void __user *umod, unsigned long umod_len)
         return 0;
 
     if (r.umod && r.umod_len >= sizeof(Elf_Ehdr) && ksu_is_block_module(&r, &blocked)) {
-        pr_info("module_load_filter: block %.*s load due to it in blocklist\n", (int)blocked.len, blocked.name);
+        pr_debug("module_load_filter: block %.*s load due to it in blocklist\n", (int)blocked.len, blocked.name);
         return 0;
     }
 
@@ -276,7 +276,7 @@ int ksu_handle_finit_module(int fd, int flags)
     fput(file);
 
     if (should_block) {
-        pr_info("module_load_filter: block %.*s load due to it in blocklist\n", (int)blocked.len, blocked.name);
+        pr_debug("module_load_filter: block %.*s load due to it in blocklist\n", (int)blocked.len, blocked.name);
         return 0;
     }
 
@@ -313,7 +313,7 @@ static long ksu_sys_finit_module(const struct pt_regs *regs)
 void __init ksu_module_load_filter_hook_init(void)
 {
     if (!ksu_block_modules[0]) {
-        pr_info("module_load_filter: no modules should be blocked\n");
+        pr_debug("module_load_filter: no modules should be blocked\n");
         return;
     }
 
@@ -321,7 +321,7 @@ void __init ksu_module_load_filter_hook_init(void)
     ksu_syscall_table_hook(__NR_init_module, ksu_sys_init_module, &orig_sys_init_module);
     ksu_syscall_table_hook(__NR_finit_module, ksu_sys_finit_module, &orig_sys_finit_module);
 #endif
-    pr_info("module_load_filter: target modules: %s\n", ksu_block_modules);
+    pr_debug("module_load_filter: target modules: %s\n", ksu_block_modules);
 }
 
 void __exit ksu_module_load_filter_hook_exit(void)

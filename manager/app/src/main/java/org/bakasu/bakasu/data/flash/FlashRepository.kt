@@ -1,5 +1,6 @@
 package org.bakasu.bakasu.data.flash
 
+import org.bakasu.bakasu.parseKmi
 import android.app.Application
 import android.net.Uri
 import androidx.core.net.toUri
@@ -85,7 +86,9 @@ class FlashRepository(
                     ),
                     isGki = runCatching { getKernelVersion().isGKI() }.getOrDefault(false),
                     isAbDevice = abDevice,
-                    currentKmi = runCatching { ksuCliRepository.getCurrentKmi() }.getOrDefault(""),
+                    currentKmi = runCatching { ksuCliRepository.getCurrentKmi() }
+                        .getOrDefault("")
+                        .ifBlank { parseKmi(android.system.Os.uname().release) },
                     defaultPartition = runCatching { ksuCliRepository.getDefaultPartition() }.getOrDefault(
                         "boot",
                     ),

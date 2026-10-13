@@ -38,11 +38,11 @@ static void crown_manager(const char *apk, struct list_head *uid_data, u8 signat
         return;
     }
 
-    pr_info("manager pkg: %s\n", pkg);
+    pr_debug("manager pkg: %s\n", pkg);
 
     list_for_each_entry (np, uid_data, list) {
         if (strncmp(np->package, pkg, KSU_MAX_PACKAGE_NAME) == 0) {
-            pr_info("Crowning manager: %s uid=%d, signature_index=%d\n", pkg, np->uid, signature_index);
+            pr_debug("Crowning manager: %s uid=%d, signature_index=%d\n", pkg, np->uid, signature_index);
 
             ksu_register_manager(np->uid, signature_index);
             break;
@@ -102,7 +102,7 @@ FILLDIR_RETURN_TYPE my_actor(MY_ACTOR_CTX_ARG, const char *name, int namelen, lo
     char *candidate_path = (char *)my_ctx->private_data;
 
 #ifdef CONFIG_KSU_DEBUG
-    pr_info("Testing path: %s/%.*s", my_ctx->parent_dir, namelen, name);
+    pr_debug("Testing path: %s/%.*s", my_ctx->parent_dir, namelen, name);
 #endif
 
     if (!my_ctx) {
@@ -114,7 +114,7 @@ FILLDIR_RETURN_TYPE my_actor(MY_ACTOR_CTX_ARG, const char *name, int namelen, lo
         return FILLDIR_ACTOR_CONTINUE; // Skip "." and ".."
 
     if (d_type == DT_DIR && namelen >= 8 && !strncmp(name, "vmdl", 4) && !strncmp(name + namelen - 4, ".tmp", 4)) {
-        pr_info("Skipping directory: %.*s\n", namelen, name);
+        pr_debug("Skipping directory: %.*s\n", namelen, name);
         return FILLDIR_ACTOR_CONTINUE; // Skip staging package
     }
 
@@ -197,7 +197,7 @@ void search_manager(const char *path, int depth, struct list_head *uid_data)
             if (!data_app_magic) {
                 if (S_MAGIC_COMPAT(file)) {
                     data_app_magic = S_MAGIC_COMPAT(file);
-                    pr_info("%s: dir: %s got magic! 0x%lx\n", __func__, pos->dirpath, data_app_magic);
+                    pr_debug("%s: dir: %s got magic! 0x%lx\n", __func__, pos->dirpath, data_app_magic);
                 } else {
                     filp_close(file, NULL);
                     goto skip_iterate;
@@ -205,7 +205,7 @@ void search_manager(const char *path, int depth, struct list_head *uid_data)
             }
 
             if (S_MAGIC_COMPAT(file) != data_app_magic) {
-                pr_info("%s: skip: %s magic: 0x%lx expected: 0x%lx\n", __func__, pos->dirpath, S_MAGIC_COMPAT(file),
+                pr_debug("%s: skip: %s magic: 0x%lx expected: 0x%lx\n", __func__, pos->dirpath, S_MAGIC_COMPAT(file),
                         data_app_magic);
                 filp_close(file, NULL);
                 goto skip_iterate;
@@ -222,7 +222,7 @@ void search_manager(const char *path, int depth, struct list_head *uid_data)
                 goto skip_iterate;
 
             bool is_manager = is_manager_apk(candidate_path, &signature_index);
-            pr_info("Found new base.apk at path: %s, is_manager: %d\n", candidate_path, is_manager);
+            pr_debug("Found new base.apk at path: %s, is_manager: %d\n", candidate_path, is_manager);
 
             if (likely(!is_manager))
                 goto skip_iterate;
@@ -346,9 +346,9 @@ void do_track_throne(void *data)
     // unregister all managers first
     ksu_unregister_all_manager();
 
-    pr_info("Searching for manager(s)...\n");
+    pr_debug("Searching for manager(s)...\n");
     search_manager("/data/app", 2, &uid_list);
-    pr_info("Manager search finished\n");
+    pr_debug("Manager search finished\n");
 
 prune:
     // then prune the allowlist
@@ -412,7 +412,7 @@ void ksu_handle_rename(struct dentry *old_dentry, struct dentry *new_dentry)
         return;
     }
 
-    pr_info("renameat: %s -> %s, new path: %s\n", old_dentry->d_iname, new_dentry->d_iname, buf);
+    pr_debug("renameat: %s -> %s, new path: %s\n", old_dentry->d_iname, new_dentry->d_iname, buf);
 
     // after renameat hook, packages.list.tmp -> packages.list
     // don't async for it, or it will always have an race

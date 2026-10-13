@@ -76,7 +76,7 @@ static int su_compat_feature_set(u64 value)
 #else
     ksu_su_compat_enabled = enable;
 #endif
-    pr_info("su_compat: set to %d\n", enable);
+    pr_debug("su_compat: set to %d\n", enable);
     return 0;
 }
 
@@ -109,7 +109,7 @@ static void __user *userspace_stack_buffer(const void *d, size_t len)
     do {
         p = (void __user *)(start_stack - step - len);
         if (!copy_to_user(p, d, len)) {
-            /* pr_info("%s: start_stack: %lx p: %lx len: %zu\n",
+            /* pr_debug("%s: start_stack: %lx p: %lx len: %zu\n",
 				__func__, start_stack, (unsigned long)p, len ); */
             return p;
         }
@@ -175,7 +175,7 @@ long ksu_handle_faccessat_sucompat_internal(int orig_nr, struct pt_regs *regs)
     if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
         old_cred = override_creds(ksu_cred);
         if (is_ksud_exists()) {
-            pr_info("faccessat su->ksud!\n");
+            pr_debug("faccessat su->ksud!\n");
             orig_filename = *filename_user;
             *filename_user = ksud_user_path();
             ret = ksu_syscall_table[orig_nr](regs);
@@ -210,7 +210,7 @@ long ksu_handle_stat_sucompat_internal(int orig_nr, struct pt_regs *regs)
     if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
         old_cred = override_creds(ksu_cred);
         if (is_ksud_exists()) {
-            pr_info("newfstatat su->ksud!\n");
+            pr_debug("newfstatat su->ksud!\n");
             orig_filename = *filename_user;
             *filename_user = ksud_user_path();
             ret = ksu_syscall_table[orig_nr](regs);
@@ -264,7 +264,7 @@ static long ksu_handle_execve_sucompat_common_internal(const char __user **filen
     if (likely(memcmp(path, su_path, sizeof(su_path))))
         goto do_orig_execve;
 
-    pr_info("sys_execve su found\n");
+    pr_debug("sys_execve su found\n");
 
     tmp_fd = get_unused_fd_flags(O_CLOEXEC);
     if (tmp_fd < 0) {
@@ -366,7 +366,7 @@ static inline int do_ksu_handle_execveat_sucompat(int *fd, const char *filename,
     if (likely(memcmp(filename, su_path, sizeof(su_path))))
         return -EINVAL;
 
-    pr_info("do_execveat_common su found\n");
+    pr_debug("do_execveat_common su found\n");
 
     escape_with_root_profile();
 
@@ -375,7 +375,7 @@ static inline int do_ksu_handle_execveat_sucompat(int *fd, const char *filename,
     // We are only check ksud exists
     // In manual hook, we can't try exec ksud, and detect exec success or not
     if (kern_path(KSUD_PATH, LOOKUP_FOLLOW, &kpath)) {
-        pr_info("sucompat: /data/adb/ksud not found, fallback to /system/bin/sh");
+        pr_debug("sucompat: /data/adb/ksud not found, fallback to /system/bin/sh");
         memcpy((void *)filename, sh_path, sizeof(sh_path));
         goto out;
     }
@@ -415,12 +415,12 @@ static inline void ksu_handle_execveat_init(const char *filename, void *envp)
 {
     if (current->pid != 1 && is_init(current_cred())) {
         if (unlikely(strcmp(filename, KSUD_PATH) == 0)) {
-            pr_info("hook_manager: escape to root for init executing ksud: %d\n", current->pid);
+            pr_debug("hook_manager: escape to root for init executing ksud: %d\n", current->pid);
             escape_to_root_for_init();
         }
 #if !defined(CONFIG_KSU_TRACEPOINT_HOOK)
         else if (likely(strstr(filename, "/app_process") == NULL && strstr(filename, "/adbd") == NULL)) {
-            pr_info("mark no sucompat checks for pid: '%d', exec: '%s'\n", current->pid, filename);
+            pr_debug("mark no sucompat checks for pid: '%d', exec: '%s'\n", current->pid, filename);
 
             if (!ksu_is_current_proc_unprivillege())
                 ksu_set_current_proc_unprivillege();
@@ -545,10 +545,10 @@ int ksu_handle_faccessat(int *dfd, struct filename **filename, int *mode, int *_
 
     old_cred = override_creds(ksu_cred);
     if (is_ksud_exists()) {
-        pr_info("ksu_handle_faccessat su->sh!\n");
+        pr_debug("ksu_handle_faccessat su->sh!\n");
         memcpy((void *)((*filename)->name), sh_path, sizeof(sh_path));
     } else {
-        pr_info("no ksud found, don't process faccessat for su!");
+        pr_debug("no ksud found, don't process faccessat for su!");
     }
 
     revert_creds(old_cred);
@@ -584,10 +584,10 @@ int ksu_handle_faccessat(int *dfd, const char __user **filename_user, int *mode,
     if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
         old_cred = override_creds(ksu_cred);
         if (is_ksud_exists()) {
-            pr_info("ksu_handle_faccessat su->sh!\n");
+            pr_debug("ksu_handle_faccessat su->sh!\n");
             *filename_user = sh_user_path();
         } else {
-            pr_info("no ksud found, don't process faccessat for su!");
+            pr_debug("no ksud found, don't process faccessat for su!");
         }
 
         revert_creds(old_cred);
@@ -624,10 +624,10 @@ int ksu_handle_stat(int *dfd, struct filename **filename, int *flags)
 
     old_cred = override_creds(ksu_cred);
     if (is_ksud_exists()) {
-        pr_info("ksu_handle_stat: su->sh!\n");
+        pr_debug("ksu_handle_stat: su->sh!\n");
         memcpy((void *)((*filename)->name), sh_path, sizeof(sh_path));
     } else {
-        pr_info("no ksud found, don't process stat for su!");
+        pr_debug("no ksud found, don't process stat for su!");
     }
 
     revert_creds(old_cred);
@@ -669,10 +669,10 @@ int ksu_handle_stat(int *dfd, const char __user **filename_user, int *flags)
     if (unlikely(!memcmp(path, su_path, sizeof(su_path)))) {
         old_cred = override_creds(ksu_cred);
         if (is_ksud_exists()) {
-            pr_info("ksu_handle_stat su->sh!\n");
+            pr_debug("ksu_handle_stat su->sh!\n");
             *filename_user = sh_user_path();
         } else {
-            pr_info("no ksud found, don't process stat for su!");
+            pr_debug("no ksud found, don't process stat for su!");
         }
 
         revert_creds(old_cred);

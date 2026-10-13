@@ -37,7 +37,7 @@ static int kernel_umount_feature_set(u64 value)
 {
     bool enable = value != 0;
     ksu_kernel_umount_enabled = enable;
-    pr_info("kernel_umount: set to %d\n", enable);
+    pr_debug("kernel_umount: set to %d\n", enable);
     return 0;
 }
 
@@ -53,7 +53,7 @@ static void ksu_umount_mnt(const char *mnt, struct path *path, int flags)
 {
     int err = path_umount(path, flags);
     if (err) {
-        pr_info("umount %s failed: %d\n", mnt, err);
+        pr_debug("umount %s failed: %d\n", mnt, err);
     }
 }
 
@@ -84,7 +84,7 @@ static void do_umount_for_current_task()
     struct mount_entry *entry;
     down_read(&mount_list_lock);
     list_for_each_entry (entry, &mount_list, list) {
-        pr_info("%s: unmounting: %s flags: 0x%x\n", __func__, entry->umountable, entry->flags);
+        pr_debug("%s: unmounting: %s flags: 0x%x\n", __func__, entry->umountable, entry->flags);
         try_umount(entry->umountable, entry->flags);
     }
     up_read(&mount_list_lock);
@@ -125,13 +125,13 @@ int ksu_handle_umount(uid_t old_uid, uid_t new_uid)
     }
 
     // umount the target mnt
-    pr_info("handle umount for uid: %d, pid: %d\n", new_uid, current->pid);
+    pr_debug("handle umount for uid: %d, pid: %d\n", new_uid, current->pid);
 
     saved = override_creds(ksu_cred);
 
     down_read(&mount_list_lock);
     list_for_each_entry (entry, &mount_list, list) {
-        pr_info("%s: unmounting: %s flags 0x%x\n", __func__, entry->umountable, entry->flags);
+        pr_debug("%s: unmounting: %s flags 0x%x\n", __func__, entry->umountable, entry->flags);
         try_umount(entry->umountable, entry->flags);
     }
     up_read(&mount_list_lock);

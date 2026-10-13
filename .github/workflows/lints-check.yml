@@ -1,7 +1,10 @@
 name: Lints Check
 
 on:
+  workflow_dispatch:
   push:
+    branches:
+      - '__disabled__'
   pull_request:
 
 permissions:

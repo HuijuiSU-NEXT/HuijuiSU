@@ -569,4 +569,16 @@
     <string name="install_upload_lkm_file_summary">Use a custom .ko file instead of the built-in LKM</string>
     <string name="skip_ksud">Do not install ksud</string>
     <string name="skip_ksud_summary">Cancel ksud installation. Do not enable this unless absolutely necessary.</string>
+
+    <string name="checkup_selinux_unknown">系统安全机制限制，状态未知（已由内核层接管）</string>
+    <string name="checkup_kernel_unknown">当前为自研 Hook 内核，未识别 KSU 标识（属正常情况）</string>
+
+    <string name="huijui_ascii_logo"><![CDATA[
+ _   _       _  _       _ ____  _   _ 
+| | | |_   _(_)(_)_   _(_) ___|| | | |
+| |_| | | | | || | | | | \___ \| | | |
+|  _  | |_| | || | |_| | |___) | |_| |
+|_| |_|\__,_|_|/ |\__,_|_|____/ \___/ 
+              |__/
+]]></string>
 </resources>

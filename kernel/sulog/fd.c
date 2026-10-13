@@ -32,7 +32,7 @@ static int ksu_sulog_release(struct inode *inode, struct file *file)
     ksu_sulog_fd_active = false;
     mutex_unlock(&ksu_sulog_fd_lock);
 
-    pr_info("sulog: fd released\n");
+    pr_debug("sulog: fd released\n");
     return 0;
 }
 
@@ -74,7 +74,7 @@ int ksu_install_sulog_fd(void)
 
     ksu_sulog_fd_active = true;
     fd_install(fd, filp);
-    pr_info("sulog: fd installed %d for pid %d\n", fd, current->pid);
+    pr_debug("sulog: fd installed %d for pid %d\n", fd, current->pid);
 
 out_unlock:
     mutex_unlock(&ksu_sulog_fd_lock);

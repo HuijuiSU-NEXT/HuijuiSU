@@ -38,6 +38,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.SaveAlt
 
 data class BackupProgress(
     val name: String,
@@ -77,12 +79,11 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
     Dialog(onDismissRequest = { if (!running) onDismiss() }) {
         Card(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
             Column(modifier = Modifier.padding(20.dp)) {
-                Text("一键备份包", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(4.dp))
-                Text(
-                    "boot / init_boot / vbmeta → /sdcard/HuijuiSU_Backup_日期/",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                HuijuiDialogHeader(
+                    icon = Icons.TwoTone.SaveAlt,
+                    iconTint = MaterialTheme.colorScheme.primary,
+                    title = "一键备份包",
+                    subtitle = "boot / init_boot / vbmeta → /sdcard/HuijuiSU_Backup_日期/",
                 )
                 Spacer(Modifier.height(16.dp))
 

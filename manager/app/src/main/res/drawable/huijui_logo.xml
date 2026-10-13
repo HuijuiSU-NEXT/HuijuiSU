@@ -1,0 +1,31 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="128dp"
+    android:height="128dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+
+    <!-- H 左竖 -->
+    <path
+        android:pathData="M32,28 L32,100"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/ic_launcher_foreground" />
+
+    <!-- H 右竖 -->
+    <path
+        android:pathData="M96,28 L96,100"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/ic_launcher_foreground" />
+
+    <!-- H 中横 -->
+    <path
+        android:pathData="M32,64 L96,64"
+        android:strokeWidth="20"
+        android:strokeLineCap="round"
+        android:fillColor="#00000000"
+        android:strokeColor="@color/ic_launcher_foreground" />
+
+</vector>
