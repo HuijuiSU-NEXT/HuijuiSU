@@ -14,6 +14,8 @@ on:
       - 'kernel/**'
       - 'userspace/**'
       - 'scripts/ksubot.py'
+      - 'repack_apk.py'
+      - 'repack_apk_multi.py'
   pull_request:
   workflow_call:
 
