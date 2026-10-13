@@ -43,6 +43,7 @@ def merge_config(file_cfg: dict, args: argparse.Namespace) -> dict:
         "arch": [],
         "output_name": "",
         "strip": False,
+        "lkm_dir": "",
     }
 
     cfg.update({k: v for k, v in file_cfg.items() if k != "signing"})
@@ -202,6 +203,43 @@ def find_ksud_binaries_by_arch(ksud_build_type: str, arch_filters: List[str]) ->
     return result
 
 
+def collect_lkm_by_arch(lkm_dir: str) -> Dict[str, List[Path]]:
+    """扫描 LKM artifact 目录，按架构收集所有 .ko 文件。"""
+    result: Dict[str, List[Path]] = {}
+    if not lkm_dir:
+        return result
+    root = Path(lkm_dir)
+    if not root.exists():
+        print(f"[WARN] LKM directory not found: {root}", file=sys.stderr)
+        return result
+
+    ARCH_FROM_ARTIFACT = {
+        "aarch64": "arm64-v8a",
+        "x86_64": "x86_64",
+    }
+
+    for sub in sorted(root.iterdir()):
+        if not sub.is_dir():
+            continue
+        name = sub.name
+        arch = None
+        for prefix, mapped in ARCH_FROM_ARTIFACT.items():
+            if name.startswith(f"{prefix}-"):
+                arch = mapped
+                break
+        if arch is None:
+            print(f"[WARN] Cannot detect arch from LKM dir: {name}", file=sys.stderr)
+            continue
+        kos = sorted(sub.glob("*.ko"))
+        if not kos:
+            print(f"[WARN] No .ko found in: {sub}", file=sys.stderr)
+            continue
+        result.setdefault(arch, []).extend(kos)
+        print(f"[INFO] LKM arch={arch}: {len(kos)} file(s) from {name}")
+
+    return result
+
+
 def collect_existing_arches(apk_path: Path) -> List[str]:
     arches = []
     seen = set()
@@ -242,6 +280,7 @@ def repack_apk(
     out_unsigned_path: Path,
     arch_filters: List[str],
     ksud_by_arch: Dict[str, Path],
+    lkm_by_arch: Optional[Dict[str, List[Path]]] = None,
     strip_tool: Optional[Path] = None,
 ) -> None:
     with tempfile.TemporaryDirectory() as tmp_dir:
@@ -288,6 +327,24 @@ def repack_apk(
                 entry.compress_type = ZIP_DEFLATED
                 zout.writestr(entry, ksud_bytes)
 
+            # 注入 LKM .ko 文件到 assets/ 目录
+            if lkm_by_arch:
+                ARCH_ASSET_DIR = {
+                    "arm64-v8a": "aarch64",
+                    "x86_64": "x86_64",
+                }
+                for arch in arch_filters:
+                    asset_dir = ARCH_ASSET_DIR.get(arch)
+                    if not asset_dir:
+                        continue
+                    kos = lkm_by_arch.get(arch, [])
+                    for ko_path in kos:
+                        asset_path = f"assets/{asset_dir}/{ko_path.name}"
+                        entry = ZipInfo(filename=asset_path)
+                        entry.compress_type = ZIP_DEFLATED
+                        zout.writestr(entry, ko_path.read_bytes())
+                        print(f"[INFO] Injected: {asset_path}")
+
 
 def assert_required_libs(apk_path: Path, arch_filters: List[str]) -> None:
     with ZipFile(apk_path, "r") as zf:
@@ -331,6 +388,7 @@ def do_repack(args: argparse.Namespace) -> int:
         print(f"[INFO] No arch configured, using: {', '.join(arch_filters)}")
 
     ksud_by_arch = find_ksud_binaries_by_arch(cfg["ksud_build_type"], arch_filters)
+    lkm_by_arch = collect_lkm_by_arch(cfg.get("lkm_dir", ""))
     missing_ksud_arches = [arch for arch in arch_filters if arch not in ksud_by_arch]
     if missing_ksud_arches:
         existing_ksud_arches = set(collect_existing_ksud_arches(apk))
@@ -371,7 +429,7 @@ def do_repack(args: argparse.Namespace) -> int:
             print(f"[INFO] Strip tool: {strip_tool}")
 
     try:
-        repack_apk(apk, unsigned_path, arch_filters, ksud_by_arch, strip_tool)
+        repack_apk(apk, unsigned_path, arch_filters, ksud_by_arch, lkm_by_arch, strip_tool)
         assert_required_libs(unsigned_path, arch_filters)
 
         zipalign = find_android_tool("zipalign")
@@ -454,6 +512,7 @@ def build_parser() -> argparse.ArgumentParser:
     repack.add_argument("-P", "--keystore-pass", help="Keystore password override")
     repack.add_argument("-S", "--key-pass", help="Private key password override")
     repack.add_argument("-n", "--output-name", help="Base name for output APK files (default: input APK stem)")
+    repack.add_argument("--lkm-dir", help="Directory containing LKM .ko artifacts (e.g. artifacts/lkm/)")
     strip_group = repack.add_mutually_exclusive_group()
     strip_group.add_argument(
         "--strip",

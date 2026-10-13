@@ -230,7 +230,7 @@ jobs:
 
   repack-manager:
     if: always() && needs.build-manager.result == 'success' && needs.build-ksud.result == 'success'
-    needs: [build-manager, build-ksud, prepare]
+    needs: [build-lkm, build-manager, build-ksud, prepare]
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -287,6 +287,13 @@ jobs:
           name: ksud-riscv64-linux-android
           path: artifacts/ksud-riscv64-linux-android
 
+
+      - name: Download LKM artifacts
+        uses: actions/download-artifact@v8
+        with:
+          pattern: '*-lkm'
+          path: artifacts/lkm/
+          merge-multiple: false
 
       - name: Place manager apk and ksud artifacts
         run: |
@@ -351,6 +358,7 @@ jobs:
             -A "$SIGN_KEY_ALIAS" \
             -P "$SIGN_KEYSTORE_PASSWORD" \
             -S "$SIGN_KEY_PASSWORD" \
+            --lkm-dir artifacts/lkm/ \
             --strip
 
       - name: Delete gradle build
