@@ -64,6 +64,10 @@ def process_single_apk(apk_path: Path, args: argparse.Namespace, out_dir: Path) 
     # Find ksud binaries
     ksud_build_type = args.ksud_build_type or "debug"
     ksud_by_arch = repack.find_ksud_binaries_by_arch(ksud_build_type, arch_filters)
+
+    # Collect LKM .ko modules
+    lkm_dir = getattr(args, "lkm_dir", "") or ""
+    lkm_by_arch = repack.collect_lkm_by_arch(lkm_dir) if lkm_dir else {}
     
     # Handle missing ksud
     missing_ksud_arches = [arch for arch in arch_filters if arch not in ksud_by_arch]
@@ -99,7 +103,14 @@ def process_single_apk(apk_path: Path, args: argparse.Namespace, out_dir: Path) 
             print(f"[WARN] {apk_path.name}: strip requested but tool not found")
     
     try:
-        repack.repack_apk(apk_path, unsigned_path, arch_filters, ksud_by_arch, strip_tool)
+        repack.repack_apk(
+            apk_path,
+            unsigned_path,
+            arch_filters,
+            ksud_by_arch,
+            lkm_by_arch=lkm_by_arch,
+            strip_tool=strip_tool,
+        )
         repack.assert_required_libs(unsigned_path, arch_filters)
         
         zipalign = repack.find_android_tool("zipalign")
