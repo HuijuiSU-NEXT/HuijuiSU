@@ -57,7 +57,7 @@ fun HuijuiToolCard(
             // 图标底圆：柔和底色 + 深色图标
             Surface(
                 shape = RoundedCornerShape(12.dp),
-                color = iconTint.copy(alpha = 0.18f),
+                color = iconTint.copy(alpha = 0.12f),
                 modifier = Modifier.size(40.dp),
             ) {
                 Box(contentAlignment = Alignment.Center) {

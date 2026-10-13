@@ -33,7 +33,7 @@ fun HuijuiHub() {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Favorite,
-                iconTint = MaterialTheme.colorScheme.error,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "一键体检",
                 description = "电量 / 温度 / BL / 内核 / Root / SELinux / 存储",
                 onClick = { showCheckup = true },
@@ -42,7 +42,7 @@ fun HuijuiHub() {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Speed,
-                iconTint = MaterialTheme.colorScheme.tertiary,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "性能模式",
                 description = "省电 / 均衡 / 性能 / 游戏，一键切换系统调度",
                 onClick = { showPerfMode = true },
@@ -60,7 +60,7 @@ fun HuijuiHub() {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Build,
-                iconTint = MaterialTheme.colorScheme.secondary,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "一键救砖",
                 description = "从历史备份目录一键刷回",
                 onClick = { showRescue = true },
