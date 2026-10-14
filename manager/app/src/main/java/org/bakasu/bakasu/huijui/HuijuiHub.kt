@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Build
+import androidx.compose.material.icons.twotone.Cloud
 import androidx.compose.material.icons.twotone.Favorite
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material.icons.twotone.Speed
@@ -24,6 +25,7 @@ fun HuijuiHub() {
     var showBackup by remember { mutableStateOf(false) }
     var showRescue by remember { mutableStateOf(false) }
     var showPerfMode by remember { mutableStateOf(false) }
+    var showGkiDownload by remember { mutableStateOf(false) }
 
     SegmentedColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -66,10 +68,20 @@ fun HuijuiHub() {
                 onClick = { showRescue = true },
             )
         }
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Cloud,
+                iconTint = MaterialTheme.colorScheme.primary,
+                title = "GKI 内核下载",
+                description = "内置模式（built-in）专用，跳转社区预编译内核",
+                onClick = { showGkiDownload = true },
+            )
+        }
     }
 
     if (showCheckup) HuijuiCheckup(onDismiss = { showCheckup = false })
     if (showPerfMode) HuijuiPerfMode(onDismiss = { showPerfMode = false })
     if (showBackup) HuijuiBackup(onDismiss = { showBackup = false })
     if (showRescue) HuijuiRescue(onDismiss = { showRescue = false })
+    if (showGkiDownload) HuijuiGkiDownload(onDismiss = { showGkiDownload = false })
 }
