@@ -4,9 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Apps
 import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.Cloud
 import androidx.compose.material.icons.twotone.Favorite
+import androidx.compose.material.icons.twotone.Memory
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material.icons.twotone.Speed
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +24,8 @@ import org.bakasu.bakasu.huijui.feature.HuijuiCheckup
 import org.bakasu.bakasu.huijui.feature.HuijuiBackup
 import org.bakasu.bakasu.huijui.feature.HuijuiRescue
 import org.bakasu.bakasu.huijui.feature.HuijuiPerfMode
+import org.bakasu.bakasu.huijui.feature.HuijuiAppManager
+import org.bakasu.bakasu.huijui.feature.HuijuiFlashCustom
 import org.bakasu.bakasu.huijui.ui.HuijuiToolCard
 import org.bakasu.bakasu.huijui.ui.HuijuiGkiDownload
 
@@ -32,6 +36,8 @@ fun HuijuiHub() {
     var showRescue by remember { mutableStateOf(false) }
     var showPerfMode by remember { mutableStateOf(false) }
     var showGkiDownload by remember { mutableStateOf(false) }
+    var showFlashCustom by remember { mutableStateOf(false) }
+    var showAppManager by remember { mutableStateOf(false) }
 
     SegmentedColumn(
         modifier = Modifier.fillMaxWidth(),
@@ -83,6 +89,24 @@ fun HuijuiHub() {
                 onClick = { showGkiDownload = true },
             )
         }
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Memory,
+                iconTint = MaterialTheme.colorScheme.primary,
+                title = "刷入定制内核",
+                description = "刷自己的 boot.img，自动处理 vbmeta 校验",
+                onClick = { showFlashCustom = true },
+            )
+        }
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Apps,
+                iconTint = MaterialTheme.colorScheme.primary,
+                title = "应用管理器",
+                description = "冻结 / 卸载 / 强停 已安装应用",
+                onClick = { showAppManager = true },
+            )
+        }
     }
 
     if (showCheckup) HuijuiCheckup(onDismiss = { showCheckup = false })
@@ -90,4 +114,6 @@ fun HuijuiHub() {
     if (showBackup) HuijuiBackup(onDismiss = { showBackup = false })
     if (showRescue) HuijuiRescue(onDismiss = { showRescue = false })
     if (showGkiDownload) HuijuiGkiDownload(onDismiss = { showGkiDownload = false })
+    if (showFlashCustom) HuijuiFlashCustom(onDismiss = { showFlashCustom = false })
+    if (showAppManager) HuijuiAppManager(onDismiss = { showAppManager = false })
 }

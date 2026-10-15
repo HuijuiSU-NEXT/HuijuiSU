@@ -41,20 +41,47 @@ object HuijuiDefaultsApplier {
 
             Log.i(TAG, "开始应用默认隐藏规则 v${HuijuiHiddenDefaults.DEFAULTS_VERSION}")
 
-            // 应用 sus_path 列表
-            var success = 0
+            // 1. 应用 sus_path 列表
+            var pathSuccess = 0
             HuijuiHiddenDefaults.SUS_PATHS.forEach { path ->
                 val out = runKsud("sus_path add '$path'")
                 if (out.isBlank() || !out.contains("error", ignoreCase = true)) {
-                    success++
+                    pathSuccess++
                     Log.d(TAG, "  ✓ sus_path: $path")
                 } else {
                     Log.w(TAG, "  ✗ sus_path: $path -> $out")
                 }
             }
-            Log.i(TAG, "  sus_path: $success/${HuijuiHiddenDefaults.SUS_PATHS.size} 成功")
+            Log.i(TAG, "  sus_path: $pathSuccess/${HuijuiHiddenDefaults.SUS_PATHS.size} 成功")
 
-            // 保存配置
+            // 2. 应用 sus_kstat 列表
+            var kstatSuccess = 0
+            HuijuiHiddenDefaults.SUS_KSTATS.forEach { path ->
+                val out = runKsud("sus_kstat add '$path' normal")
+                if (out.isBlank() || !out.contains("error", ignoreCase = true)) {
+                    kstatSuccess++
+                    Log.d(TAG, "  ✓ sus_kstat: $path")
+                } else {
+                    Log.w(TAG, "  ✗ sus_kstat: $path -> $out")
+                }
+            }
+            Log.i(TAG, "  sus_kstat: $kstatSuccess/${HuijuiHiddenDefaults.SUS_KSTATS.size} 成功")
+
+            // 3. 开启挂载点隐藏
+            if (HuijuiHiddenDefaults.ENABLE_SUS_MOUNT) {
+                val out = runKsud("hide_sus_mnts_for_non_su_procs add")
+                Log.i(TAG, if (out.isBlank() || !out.contains("error", true))
+                    "  ✓ 挂载点隐藏已开启" else "  ✗ 挂载点隐藏：$out")
+            }
+
+            // 4. 开启 AVC 日志伪装
+            if (HuijuiHiddenDefaults.ENABLE_AVC_LOG_SPOOFING) {
+                val out = runKsud("avc_log_spoofing add")
+                Log.i(TAG, if (out.isBlank() || !out.contains("error", true))
+                    "  ✓ AVC 日志伪装已开启" else "  ✗ AVC 日志伪装：$out")
+            }
+
+            // 5. 保存配置
             runKsud("feature save")
 
             // 记录已应用版本

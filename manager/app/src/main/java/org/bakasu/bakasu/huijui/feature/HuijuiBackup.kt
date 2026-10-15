@@ -40,6 +40,7 @@ import java.util.Locale
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.SaveAlt
 import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
+import org.bakasu.bakasu.huijui.data.HuijuiModuleSnapshot
 import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 data class BackupProgress(
@@ -172,6 +173,24 @@ private suspend fun doBackupSuspend(
         )
         onProgress(items.toList())
     }
+
+    // 模块快照
+    items += BackupProgress("modules", "备份中")
+    onProgress(items.toList())
+    try {
+        val snapshot = HuijuiModuleSnapshot.capture()
+        val ok = HuijuiModuleSnapshot.writeToFile(snapshot, dir)
+        items[items.lastIndex] = items.last().copy(
+            status = if (ok) "成功" else "失败",
+            size = "${snapshot.modules.size} 个模块",
+        )
+    } catch (t: Throwable) {
+        items[items.lastIndex] = items.last().copy(
+            status = "失败",
+            size = t.message.orEmpty().take(20),
+        )
+    }
+    onProgress(items.toList())
 
     File(dir, "restore.bat").writeText(buildRestoreBat())
     Result.success(dir.absolutePath)

@@ -261,4 +261,5 @@ dependencies {
     implementation(libs.lsposed.cxx)
 
     implementation(libs.accompanist.drawablepainter)
+    implementation(libs.liquid.glass)
 }

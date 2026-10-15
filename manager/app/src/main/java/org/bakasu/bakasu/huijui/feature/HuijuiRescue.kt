@@ -39,6 +39,9 @@ import java.io.File
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Build
 import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
+import org.bakasu.bakasu.huijui.data.HuijuiModuleSnapshot
+import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.Switch
 import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 @Composable
@@ -49,6 +52,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
     var running by remember { mutableStateOf(false) }
     var log by remember { mutableStateOf("") }
     var showConfirm by remember { mutableStateOf(false) }
+    var restoreModules by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         withContext(Dispatchers.IO) {
@@ -65,12 +69,40 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
             onDismissRequest = { showConfirm = false },
             title = { Text("⚠️ 确认刷回？") },
             text = {
-                Text(
-                    "即将把「${f.name}」中的 vbmeta / init_boot / boot 刷回当前设备。\n\n" +
-                    "刷回顺序：vbmeta → init_boot → boot（A/B 双槽位）。\n\n" +
-                    "⚠️ 此操作有风险，如果当前系统版本与备份底包不匹配，可能导致无法开机。\n\n" +
-                    "请确认已完整备份当前分区，并了解救砖流程。"
-                )
+                Column {
+                    Text(
+                        "即将把「${f.name}」中的 vbmeta / init_boot / boot 刷回当前设备。\n\n" +
+                        "刷回顺序：vbmeta → init_boot → boot（A/B 双槽位）。\n\n" +
+                        "⚠️ 此操作有风险，如果当前系统版本与备份底包不匹配，可能导致无法开机。\n\n" +
+                        "请确认已完整备份当前分区，并了解救砖流程。"
+                    )
+                    if (File(f, "modules.json").exists()) {
+                        Spacer(Modifier.height(12.dp))
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Switch(
+                                checked = restoreModules,
+                                onCheckedChange = { restoreModules = it },
+                                colors = SwitchDefaults.colors(),
+                            )
+                            Spacer(Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    "同时还原模块状态",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Text(
+                                    "恢复备份时的模块启用 / 卸载状态",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                )
+                            }
+                        }
+                    }
+                }
             },
             confirmButton = {
                 TextButton(onClick = {
@@ -81,7 +113,25 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                         val r = doRescueSuspend(f) { line ->
                             withContext(Dispatchers.Main) { log += line + "\n" }
                         }
-                        log += if (r.isSuccess) "✓ 完成，请手动重启到系统" else "✗ ${r.exceptionOrNull()?.message}"
+                        if (r.isSuccess) {
+                            log += "✓ 分区刷回完成\n"
+                            if (restoreModules) {
+                                val snapshot = HuijuiModuleSnapshot.readFromFile(f)
+                                if (snapshot != null) {
+                                    log += "\n开始还原模块状态（${snapshot.modules.size} 个）...\n"
+                                    val rr = HuijuiModuleSnapshot.restore(snapshot)
+                                    log += "  还原 ${rr.restored} 个，跳过 ${rr.skipped} 个\n"
+                                    if (rr.failures.isNotEmpty()) {
+                                        log += "  失败 ${rr.failures.size} 个：${rr.failures.take(3).joinToString(", ")}\n"
+                                    }
+                                } else {
+                                    log += "⚠️ 未找到 modules.json，跳过\n"
+                                }
+                            }
+                            log += "\n✓ 全部完成，请手动重启到系统"
+                        } else {
+                            log += "✗ ${r.exceptionOrNull()?.message}"
+                        }
                         running = false
                     }
                 }) { Text("确认刷回") }

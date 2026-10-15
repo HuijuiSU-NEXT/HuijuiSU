@@ -38,6 +38,7 @@ spotless = "8.10.3"
 ktlint = "1.8.0"
 compose-rules = "0.6.7"
 
+liquidGlass = "0.2.3"
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-test = { id = "com.android.test", version.ref = "agp" }
@@ -50,6 +51,7 @@ aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "abo
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 [libraries]
+liquid-glass = { module = "io.github.nadeemiqbal:liquid-glass", version.ref = "liquidGlass" }
 commons-compress = { module = "org.apache.commons:commons-compress", version.ref = "commons-compress" }
 xz = { module = "org.tukaani:xz", version.ref = "xz" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
