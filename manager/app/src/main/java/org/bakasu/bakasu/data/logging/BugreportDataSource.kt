@@ -101,7 +101,7 @@ fun getBugreportFile(context: Context, ksuCliRepository: KsuCliRepository): File
         val ksuKernel = Natives.version
         pw.println("KernelSU: $ksuKernel")
         val ksuKernelFull = Natives.getFullVersion()
-        pw.println("BakaSU: $ksuKernelFull")
+        pw.println("HuijuiSU: $ksuKernelFull")
         val safeMode = Natives.isSafeMode
         pw.println("SafeMode: $safeMode")
         val lkmMode = Natives.isLkmMode

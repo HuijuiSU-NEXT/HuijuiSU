@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.ui
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight

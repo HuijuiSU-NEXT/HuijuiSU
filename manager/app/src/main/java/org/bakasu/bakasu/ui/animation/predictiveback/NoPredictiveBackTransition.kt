@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-only
-// Copyright (C) 2026 BakaSU contributors
+// Copyright (C) 2026 HuijuiSU contributors
 package org.bakasu.bakasu.ui.animation.predictiveback
 
 import androidx.compose.ui.graphics.GraphicsLayerScope

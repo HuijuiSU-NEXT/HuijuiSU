@@ -62,7 +62,7 @@
     <string name="get_source_code">Check for source code</string>
     <string name="get_source_code_detail">Check for source code on GitHub</string>
     <string name="join_telegram_group">Join community</string>
-    <string name="join_telegram_group_detail">Join our Telegram channel</string>
+    <string name="join_telegram_group_detail">View source and report issues on GitHub</string>
     <string name="open_source_license">Open Source License</string>
     <string name="open_source_license_settings_description">View third-party open-source libraries and their licenses</string>
     <string name="visit_home_page">Visit Home Page</string>
@@ -182,10 +182,8 @@
     <string name="install_force_backup">Backup as stock image</string>
     <string name="install_force_backup_summary">Please make sure your selected boot image is a stock image</string>
     <string name="settings_uninstall">Uninstall</string>
-    <string name="settings_uninstall_temporary">Uninstall temporarily</string>
     <string name="settings_uninstall_permanent">Uninstall permanently</string>
     <string name="settings_restore_stock_image">Restore stock image</string>
-    <string name="settings_uninstall_temporary_message">Temporarily uninstall KernelSU, restore to original state after next reboot</string>
     <string name="settings_uninstall_permanent_message">Uninstalling KernelSU (root and all modules) completely and permanently</string>
     <string name="settings_restore_stock_image_message">Restore the stock factory image (if a backup exists), usually used before OTA; if you need to uninstall KernelSU, please use \"Uninstall permanently\"</string>
     <string name="flashing">Flashing</string>

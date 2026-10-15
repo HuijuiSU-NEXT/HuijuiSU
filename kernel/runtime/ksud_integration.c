@@ -466,7 +466,7 @@ static ssize_t read_proxy(struct file *file, char __user *buf, size_t count, lof
     if (ksu_rc_pos >= ksu_rc_len && module_rc_pos >= module_rc_len) {
         return ret;
     }
-    pr_info("read_proxy: orig read finished, start append rc\n");
+    pr_debug("read_proxy: orig read finished, start append rc\n");
 
 append_ksu_rc:
     if (ksu_rc_pos < ksu_rc_len) {
@@ -475,14 +475,14 @@ append_ksu_rc:
             append_count = count - ret;
         // copy_to_user returns the number of bytes that could not be copied
         if (copy_to_user(buf + ret, KERNEL_SU_RC + ksu_rc_pos, append_count)) {
-            pr_info("read_proxy: append error, totally appended %zd\n", ksu_rc_pos);
+            pr_debug("read_proxy: append error, totally appended %zd\n", ksu_rc_pos);
             return ret;
         }
-        pr_info("read_proxy: append static %zu\n", append_count);
+        pr_debug("read_proxy: append static %zu\n", append_count);
         ksu_rc_pos += append_count;
         ret += append_count;
         if (ksu_rc_pos == ksu_rc_len)
-            pr_info("read_proxy: static append done\n");
+            pr_debug("read_proxy: static append done\n");
     }
 
 append_module_rc:
@@ -491,14 +491,14 @@ append_module_rc:
         if (append_count > count - ret)
             append_count = count - ret;
         if (copy_to_user(buf + ret, module_rc_buf + module_rc_pos, append_count)) {
-            pr_info("read_proxy: module append error, totally appended %zd\n", module_rc_pos);
+            pr_debug("read_proxy: module append error, totally appended %zd\n", module_rc_pos);
             return ret;
         }
-        pr_info("read_proxy: append module %zu\n", append_count);
+        pr_debug("read_proxy: append module %zu\n", append_count);
         module_rc_pos += append_count;
         ret += append_count;
         if (module_rc_pos == (ssize_t)module_rc_len) {
-            pr_info("read_proxy: module append done\n");
+            pr_debug("read_proxy: module append done\n");
             free_module_rc();
         }
     }
@@ -523,21 +523,21 @@ static ssize_t read_iter_proxy(struct kiocb *iocb, struct iov_iter *to)
     if (ksu_rc_pos >= ksu_rc_len && module_rc_pos >= module_rc_len) {
         return ret;
     }
-    pr_info("read_iter_proxy: orig read finished, start append rc\n");
+    pr_debug("read_iter_proxy: orig read finished, start append rc\n");
 
 append_ksu_rc:
     if (ksu_rc_pos < ksu_rc_len) {
         // copy_to_iter returns the number of bytes successfully copied
         append_count = copy_to_iter((void *)KERNEL_SU_RC + ksu_rc_pos, ksu_rc_len - ksu_rc_pos, to);
         if (!append_count) {
-            pr_info("read_iter_proxy: append error, totally appended %zd\n", ksu_rc_pos);
+            pr_debug("read_iter_proxy: append error, totally appended %zd\n", ksu_rc_pos);
             return ret;
         }
-        pr_info("read_iter_proxy: append static %zu\n", append_count);
+        pr_debug("read_iter_proxy: append static %zu\n", append_count);
         ksu_rc_pos += append_count;
         ret += append_count;
         if (ksu_rc_pos == ksu_rc_len) {
-            pr_info("read_iter_proxy: static append done\n");
+            pr_debug("read_iter_proxy: static append done\n");
         }
     }
 
@@ -545,14 +545,14 @@ append_module_rc:
     if (module_rc_pos < module_rc_len) {
         append_count = copy_to_iter((void *)module_rc_buf + module_rc_pos, module_rc_len - module_rc_pos, to);
         if (!append_count) {
-            pr_info("read_iter_proxy: module append error, appended %zd\n", module_rc_pos);
+            pr_debug("read_iter_proxy: module append error, appended %zd\n", module_rc_pos);
             return ret;
         }
-        pr_info("read_iter_proxy: append module %zu\n", append_count);
+        pr_debug("read_iter_proxy: append module %zu\n", append_count);
         module_rc_pos += append_count;
         ret += append_count;
         if (module_rc_pos == (ssize_t)module_rc_len) {
-            pr_info("read_iter_proxy: module append done\n");
+            pr_debug("read_iter_proxy: module append done\n");
             free_module_rc();
         }
     }
@@ -619,7 +619,7 @@ static __always_inline void ksu_common_newfstat_ret(unsigned long fd_long, void 
     }
     fput(file);
 
-    pr_info("%s: stat init.rc \n", __func__);
+    pr_debug("%s: stat init.rc \n", __func__);
     load_module_rc_once();
 
     uintptr_t statbuf_ptr_local = (uintptr_t) * (void **)statbuf_ptr;
@@ -648,13 +648,13 @@ static __always_inline void ksu_common_newfstat_ret(unsigned long fd_long, void 
     }
 
     new_size = size + extra;
-    pr_info("%s: adding rc len: %ld -> %ld (static=%zu module=%zu)\n", __func__, size, new_size, ksu_rc_len,
+    pr_debug("%s: adding rc len: %ld -> %ld (static=%zu module=%zu)\n", __func__, size, new_size, ksu_rc_len,
             module_rc_len);
 
     if (!copy_to_user(st_size_ptr, &new_size, len))
-        pr_info("%s: added rc len \n", __func__);
+        pr_debug("%s: added rc len \n", __func__);
     else
-        pr_info("%s: add rc len failed: statbuf 0x%lx \n", __func__, (unsigned long)st_size_ptr);
+        pr_debug("%s: add rc len failed: statbuf 0x%lx \n", __func__, (unsigned long)st_size_ptr);
 
     return;
 }
@@ -690,13 +690,13 @@ void ksu_handle_vfs_fstat(int fd, loff_t *kstat_size_ptr)
     if (is_init_rc(file)) {
         size_t extra;
         loff_t new_size;
-        pr_info("stat init.rc");
+        pr_debug("stat init.rc");
         load_module_rc_once();
 
         extra = ksu_rc_len + module_rc_len;
         new_size = *kstat_size_ptr + extra;
 
-        pr_info("adding rc len: %lld -> %lld", *kstat_size_ptr, new_size);
+        pr_debug("adding rc len: %lld -> %lld", *kstat_size_ptr, new_size);
         *kstat_size_ptr = new_size;
     }
     fput(file);
@@ -796,7 +796,7 @@ int ksu_handle_input_handle_event(unsigned int *type, unsigned int *code, int *v
 
     if (*type == EV_KEY && *code == KEY_VOLUMEDOWN) {
         int val = *value;
-        pr_info("KEY_VOLUMEDOWN val: %d\n", val);
+        pr_debug("KEY_VOLUMEDOWN val: %d\n", val);
         if (val) {
             // key pressed, count it
             volumedown_pressed_count += 1;
@@ -825,15 +825,15 @@ static void vol_detector_event(struct input_handle *handle, unsigned int type, u
     if (code != KEY_VOLUMEDOWN)
         return;
 
-    pr_info("KEY_VOLUMEDOWN press detected!\n");
+    pr_debug("KEY_VOLUMEDOWN press detected!\n");
 
     volumedown_pressed_count += 1;
-    pr_info("volumedown_pressed_count: %d\n", volumedown_pressed_count);
+    pr_debug("volumedown_pressed_count: %d\n", volumedown_pressed_count);
 
     // yeah this fucks up, seems unreg in the same context is an issue
     // but then again, tehres no need to unreg here, just let on_post_fs_data do it
     //if (volume_pressed_count >= 3) {
-    //	pr_info("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
+    //	pr_debug("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
     //	ksu_stop_input_hook_runtime();
     //}
 }
@@ -939,10 +939,10 @@ bool ksu_is_safe_mode()
     // stop hook first!
     ksu_stop_input_hook_runtime();
 
-    pr_info("volumedown_pressed_count: %d\n", volumedown_pressed_count);
+    pr_debug("volumedown_pressed_count: %d\n", volumedown_pressed_count);
     if (is_volumedown_enough(volumedown_pressed_count)) {
         // pressed over 3 times
-        pr_info("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
+        pr_debug("KEY_VOLUMEDOWN pressed max times, safe mode detected!\n");
         safe_mode = true;
         return true;
     }
@@ -1013,7 +1013,7 @@ static long ksu_sys_fstat(const struct pt_regs *regs)
     struct file *file = fget(fd);
     if (file) {
         if (is_init_rc(file)) {
-            pr_info("stat init.rc");
+            pr_debug("stat init.rc");
             is_rc = true;
             load_module_rc_once();
         }
@@ -1028,9 +1028,9 @@ static long ksu_sys_fstat(const struct pt_regs *regs)
         size_t extra = ksu_rc_len + module_rc_len;
         if (!copy_from_user_nofault(&size, st_size_ptr, sizeof(long))) {
             new_size = size + extra;
-            pr_info("adding rc len: %ld -> %ld", size, new_size);
+            pr_debug("adding rc len: %ld -> %ld", size, new_size);
             if (!copy_to_user_nofault(st_size_ptr, &new_size, sizeof(long))) {
-                pr_info("added rc len");
+                pr_debug("added rc len");
             } else {
                 pr_err("add rc len failed: statbuf 0x%lx", (unsigned long)st_size_ptr);
             }

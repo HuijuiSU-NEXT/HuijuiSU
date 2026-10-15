@@ -195,7 +195,7 @@ val coreModule = module {
             .addInterceptor { chain ->
                 chain.proceed(
                     chain.request().newBuilder()
-                        .header("User-Agent", "BakaSU/${BuildConfig.VERSION_CODE}")
+                        .header("User-Agent", "HuiJuiSU_Next/${BuildConfig.VERSION_CODE}")
                         .header("Accept-Language", Locale.getDefault().toLanguageTag())
                         .build(),
                 )

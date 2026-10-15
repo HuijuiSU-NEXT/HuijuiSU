@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.ui
 
 import android.content.Intent
 import android.net.Uri

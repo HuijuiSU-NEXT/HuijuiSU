@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.feature
 
 import android.content.Context
 import android.content.Intent
@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Favorite
 import org.bakasu.bakasu.R
+import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 data class CheckItem(
     val name: String,

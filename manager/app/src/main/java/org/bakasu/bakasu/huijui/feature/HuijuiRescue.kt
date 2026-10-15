@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.feature
 
 import android.os.Environment
 import androidx.compose.foundation.layout.Arrangement
@@ -36,9 +36,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.concurrent.TimeUnit
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Build
+import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
+import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 @Composable
 fun HuijuiRescue(onDismiss: () -> Unit) {
@@ -169,9 +170,5 @@ private suspend fun doRescueSuspend(
     Result.success(Unit)
 }
 
-private fun runAsRoot(cmd: String): String = try {
-    val p = ProcessBuilder("su", "-c", cmd).redirectErrorStream(true).start()
-    val out = p.inputStream.bufferedReader().readText()
-    p.waitFor(60, TimeUnit.SECONDS)
-    out
-} catch (t: Throwable) { t.message ?: "" }
+private fun runAsRoot(cmd: String): String =
+    HuijuiShellUtils.runAsRoot(cmd, timeoutSeconds = 60)

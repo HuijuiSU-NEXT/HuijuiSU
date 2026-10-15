@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -632,9 +631,6 @@ fun UninstallItem(
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val uninstallConfirmDialog = rememberConfirmDialog()
-    val showTodo = {
-        Toast.makeText(context, "TODO", Toast.LENGTH_SHORT).show()
-    }
     val options = remember {
         listOf(
             UninstallType.PERMANENT,
@@ -660,7 +656,6 @@ fun UninstallItem(
                     if (result == ConfirmResult.Confirmed) {
                         withLoading {
                             when (uninstallType) {
-                                UninstallType.TEMPORARY -> showTodo()
                                 UninstallType.PERMANENT -> navigator.push(Route.Flash.uninstall())
                                 UninstallType.RESTORE_STOCK_IMAGE -> navigator.push(Route.Flash.restore())
                                 UninstallType.NONE -> Unit
@@ -674,11 +669,6 @@ fun UninstallItem(
 }
 
 enum class UninstallType(val title: Int, val message: Int, val icon: ImageVector) {
-    TEMPORARY(
-        R.string.settings_uninstall_temporary,
-        R.string.settings_uninstall_temporary_message,
-        Icons.TwoTone.Delete,
-    ),
     PERMANENT(
         R.string.settings_uninstall_permanent,
         R.string.settings_uninstall_permanent_message,

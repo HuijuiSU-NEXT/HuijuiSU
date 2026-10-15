@@ -18,6 +18,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.bakasu.bakasu.ui.component.settings.SegmentedColumn
+import org.bakasu.bakasu.huijui.feature.HuijuiCheckup
+import org.bakasu.bakasu.huijui.feature.HuijuiBackup
+import org.bakasu.bakasu.huijui.feature.HuijuiRescue
+import org.bakasu.bakasu.huijui.feature.HuijuiPerfMode
+import org.bakasu.bakasu.huijui.ui.HuijuiToolCard
+import org.bakasu.bakasu.huijui.ui.HuijuiGkiDownload
 
 @Composable
 fun HuijuiHub() {

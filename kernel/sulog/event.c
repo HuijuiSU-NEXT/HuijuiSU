@@ -404,6 +404,10 @@ void ksu_sulog_emit_pending(struct ksu_sulog_pending_event *pending, int retval,
 
 int ksu_sulog_emit_grant_root(int retval, __u32 uid, __u32 euid, gfp_t gfp)
 {
+    // Hot path: quick return if sulog disabled (called on every setresuid)
+    if (likely(!ksu_sulog_is_enabled()))
+        return 0;
+
     struct ksu_sulog_pending_event *pending;
     struct ksu_sulog_identity identity = {
         .uid = uid,

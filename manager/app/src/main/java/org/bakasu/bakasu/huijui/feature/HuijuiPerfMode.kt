@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.feature
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -31,9 +31,10 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.concurrent.TimeUnit
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Speed
+import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
+import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 /**
  * HuijuiSU 性能模式切换器 v2.0.0
@@ -185,11 +186,5 @@ private fun readSysfs(path: String): String = try {
     ""
 }
 
-private fun runAsRoot(cmd: String): String = try {
-    val p = ProcessBuilder("su", "-c", cmd).redirectErrorStream(true).start()
-    val out = p.inputStream.bufferedReader().readText()
-    p.waitFor(30, TimeUnit.SECONDS)
-    out
-} catch (t: Throwable) {
-    t.message ?: ""
-}
+private fun runAsRoot(cmd: String): String =
+    HuijuiShellUtils.runAsRoot(cmd, timeoutSeconds = 30)

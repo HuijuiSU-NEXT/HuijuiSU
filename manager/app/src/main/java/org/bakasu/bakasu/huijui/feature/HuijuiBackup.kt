@@ -1,4 +1,4 @@
-package org.bakasu.bakasu.huijui
+package org.bakasu.bakasu.huijui.feature
 
 import android.content.Context
 import android.os.Environment
@@ -37,9 +37,10 @@ import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.SaveAlt
+import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
+import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 data class BackupProgress(
     val name: String,
@@ -189,12 +190,8 @@ private fun buildRestoreBat(): String = buildString {
     appendLine("pause")
 }
 
-private fun runAsRoot(cmd: String): String = try {
-    val p = ProcessBuilder("su", "-c", cmd).redirectErrorStream(true).start()
-    val out = p.inputStream.bufferedReader().readText()
-    p.waitFor(60, TimeUnit.SECONDS)
-    out
-} catch (t: Throwable) { t.message ?: "" }
+private fun runAsRoot(cmd: String): String =
+    HuijuiShellUtils.runAsRoot(cmd, timeoutSeconds = 60)
 
 private fun humanSize(bytes: Long): String {
     val mb = bytes / 1024.0 / 1024.0

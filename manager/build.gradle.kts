@@ -48,7 +48,7 @@ extra["managerVersionName"] = getGitDescribe()
 extra["isPrBuild"] = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
 extra["defaultManagerPackageName"] = "com.huijui.manager"
 extra["managerPackageName"] = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: extra["defaultManagerPackageName"]
-extra["defaultManagerAppName"] = if (extra["isPrBuild"] == true) "HuijuiSU PR" else "HuijuiSU"
+extra["defaultManagerAppName"] = if (extra["isPrBuild"] == true) "HuiJuiSU Next PR" else "HuiJuiSU Next"
 extra["managerName"] = project.findProperty("KSU_NAME")?.toString() ?: extra["defaultManagerAppName"]
 
 val isSpoofedBuild = project.findProperty("IS_SPOOFED_BUILD")?.toString()?.toBoolean() ?: false
@@ -59,7 +59,7 @@ fun getGitCommitCount(): Int = providers.exec {
 
 fun getGitDescribe(): String {
     // HuijuiSU: fixed version instead of git describe
-    val desc = "v2.0.0"
+    val desc = "v3.0.0"
     if (isSpoofedBuild) {
         return "$desc-spoofed"
     }
