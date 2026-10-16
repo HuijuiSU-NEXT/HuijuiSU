@@ -33,7 +33,7 @@ import androidx.compose.ui.window.Dialog
 import org.bakasu.bakasu.parseKmi
 
 /**
- * HuijuiSU GKI 内核下载引导页
+ * HuiJuiSU NEXT GKI 内核下载引导页
  *
  * GKI 设备（内核 5.10+）无法 built-in，这里引导用户下载社区预编译 GKI 内核。
  */

@@ -66,10 +66,19 @@ import org.bakasu.bakasu.ui.theme.blurSource
 import org.bakasu.bakasu.ui.theme.renderBackgroundBlur
 import org.bakasu.bakasu.ui.util.adaptiveScaffoldWindowInsets
 import org.koin.compose.koinInject
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.material3.IconButton
+import androidx.compose.material.icons.twotone.ContentCopy
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AboutScreen() {
+    val context = LocalContext.current
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -180,7 +189,9 @@ fun AboutScreen() {
                             icon = Icons.TwoTone.Code,
                             title = stringResource(R.string.get_source_code),
                             description = stringResource(R.string.get_source_code_detail),
-                            onClick = { uriHandler.openUri("https://github.com/hhcdxii-ship-it/HuijuiSU") },
+                            onClick = {
+                                uriHandler.openUri("https://github.com/hhcdxii-ship-it/HuijuiSU")
+                            },
                         )
                     }
                     item {
@@ -188,7 +199,20 @@ fun AboutScreen() {
                             icon = Icons.TwoTone.Group,
                             title = stringResource(R.string.join_telegram_group),
                             description = stringResource(R.string.join_telegram_group_detail),
-                            onClick = { uriHandler.openUri("https://github.com/hhcdxii-ship-it/HuijuiSU") },
+                            onClick = {
+                                val ctx = context
+                                val qqGroupUin = "763278354"
+                                val scheme = "mqqapi://card/show_pslcard?src_type=internal&version=1&card_type=group&uin=$qqGroupUin"
+                                try {
+                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(scheme))
+                                    ctx.startActivity(intent)
+                                } catch (e: Exception) {
+                                    // 未安装 QQ，复制群号
+                                    val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                                    clipboard.setPrimaryClip(ClipData.newPlainText("QQ Group", qqGroupUin))
+                                    Toast.makeText(ctx, "群号已复制：$qqGroupUin", Toast.LENGTH_LONG).show()
+                                }
+                            },
                         )
                     }
                     item {

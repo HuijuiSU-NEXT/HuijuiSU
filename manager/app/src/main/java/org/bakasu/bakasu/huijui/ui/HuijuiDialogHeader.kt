@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
 /**
- * HuijuiSU 对话框统一头部 v2.0
+ * HuiJuiSU NEXT 对话框统一头部 v2.0
  *
  * 左侧色块图标 + 标题 + 副标题，替代原有的纯文字标题。
  */

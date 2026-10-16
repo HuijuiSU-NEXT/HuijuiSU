@@ -61,8 +61,8 @@
     <string name="about_app_icon"><![CDATA[App 图标版权归 %1$s 所有，保留所有权利]]></string>
     <string name="get_source_code">查看源代码</string>
     <string name="get_source_code_detail">在 GitHub 上查看源代码</string>
-    <string name="join_telegram_group">加入社区</string>
-    <string name="join_telegram_group_detail">在 GitHub 上查看源码与反馈问题</string>
+    <string name="join_telegram_group">加入 QQ 群</string>
+    <string name="join_telegram_group_detail">点击跳转 QQ 加入 HuiJuiSU NEXT 用户群</string>
     <string name="open_source_license">开放源代码许可</string>
     <string name="open_source_license_settings_description">查看本应用所使用的第三方开源库及其许可证信息</string>
     <string name="visit_home_page">访问主页</string>
