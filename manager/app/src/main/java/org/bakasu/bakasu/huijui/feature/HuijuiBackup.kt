@@ -166,7 +166,8 @@ private suspend fun doBackupSuspend(
 
         val src = "/dev/block/by-name/$part"
         val dst = File(dir, "$part.img")
-        val exists = File(src).exists()
+        // 用 Root 检查分区是否存在（普通 App 无法 stat /dev/block/）
+        val exists = runAsRoot("[ -e $src ] && echo yes || echo no").trim() == "yes"
         if (!exists) {
             items[items.lastIndex] = items.last().copy(status = "跳过", size = "分区不存在")
             onProgress(items.toList())
@@ -186,15 +187,18 @@ private suspend fun doBackupSuspend(
     onProgress(items.toList())
     try {
         val snapshot = HuijuiModuleSnapshot.capture()
+        android.util.Log.i("HuijuiBackup", "captured ${snapshot.modules.size} modules")
         val ok = HuijuiModuleSnapshot.writeToFile(snapshot, dir)
         items[items.lastIndex] = items.last().copy(
             status = if (ok) "成功" else "失败",
             size = "${snapshot.modules.size} 个模块",
         )
+        android.util.Log.i("HuijuiBackup", "writeToFile result: $ok")
     } catch (t: Throwable) {
+        android.util.Log.e("HuijuiBackup", "module snapshot failed", t)
         items[items.lastIndex] = items.last().copy(
             status = "失败",
-            size = t.message.orEmpty().take(20),
+            size = t.message.orEmpty().take(30),
         )
     }
     onProgress(items.toList())

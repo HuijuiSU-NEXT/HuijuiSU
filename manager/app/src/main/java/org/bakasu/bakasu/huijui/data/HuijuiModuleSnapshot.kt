@@ -41,6 +41,7 @@ object HuijuiModuleSnapshot {
             timeoutSeconds = 15,
             trim = true,
         )
+        Log.i(TAG, "raw ls output: [$out]")
         val ids = out.lines().map { it.trim() }.filter { it.isNotEmpty() }
         val modules = ids.map { id ->
             val disable = checkFileExists("$MODULES_DIR/$id/disable")
@@ -75,11 +76,14 @@ object HuijuiModuleSnapshot {
             put("createdAt", snapshot.createdAt)
             put("modules", arr)
         }
-        File(dir, SNAPSHOT_FILE).writeText(root.toString(2))
-        Log.i(TAG, "快照写入 ${dir.absolutePath}/$SNAPSHOT_FILE")
+        val targetFile = File(dir, SNAPSHOT_FILE)
+        Log.i(TAG, "准备写入：${targetFile.absolutePath}")
+        Log.i(TAG, "目录存在=${dir.exists()}, 可写=${dir.canWrite()}, 可读=${dir.canRead()}")
+        targetFile.writeText(root.toString(2))
+        Log.i(TAG, "快照写入成功，大小=${targetFile.length()}")
         true
     } catch (t: Throwable) {
-        Log.w(TAG, "写入快照失败：${t.message}")
+        Log.w(TAG, "写入快照失败", t)
         false
     }
 
