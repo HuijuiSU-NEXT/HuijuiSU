@@ -212,7 +212,7 @@ jobs:
             # HuiJuiSU NEXT: force custom name + package
             KSU_NAME="HuiJuiSU NEXT"
             KSU_PACKAGE_NAME="com.huijui.sunext"
-            ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PKSU_NAME=$KSU_NAME -PKSU_PACKAGE_NAME=$KSU_PACKAGE_NAME
+            ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PKSU_NAME="$KSU_NAME" -PKSU_PACKAGE_NAME="$KSU_PACKAGE_NAME"
           fi
 
       - name: Upload artifact
