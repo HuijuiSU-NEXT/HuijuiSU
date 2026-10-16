@@ -3,7 +3,7 @@
 > 基于 [BakaSU](https://github.com/Baka-SU/BakaSU) 深度定制的 Android Root 管理器
 > 保留 BakaSU 稳定底层，针对国内玩机环境做了大量 UI 重构与功能增强。
 
-**English** | [简体中文](./zh/README.md)
+[English](./README_EN.md) | [简体中文](./README.md) | [日本語](./README_JA.md) | [한국어](./README_KO.md) | [Русский](./README_RU.md)
 
 [![Latest release](https://img.shields.io/github/v/release/hhcdxii-ship-it/HuijuiSU?label=Release&logo=github)](https://github.com/hhcdxii-ship-it/HuijuiSU/releases/latest)
 [![Kernel License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-orange.svg?logo=gnu)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
