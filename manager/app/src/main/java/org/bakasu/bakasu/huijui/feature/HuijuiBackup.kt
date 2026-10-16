@@ -188,7 +188,7 @@ private suspend fun doBackupSuspend(
     try {
         val snapshot = HuijuiModuleSnapshot.capture()
         android.util.Log.i("HuijuiBackup", "captured ${snapshot.modules.size} modules")
-        val ok = HuijuiModuleSnapshot.writeToFile(snapshot, dir)
+        val ok = HuijuiModuleSnapshot.writeToFile(context, snapshot, dir)
         items[items.lastIndex] = items.last().copy(
             status = if (ok) "成功" else "失败",
             size = "${snapshot.modules.size} 个模块",

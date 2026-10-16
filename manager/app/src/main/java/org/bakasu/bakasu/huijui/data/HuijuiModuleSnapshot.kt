@@ -1,5 +1,6 @@
 package org.bakasu.bakasu.huijui.data
 
+import android.content.Context
 import android.util.Log
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -34,22 +35,31 @@ object HuijuiModuleSnapshot {
 
     /**
      * 捕获当前模块状态。
+     *
+     * 用单次 su 调用拿到所有模块及状态，避免每个模块单独 su（性能问题）。
      */
     suspend fun capture(): Snapshot = withContext(Dispatchers.IO) {
-        val out = HuijuiShellUtils.runAsRoot(
-            "ls $MODULES_DIR 2>/dev/null",
-            timeoutSeconds = 15,
-            trim = true,
-        )
-        Log.i(TAG, "raw ls output: [$out]")
-        val ids = out.lines().map { it.trim() }.filter { it.isNotEmpty() }
-        val modules = ids.map { id ->
-            val disable = checkFileExists("$MODULES_DIR/$id/disable")
-            val remove = checkFileExists("$MODULES_DIR/$id/remove")
+        val script = buildString {
+            append("for d in $MODULES_DIR/*/; do ")
+            append("id=\$(basename \"\$d\"); ")
+            append("disable=0; remove=0; ")
+            append("[ -f \"\$d/disable\" ] && disable=1; ")
+            append("[ -f \"\$d/remove\" ] && remove=1; ")
+            append("echo \"\$id|\$disable|\$remove\"; ")
+            append("done")
+        }
+        val out = HuijuiShellUtils.runAsRoot(script, timeoutSeconds = 30, trim = true)
+        Log.i(TAG, "raw output:\n$out")
+
+        val modules = out.lines().mapNotNull { line ->
+            val trimmed = line.trim()
+            if (trimmed.isEmpty()) return@mapNotNull null
+            val parts = trimmed.split("|")
+            if (parts.size != 3) return@mapNotNull null
             ModuleEntry(
-                id = id,
-                enabled = !disable,
-                remove = remove,
+                id = parts[0],
+                enabled = parts[1] == "0",
+                remove = parts[2] == "1",
             )
         }
         Log.i(TAG, "捕获 ${modules.size} 个模块")
@@ -61,27 +71,25 @@ object HuijuiModuleSnapshot {
 
     /**
      * 序列化到 JSON 文件。
+     *
+     * 先写到 App 私有目录，再用 su 复制到目标位置，
+     * 避免 SELinux context 问题导致 App 无法直接写入 /sdcard/。
      */
-    fun writeToFile(snapshot: Snapshot, dir: File): Boolean = try {
-        val arr = JSONArray()
-        snapshot.modules.forEach { m ->
-            arr.put(JSONObject().apply {
-                put("id", m.id)
-                put("enabled", m.enabled)
-                put("remove", m.remove)
-            })
-        }
-        val root = JSONObject().apply {
-            put("version", FORMAT_VERSION)
-            put("createdAt", snapshot.createdAt)
-            put("modules", arr)
-        }
-        val targetFile = File(dir, SNAPSHOT_FILE)
-        Log.i(TAG, "准备写入：${targetFile.absolutePath}")
-        Log.i(TAG, "目录存在=${dir.exists()}, 可写=${dir.canWrite()}, 可读=${dir.canRead()}")
-        targetFile.writeText(root.toString(2))
-        Log.i(TAG, "快照写入成功，大小=${targetFile.length()}")
-        true
+    fun writeToFile(context: Context, snapshot: Snapshot, dir: File): Boolean = try {
+        val json = buildJson(snapshot)
+        val tempFile = File(context.cacheDir, SNAPSHOT_FILE)
+        tempFile.writeText(json)
+        Log.i(TAG, "临时文件已写：${tempFile.absolutePath} (${tempFile.length()} bytes)")
+
+        val targetPath = "${dir.absolutePath}/$SNAPSHOT_FILE"
+        val out = HuijuiShellUtils.runAsRoot(
+            "cp '${tempFile.absolutePath}' '$targetPath' && chmod 644 '$targetPath'",
+            timeoutSeconds = 10,
+            trim = true,
+        )
+        val ok = File(dir, SNAPSHOT_FILE).exists()
+        Log.i(TAG, "cp 结果：[$out]，目标存在=$ok")
+        ok
     } catch (t: Throwable) {
         Log.w(TAG, "写入快照失败", t)
         false
@@ -93,6 +101,7 @@ object HuijuiModuleSnapshot {
     fun readFromFile(dir: File): Snapshot? = try {
         val f = File(dir, SNAPSHOT_FILE)
         if (!f.exists()) {
+            Log.i(TAG, "无快照文件：${f.absolutePath}")
             null
         } else {
             val root = JSONObject(f.readText())
@@ -111,7 +120,7 @@ object HuijuiModuleSnapshot {
             )
         }
     } catch (t: Throwable) {
-        Log.w(TAG, "读取快照失败：${t.message}")
+        Log.w(TAG, "读取快照失败", t)
         null
     }
 
@@ -127,20 +136,26 @@ object HuijuiModuleSnapshot {
         val failures = mutableListOf<String>()
 
         snapshot.modules.forEach { m ->
-            if (!checkFileExists("$MODULES_DIR/${m.id}")) {
+            val moduleDir = "$MODULES_DIR/${m.id}"
+            val exists = HuijuiShellUtils.runAsRoot(
+                "[ -d '$moduleDir' ] && echo yes || echo no",
+                timeoutSeconds = 5,
+                trim = true,
+            ) == "yes"
+            if (!exists) {
                 skipped++
                 return@forEach
             }
             try {
                 if (m.enabled) {
-                    HuijuiShellUtils.runAsRoot("rm -f $MODULES_DIR/${m.id}/disable", 10, trim = true)
+                    HuijuiShellUtils.runAsRoot("rm -f '$moduleDir/disable'", 10, trim = true)
                 } else {
-                    HuijuiShellUtils.runAsRoot("touch $MODULES_DIR/${m.id}/disable", 10, trim = true)
+                    HuijuiShellUtils.runAsRoot("touch '$moduleDir/disable'", 10, trim = true)
                 }
                 if (m.remove) {
-                    HuijuiShellUtils.runAsRoot("touch $MODULES_DIR/${m.id}/remove", 10, trim = true)
+                    HuijuiShellUtils.runAsRoot("touch '$moduleDir/remove'", 10, trim = true)
                 } else {
-                    HuijuiShellUtils.runAsRoot("rm -f $MODULES_DIR/${m.id}/remove", 10, trim = true)
+                    HuijuiShellUtils.runAsRoot("rm -f '$moduleDir/remove'", 10, trim = true)
                 }
                 restored++
             } catch (t: Throwable) {
@@ -152,13 +167,20 @@ object HuijuiModuleSnapshot {
         RestoreResult(restored, skipped, failures)
     }
 
-    private fun checkFileExists(path: String): Boolean {
-        val out = HuijuiShellUtils.runAsRoot(
-            "[ -e $path ] && echo yes || echo no",
-            timeoutSeconds = 5,
-            trim = true,
-        )
-        return out == "yes"
+    private fun buildJson(snapshot: Snapshot): String {
+        val arr = JSONArray()
+        snapshot.modules.forEach { m ->
+            arr.put(JSONObject().apply {
+                put("id", m.id)
+                put("enabled", m.enabled)
+                put("remove", m.remove)
+            })
+        }
+        return JSONObject().apply {
+            put("version", FORMAT_VERSION)
+            put("createdAt", snapshot.createdAt)
+            put("modules", arr)
+        }.toString(2)
     }
 
     data class RestoreResult(

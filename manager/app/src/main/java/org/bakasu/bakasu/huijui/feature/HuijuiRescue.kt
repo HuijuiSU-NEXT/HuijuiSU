@@ -58,7 +58,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
         withContext(Dispatchers.IO) {
             val root = Environment.getExternalStorageDirectory()
             dirs = root.listFiles { f ->
-                f.isDirectory && f.name.startsWith("HuijuiSU_Backup_")
+                f.isDirectory && f.name.startsWith("HuiJuiSU_Backup_") || f.name.startsWith("HuijuiSU_Backup_")
             }?.sortedByDescending { it.name } ?: emptyList()
         }
     }
