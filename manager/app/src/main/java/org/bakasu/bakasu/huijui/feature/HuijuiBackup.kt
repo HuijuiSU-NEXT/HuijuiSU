@@ -146,7 +146,14 @@ private suspend fun doBackupSuspend(
     val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
     val dir = File(Environment.getExternalStorageDirectory(), "HuijuiSU_Backup_$date")
     if (!dir.exists() && !dir.mkdirs()) {
-        return@withContext Result.failure(Exception("无法创建目录 ${dir.absolutePath}"))
+        // Android 10+ 的 scoped storage 可能阻止普通 mkdirs，
+        // 有 Root 时用 su 创建并放开权限
+        runAsRoot("mkdir -p ${dir.absolutePath} && chmod 777 ${dir.absolutePath} 2>&1")
+        if (!dir.exists()) {
+            return@withContext Result.failure(
+                Exception("无法创建目录 ${dir.absolutePath}（请确认已授予 Root 权限）")
+            )
+        }
     }
 
     val items = mutableListOf<BackupProgress>()

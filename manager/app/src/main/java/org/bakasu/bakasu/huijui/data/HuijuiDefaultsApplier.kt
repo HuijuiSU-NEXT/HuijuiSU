@@ -9,7 +9,7 @@ import org.bakasu.bakasu.huijui.data.HuijuiHiddenDefaults
 import org.bakasu.bakasu.huijui.data.HuijuiDefaultsApplier
 
 /**
- * HuiJuiSU Next 内置隐藏默认值应用器
+ * HuiJuiSU NEXT 内置隐藏默认值应用器
  *
  * 在 App 启动时静默执行，把默认隐藏规则应用到内核。
  * 用 SharedPreferences 记录已应用版本，只在版本变化时重新应用。

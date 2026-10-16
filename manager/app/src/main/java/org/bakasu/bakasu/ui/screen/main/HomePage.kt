@@ -94,7 +94,6 @@ import org.bakasu.bakasu.domain.model.KernelStatus
 import org.bakasu.bakasu.domain.model.ManagerUpdateChannel
 import org.bakasu.bakasu.domain.model.ManagerUpdateInfo
 import org.bakasu.bakasu.domain.usecase.EnqueueManagerUpdateUseCase
-import org.bakasu.bakasu.huijui.HuijuiHub
 import org.bakasu.bakasu.magica.MagicaService
 import org.bakasu.bakasu.ui.component.KsuIsValid
 import org.bakasu.bakasu.ui.component.SwipeableSnackbarHost
@@ -369,9 +368,6 @@ fun HomePage(
                     showHomeCardIcons = uiState.showHomeCardIcons,
                 )
             }
-
-            // Huijui 工具入口
-            HuijuiHub()
 
             // 链接卡片
             if (!uiState.isSimpleMode) {

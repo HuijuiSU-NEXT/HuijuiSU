@@ -49,7 +49,7 @@ import org.bakasu.bakasu.huijui.feature.HuijuiFlashCustom
 import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 
 /**
- * HuiJuiSU Next 定制内核刷入
+ * HuiJuiSU NEXT 定制内核刷入
  *
  * 用户选自己的 boot.img（built-in 内核），Root 权限 dd 刷入，
  * 自动处理 vbmeta 校验防止回滚。全程不需要电脑。

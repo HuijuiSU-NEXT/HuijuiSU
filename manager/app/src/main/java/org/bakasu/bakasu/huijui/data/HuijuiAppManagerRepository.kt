@@ -6,7 +6,7 @@ import kotlinx.coroutines.withContext
 import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
 
 /**
- * HuiJuiSU Next 应用管理器数据层
+ * HuiJuiSU NEXT 应用管理器数据层
  *
  * 封装 pm / am 命令，提供冻结、解冻、强停、清数据、卸载（当前用户）操作。
  */

@@ -1,7 +1,7 @@
 package org.bakasu.bakasu.huijui.data
 
 /**
- * HuiJuiSU Next 内置隐藏默认值
+ * HuiJuiSU NEXT 内置隐藏默认值
  *
  * 用户不需要任何配置，装完就是最强隐藏状态。
  * 修改 DEFAULTS_VERSION 会触发下次启动重新应用。

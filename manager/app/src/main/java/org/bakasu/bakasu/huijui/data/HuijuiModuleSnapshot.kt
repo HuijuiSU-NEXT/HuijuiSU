@@ -9,7 +9,7 @@ import org.json.JSONObject
 import java.io.File
 
 /**
- * HuiJuiSU Next 模块快照
+ * HuiJuiSU NEXT 模块快照
  *
  * 记录 /data/adb/modules/ 下所有模块的启用 / 卸载状态，
  * 刷机后一键还原，避免逐个手动重新配置。

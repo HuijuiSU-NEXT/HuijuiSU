@@ -3,6 +3,7 @@ package org.bakasu.bakasu.ui.screen
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.AdminPanelSettings
+import androidx.compose.material.icons.twotone.Apps
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Home
 import androidx.compose.material.icons.twotone.Settings
@@ -10,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import org.bakasu.bakasu.R
+import org.bakasu.bakasu.huijui.HuijuiHubPage
 import org.bakasu.bakasu.ui.screen.main.HomePage
 import org.bakasu.bakasu.ui.screen.main.ModulePage
 import org.bakasu.bakasu.ui.screen.main.SettingsPage
@@ -27,6 +29,13 @@ enum class BottomBarDestination(
         R.string.home,
         Icons.TwoTone.Home,
         Icons.TwoTone.Home,
+        false,
+    ),
+    Tools(
+        { bottomPadding -> HuijuiHubPage(bottomPadding) },
+        R.string.tools,
+        Icons.TwoTone.Apps,
+        Icons.TwoTone.Apps,
         false,
     ),
     SuperUser(

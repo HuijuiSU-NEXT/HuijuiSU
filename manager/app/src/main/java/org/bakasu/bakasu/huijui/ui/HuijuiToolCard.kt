@@ -28,7 +28,7 @@ import io.github.nadeemiqbal.liquidglass.LiquidGlassQuality
 import io.github.nadeemiqbal.liquidglass.rememberLiquidGlassState
 
 /**
- * HuiJuiSU Next 工具卡片 v3.0
+ * HuiJuiSU NEXT 工具卡片 v3.0
  *
  * 使用 liquid-glass 库的 GlassButton 实现液态玻璃效果。
  * 保留 v2.0 的对外参数，HuijuiHub 无需改动。

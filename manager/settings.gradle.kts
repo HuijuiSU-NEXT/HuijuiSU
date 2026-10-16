@@ -19,7 +19,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "HuijuiSU"
+rootProject.name = "HuiJuiSU_Next"
 include(":app")
 include(":baselineprofile")
 include(":lint-rules")

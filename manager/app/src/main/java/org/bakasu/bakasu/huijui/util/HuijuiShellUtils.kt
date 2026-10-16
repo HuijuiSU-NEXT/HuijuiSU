@@ -3,7 +3,7 @@ package org.bakasu.bakasu.huijui.util
 import java.util.concurrent.TimeUnit
 
 /**
- * HuiJuiSU Next 公共 Root Shell 执行工具
+ * HuiJuiSU NEXT 公共 Root Shell 执行工具
  *
  * 统一 ProcessBuilder + su -c 的调用方式，避免在多个文件里重复实现。
  */
