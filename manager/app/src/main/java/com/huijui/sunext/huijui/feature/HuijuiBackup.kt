@@ -51,7 +51,7 @@ data class BackupProgress(
 
 @Composable
 fun HuijuiBackup(onDismiss: () -> Unit) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val scope = rememberCoroutineScope()
     var running by remember { mutableStateOf(false) }
     var done by remember { mutableStateOf(false) }
@@ -65,7 +65,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
             done = false
             errorMsg = ""
             progress = emptyList()
-            val result = doBackupSuspend(context) { p ->
+            val result = doBackupSuspend(appContext) { p ->
                 withContext(Dispatchers.Main) { progress = p }
             }
             if (result.isSuccess) {

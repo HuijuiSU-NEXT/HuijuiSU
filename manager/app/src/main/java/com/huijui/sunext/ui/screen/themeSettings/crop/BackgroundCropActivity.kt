@@ -183,7 +183,7 @@ private fun BackgroundCropScreen(
     onCropped: (Uri, Int, Int, Int, Int) -> Unit,
     onError: (Throwable) -> Unit,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     var cropView by remember { mutableStateOf<UCropView?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isCropping by remember { mutableStateOf(false) }

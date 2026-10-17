@@ -382,7 +382,7 @@ fun OnlineModuleItem(
 ) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val navigator = LocalNavigator.current
     val coroutineScope = rememberCoroutineScope()
@@ -599,7 +599,7 @@ fun downloadAssetAndInstall(
     enqueueDownload: EnqueueDownloadUseCase,
     observeDownload: ObserveDownloadUseCase,
 ) {
-    val downloadingText = context.getText(R.string.module_downloading).toString()
+    val downloadingText = appContext.getText(R.string.module_downloading).toString()
     coroutineScope.launch {
         withContext(Dispatchers.IO) {
             download(
@@ -633,7 +633,7 @@ fun ChooseDialogContent(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val module = currentModuleForChooseDialog.value
     if (module == null || module.latestAsset == null) {

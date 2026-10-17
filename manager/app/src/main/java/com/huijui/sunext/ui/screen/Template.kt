@@ -103,8 +103,8 @@ fun AppProfileTemplateScreen() {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val navigator = LocalNavigator.current
-    val context = LocalContext.current
-    val clipboardManager = context.getSystemService<ClipboardManager>()
+    val appContext = LocalContext.current
+    val clipboardManager = appContext.getSystemService<ClipboardManager>()
     val appProfileTemplateImportEmpty =
         stringResource(R.string.app_profile_template_import_empty)
     val appProfileTemplateImportSuccess =

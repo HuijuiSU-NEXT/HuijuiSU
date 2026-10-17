@@ -103,7 +103,7 @@ private data class SuperUserMenuItem(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun SuperUserPage(bottomPadding: Dp) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val viewModel = koinViewModel<SuperUserViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val pagerPage = LocalPagerPage.current
@@ -142,7 +142,7 @@ fun SuperUserPage(bottomPadding: Dp) {
                         R.string.allowlist_backup_failed
                     }
                     snackBarHostState.showReplacingSnackbar(
-                        message = context.allowlistOperationMessage(
+                        message = appContext.allowlistOperationMessage(
                             result = event.result,
                             successMessage = successMessage,
                             failureMessage = failureMessage,

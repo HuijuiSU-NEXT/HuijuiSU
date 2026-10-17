@@ -39,7 +39,7 @@ import com.huijui.sunext.parseKmi
  */
 @Composable
 fun HuijuiGkiDownload(onDismiss: () -> Unit) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     var currentKmi by remember { mutableStateOf("") }
     var kernelRelease by remember { mutableStateOf("") }
 
@@ -117,7 +117,7 @@ fun HuijuiGkiDownload(onDismiss: () -> Unit) {
                             val intent = Intent(Intent.ACTION_VIEW).apply {
                                 data = Uri.parse("https://github.com/WildKernels/GKI_KernelSU_SUSFS/releases")
                             }
-                            context.startActivity(intent)
+                            appContext.startActivity(intent)
                         },
                     ) {
                         Text("去下载")

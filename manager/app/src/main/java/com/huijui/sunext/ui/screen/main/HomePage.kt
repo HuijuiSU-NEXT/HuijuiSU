@@ -132,7 +132,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomePage(
     bottomPadding: Dp,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -328,7 +328,7 @@ fun HomePage(
                     },
                     onClickJailbreak = {
                         loadingDialog.showLoading()
-                        context.startService(Intent(context, MagicaService::class.java))
+                        appContext.startService(Intent(context, MagicaService::class.java))
                         // Manager will be force-stopped and restarted by late-load on success.
                         // If that doesn't happen within timeout, jailbreak likely failed.
                         scope.launch(Dispatchers.IO) {
@@ -405,7 +405,7 @@ private fun ManagerUpdateCard(update: ManagerUpdateInfo?) {
 
 @Composable
 private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val enqueueManagerUpdate = koinInject<EnqueueManagerUpdateUseCase>()
     val channelTitle = stringResource(

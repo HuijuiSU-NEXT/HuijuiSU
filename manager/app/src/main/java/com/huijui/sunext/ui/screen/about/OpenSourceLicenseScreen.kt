@@ -87,8 +87,8 @@ fun OpenSourceLicenseScreen() {
     }
 
     // from https://github.com/mikepenz/AboutLibraries#setup
-    val context = LocalContext.current
-    val libraries by produceState(initialValue = Libs(emptyList(), emptySet()), context) {
+    val appContext = LocalContext.current
+    val libraries by produceState(initialValue = Libs(emptyList(), emptySet()), appContext) {
         value = withContext(Dispatchers.IO) {
             Libs.Builder().withJson(context, R.raw.aboutlibraries).build()
         }

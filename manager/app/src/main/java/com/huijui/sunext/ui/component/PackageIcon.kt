@@ -21,7 +21,7 @@ fun PackageIcon(
     contentDescription: String?,
     modifier: Modifier = Modifier,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val iconDataSource = koinInject<AppIconDataSource>()
     val packageInfo by produceState<PackageInfo?>(
         initialValue = iconDataSource.findCachedPackageInfo(packageName),
@@ -36,7 +36,7 @@ fun PackageIcon(
     }
 
     AsyncImage(
-        model = ImageRequest.Builder(context)
+        model = ImageRequest.Builder(appContext)
             .data(packageInfo)
             .crossfade(true)
             .memoryCachePolicy(CachePolicy.ENABLED)

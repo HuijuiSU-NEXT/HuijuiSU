@@ -129,7 +129,7 @@ private fun resolveIntent(context: Context, intent: Intent, intentToken: String,
     if (hasKernel && hasModule) {
         Toast.makeText(
             context,
-            context.getString(R.string.both_kernel_and_module_files),
+            appContext.getString(R.string.both_kernel_and_module_files),
             Toast.LENGTH_SHORT,
         ).show()
         return null
@@ -140,7 +140,7 @@ private fun resolveIntent(context: Context, intent: Intent, intentToken: String,
         if (zipFileInfos.count { it.type == ZipType.KERNEL } != 1) {
             Toast.makeText(
                 context,
-                context.getString(R.string.more_than_one_kernel_file),
+                appContext.getString(R.string.more_than_one_kernel_file),
                 Toast.LENGTH_SHORT,
             ).show()
             return null
@@ -174,7 +174,7 @@ private fun parseValidatedDeepLink(uri: Uri?, intentToken: String): KsuDeepLink?
 @SuppressLint("StringFormatInvalid")
 @Composable
 fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val activity = LocalActivity.current
     val navigator = LocalNavigator.current
     val isManager = Natives.isManager
@@ -224,7 +224,7 @@ fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
             is PendingAction.OpenWebUI -> {
                 val webIntent = Intent(context, WebUIActivity::class.java)
                     .setData(buildInternalWebUiUri(action.moduleId))
-                context.startActivity(webIntent)
+                appContext.startActivity(webIntent)
             }
         }
     }

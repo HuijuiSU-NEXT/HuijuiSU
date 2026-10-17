@@ -77,12 +77,12 @@ fun LanguageSelectionDialog(
         koinInject<IsSystemLanguageSettingsUseCase>()
     val launchSystemLanguageSettingsUseCase =
         koinInject<LaunchSystemLanguageSettingsUseCase>()
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val languageUseSystemDefault = stringResource(R.string.language_system_default)
     val systemLanguage = stringResource(R.string.settings_language)
 
     if (isSystemLanguageSettingsUseCase()) {
-        launchSystemLanguageSettingsUseCase(context)
+        launchSystemLanguageSettingsUseCase(appContext)
         onDismiss()
     } else {
         val supportedLocales = remember {
@@ -113,7 +113,7 @@ fun LanguageSelectionDialog(
 
                     val config = android.content.res.Configuration()
                     config.setLocale(locale)
-                    val localizedContext = context.createConfigurationContext(config)
+                    val localizedContext = appContext.createConfigurationContext(config)
                     val testString = localizedContext.getString(R.string.settings_language)
 
                     if (testString != systemLanguage || locale.language == "en") {

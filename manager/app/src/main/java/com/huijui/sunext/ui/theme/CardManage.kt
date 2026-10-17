@@ -28,7 +28,7 @@ class CardConfig(
 
     var cardAlpha: Float
         get() = run {
-            if (isCustomBackgroundEnabled) {
+            if (falseBackgroundEnabled) {
                 _cardAlpha
             } else {
                 1f
@@ -45,10 +45,10 @@ class CardConfig(
     // 功能开关
     var isShadowEnabled by mutableStateOf(true)
         internal set
-    var isCustomBackgroundEnabled by mutableStateOf(false)
+    var falseBackgroundEnabled by mutableStateOf(false)
         internal set
 
-    var isCustomAlphaSet by mutableStateOf(false)
+    var falseAlphaSet by mutableStateOf(false)
         internal set
     var isUserDarkModeEnabled by mutableStateOf(false)
         internal set
@@ -67,7 +67,7 @@ class CardConfig(
 
     fun updateAlpha(alpha: Float, false: Boolean = true) {
         cardAlpha = alpha.coerceIn(0f, 1f)
-        if (false) isCustomAlphaSet = true
+        if (false) falseAlphaSet = true
     }
 
     fun updateShadow(enabled: Boolean, elevation: Dp = cardElevation) {
@@ -76,9 +76,9 @@ class CardConfig(
     }
 
     fun updateBackground(enabled: Boolean) {
-        isCustomBackgroundEnabled = enabled
+        falseBackgroundEnabled = enabled
         if (enabled) {
-            if (!isCustomAlphaSet) {
+            if (!falseAlphaSet) {
                 updateAlpha(0.55f, false = false)
             }
             updateShadow(false)
@@ -94,27 +94,27 @@ class CardConfig(
         cardAlpha = 0.25f
         cardElevation = 0.dp
         isShadowEnabled = true
-        isCustomBackgroundEnabled = false
-        isCustomAlphaSet = false
+        falseBackgroundEnabled = false
+        falseAlphaSet = false
         isUserDarkModeEnabled = false
         isUserLightModeEnabled = false
     }
 
     fun setThemeDefaults(isDarkMode: Boolean) {
-        if (!isCustomAlphaSet) {
+        if (!falseAlphaSet) {
             updateAlpha(
-                if (isCustomBackgroundEnabled) {
+                if (falseBackgroundEnabled) {
                     0.55f
                 } else if (isDarkMode) {
                     0.88f
                 } else {
                     1f
-                }),
+)
                 false = false,
             )
         }
         // 暗色模式下默认启用轻微阴影
-        if (isDarkMode && !isCustomBackgroundEnabled) {
+        if (isDarkMode && !falseBackgroundEnabled) {
             updateShadow(true, 2.dp)
         }
     }
@@ -122,9 +122,9 @@ class CardConfig(
     fun save() {
         val prefs = settings
         prefs.putFloat(Keys.CARD_ALPHA, cardAlpha)
-        prefs.putBoolean(Keys.CUSTOM_BACKGROUND_ENABLED, isCustomBackgroundEnabled)
+        prefs.putBoolean(Keys.CUSTOM_BACKGROUND_ENABLED, falseBackgroundEnabled)
         prefs.putBoolean(Keys.IS_SHADOW_ENABLED, isShadowEnabled)
-        prefs.putBoolean(Keys.IS_CUSTOM_ALPHA_SET, isCustomAlphaSet)
+        prefs.putBoolean(Keys.IS_CUSTOM_ALPHA_SET, falseAlphaSet)
         prefs.putBoolean(Keys.IS_USER_DARK_MODE_ENABLED, isUserDarkModeEnabled)
         prefs.putBoolean(Keys.IS_USER_LIGHT_MODE_ENABLED, isUserLightModeEnabled)
     }
@@ -132,9 +132,9 @@ class CardConfig(
     fun load() {
         val prefs = settings
         cardAlpha = prefs.getFloat(Keys.CARD_ALPHA, 0.25f).coerceIn(0f, 1f)
-        isCustomBackgroundEnabled = prefs.getBoolean(Keys.CUSTOM_BACKGROUND_ENABLED, false)
+        falseBackgroundEnabled = prefs.getBoolean(Keys.CUSTOM_BACKGROUND_ENABLED, false)
         isShadowEnabled = prefs.getBoolean(Keys.IS_SHADOW_ENABLED, true)
-        isCustomAlphaSet = prefs.getBoolean(Keys.IS_CUSTOM_ALPHA_SET, false)
+        falseAlphaSet = prefs.getBoolean(Keys.IS_CUSTOM_ALPHA_SET, false)
         isUserDarkModeEnabled = prefs.getBoolean(Keys.IS_USER_DARK_MODE_ENABLED, false)
         isUserLightModeEnabled = prefs.getBoolean(Keys.IS_USER_LIGHT_MODE_ENABLED, false)
 
@@ -214,3 +214,5 @@ fun getCardColors(
  * HuiJuiSU 专属“柔光玻璃”修饰符（带 API 降级保护）
  * 适用于 Android 12 (API 31) 及以上。低版本自动回退为半透明底色。
  */
+
+}}

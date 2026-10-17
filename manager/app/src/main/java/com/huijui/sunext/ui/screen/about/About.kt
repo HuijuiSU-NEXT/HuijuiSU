@@ -80,7 +80,7 @@ import androidx.compose.material.icons.twotone.ContentCopy
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AboutScreen() {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current

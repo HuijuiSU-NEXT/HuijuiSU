@@ -152,7 +152,7 @@ fun ThemeSettingsScreen(
     // 顶部滚动行为
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     // 创建设置状态管理器
     val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -207,7 +207,7 @@ fun ThemeSettingsScreen(
 
     val launchInAppCrop = { sourceUri: Uri ->
         val outputUri = createBackgroundCropOutputUri(context, "background_crop_ucrop")
-        val (screenWidth, screenHeight) = context.backgroundCropSize()
+        val (screenWidth, screenHeight) = appContext.backgroundCropSize()
         val intent = Intent(context, BackgroundCropActivity::class.java).apply {
             putExtra(UCrop.EXTRA_INPUT_URI, sourceUri)
             putExtra(UCrop.EXTRA_OUTPUT_URI, outputUri)
@@ -224,13 +224,13 @@ fun ThemeSettingsScreen(
 
     val launchExternalCrop = { sourceUri: Uri ->
         val uri = createBackgroundCropOutputUri(context, "background_crop_external")
-        context.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
-            context.contentResolver.openOutputStream(uri)?.use { outputStream ->
+        appContext.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+            appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
         }
 
-        val (screenWidth, screenHeight) = context.backgroundCropSize()
+        val (screenWidth, screenHeight) = appContext.backgroundCropSize()
         val intent = Intent("com.android.camera.action.CROP").apply {
             setDataAndType(uri, "image/*")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -466,7 +466,7 @@ private fun Context.backgroundCropSize(): Pair<Int, Int> {
 }
 
 private fun createBackgroundCropOutputUri(context: Context, prefix: String): Uri {
-    val outputFile = File(context.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
+    val outputFile = File(appContext.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
         parentFile?.mkdirs()
         delete()
         createNewFile()
@@ -475,7 +475,7 @@ private fun createBackgroundCropOutputUri(context: Context, prefix: String): Uri
 
     return FileProvider.getUriForFile(
         context,
-        "${context.packageName}.fileprovider",
+        "${appContext.packageName}.fileprovider",
         outputFile,
     )
 }

@@ -128,7 +128,7 @@ fun ManualAddDialog(
     onImportFromFile: (String) -> Unit = {},
     formContent: SegmentedColumnScope.() -> Unit,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
     val onImportFromFileState by rememberUpdatedState(onImportFromFile)
@@ -144,7 +144,7 @@ fun ManualAddDialog(
             scope.launch {
                 val decodedContent = withContext(Dispatchers.IO) {
                     runCatching {
-                        checkNotNull(context.contentResolver.openInputStream(it)).use { stream ->
+                        checkNotNull(appContext.contentResolver.openInputStream(it)).use { stream ->
                             stream.readBytes().decodeToString(throwOnInvalidSequence = true)
                         }
                     }

@@ -157,7 +157,7 @@ class BackgroundManager(
         context: Context,
         uri: Uri,
     ): Boolean {
-        val appContext = context.applicationContext
+        val appContext = appContext.applicationContext
         return try {
             val finalUri = withContext(Dispatchers.IO) {
                 copyImageToInternalStorage(appContext, uri)
@@ -184,7 +184,7 @@ class BackgroundManager(
         saveBackgroundUri(null)
         config.customBackgroundUri = null
         cardConfig.updateBackground(false)
-        clearBackgroundBlurCache(context)
+        clearBackgroundBlurCache(appContext)
         config.backgroundImageLoaded = false
     }
 
@@ -213,8 +213,8 @@ class BackgroundManager(
 
     fun clearBackgroundBlurCache(context: Context) {
         runCatching {
-            backgroundBlurCacheFile(context).delete()
-            legacyBackgroundBlurCacheDir(context).deleteRecursively()
+            backgroundBlurCacheFile(appContext).delete()
+            legacyBackgroundBlurCacheDir(appContext).deleteRecursively()
         }.onFailure {
             Log.w(tag, "Failed to clear background blur cache: ${it.message}")
         }
@@ -222,9 +222,9 @@ class BackgroundManager(
 
     private fun copyImageToInternalStorage(context: Context, uri: Uri): Uri? {
         return try {
-            val inputStream = context.contentResolver.openInputStream(uri) ?: return null
+            val inputStream = appContext.contentResolver.openInputStream(uri) ?: return null
             val fileName = "custom_background.jpg"
-            val file = File(context.filesDir, fileName)
+            val file = File(appContext.filesDir, fileName)
 
             FileOutputStream(file).use { outputStream ->
                 val buffer = ByteArray(8 * 1024)
@@ -259,7 +259,7 @@ fun KernelSUTheme(
     val backgroundRenderState = remember { BackgroundRenderState() }
     val resolvedDarkTheme = darkTheme ?: isInDarkTheme(themeConfig.forceDarkMode)
     val resolvedDynamicColor = dynamicColor ?: themeConfig.useDynamicColor
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val systemIsDark = isSystemInDarkTheme()
 
     // 初始化主题
@@ -541,7 +541,7 @@ private fun createColorScheme(
 
 @Composable
 private fun SystemBarController(darkMode: Boolean) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val activity = context as ComponentActivity
 
     SideEffect {

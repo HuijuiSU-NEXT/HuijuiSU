@@ -99,7 +99,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun InstallScreen(
     preselectedKernelUri: String? = null,
 ) {
-    val localContext = androidx.compose.ui.platform.LocalContext.current
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+
 
     val viewModel = koinViewModel<InstallViewModel>()
     val installState by viewModel.state.collectAsStateWithLifecycle()
@@ -319,8 +320,7 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                val localContext = androidx.compose.ui.platform.LocalContext.current
-                val isKo = isKoFile(localContext, uri)
+                val isKo = isKoFile(ctx, uri)
                 if (isKo) {
                     lkmSelection = LkmSelection.LkmUri(uri.toString())
                     lkmFileName = uri.toString()
@@ -872,7 +872,7 @@ private fun isKoFile(context: Context, uri: Uri): Boolean {
     if (seg.endsWith(".ko", ignoreCase = true)) return true
 
     return try {
-        localContext.contentResolver.query(
+        ctx.contentResolver.query(
             uri,
             arrayOf(OpenableColumns.DISPLAY_NAME),
             null,

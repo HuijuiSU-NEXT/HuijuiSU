@@ -86,7 +86,7 @@ fun TemplateEditorScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val template = state.template
     val autoSave = !isCreation && !readOnly
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val saveTemplateFailed = stringResource(id = R.string.app_profile_template_save_failed)
 
     val scrollBehavior =

@@ -189,7 +189,7 @@ fun ModulePage(bottomPadding: Dp) {
     val extractModuleName = koinInject<ExtractModuleNameUseCase>()
     val zipFileDetector = koinInject<ZipFileDetector>()
     val navigator = LocalNavigator.current
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val viewModel = koinViewModel<ModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val homeState by koinViewModel<HomeViewModel>().uiState.collectAsStateWithLifecycle()
@@ -466,7 +466,7 @@ fun ModulePage(bottomPadding: Dp) {
 
                         if (hasWebUi) {
                             try {
-                                context.startActivity(
+                                appContext.startActivity(
                                     Intent(context, WebUIActivity::class.java)
                                         .setData(
                                             Uri.Builder()

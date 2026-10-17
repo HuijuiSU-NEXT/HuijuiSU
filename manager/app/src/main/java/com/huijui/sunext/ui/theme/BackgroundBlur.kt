@@ -161,8 +161,7 @@ fun Modifier.blurEffect(
     }
 
     return LocalBlurState.current?.let { backdrop ->
-        // 0.8f like haze, for material design without custom background enable
-        val blurTintAlpha = if (cardConfig.isCustomBackgroundEnabled) {
+                val blurTintAlpha = if (cardConfig.isCustomBackgroundEnabled) {
             cardConfig.cardAlpha
         } else {
             0.8f
@@ -1357,7 +1356,7 @@ private suspend fun Bitmap.createBackgroundBlurImage(
     viewportSize: IntSize,
     blurRadius: Float,
 ): ImageBitmap = withContext(Dispatchers.Default) {
-    val cacheFile = backgroundBlurCacheFile(context)
+    val cacheFile = backgroundBlurCacheFile(appContext)
 
     BitmapFactory.decodeFile(cacheFile.absolutePath)?.let { cachedBitmap ->
         if (
@@ -1415,9 +1414,9 @@ private fun Bitmap.createBackgroundBlurSource(viewportSize: IntSize): Bitmap {
     }
 }
 
-internal fun backgroundBlurCacheFile(context: Context): File = File(context.filesDir, "blured_custom_background.jpg")
+internal fun backgroundBlurCacheFile(context: Context): File = File(appContext.filesDir, "blured_custom_background.jpg")
 
-internal fun legacyBackgroundBlurCacheDir(context: Context): File = File(context.filesDir, "background_blur_cache")
+internal fun legacyBackgroundBlurCacheDir(context: Context): File = File(appContext.filesDir, "background_blur_cache")
 
 private fun saveBackgroundBlurCache(cacheFile: File, bitmap: Bitmap) {
     runCatching {
@@ -1442,7 +1441,7 @@ internal fun BackgroundInitializer(
     settings: AppSettingsRepository,
     renderState: BackgroundRenderState,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     val dynamicColorFromSystem = themeConfig.monetCompatSeedColor
@@ -1473,7 +1472,7 @@ internal fun BackgroundInitializer(
     }
 
     renderState.imagePainter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(context)
+        model = ImageRequest.Builder(appContext)
             .data(uri)
             .allowHardware(false)
             .crossfade(true)

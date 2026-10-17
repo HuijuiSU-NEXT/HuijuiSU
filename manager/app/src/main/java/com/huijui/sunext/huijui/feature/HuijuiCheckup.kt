@@ -58,7 +58,7 @@ data class CheckItem(
 
 @Composable
 fun HuijuiCheckup(onDismiss: () -> Unit) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val scope = rememberCoroutineScope()
     var items by remember { mutableStateOf<List<CheckItem>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
@@ -67,7 +67,7 @@ fun HuijuiCheckup(onDismiss: () -> Unit) {
     fun rescan() {
         scope.launch {
             loading = true
-            val r = withContext(Dispatchers.IO) { runCheckup(context) }
+            val r = withContext(Dispatchers.IO) { runCheckup(appContext) }
             items = r
             conclusion = buildConclusion(r)
             loading = false
@@ -147,7 +147,7 @@ private fun CheckRow(item: CheckItem) {
 private fun runCheckup(context: Context): List<CheckItem> {
     val out = mutableListOf<CheckItem>()
 
-    val bm = context.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
+    val bm = appContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager
     val level = bm.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
     val charging = bm.isCharging
     when {
@@ -156,7 +156,7 @@ private fun runCheckup(context: Context): List<CheckItem> {
         else -> out += CheckItem("电量", CheckItem.Status.OK, "$level%${if (charging) " · 充电中" else ""}")
     }
 
-    val intent = context.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    val intent = appContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     val tempC = (intent?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, 0) ?: 0) / 10.0
     when {
         tempC >= 45 -> out += CheckItem("温度", CheckItem.Status.FAIL, "%.1f°C".format(tempC), "温度过高，等降温")
@@ -198,7 +198,7 @@ private fun runCheckup(context: Context): List<CheckItem> {
         else -> CheckItem(
                     "SELinux",
                     CheckItem.Status.OK,
-                    context.getString(R.string.checkup_selinux_unknown),
+                    appContext.getString(R.string.checkup_selinux_unknown),
                 )
     }
 

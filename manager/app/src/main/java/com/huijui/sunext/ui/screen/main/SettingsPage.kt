@@ -150,7 +150,7 @@ fun SettingsPage(bottomPadding: Dp) {
         val loadingDialog = rememberLoadingDialog()
         var showBottomsheet by remember { mutableStateOf(false) }
         val logSaved = stringResource(R.string.log_saved)
-        val context = LocalContext.current
+        val appContext = LocalContext.current
         val scope = rememberCoroutineScope()
         val exportBugreportLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.CreateDocument("application/gzip"),
@@ -158,7 +158,7 @@ fun SettingsPage(bottomPadding: Dp) {
             if (uri == null) return@rememberLauncherForActivityResult
             scope.launch(Dispatchers.IO) {
                 loadingDialog.show()
-                context.contentResolver.openOutputStream(uri)?.use { output ->
+                appContext.contentResolver.openOutputStream(uri)?.use { output ->
                     generateBugreport().inputStream().use {
                         it.copyTo(output)
                     }
@@ -522,7 +522,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 }
 
-                                context.startActivity(
+                                appContext.startActivity(
                                     Intent.createChooser(
                                         shareIntent,
                                         sendLog,
@@ -630,7 +630,7 @@ fun UninstallItem(
     withLoading: suspend (suspend () -> Unit) -> Unit,
 ) {
     val navigator = LocalNavigator.current
-    val context = LocalContext.current
+    val appContext = LocalContext.current
     val scope = rememberCoroutineScope()
     val uninstallConfirmDialog = rememberConfirmDialog()
     val options = remember {
@@ -652,8 +652,8 @@ fun UninstallItem(
             options.getOrNull(index)?.let { uninstallType ->
                 scope.launch {
                     val result = uninstallConfirmDialog.awaitConfirm(
-                        title = context.getString(uninstallType.title),
-                        content = context.getString(uninstallType.message),
+                        title = appContext.getString(uninstallType.title),
+                        content = appContext.getString(uninstallType.message),
                     )
                     if (result == ConfirmResult.Confirmed) {
                         withLoading {

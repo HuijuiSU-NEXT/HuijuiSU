@@ -126,7 +126,7 @@ fun FlashScreen(flashIt: FlashIt) {
     val isModuleUriAccessible = koinInject<IsModuleUriAccessibleUseCase>()
     val checkFlashModuleMount = koinInject<CheckFlashModuleMountUseCase>()
     val executeFlashOperation = koinInject<ExecuteFlashOperationUseCase>()
-    val context = LocalContext.current
+    val appContext = LocalContext.current
 
     // 是否通过从外部启动的模块安装
     val isExternalInstall = remember {
@@ -801,14 +801,14 @@ suspend fun getModuleNameFromUri(
     return withContext(Dispatchers.IO) {
         try {
             if (uri.isBlank()) {
-                return@withContext context.getString(R.string.unknown_module)
+                return@withContext appContext.getString(R.string.unknown_module)
             }
             if (!isModuleUriAccessible(uri)) {
-                return@withContext context.getString(R.string.unknown_module)
+                return@withContext appContext.getString(R.string.unknown_module)
             }
             extractModuleName(uri)
         } catch (_: Exception) {
-            context.getString(R.string.unknown_module)
+            appContext.getString(R.string.unknown_module)
         }
     }
 }

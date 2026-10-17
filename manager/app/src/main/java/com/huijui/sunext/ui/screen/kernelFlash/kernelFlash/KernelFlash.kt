@@ -93,7 +93,7 @@ fun KernelFlashScreen(
     selectedSlot: String? = null,
     skipKsud: Boolean = false,
 ) {
-    val context = LocalContext.current
+    val appContext = LocalContext.current
 
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
