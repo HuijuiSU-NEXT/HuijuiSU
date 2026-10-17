@@ -1,4 +1,5 @@
 package com.huijui.sunext.ui.webui
+import com.huijui.sunext.R
 
 import android.annotation.SuppressLint
 import android.os.Build

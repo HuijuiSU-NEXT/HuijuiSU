@@ -1,4 +1,6 @@
 package com.huijui.sunext.ui.theme
+import com.huijui.sunext.R
+import androidx.compose.ui.text.font.FontWeight
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -301,7 +303,26 @@ fun KernelSUTheme(
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
             motionScheme = MotionScheme.expressive(),
-            typography = generateTypography(themeConfig).copy(defaultFontFamily = GeekFontFamily),
+            typography = generateTypography(themeConfig)
+
+                val geekTypography = typography.copy(
+                    displayLarge = typography.displayLarge.copy(fontFamily = GeekFontFamily),
+                    displayMedium = typography.displayMedium.copy(fontFamily = GeekFontFamily),
+                    displaySmall = typography.displaySmall.copy(fontFamily = GeekFontFamily),
+                    headlineLarge = typography.headlineLarge.copy(fontFamily = GeekFontFamily),
+                    headlineMedium = typography.headlineMedium.copy(fontFamily = GeekFontFamily),
+                    headlineSmall = typography.headlineSmall.copy(fontFamily = GeekFontFamily),
+                    titleLarge = typography.titleLarge.copy(fontFamily = GeekFontFamily),
+                    titleMedium = typography.titleMedium.copy(fontFamily = GeekFontFamily),
+                    titleSmall = typography.titleSmall.copy(fontFamily = GeekFontFamily),
+                    bodyLarge = typography.bodyLarge.copy(fontFamily = GeekFontFamily),
+                    bodyMedium = typography.bodyMedium.copy(fontFamily = GeekFontFamily),
+                    bodySmall = typography.bodySmall.copy(fontFamily = GeekFontFamily),
+                    labelLarge = typography.labelLarge.copy(fontFamily = GeekFontFamily),
+                    labelMedium = typography.labelMedium.copy(fontFamily = GeekFontFamily),
+                    labelSmall = typography.labelSmall.copy(fontFamily = GeekFontFamily)
+                )
+                ,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 BackgroundLayer(themeConfig, settings, backgroundRenderState)

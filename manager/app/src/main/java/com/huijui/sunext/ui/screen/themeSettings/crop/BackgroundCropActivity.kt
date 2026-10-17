@@ -168,6 +168,7 @@ class BackgroundCropActivity : ComponentActivity() {
 
 @SuppressLint("AutoboxingStateCreation")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun BackgroundCropScreen(
     inputUri: Uri,

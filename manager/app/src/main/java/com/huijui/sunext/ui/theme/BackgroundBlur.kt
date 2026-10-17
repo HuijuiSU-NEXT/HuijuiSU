@@ -1,4 +1,5 @@
 package com.huijui.sunext.ui.theme
+import com.huijui.sunext.R
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -114,6 +115,7 @@ import top.yukonga.miuix.kmp.blur.textureBlurEffect
 
 @Stable
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun Modifier.blurSource(): Modifier {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return this

@@ -1,4 +1,5 @@
 package com.huijui.sunext.ui.theme
+import com.huijui.sunext.R
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -159,6 +160,7 @@ private val BuiltinspaceFontFamily = FontFamily(
     Font(com.huijui.sunext.R.font.jetbrains_mono),
 )
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun monospaceFontFamily(): FontFamily {
     val themeConfig = koinInject<ThemeConfig>()
