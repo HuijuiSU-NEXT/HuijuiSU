@@ -105,40 +105,8 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
         if (uri != null) {
             initBootUri = uri
             } else {
-                                android.widget.Toast.makeText(context, scanResultInit.second, android.widget.Toast.LENGTH_LONG).show()
                             }
-                            if (scanResultInit.first) {initBootName = uri.lastPathSegment?.substringAfterLast('/') ?: "init_boot.img"
-        }
-    }
-
-    val sizeMb = selectedSize / 1024.0 / 1024.0
-    val fileType = when {
-        selectedSize == 0L -> null
-        selectedName.endsWith(".ko", ignoreCase = true) -> "lkm"
-        selectedSize < 1024L * 1024L -> "lkm"
-        selectedSize < 10L * 1024L * 1024L -> "small"
-        else -> "kernel"
-    }
-
-    if (showConfirm && selectedUri != null) {
-        AlertDialog(
-            onDismissRequest = { showConfirm = false },
-            title = { Text(if (fileType == "lkm") "⚠️ 确认安装 LKM 模块？" else "⚠️ 确认刷入定制内核？") },
-            text = {
-                if (fileType == "lkm") {
-                    Text(
-                        "源文件：$selectedName (${"%.1f".format(sizeMb)} MB)\n\n" +
-                            "这是 LKM 模式安装，将使用 ksud boot-patch 修补当前设备的 boot/init_boot 分区。\n\n" +
-                            "操作步骤：\n" +
-                            "1. 读取当前设备 boot 分区\n" +
-                            "2. 把 .ko 注入到 boot 镜像\n" +
-                            "3. 刷回修补后的 boot 分区\n\n" +
-                            "重启后 LKM 生效，功能与刷入 built-in 内核一致。"
-                    )
-                } else {
-                    Text(
-                        "目标分区：/dev/block/by-name/boot_$currentSlot\n" +
-                            "源文件：$selectedName (${"%.1f".format(sizeMb)} MB)\n" +
+                             MB)\n" +
                             (if (initBootUri != null) "init_boot：$initBootName\n" else "") +
                             "\n操作步骤：\n" +
                             "1. 备份当前 boot_$currentSlot 到 /sdcard/\n" +

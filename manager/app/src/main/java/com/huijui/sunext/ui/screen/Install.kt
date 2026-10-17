@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -300,9 +299,6 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                        val ctx = androidx.compose.ui.platform.LocalContext.current
-                        val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
-                        if (!scanResult.first) {
                             return@let
                         }
                 lkmInstallMethod = InstallMethod.SelectFile(
@@ -318,9 +314,6 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                        val ctx = androidx.compose.ui.platform.LocalContext.current
-                        val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
-                        if (!scanResult.first) {
                             return@let
                         }
                 val isKo = isKoFile(context, uri)
@@ -627,9 +620,6 @@ private fun Anykernel3InstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                        val ctx = androidx.compose.ui.platform.LocalContext.current
-                        val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
-                        if (!scanResult.first) {
                             return@let
                         }
                 if (isAbDevice) {
