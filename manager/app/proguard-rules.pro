@@ -45,3 +45,10 @@
 -keep interface com.yalantis.ucrop** { *; }
 
 -keep interface org.bakasu.rootService.** { *; }
+
+
+# --- HuiJuiSU 防闪退白名单 ---
+-keep class com.huijui.sunext.** { *; }
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
+-keep class com.huijui.sunext.ui.util.HuiJuiSecurityScanner { *; }
