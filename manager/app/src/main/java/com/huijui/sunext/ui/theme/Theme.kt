@@ -299,8 +299,8 @@ fun KernelSUTheme(
         LocalDensity provides density,
         LocalBackgroundRenderState provides backgroundRenderState,
     ) {
-        MaterialExpressiveTheme(
-        motionScheme = MotionScheme.expressive(),
+        MaterialTheme(
+        
 
         colorScheme = colorScheme,
         typography = Typography(),

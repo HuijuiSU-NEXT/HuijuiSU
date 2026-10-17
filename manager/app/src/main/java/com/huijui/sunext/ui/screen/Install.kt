@@ -103,7 +103,6 @@ fun InstallScreen(
     val installState by viewModel.state.collectAsStateWithLifecycle()
     val environment = installState.environment
     val themeConfig: ThemeConfig = koinInject()
-    val context = LocalContext.current
 
     val pagerState = rememberPagerState(pageCount = { 2 })
     val scope = rememberCoroutineScope()
@@ -240,7 +239,6 @@ private fun LKMInstallPage(
     availablePartitions: List<String>,
     defaultPartition: String,
 ) {
-    val context = LocalContext.current
     val navigator = LocalNavigator.current
     val selectFileTip = stringResource(
         id = R.string.select_file_tip,
@@ -301,7 +299,6 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                val context = androidx.compose.ui.platform.LocalContext.current
                 val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(context, uri)
                 if (!scanResult.first) {
                     android.widget.Toast.makeText(context, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
