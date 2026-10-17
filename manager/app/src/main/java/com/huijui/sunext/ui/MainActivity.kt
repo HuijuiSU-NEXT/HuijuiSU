@@ -125,16 +125,14 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        NavContainer(settingsViewModel, intentChannel)
+                        when (val state = startupState.collectAsStateWithLifecycle().value) {
+                            is StartupState.Failed -> StartupFailureContent(state.message)
+                            else -> NavContainer(settingsViewModel, intentChannel)
                         }
-                }
+                    }
                 }
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
-
+            
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -193,3 +191,5 @@ private fun StartupFailureContent(reason: String) {
         )
     }
 }
+
+}}
