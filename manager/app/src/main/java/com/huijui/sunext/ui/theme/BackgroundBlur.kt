@@ -1435,7 +1435,6 @@ private fun saveBackgroundBlurCache(cacheFile: File, bitmap: Bitmap) {
     }
 }
 
-
 @Composable
 internal fun BackgroundInitializer(
     uri: Uri,

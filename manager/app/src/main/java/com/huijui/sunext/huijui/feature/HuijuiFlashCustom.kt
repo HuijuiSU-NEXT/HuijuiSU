@@ -104,19 +104,34 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
     ) { uri ->
         if (uri != null) {
             initBootUri = uri
-            } else {
-                            }
-                             MB)\n" +
-                            (if (initBootUri != null) "init_boot：$initBootName\n" else "") +
-                            "\n操作步骤：\n" +
-                            "1. 备份当前 boot_$currentSlot 到 /sdcard/\n" +
-                            "2. dd 刷入新内核到 boot_$currentSlot\n" +
-                            (if (initBootUri != null) "3. 刷回原厂 init_boot（清 LKM 残留）\n" else "") +
-                            "4. 尝试关闭 vbmeta 校验\n\n" +
-                            "如果刷入的内核不兼容，重启后可能无法开机。\n" +
-                            "请确认你已经备份了关键分区。"
-                    )
+            scope.launch(Dispatchers.IO) {
+                try {
+                    initBootName = uri.lastPathSegment?.substringAfterLast('/') ?: "init_boot.img"
+                } catch (t: Throwable) {
+                    log = "读取文件失败：${t.message}\n"
                 }
+            }
+        }
+    }
+
+    if (showConfirm && selectedUri != null) {
+        AlertDialog(
+            onDismissRequest = { showConfirm = false },
+            title = { Text("确认刷入") },
+            text = {
+                Text(
+                    "即将刷入自定义内核：\n" +
+                    "boot：$selectedName\n" +
+                    (if (selectedSize > 0) "大小：${selectedSize / (1024 * 1024)} MB\n" else "") +
+                    (if (initBootUri != null) "init_boot：$initBootName\n" else "") +
+                    "\n操作步骤：\n" +
+                    "1. 备份当前 boot_$currentSlot 到 /sdcard/\n" +
+                    "2. dd 刷入新内核到 boot_$currentSlot\n" +
+                    (if (initBootUri != null) "3. 刷回原厂 init_boot（清 LKM 残留）\n" else "") +
+                    "4. 尝试关闭 vbmeta 校验\n\n" +
+                    "如果刷入的内核不兼容，重启后可能无法开机。\n" +
+                    "请确认你已经备份了关键分区。"
+                )
             },
             confirmButton = {
                 TextButton(onClick = {

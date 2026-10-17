@@ -299,8 +299,6 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                            return@let
-                        }
                 lkmInstallMethod = InstallMethod.SelectFile(
                     uri,
                     summary = selectFileTip,
@@ -314,8 +312,6 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                            return@let
-                        }
                 val isKo = isKoFile(context, uri)
                 if (isKo) {
                     lkmSelection = LkmSelection.LkmUri(uri.toString())
