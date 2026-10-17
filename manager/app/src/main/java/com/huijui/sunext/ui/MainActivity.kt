@@ -111,7 +111,7 @@ class MainActivity : ComponentActivity() {
             if (savedInstanceState == null) intent?.let { intentChannel.trySend(it) }
 
             setContent {
-                val prefs = getSharedPreferences("huijui_prefs", android.content.Context.MODE_PRIVATE)
+                val prefs = this@MainActivity.getSharedPreferences("huijui_prefs", android.content.Context.MODE_PRIVATE)
                 var hasSeenOnboarding by androidx.compose.runtime.remember {
                     androidx.compose.runtime.mutableStateOf(prefs.getBoolean("has_seen_onboarding", false))
                 }

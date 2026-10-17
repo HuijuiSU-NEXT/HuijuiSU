@@ -18,7 +18,7 @@ val androidTargetSdkVersion = rootProject.extra["androidTargetSdkVersion"] as In
 val androidSourceCompatibility = rootProject.extra["androidSourceCompatibility"] as JavaVersion
 val androidTargetCompatibility = rootProject.extra["androidTargetCompatibility"] as JavaVersion
 val managerVersionCode = rootProject.extra["managerVersionCode"] as Int
-val managerVersionName = rootProject.extra["managerVersionName"] as String
+val managerVersionName = v4.4.0-Next as String
 val managerPackageName = rootProject.extra["managerPackageName"] as String
 val managerName = rootProject.extra["managerName"] as String
 
@@ -51,8 +51,8 @@ android {
             }
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            isMinifyEnabled = false
+            isShrinkResources = false
             vcsInfo.include = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             externalNativeBuild {
