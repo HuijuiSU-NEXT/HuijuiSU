@@ -673,7 +673,7 @@ int fork_dont_care_and_exec_ksud(const char *path, const char *pkg) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_huijuisu_huijuisu_magica_AppZygotePreload_forkDontCareAndExecKsud(JNIEnv *env,
+Java_com_huijui_sunext_magica_AppZygotePreload_forkDontCareAndExecKsud(JNIEnv *env,
                                                                            jclass clazz,
                                                                            jstring ksud_path, jstring pkg_name) {
     const char *path = GetEnvironment()->GetStringUTFChars(env, ksud_path, nullptr);
