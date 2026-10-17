@@ -1,3 +1,5 @@
+@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
+
 package com.huijui.sunext.ui.component.settings
 
 import androidx.compose.animation.core.FiniteAnimationSpec
