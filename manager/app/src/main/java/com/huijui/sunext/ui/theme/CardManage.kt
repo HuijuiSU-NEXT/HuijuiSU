@@ -14,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.huijui.sunext.data.AppSettingsRepository
@@ -215,4 +214,3 @@ fun getCardColors(
  * HuiJuiSU 专属“柔光玻璃”修饰符（带 API 降级保护）
  * 适用于 Android 12 (API 31) 及以上。低版本自动回退为半透明底色。
  */
-
