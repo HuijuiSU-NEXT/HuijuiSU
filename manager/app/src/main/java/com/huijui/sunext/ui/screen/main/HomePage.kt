@@ -1,8 +1,5 @@
-import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.animateFloatAsState
 package com.huijui.sunext.ui.screen.main
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.PowerManager

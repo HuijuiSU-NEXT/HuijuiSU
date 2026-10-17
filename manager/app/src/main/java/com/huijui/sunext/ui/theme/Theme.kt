@@ -28,9 +28,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ColorScheme
-import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -302,30 +300,10 @@ fun KernelSUTheme(
         LocalDensity provides density,
         LocalBackgroundRenderState provides backgroundRenderState,
     ) {
-        MaterialExpressiveTheme(
-            colorScheme = colorScheme,
-            motionScheme = MotionScheme.expressive(),
-            typography = generateTypography(themeConfig)
-
-                val geekTypography = typography.copy(
-                    displayLarge = typography.displayLarge.copy(fontFamily = GeekFontFamily),
-                    displayMedium = typography.displayMedium.copy(fontFamily = GeekFontFamily),
-                    displaySmall = typography.displaySmall.copy(fontFamily = GeekFontFamily),
-                    headlineLarge = typography.headlineLarge.copy(fontFamily = GeekFontFamily),
-                    headlineMedium = typography.headlineMedium.copy(fontFamily = GeekFontFamily),
-                    headlineSmall = typography.headlineSmall.copy(fontFamily = GeekFontFamily),
-                    titleLarge = typography.titleLarge.copy(fontFamily = GeekFontFamily),
-                    titleMedium = typography.titleMedium.copy(fontFamily = GeekFontFamily),
-                    titleSmall = typography.titleSmall.copy(fontFamily = GeekFontFamily),
-                    bodyLarge = typography.bodyLarge.copy(fontFamily = GeekFontFamily),
-                    bodyMedium = typography.bodyMedium.copy(fontFamily = GeekFontFamily),
-                    bodySmall = typography.bodySmall.copy(fontFamily = GeekFontFamily),
-                    labelLarge = typography.labelLarge.copy(fontFamily = GeekFontFamily),
-                    labelMedium = typography.labelMedium.copy(fontFamily = GeekFontFamily),
-                    labelSmall = typography.labelSmall.copy(fontFamily = GeekFontFamily)
-                )
-                ,
-        ) {
+        MaterialTheme(
+        colorScheme = colorScheme,
+        typography = Typography(),
+    ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 BackgroundLayer(themeConfig, settings, backgroundRenderState)
                 content()

@@ -19,7 +19,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.huijuisu.rootService.IKsuInterface
+import com.huijui.sunext.rootService.IKsuInterface
 
 class RootServiceRepository(
     private val application: Application,
