@@ -2,6 +2,8 @@
 
 package com.huijui.sunext.ui.screen
 
+import android.widget.Toast
+
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -616,8 +618,6 @@ private fun Anykernel3InstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                            return@let
-                        }
                 if (isAbDevice) {
                     tempKernelUri = uri
                     showSlotSelectionDialog = true

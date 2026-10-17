@@ -61,7 +61,9 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
 
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
     var selectedName by remember { mutableStateOf("") }
+    var fileType by remember { mutableStateOf("kernel") }
     var selectedSize by remember { mutableStateOf(0L) }
+    val sizeMb = (selectedSize.toFloat() / (1024 * 1024)).coerceAtLeast(0f)
     var initBootUri by remember { mutableStateOf<Uri?>(null) }
     var initBootName by remember { mutableStateOf("") }
     var currentSlot by remember { mutableStateOf("?") }

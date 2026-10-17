@@ -143,7 +143,6 @@ import org.koin.compose.viewmodel.koinViewModel
     "ObsoleteSdkInt",
 )
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun ThemeSettingsScreen(
     settingsViewModel: SettingsViewModel,
