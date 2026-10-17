@@ -24,10 +24,10 @@ class ModuleUtils {
      * @param uri Uri pointing to the module ZIP file
      * @return The extracted module name, or a fallback name if extraction fails
      */
-    fun extractModuleName(context: Context, uri: Uri): String {
+    fun extractModuleName(appContext: Context, uri: Uri): String {
         if (uri == Uri.EMPTY) {
             Log.e(TAG, "The supplied URI is empty")
-            return context.getString(R.string.unknown_module)
+            return appContext.getString(R.string.unknown_module)
         }
 
         try {
@@ -55,7 +55,7 @@ class ModuleUtils {
                 "",
             )
             ?.trim()
-            ?: context.getString(R.string.unknown_module)
+            ?: appContext.getString(R.string.unknown_module)
 
         return fallback
     }
@@ -69,11 +69,11 @@ class ModuleUtils {
      * @param uri The Uri to be checked
      * @return `true` if the Uri can be opened, `false` otherwise
      */
-    fun isUriAccessible(context: Context, uri: Uri): Boolean {
+    fun isUriAccessible(appContext: Context, uri: Uri): Boolean {
         if (uri == Uri.EMPTY) return false
 
         return try {
-            context.contentResolver.openInputStream(uri)?.use {} != null
+            appContext.contentResolver.openInputStream(uri)?.use {} != null
         } catch (e: Exception) {
             Log.e(TAG, "URI is inaccessible: $uri", e)
             false
@@ -88,10 +88,10 @@ class ModuleUtils {
      * @param context Context used to access the [ContentResolver]
      * @param uri The Uri for which persistable permission is requested
      */
-    fun takePersistableUriPermission(context: Context, uri: Uri) {
+    fun takePersistableUriPermission(appContext: Context, uri: Uri) {
         try {
             val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            context.contentResolver.takePersistableUriPermission(uri, flags)
+            appContext.contentResolver.takePersistableUriPermission(uri, flags)
             Log.d(TAG, "Persistent permissions for URIs have been obtained: $uri")
         } catch (e: Exception) {
             Log.e(TAG, "Unable to get persistent permissions on URIs: $uri, Error: ${e.message}")
@@ -107,7 +107,7 @@ class ModuleUtils {
      * @param uri Uri pointing to the module ZIP file
      * @return The module ID if found, or `null` if extraction fails
      */
-    fun extractModuleId(context: Context, uri: Uri): String? {
+    fun extractModuleId(appContext: Context, uri: Uri): String? {
         if (uri == Uri.EMPTY) return null
 
         return withInstallArchive(context, uri) { zip ->

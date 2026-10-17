@@ -9,9 +9,9 @@ object HuiJuiGuard {
     /**
      * 防呆校验：检查刷机文件后缀是否匹配
      */
-    fun validateFlashFile(context: Context, uri: Uri, expectedType: String): Pair<Boolean, String> {
+    fun validateFlashFile(appContext: Context, uri: Uri, expectedType: String): Pair<Boolean, String> {
         var fileName = ""
-        context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+        appContext.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
             val nameIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (nameIndex >= 0 && cursor.moveToFirst()) {
                 fileName = cursor.getString(nameIndex)

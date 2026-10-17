@@ -23,7 +23,7 @@ import com.huijui.sunext.ui.activity.PermissionRequestInterface
  * @date 2023/6/22.
  */
 fun download(
-    context: Context,
+    appContext: Context,
     permissionRequestInterface: PermissionRequestInterface,
     url: String,
     fileName: String,
@@ -70,7 +70,7 @@ fun download(
 }
 
 fun downloadManagerUpdate(
-    context: Context,
+    appContext: Context,
     permissionRequestInterface: PermissionRequestInterface,
     update: ManagerUpdateInfo,
     enqueueManagerUpdate: EnqueueManagerUpdateUseCase,
@@ -81,7 +81,7 @@ fun downloadManagerUpdate(
 }
 
 private fun requestDownloadPermissions(
-    context: Context,
+    appContext: Context,
     permissionRequestInterface: PermissionRequestInterface,
     onGranted: () -> Unit,
 ) {
@@ -93,7 +93,7 @@ private fun requestDownloadPermissions(
                 if (!success) {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.notification_permission_denied),
+                        appContext.getString(R.string.notification_permission_denied),
                         Toast.LENGTH_SHORT,
                     ).show()
                     return@requestPermission
@@ -101,7 +101,7 @@ private fun requestDownloadPermissions(
 
                 onGranted()
             },
-            requestDescription = context.getString(R.string.notification_permission_description),
+            requestDescription = appContext.getString(R.string.notification_permission_description),
         )
     } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
         // sdk 32, no need any permission
@@ -118,7 +118,7 @@ private fun requestDownloadPermissions(
                 if (!success) {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.storage_permission_denied),
+                        appContext.getString(R.string.storage_permission_denied),
                         Toast.LENGTH_SHORT,
                     ).show()
                     return@requestPermissions
@@ -126,7 +126,7 @@ private fun requestDownloadPermissions(
                 onGranted()
             },
             requestDescription = mapOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE to context.getString(R.string.storage_permission_description),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE to appContext.getString(R.string.storage_permission_description),
             ),
         )
     }

@@ -274,7 +274,7 @@ class SuSFSConfigHelper(
 
     suspend fun showEnabledFeatures(): String = loadStatusInfo().enabledFeatures
 
-    suspend fun exportConfigToUri(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
+    suspend fun exportConfigToUri(appContext: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
         try {
             val result = executeSusfsCommand("config backup")
             if (!result.success || result.stdout.isBlank()) {
@@ -282,7 +282,7 @@ class SuSFSConfigHelper(
                 return@withContext false
             }
 
-            context.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { writer ->
+            appContext.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { writer ->
                 writer.write(result.stdout)
                 writer.newLine()
             } ?: return@withContext false
@@ -294,8 +294,8 @@ class SuSFSConfigHelper(
         }
     }
 
-    suspend fun importConfigFromUri(context: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        val tempFile = File.createTempFile("susfs_restore", ".json", context.cacheDir)
+    suspend fun importConfigFromUri(appContext: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
+        val tempFile = File.createTempFile("susfs_restore", ".json", appContext.cacheDir)
         try {
             val fileName = DocumentFile.fromSingleUri(context, uri)?.name.orEmpty()
             if (!fileName.endsWith(".json", ignoreCase = true)) {
@@ -303,7 +303,7 @@ class SuSFSConfigHelper(
                 return@withContext false
             }
 
-            context.contentResolver.openInputStream(uri)?.use { input ->
+            appContext.contentResolver.openInputStream(uri)?.use { input ->
                 tempFile.outputStream().use { output -> input.copyTo(output) }
             } ?: return@withContext false
 

@@ -140,7 +140,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
 }
 
 private suspend fun doBackupSuspend(
-    context: Context,
+    appContext: Context,
     onProgress: suspend (List<BackupProgress>) -> Unit,
 ): Result<String> = withContext(Dispatchers.IO) {
     val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())

@@ -69,8 +69,8 @@ object HuiJuiSecurityScanner {
             if (!uri.lastPathSegment.orEmpty().endsWith(".zip", ignoreCase = true)) {
                 return Pair(true, "非 zip 模块，跳过扫描")
             }
-            tempFile = java.io.File.createTempFile("module_scan", ".zip", context.cacheDir)
-            context.contentResolver.openInputStream(uri)?.use { input ->
+            tempFile = java.io.File.createTempFile("module_scan", ".zip", appContext.cacheDir)
+            appContext.contentResolver.openInputStream(uri)?.use { input ->
                 tempFile.outputStream().use { output ->
                     input.copyTo(output)
                 }

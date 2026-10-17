@@ -67,7 +67,7 @@ data class ZipFileInfo(
 )
 
 class ZipFileDetector {
-    fun parseModuleInfo(context: Context, uri: Uri): ZipFileInfo {
+    fun parseModuleInfo(appContext: Context, uri: Uri): ZipFileInfo {
         var zipInfo = ZipFileInfo(uri = uri, type = ZipType.MODULE)
 
         try {
@@ -79,7 +79,7 @@ class ZipFileDetector {
                         val props = zip.getInputStream(entry).use(::parseSimpleProps)
 
                         zipInfo = zipInfo.copy(
-                            name = props["name"] ?: context.getString(R.string.unknown_module),
+                            name = props["name"] ?: appContext.getString(R.string.unknown_module),
                             version = props["version"] ?: "",
                             versionCode = props["versionCode"] ?: "",
                             author = props["author"] ?: "",
@@ -126,7 +126,7 @@ class ZipFileDetector {
         return map
     }
 
-    fun parseZipFile(context: Context, uri: Uri): ZipFileInfo {
+    fun parseZipFile(appContext: Context, uri: Uri): ZipFileInfo {
         val props = mutableMapOf<String, String>()
         val foundFiles = mutableSetOf<String>()
 

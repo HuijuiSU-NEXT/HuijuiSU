@@ -590,7 +590,7 @@ fun OnlineModuleItem(
 }
 
 fun downloadAssetAndInstall(
-    context: Context,
+    appContext: Context,
     permissionRequestInterface: PermissionRequestInterface,
     module: CatalogModule,
     asset: ModuleReleaseAsset,

@@ -867,7 +867,7 @@ private fun TopBar(
     }
 }
 
-private fun isKoFile(context: Context, uri: Uri): Boolean {
+private fun isKoFile(appContext: Context, uri: Uri): Boolean {
     val seg = uri.lastPathSegment ?: ""
     if (seg.endsWith(".ko", ignoreCase = true)) return true
 

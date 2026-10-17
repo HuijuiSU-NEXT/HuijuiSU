@@ -144,7 +144,7 @@ private fun CheckRow(item: CheckItem) {
     }
 }
 
-private fun runCheckup(context: Context): List<CheckItem> {
+private fun runCheckup(appContext: Context): List<CheckItem> {
     val out = mutableListOf<CheckItem>()
 
     val bm = appContext.getSystemService(Context.BATTERY_SERVICE) as BatteryManager

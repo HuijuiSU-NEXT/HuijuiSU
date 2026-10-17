@@ -59,7 +59,7 @@ private fun buildInternalWebUiUri(moduleId: String): Uri = Uri.Builder()
     .appendQueryParameter(PARAM_ID, moduleId)
     .build()
 
-private fun resolveIntent(context: Context, intent: Intent, intentToken: String, zipFileDetector: ZipFileDetector): PendingAction? {
+private fun resolveIntent(appContext: Context, intent: Intent, intentToken: String, zipFileDetector: ZipFileDetector): PendingAction? {
     if (intent.action == DownloadService.ACTION_INSTALL_MODULE) {
         val token = intent.getStringExtra(DownloadService.EXTRA_TOKEN)?.takeIf { it.isNotBlank() } ?: return null
         if (token != intentToken) return null

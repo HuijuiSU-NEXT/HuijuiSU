@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter
 import com.huijui.sunext.Natives
 import com.huijui.sunext.data.shell.KsuCliRepository
 
-fun getManagerVersion(context: Context): Pair<String, Long> {
-    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)!!
+fun getManagerVersion(appContext: Context): Pair<String, Long> {
+    val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)!!
     val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
     return Pair(packageInfo.versionName!!, versionCode)
 }
 
-fun getBugreportFile(context: Context, ksuCliRepository: KsuCliRepository): File {
-    val bugreportDir = File(context.cacheDir, "bugreport")
+fun getBugreportFile(appContext: Context, ksuCliRepository: KsuCliRepository): File {
+    val bugreportDir = File(appContext.cacheDir, "bugreport")
     bugreportDir.mkdirs()
 
     val processFile = File(bugreportDir, "process.txt")
@@ -115,7 +115,7 @@ fun getBugreportFile(context: Context, ksuCliRepository: KsuCliRepository): File
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
     val current = LocalDateTime.now().format(formatter)
 
-    val targetFile = File(context.cacheDir, "KernelSU_bugreport_$current.tar.gz")
+    val targetFile = File(appContext.cacheDir, "KernelSU_bugreport_$current.tar.gz")
 
     shell.newJob().add("tar czf ${targetFile.absolutePath} -C ${bugreportDir.absolutePath} .").exec()
     shell.newJob().add("rm -rf ${bugreportDir.absolutePath}").exec()

@@ -465,7 +465,7 @@ private fun Context.backgroundCropSize(): Pair<Int, Int> {
     return displayMetrics.widthPixels to displayMetrics.heightPixels
 }
 
-private fun createBackgroundCropOutputUri(context: Context, prefix: String): Uri {
+private fun createBackgroundCropOutputUri(appContext: Context, prefix: String): Uri {
     val outputFile = File(appContext.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
         parentFile?.mkdirs()
         delete()

@@ -1352,7 +1352,7 @@ private fun Bitmap.blurBitmap(blurRadius: Float): Bitmap {
 
 @RequiresApi(Build.VERSION_CODES.S)
 private suspend fun Bitmap.createBackgroundBlurImage(
-    context: Context,
+    appContext: Context,
     viewportSize: IntSize,
     blurRadius: Float,
 ): ImageBitmap = withContext(Dispatchers.Default) {
@@ -1414,9 +1414,9 @@ private fun Bitmap.createBackgroundBlurSource(viewportSize: IntSize): Bitmap {
     }
 }
 
-internal fun backgroundBlurCacheFile(context: Context): File = File(appContext.filesDir, "blured_custom_background.jpg")
+internal fun backgroundBlurCacheFile(appContext: Context): File = File(appContext.filesDir, "blured_custom_background.jpg")
 
-internal fun legacyBackgroundBlurCacheDir(context: Context): File = File(appContext.filesDir, "background_blur_cache")
+internal fun legacyBackgroundBlurCacheDir(appContext: Context): File = File(appContext.filesDir, "background_blur_cache")
 
 private fun saveBackgroundBlurCache(cacheFile: File, bitmap: Bitmap) {
     runCatching {

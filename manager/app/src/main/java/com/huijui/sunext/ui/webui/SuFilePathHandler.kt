@@ -25,7 +25,7 @@ import com.huijui.sunext.ui.webui.SuFilePathHandler.Companion.DEFAULT_MIME_TYPE
  *
  * A typical usage would be like:
  * ```
- * val publicDir = File(context.filesDir, "public")
+ * val publicDir = File(appContext.filesDir, "public")
  * // Host "files/public/" in app's data directory under:
  * // http://appassets.androidplatform.net/public/...
  * val assetLoader = WebViewAssetLoader.Builder()

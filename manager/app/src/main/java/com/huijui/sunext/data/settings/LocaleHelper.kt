@@ -14,13 +14,13 @@ import com.huijui.sunext.data.AppSettingsRepository
 /**
  * Launch system app locale settings (Android 13+)
  */
-fun launchSystemLanguageSettings(context: Context) {
+fun launchSystemLanguageSettings(appContext: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         try {
             val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
-                data = Uri.fromParts("package", context.packageName, null)
+                data = Uri.fromParts("package", appContext.packageName, null)
             }
-            context.startActivity(intent)
+            appContext.startActivity(intent)
         } catch (_: Exception) {
             // Fallback to app language settings if system settings not available
         }
@@ -33,7 +33,7 @@ fun launchSystemLanguageSettings(context: Context) {
 class LocaleHelper(
     private val settings: AppSettingsRepository,
 ) {
-    fun applyLanguage(context: Context): Context {
+    fun applyLanguage(appContext: Context): Context {
         // On Android 13+, language is handled by system
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             return context
@@ -53,7 +53,7 @@ class LocaleHelper(
      * Set locale for context (Android < 13)
      */
     @SuppressLint("ObsoleteSdkInt")
-    private fun setLocale(context: Context, locale: Locale): Context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+    private fun setLocale(appContext: Context, locale: Locale): Context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         updateResources(context, locale)
     } else {
         updateResourcesLegacy(context, locale)
@@ -61,18 +61,18 @@ class LocaleHelper(
 
     @SuppressLint("UseRequiresApi", "ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.N)
-    private fun updateResources(context: Context, locale: Locale): Context {
+    private fun updateResources(appContext: Context, locale: Locale): Context {
         val configuration = Configuration()
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)
-        return context.createConfigurationContext(configuration)
+        return appContext.createConfigurationContext(configuration)
     }
 
     @Suppress("DEPRECATION")
     @SuppressWarnings("deprecation")
-    private fun updateResourcesLegacy(context: Context, locale: Locale): Context {
+    private fun updateResourcesLegacy(appContext: Context, locale: Locale): Context {
         Locale.setDefault(locale)
-        val resources = context.resources
+        val resources = appContext.resources
         val configuration = resources.configuration
         configuration.locale = locale
         configuration.setLayoutDirection(locale)
@@ -103,10 +103,10 @@ class LocaleHelper(
      * Get current app locale
      */
     @SuppressLint("ObsoleteSdkInt")
-    fun getCurrentAppLocale(context: Context): Locale? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    fun getCurrentAppLocale(appContext: Context): Locale? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         try {
             val localeManager =
-                context.getSystemService(Context.LOCALE_SERVICE) as? android.app.LocaleManager
+                appContext.getSystemService(Context.LOCALE_SERVICE) as? android.app.LocaleManager
             val locales = localeManager?.applicationLocales
             if (locales != null && !locales.isEmpty) {
                 locales.get(0)

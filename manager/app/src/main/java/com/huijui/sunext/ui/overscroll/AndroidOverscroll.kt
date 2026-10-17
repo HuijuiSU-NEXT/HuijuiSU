@@ -101,7 +101,7 @@ fun rememberCustomOverscrollFactory(
 }
 
 private class AndroidEdgeEffectOverscrollFactory(
-    private val context: Context,
+    private val appContext: Context,
     private val density: Density,
     private val glowColor: Color = DefaultGlowColor,
     private val glowDrawPadding: PaddingValues = DefaultGlowPaddingValues,
@@ -594,7 +594,7 @@ private class GlowOverscrollNode(
 }
 
 internal class AndroidEdgeEffectOverscrollEffect(
-    context: Context,
+    appContext: Context,
     private val density: Density,
     glowColor: Color,
     glowDrawPadding: PaddingValues,
@@ -1018,7 +1018,7 @@ internal class AndroidEdgeEffectOverscrollEffect(
 
 /** Handles lazy creation of [EdgeEffect]s used to render overscroll. */
 private class EdgeEffectWrapper(
-    private val context: Context,
+    private val appContext: Context,
     @ColorInt private val glowColor: Int,
 ) {
     private var size: IntSize = IntSize.Zero

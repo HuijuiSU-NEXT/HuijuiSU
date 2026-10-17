@@ -75,9 +75,9 @@ object HuijuiModuleSnapshot {
      * 先写到 App 私有目录，再用 su 复制到目标位置，
      * 避免 SELinux context 问题导致 App 无法直接写入 /sdcard/。
      */
-    fun writeToFile(context: Context, snapshot: Snapshot, dir: File): Boolean = try {
+    fun writeToFile(appContext: Context, snapshot: Snapshot, dir: File): Boolean = try {
         val json = buildJson(snapshot)
-        val tempFile = File(context.cacheDir, SNAPSHOT_FILE)
+        val tempFile = File(appContext.cacheDir, SNAPSHOT_FILE)
         tempFile.writeText(json)
         Log.i(TAG, "临时文件已写：${tempFile.absolutePath} (${tempFile.length()} bytes)")
 

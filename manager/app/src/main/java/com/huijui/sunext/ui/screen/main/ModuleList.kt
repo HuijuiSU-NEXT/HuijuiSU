@@ -174,16 +174,16 @@ import androidx.compose.ui.text.font.FontFamily
 fun getMetaModuleWarningText(
     hasModuleRequireMount: Boolean,
     showWarning: Boolean,
-    context: Context,
+    appContext: Context,
     status: MetaModuleStatus,
 ): String? {
     if (!showWarning) return null
     if (!hasModuleRequireMount) return null
 
     return when (status) {
-        MetaModuleStatus.MISSING -> context.getString(R.string.no_meta_module_installed)
-        MetaModuleStatus.REMOVED -> context.getString(R.string.meta_module_removed)
-        MetaModuleStatus.DISABLED -> context.getString(R.string.meta_module_disabled)
+        MetaModuleStatus.MISSING -> appContext.getString(R.string.no_meta_module_installed)
+        MetaModuleStatus.REMOVED -> appContext.getString(R.string.meta_module_removed)
+        MetaModuleStatus.DISABLED -> appContext.getString(R.string.meta_module_disabled)
         MetaModuleStatus.ACTIVE -> null
     }
 }
@@ -220,7 +220,7 @@ fun ModuleList(
     boxModifier: Modifier = Modifier,
     onUpdateModule: (Uri) -> Unit,
     onClickModule: (id: String, hasWebUi: Boolean) -> Unit,
-    context: Context,
+    appContext: Context,
     snackBarHost: SnackbarHostState,
     bottomPadding: Dp,
     topPadding: Dp,
@@ -326,12 +326,12 @@ fun ModuleList(
         showShortcutDialog.value = true
     }
 
-    fun hasModuleShortcut(context: Context, moduleId: String, type: ShortcutType): Boolean = when (type) {
+    fun hasModuleShortcut(appContext: Context, moduleId: String, type: ShortcutType): Boolean = when (type) {
         ShortcutType.Action -> shortcut.hasModuleActionShortcut(context, moduleId)
         ShortcutType.WebUI -> shortcut.hasModuleWebUiShortcut(context, moduleId)
     }
 
-    fun deleteModuleShortcut(context: Context, moduleId: String, type: ShortcutType) {
+    fun deleteModuleShortcut(appContext: Context, moduleId: String, type: ShortcutType) {
         when (type) {
             ShortcutType.Action -> shortcut.deleteModuleActionShortcut(context, moduleId)
             ShortcutType.WebUI -> shortcut.deleteModuleWebUiShortcut(context, moduleId)
@@ -339,7 +339,7 @@ fun ModuleList(
     }
 
     fun createModuleShortcut(
-        context: Context,
+        appContext: Context,
         moduleId: String,
         name: String,
         iconUri: String?,
@@ -758,7 +758,7 @@ fun ModuleList(
                                     return@SettingsJumpPageWidget
                                 }
                                 val url = shortcut.buildShortcutUri(currentModuleId, type, settings.intentToken).toString()
-                                val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                                val clipboard = appContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                                 clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
                                 Toast.makeText(context, moduleShortcutSchemeCopied, Toast.LENGTH_SHORT).show()
                             },

@@ -290,7 +290,7 @@ private suspend fun readCurrentSlot(): String = withContext(Dispatchers.IO) {
 }
 
 private suspend fun doFlash(
-    context: Context,
+    appContext: Context,
     uri: Uri,
     initBootUri: Uri?,
     slot: String,
@@ -397,7 +397,7 @@ private fun runShell(cmd: String): String =
  * -m 指定 lkm 模块路径
  */
 private suspend fun doLkmInstall(
-    context: Context,
+    appContext: Context,
     uri: Uri,
     onLog: suspend (String) -> Unit,
 ): Result<Unit> = withContext(Dispatchers.IO) {

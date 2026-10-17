@@ -221,7 +221,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
                             val url = request.url.toString()
                             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
+                            appContext.startActivity(intent)
                             return true
                         }
 

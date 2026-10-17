@@ -27,10 +27,10 @@ import com.huijui.sunext.domain.model.AppPreferences
 import com.huijui.sunext.domain.model.PreferenceValue
 
 class AppSettingsRepository(
-    context: Context,
+    appContext: Context,
     private val applicationScope: CoroutineScope,
 ) {
-    private val appContext = context.applicationContext
+    private val appContext = appContext.applicationContext
     private val dataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
         migrations = listOf(
             SharedPreferencesMigration(appContext, "settings"),

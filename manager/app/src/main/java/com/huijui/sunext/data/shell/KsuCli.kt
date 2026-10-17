@@ -25,12 +25,12 @@ import org.json.JSONObject
  * @author weishu
  * @date 2023/1/1.
  */
-class KsuCliRepository(context: Context) {
+class KsuCliRepository(appContext: Context) {
     private companion object {
         const val TAG = "KsuCli"
     }
 
-    private val nativeLibraryDir = context.applicationInfo.nativeLibraryDir
+    private val nativeLibraryDir = appContext.applicationInfo.nativeLibraryDir
 
     private fun getNativeLibraryPath(name: String): String {
         val library = File(nativeLibraryDir, System.mapLibraryName(name))
@@ -246,15 +246,15 @@ class KsuCliRepository(context: Context) {
     }
 
     fun flashModule(
-        context: Context,
+        appContext: Context,
         uri: Uri,
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
         onStderr: (String) -> Unit,
     ): Boolean {
-        val resolver = context.contentResolver
+        val resolver = appContext.contentResolver
         with(resolver.openInputStream(uri)) {
-            val file = File(context.cacheDir, "module.zip")
+            val file = File(appContext.cacheDir, "module.zip")
             file.outputStream().use { output ->
                 this?.copyTo(output)
             }
@@ -343,7 +343,7 @@ class KsuCliRepository(context: Context) {
     }
 
     fun installBoot(
-        context: Context,
+        appContext: Context,
         bootUri: Uri?,
         lkm: LkmSelection,
         ota: Boolean,
@@ -355,11 +355,11 @@ class KsuCliRepository(context: Context) {
         onStdout: (String) -> Unit,
         onStderr: (String) -> Unit,
     ): Boolean {
-        val resolver = context.contentResolver
+        val resolver = appContext.contentResolver
 
         val bootFile = bootUri?.let { uri ->
             with(resolver.openInputStream(uri)) {
-                val bootFile = File(context.cacheDir, "boot.img")
+                val bootFile = File(appContext.cacheDir, "boot.img")
                 bootFile.outputStream().use { output ->
                     this?.copyTo(output)
                 }
@@ -385,7 +385,7 @@ class KsuCliRepository(context: Context) {
         when (lkm) {
             is LkmSelection.LkmUri -> {
                 lkmFile = with(resolver.openInputStream(lkm.uri.toUri())) {
-                    val file = File(context.cacheDir, "kernelsu-tmp-lkm.ko")
+                    val file = File(appContext.cacheDir, "kernelsu-tmp-lkm.ko")
                     file.outputStream().use { output ->
                         this?.copyTo(output)
                     }

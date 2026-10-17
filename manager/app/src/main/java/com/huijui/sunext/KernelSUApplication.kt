@@ -12,7 +12,7 @@ import com.huijui.sunext.huijui.data.HuijuiDefaultsApplier
 import com.huijui.sunext.domain.usecase.InitializeApplicationUseCase
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
-import org.koin.core.context.startKoin
+import org.koin.core.appContext.startKoin
 
 class KernelSUApplication : Application() {
     override fun onCreate() {

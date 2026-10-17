@@ -154,7 +154,7 @@ class BackgroundManager(
     }
 
     suspend fun saveAndApplyCustomBackground(
-        context: Context,
+        appContext: Context,
         uri: Uri,
     ): Boolean {
         val appContext = appContext.applicationContext
@@ -180,7 +180,7 @@ class BackgroundManager(
         }
     }
 
-    fun clearCustomBackground(context: Context) {
+    fun clearCustomBackground(appContext: Context) {
         saveBackgroundUri(null)
         config.customBackgroundUri = null
         cardConfig.updateBackground(false)
@@ -211,7 +211,7 @@ class BackgroundManager(
         settings.putString("custom_background", uri?.toString())
     }
 
-    fun clearBackgroundBlurCache(context: Context) {
+    fun clearBackgroundBlurCache(appContext: Context) {
         runCatching {
             backgroundBlurCacheFile(appContext).delete()
             legacyBackgroundBlurCacheDir(appContext).deleteRecursively()
@@ -220,7 +220,7 @@ class BackgroundManager(
         }
     }
 
-    private fun copyImageToInternalStorage(context: Context, uri: Uri): Uri? {
+    private fun copyImageToInternalStorage(appContext: Context, uri: Uri): Uri? {
         return try {
             val inputStream = appContext.contentResolver.openInputStream(uri) ?: return null
             val fileName = "custom_background.jpg"
@@ -315,7 +315,7 @@ fun KernelSUTheme(
 
 @Composable
 private fun ThemeInitializer(
-    context: Context,
+    appContext: Context,
     systemIsDark: Boolean,
     themeConfig: ThemeConfig,
     themeRepository: ThemeRepository,

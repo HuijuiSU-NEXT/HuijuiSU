@@ -214,7 +214,7 @@ class ProfileTemplateRepository(
                 JSONArray(Capabilities.entries.filter { it.cap in capabilities }.map { it.name }),
             )
         }
-        if (context.isNotEmpty()) put("context", context)
+        if (appContext.isNotEmpty()) put("context", context)
         if (rules.isNotEmpty()) put("rules", JSONArray(rules))
         put(
             "flags",

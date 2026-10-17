@@ -32,7 +32,7 @@ import com.huijui.sunext.ui.overscroll.EdgeEffectCompat.distanceCompat
 
 internal object EdgeEffectCompat {
 
-    fun create(context: Context): EdgeEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    fun create(appContext: Context): EdgeEffect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         Api31Impl.create(context, null)
     } else {
         GlowEdgeEffectCompat(context)
@@ -117,7 +117,7 @@ internal object EdgeEffectCompat {
  * really moving. To workaround this we only release the overscroll if the cumulative negative
  * deltas are larger than a minimum value - this should catch the majority of cases.
  */
-private class GlowEdgeEffectCompat(context: Context) : EdgeEffect(context) {
+private class GlowEdgeEffectCompat(appContext: Context) : EdgeEffect(context) {
     // Minimum distance in the opposite scroll direction to trigger a release
     private val oppositeReleaseDeltaThreshold = with(Density(context)) { 1.dp.toPx() }
     private var oppositeReleaseDelta = 0f
@@ -156,7 +156,7 @@ private class GlowEdgeEffectCompat(context: Context) : EdgeEffect(context) {
 
 @RequiresApi(Build.VERSION_CODES.S)
 private object Api31Impl {
-    fun create(context: Context, attrs: AttributeSet?): EdgeEffect = try {
+    fun create(appContext: Context, attrs: AttributeSet?): EdgeEffect = try {
         EdgeEffect(context, attrs)
     } catch (t: Throwable) {
         EdgeEffect(context) // Old preview release
