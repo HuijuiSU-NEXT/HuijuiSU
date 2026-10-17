@@ -1,7 +1,5 @@
 @file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
 
-@file:OptIn(androidx.compose.material3.ExperimentalMaterial3ExpressiveApi::class)
-
 package com.huijui.sunext.ui.screen
 
 import android.app.Activity
@@ -305,7 +303,6 @@ private fun LKMInstallPage(
                         val ctx = androidx.compose.ui.platform.LocalContext.current
                         val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
                         if (!scanResult.first) {
-                            android.widget.Toast.makeText(ctx, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
                             return@let
                         }
                 lkmInstallMethod = InstallMethod.SelectFile(
@@ -324,7 +321,6 @@ private fun LKMInstallPage(
                         val ctx = androidx.compose.ui.platform.LocalContext.current
                         val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
                         if (!scanResult.first) {
-                            android.widget.Toast.makeText(ctx, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
                             return@let
                         }
                 val isKo = isKoFile(context, uri)
@@ -634,7 +630,6 @@ private fun Anykernel3InstallPage(
                         val ctx = androidx.compose.ui.platform.LocalContext.current
                         val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
                         if (!scanResult.first) {
-                            android.widget.Toast.makeText(ctx, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
                             return@let
                         }
                 if (isAbDevice) {

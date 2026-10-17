@@ -1,5 +1,6 @@
 
 package com.huijui.sunext.ui.theme
+import androidx.compose.material3.Typography
 
 import com.huijui.sunext.R
 import androidx.compose.ui.text.font.FontWeight
