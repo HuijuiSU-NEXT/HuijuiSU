@@ -18,7 +18,7 @@ val androidTargetSdkVersion = rootProject.extra["androidTargetSdkVersion"] as In
 val androidSourceCompatibility = rootProject.extra["androidSourceCompatibility"] as JavaVersion
 val androidTargetCompatibility = rootProject.extra["androidTargetCompatibility"] as JavaVersion
 val managerVersionCode = rootProject.extra["managerVersionCode"] as Int
-val managerVersionName = v4.4.0-Next as String
+val managerVersionName = "v4.4.0-Next"
 val managerPackageName = rootProject.extra["managerPackageName"] as String
 val managerName = rootProject.extra["managerName"] as String
 
