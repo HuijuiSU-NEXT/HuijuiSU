@@ -1,5 +1,4 @@
 package com.huijui.sunext.data.packageinfo
-import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import com.huijui.sunext.R
 
 import android.annotation.SuppressLint
@@ -10,13 +9,12 @@ import android.os.UserHandle
 import android.os.UserManager
 import android.util.Log
 import com.topjohnwu.superuser.ipc.RootService
-import org.huijuisu.rootService.IKsuInterface
+import org.bakasu.rootService.IKsuInterface
 
 /**
  * @author ShirkNeko
  * @date 2025/10/17.
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 class KsuService : RootService() {
 
     private val TAG = "KsuService"

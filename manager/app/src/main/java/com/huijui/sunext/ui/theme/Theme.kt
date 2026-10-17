@@ -1,4 +1,7 @@
 package com.huijui.sunext.ui.theme
+
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+@file:OptIn(ExperimentalMaterial3ExpressiveApi::class)
 import com.huijui.sunext.R
 import androidx.compose.ui.text.font.FontWeight
 
