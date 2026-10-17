@@ -106,7 +106,7 @@ private fun MainContent(activity: ComponentActivity, onFinish: () -> Unit) {
     }
     val isLoading = webUIState.uiEvent is WebUIEvent.Loading
 
-    Crossfade(targetState = isLoading, animationSpec = tween(300)) { loading ->
+    Crossfade(targetState = isLoading, animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy, stiffness = Spring.StiffnessLow)) { loading ->
         if (loading) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 LoadingIndicator()

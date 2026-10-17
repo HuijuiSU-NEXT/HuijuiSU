@@ -133,6 +133,11 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
@@ -192,4 +197,3 @@ private fun StartupFailureContent(reason: String) {
     }
 }
 
-}}

@@ -301,6 +301,12 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
+                val context = androidx.compose.ui.platform.LocalContext.current
+                val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(context, uri)
+                if (!scanResult.first) {
+                    android.widget.Toast.makeText(context, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
+                    return@let
+                }
                 lkmInstallMethod = InstallMethod.SelectFile(
                     uri,
                     summary = selectFileTip,

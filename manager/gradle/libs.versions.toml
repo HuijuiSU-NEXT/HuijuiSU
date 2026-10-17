@@ -1,6 +1,8 @@
 [versions]
+compose-animation = "1.12.1"
+haze = "2.0.1"
 accompanist-drawablepainter = "0.37.3"
-agp = "9.4.1"
+agp = "9.4.0"
 gson = "2.14.0"
 kotlin = "2.4.20"
 materialKolor = "5.0.1"
@@ -21,7 +23,7 @@ hiddenapibypass = "6.1"
 parcelablelist = "2.0.1"
 libsu = "6.0.0"
 apksign = "1.4"
-compose-material3 = "1.5.0-alpha29"
+compose-material3 = "1.5.0-alpha28"
 compose-ui = "1.12.1"
 documentfile = "1.1.0"
 ndk = "30.0.16248370"
@@ -119,3 +121,10 @@ androidx-profileinstaller = { group = "androidx.profileinstaller", name = "profi
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 # Compose UI modules (choose one or both)
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }
+
+haze-blur-material3 = { group = "dev.chrisbanes.haze", name = "haze-blur-material3", version.ref = "haze" }
+
+haze-glass = { group = "dev.chrisbanes.haze", name = "haze-glass", version.ref = "haze" }
+haze-glass-material3 = { group = "dev.chrisbanes.haze", name = "haze-glass-material3", version.ref = "haze" }
+
+androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "compose-animation" }
