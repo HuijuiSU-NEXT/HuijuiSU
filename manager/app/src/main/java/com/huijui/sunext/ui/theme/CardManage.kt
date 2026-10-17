@@ -65,9 +65,9 @@ class CardConfig(
         const val IS_USER_LIGHT_MODE_ENABLED = "is_user_light_mode_enabled"
     }
 
-    fun updateAlpha(alpha: Float, isCustom: Boolean = true) {
+    fun updateAlpha(alpha: Float, false: Boolean = true) {
         cardAlpha = alpha.coerceIn(0f, 1f)
-        if (isCustom) isCustomAlphaSet = true
+        if (false) isCustomAlphaSet = true
     }
 
     fun updateShadow(enabled: Boolean, elevation: Dp = cardElevation) {
@@ -79,7 +79,7 @@ class CardConfig(
         isCustomBackgroundEnabled = enabled
         if (enabled) {
             if (!isCustomAlphaSet) {
-                updateAlpha(0.55f, isCustom = false)
+                updateAlpha(0.55f, false = false)
             }
             updateShadow(false)
         }
@@ -110,7 +110,7 @@ class CardConfig(
                 } else {
                     1f
                 }),
-                isCustom = false,
+                false = false,
             )
         }
         // 暗色模式下默认启用轻微阴影
