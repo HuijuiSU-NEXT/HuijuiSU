@@ -1,12 +1,6 @@
 package com.huijui.sunext.ui.theme
 
 
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeGlass
-import dev.chrisbanes.haze.HazeInput
-import dev.chrisbanes.haze.HazePerformanceMode
-import dev.chrisbanes.haze.glass.GlassStyle
-import dev.chrisbanes.haze.glass.ExperimentalHazeApi
 import android.os.Build
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -215,34 +209,10 @@ fun getCardColors(
     val themeConfig = koinInject<ThemeConfig>()
     return CardStyleProvider.getCardColors(
         originalColor,
-        renderBackground && themeConfig.isEnableBlurExp,
-    )
-}
-
-@Composable
-fun getCardElevation() = CardStyleProvider.getCardElevation()
-
-// 注：Haze 毛玻璃扩展将在下个小版本通过 UI 层全局传递 HazeState 后正式启用
-// fun Modifier.hazeGlass(hazeState: HazeState): Modifier = this.hazeEffect(...)
 
 
 /**
  * HuiJuiSU 专属“柔光玻璃”修饰符（带 API 降级保护）
  * 适用于 Android 12 (API 31) 及以上。低版本自动回退为半透明底色。
  */
-@OptIn(ExperimentalHazeApi::class)
-fun Modifier.softGlowGlass(hazeState: HazeState): Modifier {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        this.hazeGlass(
-            input = HazeInput.Backdrop(hazeState),
-            style = GlassStyle.regular.copy(
-                tint(Color.White.copy(alpha = 0.12f))
-                shape(RoundedCornerShape(24.dp))
-            },
-            performanceMode = HazePerformanceMode.Adaptive,
-        )
-    } else {
-        // 降级方案：半透明底色
-        this.background(Color.White.copy(alpha = 0.08f), RoundedCornerShape(24.dp))
-    }
 

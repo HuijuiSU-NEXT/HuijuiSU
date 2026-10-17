@@ -99,6 +99,8 @@ import org.koin.compose.viewmodel.koinViewModel
 fun InstallScreen(
     preselectedKernelUri: String? = null,
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     val viewModel = koinViewModel<InstallViewModel>()
     val installState by viewModel.state.collectAsStateWithLifecycle()
     val environment = installState.environment
