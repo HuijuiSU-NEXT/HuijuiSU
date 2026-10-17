@@ -125,18 +125,8 @@ class MainActivity : ComponentActivity() {
                             }
                         )
                     } else {
-                        androidx.compose.foundation.layout.Box(modifier = androidx.compose.ui.Modifier.fillMaxSize()) {
-                        androidx.compose.foundation.Image(
-                            painter = androidx.compose.ui.res.painterResource(id = com.huijui.sunext.R.drawable.huijui_wallpaper),
-                            contentDescription = "Background",
-                            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
-                            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-                        )
-                        when (val state = startupState.collectAsStateWithLifecycle().value) {
-                        is StartupState.Failed -> StartupFailureContent(state.message)
-                        else -> NavContainer(settingsViewModel, intentChannel)
+                        NavContainer(settingsViewModel, intentChannel)
                         }
-                    }
                 }
                 }
             }
