@@ -86,10 +86,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
             selectedUri = uri
             scope.launch(Dispatchers.IO) {
                 try {
-                    } else {
-                                android.widget.Toast.makeText(context, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
-                            }
-                            if (scanResult.first) {selectedName = uri.lastPathSegment?.substringAfterLast('/') ?: "boot.img"
+                    selectedName = uri.lastPathSegment?.substringAfterLast('/') ?: "boot.img"
                     val tmp = File(context.cacheDir, "flash_custom_tmp.img")
                     context.contentResolver.openInputStream(uri)?.use { input ->
                         tmp.outputStream().use { out -> input.copyTo(out) }
