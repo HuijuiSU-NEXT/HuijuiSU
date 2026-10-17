@@ -63,7 +63,7 @@ class FlashRepository(
             }
         }
         worker = HorizonKernelWorker(
-            context = application,
+            ctx = application,
             state = workerState,
             ksuCliRepository = ksuCliRepository,
             slot = selectedSlot,

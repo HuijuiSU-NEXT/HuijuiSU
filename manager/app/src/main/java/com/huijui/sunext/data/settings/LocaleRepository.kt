@@ -7,7 +7,7 @@ import com.huijui.sunext.data.settings.launchSystemLanguageSettings as launchSys
 class LocaleRepository(
     private val localeHelper: LocaleHelper,
 ) {
-    fun applyLanguage(appContext: Context): Context = localeHelper.applyLanguage(context)
+    fun applyLanguage(ctx: Context): Context = localeHelper.applyLanguage(ctx)
     fun isSystemLanguageSettings(): Boolean = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-    fun launchSystemLanguageSettings(appContext: Context) = launchSystemLanguageSettingsInternal(context)
+    fun launchSystemLanguageSettings(ctx: Context) = launchSystemLanguageSettingsInternal(ctx)
 }

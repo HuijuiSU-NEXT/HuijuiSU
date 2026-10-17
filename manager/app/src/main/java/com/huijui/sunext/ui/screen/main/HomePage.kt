@@ -132,7 +132,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun HomePage(
     bottomPadding: Dp,
 ) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -144,7 +144,7 @@ fun HomePage(
         viewModel.events.collect { event ->
             when (event) {
                 is HomeUiEvent.Error -> if (event.message.isNotBlank()) {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -328,7 +328,7 @@ fun HomePage(
                     },
                     onClickJailbreak = {
                         loadingDialog.showLoading()
-                        appContext.startService(Intent(context, MagicaService::class.java))
+                        ctx.startService(Intent(ctx, MagicaService::class.java))
                         // Manager will be force-stopped and restarted by late-load on success.
                         // If that doesn't happen within timeout, jailbreak likely failed.
                         scope.launch(Dispatchers.IO) {
@@ -336,7 +336,7 @@ fun HomePage(
                             withContext(Dispatchers.Main) {
                                 loadingDialog.hide()
                                 Toast.makeText(
-                                    context,
+                                    ctx,
                                     R.string.jailbreak_timeout,
                                     Toast.LENGTH_LONG,
                                 ).show()
@@ -405,7 +405,7 @@ private fun ManagerUpdateCard(update: ManagerUpdateInfo?) {
 
 @Composable
 private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val enqueueManagerUpdate = koinInject<EnqueueManagerUpdateUseCase>()
     val channelTitle = stringResource(
@@ -435,7 +435,7 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
     val updateDialog = rememberConfirmDialog(
         onConfirm = {
             downloadManagerUpdate(
-                context,
+                ctx,
                 permissionRequestInterface,
                 updateInfo,
                 enqueueManagerUpdate,

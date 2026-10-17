@@ -235,7 +235,7 @@ val repositoryModule = module {
     }
     single {
         AppSettingsRepository(
-            context = androidApplication(),
+            ctx = androidApplication(),
             applicationScope = get(applicationScopeQualifier),
         )
     }

@@ -113,7 +113,7 @@ fun TemplateConfig(
                 gid = templateInfo.gid,
                 groups = templateInfo.groups,
                 capabilities = templateInfo.capabilities,
-                context = templateInfo.context,
+                ctx = templateInfo.ctx,
                 rules = templateInfo.rules.joinToString("\n"),
                 namespace = templateInfo.namespace,
             ),

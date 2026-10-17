@@ -27,22 +27,22 @@ import com.huijui.sunext.domain.model.AppPreferences
 import com.huijui.sunext.domain.model.PreferenceValue
 
 class AppSettingsRepository(
-    appContext: Context,
+    ctx: Context,
     private val applicationScope: CoroutineScope,
 ) {
-    private val appContext = appContext.applicationContext
+    private val ctx = ctx.applicationContext
     private val dataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
         migrations = listOf(
-            SharedPreferencesMigration(appContext, "settings"),
-            SharedPreferencesMigration(appContext, "theme_prefs"),
-            SharedPreferencesMigration(appContext, "card_settings"),
-            SharedPreferencesMigration(appContext, "susfs_config"),
-            SharedPreferencesMigration(appContext, "kernel_flash_prefs"),
+            SharedPreferencesMigration(ctx, "settings"),
+            SharedPreferencesMigration(ctx, "theme_prefs"),
+            SharedPreferencesMigration(ctx, "card_settings"),
+            SharedPreferencesMigration(ctx, "susfs_config"),
+            SharedPreferencesMigration(ctx, "kernel_flash_prefs"),
         ),
         scope = CoroutineScope(
             applicationScope.coroutineContext + Dispatchers.IO,
         ),
-        produceFile = { appContext.preferencesDataStoreFile("app_preferences") },
+        produceFile = { ctx.preferencesDataStoreFile("app_preferences") },
     )
     private val cachedPreferences = MutableStateFlow(emptyPreferences())
     private val mutablePreferences = MutableStateFlow(AppPreferences())

@@ -174,16 +174,16 @@ import androidx.compose.ui.text.font.FontFamily
 fun getMetaModuleWarningText(
     hasModuleRequireMount: Boolean,
     showWarning: Boolean,
-    appContext: Context,
+    ctx: Context,
     status: MetaModuleStatus,
 ): String? {
     if (!showWarning) return null
     if (!hasModuleRequireMount) return null
 
     return when (status) {
-        MetaModuleStatus.MISSING -> appContext.getString(R.string.no_meta_module_installed)
-        MetaModuleStatus.REMOVED -> appContext.getString(R.string.meta_module_removed)
-        MetaModuleStatus.DISABLED -> appContext.getString(R.string.meta_module_disabled)
+        MetaModuleStatus.MISSING -> ctx.getString(R.string.no_meta_module_installed)
+        MetaModuleStatus.REMOVED -> ctx.getString(R.string.meta_module_removed)
+        MetaModuleStatus.DISABLED -> ctx.getString(R.string.meta_module_disabled)
         MetaModuleStatus.ACTIVE -> null
     }
 }
@@ -220,7 +220,7 @@ fun ModuleList(
     boxModifier: Modifier = Modifier,
     onUpdateModule: (Uri) -> Unit,
     onClickModule: (id: String, hasWebUi: Boolean) -> Unit,
-    appContext: Context,
+    ctx: Context,
     snackBarHost: SnackbarHostState,
     bottomPadding: Dp,
     topPadding: Dp,
@@ -326,20 +326,20 @@ fun ModuleList(
         showShortcutDialog.value = true
     }
 
-    fun hasModuleShortcut(appContext: Context, moduleId: String, type: ShortcutType): Boolean = when (type) {
-        ShortcutType.Action -> shortcut.hasModuleActionShortcut(context, moduleId)
-        ShortcutType.WebUI -> shortcut.hasModuleWebUiShortcut(context, moduleId)
+    fun hasModuleShortcut(ctx: Context, moduleId: String, type: ShortcutType): Boolean = when (type) {
+        ShortcutType.Action -> shortcut.hasModuleActionShortcut(ctx, moduleId)
+        ShortcutType.WebUI -> shortcut.hasModuleWebUiShortcut(ctx, moduleId)
     }
 
-    fun deleteModuleShortcut(appContext: Context, moduleId: String, type: ShortcutType) {
+    fun deleteModuleShortcut(ctx: Context, moduleId: String, type: ShortcutType) {
         when (type) {
-            ShortcutType.Action -> shortcut.deleteModuleActionShortcut(context, moduleId)
-            ShortcutType.WebUI -> shortcut.deleteModuleWebUiShortcut(context, moduleId)
+            ShortcutType.Action -> shortcut.deleteModuleActionShortcut(ctx, moduleId)
+            ShortcutType.WebUI -> shortcut.deleteModuleWebUiShortcut(ctx, moduleId)
         }
     }
 
     fun createModuleShortcut(
-        appContext: Context,
+        ctx: Context,
         moduleId: String,
         name: String,
         iconUri: String?,
@@ -349,7 +349,7 @@ fun ModuleList(
         when (type) {
             ShortcutType.Action -> {
                 shortcut.createModuleActionShortcut(
-                    context = context,
+                    ctx = ctx,
                     moduleId = moduleId,
                     name = name,
                     iconUri = iconUri,
@@ -359,7 +359,7 @@ fun ModuleList(
 
             ShortcutType.WebUI -> {
                 shortcut.createModuleWebUiShortcut(
-                    context = context,
+                    ctx = ctx,
                     moduleId = moduleId,
                     name = name,
                     iconUri = iconUri,
@@ -383,7 +383,7 @@ fun ModuleList(
             return@LaunchedEffect
         }
         val bitmap = withContext(Dispatchers.IO) {
-            shortcut.loadShortcutBitmap(context, uriStr)
+            shortcut.loadShortcutBitmap(ctx, uriStr)
         }
         shortcutPreviewIcon.value = bitmap?.asImageBitmap()
     }
@@ -397,7 +397,7 @@ fun ModuleList(
             return@LaunchedEffect
         }
         val exists = withContext(Dispatchers.IO) {
-            hasModuleShortcut(context, moduleId, type)
+            hasModuleShortcut(ctx, moduleId, type)
         }
         hasExistingShortcut = exists
     }
@@ -415,7 +415,7 @@ fun ModuleList(
         val showToast: suspend (String) -> Unit = { msg ->
             withContext(Dispatchers.Main) {
                 Toast.makeText(
-                    context,
+                    ctx,
                     msg,
                     Toast.LENGTH_SHORT,
                 ).show()
@@ -443,7 +443,7 @@ fun ModuleList(
         val downloading = downloadingText.format(module.name)
         withContext(Dispatchers.IO) {
             download(
-                context,
+                ctx,
                 permissionRequestInterface,
                 downloadUrl,
                 fileName,
@@ -454,7 +454,7 @@ fun ModuleList(
                 },
                 onDownloading = {
                     launch(Dispatchers.Main) {
-                        Toast.makeText(context, downloading, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, downloading, Toast.LENGTH_SHORT).show()
                     }
                 },
             )
@@ -478,8 +478,8 @@ fun ModuleList(
 
         if (isUninstall) {
             withContext(Dispatchers.IO) {
-                shortcut.deleteModuleActionShortcut(context, module.id)
-                shortcut.deleteModuleWebUiShortcut(context, module.id)
+                shortcut.deleteModuleActionShortcut(ctx, module.id)
+                shortcut.deleteModuleWebUiShortcut(ctx, module.id)
             }
         }
         viewModel.dispatch(ModuleUiAction.SetRemoved(module.dirId, isUninstall))
@@ -530,7 +530,7 @@ fun ModuleList(
                 getMetaModuleWarningText(
                     uiState.hasModuleRequireMount,
                     showMetaModuleWarning,
-                    context,
+                    ctx,
                     uiState.metaModuleStatus,
                 )
             }
@@ -735,7 +735,7 @@ fun ModuleList(
                                     val moduleId = shortcutModuleId
                                     val type = selectedShortcutType
                                     if (!moduleId.isNullOrBlank() && type != null) {
-                                        deleteModuleShortcut(context, moduleId, type)
+                                        deleteModuleShortcut(ctx, moduleId, type)
                                     }
                                     showShortcutDialog.value = false
                                 },
@@ -758,9 +758,9 @@ fun ModuleList(
                                     return@SettingsJumpPageWidget
                                 }
                                 val url = shortcut.buildShortcutUri(currentModuleId, type, settings.intentToken).toString()
-                                val clipboard = appContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                                val clipboard = ctx.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                                 clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
-                                Toast.makeText(context, moduleShortcutSchemeCopied, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(ctx, moduleShortcutSchemeCopied, Toast.LENGTH_SHORT).show()
                             },
                         )
                     }
@@ -785,7 +785,7 @@ fun ModuleList(
                             val type = selectedShortcutType
                             if (!moduleId.isNullOrBlank() && textFieldState.text.isNotBlank() && type != null) {
                                 createModuleShortcut(
-                                    context = context,
+                                    ctx = ctx,
                                     moduleId = moduleId,
                                     name = textFieldState.text.toString(),
                                     iconUri = shortcutIconUri,

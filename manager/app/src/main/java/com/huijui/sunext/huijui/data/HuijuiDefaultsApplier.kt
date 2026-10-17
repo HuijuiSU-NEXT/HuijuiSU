@@ -23,9 +23,9 @@ object HuijuiDefaultsApplier {
     /**
      * 检查并应用默认规则。幂等操作，多次调用不会重复添加。
      */
-    suspend fun applyIfNeeded(appContext: Context) = withContext(Dispatchers.IO) {
+    suspend fun applyIfNeeded(ctx: Context) = withContext(Dispatchers.IO) {
         try {
-            val prefs = appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+            val prefs = ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             val appliedVersion = prefs.getInt(KEY_APPLIED_VERSION, 0)
 
             if (appliedVersion >= HuijuiHiddenDefaults.DEFAULTS_VERSION) {
@@ -97,12 +97,12 @@ object HuijuiDefaultsApplier {
     /**
      * 强制重新应用（用户主动触发时调用）。
      */
-    suspend fun forceReapply(appContext: Context) = withContext(Dispatchers.IO) {
-        appContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    suspend fun forceReapply(ctx: Context) = withContext(Dispatchers.IO) {
+        ctx.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
             .edit()
             .putInt(KEY_APPLIED_VERSION, 0)
             .apply()
-        applyIfNeeded(context)
+        applyIfNeeded(ctx)
     }
 
     private fun isRootAvailable(): Boolean = try {

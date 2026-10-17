@@ -152,7 +152,7 @@ fun ThemeSettingsScreen(
     // 顶部滚动行为
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState)
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     // 创建设置状态管理器
     val settingsState by settingsViewModel.uiState.collectAsStateWithLifecycle()
@@ -184,7 +184,7 @@ fun ThemeSettingsScreen(
             }
         } else if (result.resultCode == UCrop.RESULT_ERROR) {
             Toast.makeText(
-                context,
+                ctx,
                 backgroundCropFailed,
                 Toast.LENGTH_SHORT,
             ).show()
@@ -206,9 +206,9 @@ fun ThemeSettingsScreen(
     }
 
     val launchInAppCrop = { sourceUri: Uri ->
-        val outputUri = createBackgroundCropOutputUri(context, "background_crop_ucrop")
-        val (screenWidth, screenHeight) = appContext.backgroundCropSize()
-        val intent = Intent(context, BackgroundCropActivity::class.java).apply {
+        val outputUri = createBackgroundCropOutputUri(ctx, "background_crop_ucrop")
+        val (screenWidth, screenHeight) = ctx.backgroundCropSize()
+        val intent = Intent(ctx, BackgroundCropActivity::class.java).apply {
             putExtra(UCrop.EXTRA_INPUT_URI, sourceUri)
             putExtra(UCrop.EXTRA_OUTPUT_URI, outputUri)
             putExtra(UCrop.EXTRA_ASPECT_RATIO_X, screenWidth.toFloat())
@@ -223,14 +223,14 @@ fun ThemeSettingsScreen(
     }
 
     val launchExternalCrop = { sourceUri: Uri ->
-        val uri = createBackgroundCropOutputUri(context, "background_crop_external")
-        appContext.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
-            appContext.contentResolver.openOutputStream(uri)?.use { outputStream ->
+        val uri = createBackgroundCropOutputUri(ctx, "background_crop_external")
+        ctx.contentResolver.openInputStream(sourceUri)?.use { inputStream ->
+            ctx.contentResolver.openOutputStream(uri)?.use { outputStream ->
                 inputStream.copyTo(outputStream)
             }
         }
 
-        val (screenWidth, screenHeight) = appContext.backgroundCropSize()
+        val (screenWidth, screenHeight) = ctx.backgroundCropSize()
         val intent = Intent("com.android.camera.action.CROP").apply {
             setDataAndType(uri, "image/*")
             addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -251,7 +251,7 @@ fun ThemeSettingsScreen(
             Log.e("ThemeSettings", "External Crop failed, fallback to in-app crop", t)
             pendingExternalCropOutputUri = null
             Toast.makeText(
-                context,
+                ctx,
                 externalCropUnavailable,
                 Toast.LENGTH_SHORT,
             ).show()
@@ -465,8 +465,8 @@ private fun Context.backgroundCropSize(): Pair<Int, Int> {
     return displayMetrics.widthPixels to displayMetrics.heightPixels
 }
 
-private fun createBackgroundCropOutputUri(appContext: Context, prefix: String): Uri {
-    val outputFile = File(appContext.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
+private fun createBackgroundCropOutputUri(ctx: Context, prefix: String): Uri {
+    val outputFile = File(ctx.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
         parentFile?.mkdirs()
         delete()
         createNewFile()
@@ -474,8 +474,8 @@ private fun createBackgroundCropOutputUri(appContext: Context, prefix: String): 
     }
 
     return FileProvider.getUriForFile(
-        context,
-        "${appContext.packageName}.fileprovider",
+        ctx,
+        "${ctx.packageName}.fileprovider",
         outputFile,
     )
 }

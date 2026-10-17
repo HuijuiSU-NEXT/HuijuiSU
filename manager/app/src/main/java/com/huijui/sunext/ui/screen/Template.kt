@@ -103,8 +103,8 @@ fun AppProfileTemplateScreen() {
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     val navigator = LocalNavigator.current
-    val appContext = LocalContext.current
-    val clipboardManager = appContext.getSystemService<ClipboardManager>()
+    val ctx = LocalContext.current
+    val clipboardManager = ctx.getSystemService<ClipboardManager>()
     val appProfileTemplateImportEmpty =
         stringResource(R.string.app_profile_template_import_empty)
     val appProfileTemplateImportSuccess =
@@ -117,7 +117,7 @@ fun AppProfileTemplateScreen() {
             when (event) {
                 TemplateUiEvent.ImportCompleted -> {
                     Toast.makeText(
-                        context,
+                        ctx,
                         appProfileTemplateImportSuccess,
                         Toast.LENGTH_SHORT,
                     ).show()
@@ -130,14 +130,14 @@ fun AppProfileTemplateScreen() {
 
                 TemplateUiEvent.ExportEmpty -> {
                     Toast.makeText(
-                        context,
+                        ctx,
                         appProfileTemplateExportEmpty,
                         Toast.LENGTH_SHORT,
                     ).show()
                 }
 
                 is TemplateUiEvent.Error -> if (event.message.isNotBlank()) {
-                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, event.message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -170,7 +170,7 @@ fun AppProfileTemplateScreen() {
                         clipboardManager?.primaryClip?.getItemAt(0)?.text?.toString()
                     if (clipboardText.isNullOrEmpty()) {
                         Toast.makeText(
-                            context,
+                            ctx,
                             appProfileTemplateImportEmpty,
                             Toast.LENGTH_SHORT,
                         ).show()
@@ -318,7 +318,7 @@ private fun TemplateItem(
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
                 LabelText(
-                    label = template.context,
+                    label = template.ctx,
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                 )
                 if (template.local) {

@@ -20,18 +20,18 @@ class ModuleUtils {
      * 1. Attempts to read the `name` field from `module.prop` file
      * 2. Falls back to the ZIP file name
      *
-     * @param context Context used to access the [ContentResolver] and fallback string
+     * @param ctx Context used to access the [ContentResolver] and fallback string
      * @param uri Uri pointing to the module ZIP file
      * @return The extracted module name, or a fallback name if extraction fails
      */
-    fun extractModuleName(appContext: Context, uri: Uri): String {
+    fun extractModuleName(ctx: Context, uri: Uri): String {
         if (uri == Uri.EMPTY) {
             Log.e(TAG, "The supplied URI is empty")
-            return appContext.getString(R.string.unknown_module)
+            return ctx.getString(R.string.unknown_module)
         }
 
         try {
-            val name = withInstallArchive(context, uri) { zip ->
+            val name = withInstallArchive(ctx, uri) { zip ->
                 val entry = zip.getEntry("module.prop") ?: return@withInstallArchive null
                 val prop = Properties()
                 zip.getInputStream(entry).use { prop.load(it) }
@@ -55,7 +55,7 @@ class ModuleUtils {
                 "",
             )
             ?.trim()
-            ?: appContext.getString(R.string.unknown_module)
+            ?: ctx.getString(R.string.unknown_module)
 
         return fallback
     }
@@ -65,15 +65,15 @@ class ModuleUtils {
      *
      * This method attempts to open an InputStream from the Uri.
      *
-     * @param context Context used to access the [ContentResolver]
+     * @param ctx Context used to access the [ContentResolver]
      * @param uri The Uri to be checked
      * @return `true` if the Uri can be opened, `false` otherwise
      */
-    fun isUriAccessible(appContext: Context, uri: Uri): Boolean {
+    fun isUriAccessible(ctx: Context, uri: Uri): Boolean {
         if (uri == Uri.EMPTY) return false
 
         return try {
-            appContext.contentResolver.openInputStream(uri)?.use {} != null
+            ctx.contentResolver.openInputStream(uri)?.use {} != null
         } catch (e: Exception) {
             Log.e(TAG, "URI is inaccessible: $uri", e)
             false
@@ -85,13 +85,13 @@ class ModuleUtils {
      *
      * This allows the app to retain access to the Uri across device reboots.
      *
-     * @param context Context used to access the [ContentResolver]
+     * @param ctx Context used to access the [ContentResolver]
      * @param uri The Uri for which persistable permission is requested
      */
-    fun takePersistableUriPermission(appContext: Context, uri: Uri) {
+    fun takePersistableUriPermission(ctx: Context, uri: Uri) {
         try {
             val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-            appContext.contentResolver.takePersistableUriPermission(uri, flags)
+            ctx.contentResolver.takePersistableUriPermission(uri, flags)
             Log.d(TAG, "Persistent permissions for URIs have been obtained: $uri")
         } catch (e: Exception) {
             Log.e(TAG, "Unable to get persistent permissions on URIs: $uri, Error: ${e.message}")
@@ -103,14 +103,14 @@ class ModuleUtils {
      *
      * This method read the `id` field from `module.prop` file
      *
-     * @param context Context used to access the [ContentResolver]
+     * @param ctx Context used to access the [ContentResolver]
      * @param uri Uri pointing to the module ZIP file
      * @return The module ID if found, or `null` if extraction fails
      */
-    fun extractModuleId(appContext: Context, uri: Uri): String? {
+    fun extractModuleId(ctx: Context, uri: Uri): String? {
         if (uri == Uri.EMPTY) return null
 
-        return withInstallArchive(context, uri) { zip ->
+        return withInstallArchive(ctx, uri) { zip ->
             val entry = zip.getEntry("module.prop") ?: return@withInstallArchive null
             val prop = Properties()
             zip.getInputStream(entry).use { prop.load(it) }

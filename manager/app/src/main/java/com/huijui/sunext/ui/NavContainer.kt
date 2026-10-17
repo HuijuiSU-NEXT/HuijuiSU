@@ -112,7 +112,7 @@ fun NavContainer(
     val themeConfig: ThemeConfig = koinInject()
     val backgroundRenderState = LocalBackgroundRenderState.current
     val activity = LocalActivity.current as MainActivity
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
 
     val settings by settingsViewModel.uiState.collectAsStateWithLifecycle()
     val systemDensity = LocalDensity.current
@@ -153,7 +153,7 @@ fun NavContainer(
 
     lateinit var permissionRequestHandler: ManagedActivityResultLauncher<Array<String>, Map<String, @JvmSuppressWildcards Boolean>>
 
-    val permissionRequestInterface = remember(activity, appContext) {
+    val permissionRequestInterface = remember(activity, ctx) {
         object : PermissionRequestInterface {
             private val mutex = Mutex()
             private var currentCallback: ((Map<String, @JvmSuppressWildcards Boolean>) -> Unit)? =
@@ -183,7 +183,7 @@ fun NavContainer(
                                 )
                             ) {
                                 Toast.makeText(
-                                    context,
+                                    ctx,
                                     requestDescription,
                                     Toast.LENGTH_SHORT,
                                 ).show()

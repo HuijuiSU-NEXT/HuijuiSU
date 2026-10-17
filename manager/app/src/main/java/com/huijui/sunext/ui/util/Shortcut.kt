@@ -46,15 +46,15 @@ class Shortcut(
     }
 
     fun createModuleActionShortcut(
-        appContext: Context,
+        ctx: Context,
         moduleId: String,
         name: String,
         iconUri: String?,
         intentToken: String,
     ) {
         val usingAltIcon = settings.getBoolean("use_alt_icon", false)
-        val mainActivity = ComponentName(context, MainActivity::class.java.name)
-        val mainActivityAlias = ComponentName(context, "${MainActivity::class.java.name}Alias")
+        val mainActivity = ComponentName(ctx, MainActivity::class.java.name)
+        val mainActivityAlias = ComponentName(ctx, "${MainActivity::class.java.name}Alias")
 
         val shortcutId = "module_action_$moduleId"
         val shortcutIntent = Intent().apply {
@@ -64,7 +64,7 @@ class Shortcut(
             addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
         createModuleShortcut(
-            context = context,
+            ctx = ctx,
             moduleId = moduleId,
             name = name,
             iconUri = iconUri,
@@ -75,20 +75,20 @@ class Shortcut(
     }
 
     fun createModuleWebUiShortcut(
-        appContext: Context,
+        ctx: Context,
         moduleId: String,
         name: String,
         iconUri: String?,
         intentToken: String,
     ) {
         val shortcutId = "module_webui_$moduleId"
-        val shortcutIntent = Intent(context, MainActivity::class.java).apply {
+        val shortcutIntent = Intent(ctx, MainActivity::class.java).apply {
             action = Intent.ACTION_VIEW
             data = buildShortcutUri(moduleId, ShortcutType.WebUI, intentToken)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
         createModuleShortcut(
-            context = context,
+            ctx = ctx,
             moduleId = moduleId,
             name = name,
             iconUri = iconUri,
@@ -99,7 +99,7 @@ class Shortcut(
     }
 
     private fun createModuleShortcut(
-        appContext: Context,
+        ctx: Context,
         moduleId: String,
         name: String,
         iconUri: String?,
@@ -107,13 +107,13 @@ class Shortcut(
         shortcutIntent: Intent,
         logPrefix: String,
     ) {
-        val hasPinned = hasPinnedShortcut(context, shortcutId)
+        val hasPinned = hasPinnedShortcut(ctx, shortcutId)
         Log.d(TAG, "$logPrefix: shortcutId=$shortcutId, hasPinned=$hasPinned")
 
-        val iconCompat = createShortcutIcon(context, iconUri)
-        val finalIcon = iconCompat ?: IconCompat.createWithResource(context, R.mipmap.ic_launcher)
+        val iconCompat = createShortcutIcon(ctx, iconUri)
+        val finalIcon = iconCompat ?: IconCompat.createWithResource(ctx, R.mipmap.ic_launcher)
 
-        val shortcut = ShortcutInfoCompat.Builder(context, shortcutId)
+        val shortcut = ShortcutInfoCompat.Builder(ctx, shortcutId)
             .setShortLabel(name)
             .setIntent(shortcutIntent)
             .setIcon(finalIcon)
@@ -121,40 +121,40 @@ class Shortcut(
 
         try {
             Log.d(TAG, "$logPrefix: pushDynamicShortcut() called for moduleId=$moduleId")
-            ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+            ShortcutManagerCompat.pushDynamicShortcut(ctx, shortcut)
         } catch (t: Throwable) {
             Log.w(TAG, "$logPrefix: pushDynamicShortcut() threw exception for moduleId=$moduleId: ${t.message}", t)
         }
 
         if (hasPinned) {
             Log.d(TAG, "$logPrefix: detected existing pinned shortcut, updating only")
-            Toast.makeText(context, appContext.getString(R.string.module_shortcut_updated), Toast.LENGTH_SHORT).show()
+            Toast.makeText(ctx, ctx.getString(R.string.module_shortcut_updated), Toast.LENGTH_SHORT).show()
             return
         }
 
-        val initialState = getShortcutPermissionState(context)
+        val initialState = getShortcutPermissionState(ctx)
         Log.d(TAG, "$logPrefix: initial permission state=$initialState")
         if ((isMiui() || isHyperOS()) && initialState != ShortcutPermissionState.Granted) {
             Log.d(TAG, "$logPrefix: device is Xiaomi, trying to grant via root shell")
-            val rootSuccess = tryGrantMiuiShortcutPermissionByRoot(context)
+            val rootSuccess = tryGrantMiuiShortcutPermissionByRoot(ctx)
             Log.d(TAG, "$logPrefix: root grant attempt success=$rootSuccess")
-            val afterState = getShortcutPermissionState(context)
+            val afterState = getShortcutPermissionState(ctx)
             Log.d(TAG, "$logPrefix: state after root attempt=$afterState")
             if (afterState != ShortcutPermissionState.Granted) {
                 Log.d(TAG, "$logPrefix: still not Granted after root, showing hint")
-                showShortcutPermissionHint(context)
+                showShortcutPermissionHint(ctx)
                 return
             }
         } else if (initialState == ShortcutPermissionState.Denied || initialState == ShortcutPermissionState.Ask) {
             Log.d(TAG, "$logPrefix: permission not granted (state=$initialState), showing hint first")
-            showShortcutPermissionHint(context)
+            showShortcutPermissionHint(ctx)
             return
         }
-        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(context)) {
+        if (!ShortcutManagerCompat.isRequestPinShortcutSupported(ctx)) {
             Log.w(TAG, "$logPrefix: requestPinShortcut not supported on this launcher")
             Toast.makeText(
-                context,
-                appContext.getString(R.string.module_shortcut_not_supported),
+                ctx,
+                ctx.getString(R.string.module_shortcut_not_supported),
                 Toast.LENGTH_LONG,
             ).show()
             return
@@ -162,7 +162,7 @@ class Shortcut(
 
         val pinned = try {
             Log.d(TAG, "$logPrefix: requestPinShortcut() called for moduleId=$moduleId")
-            val result = ShortcutManagerCompat.requestPinShortcut(context, shortcut, null)
+            val result = ShortcutManagerCompat.requestPinShortcut(ctx, shortcut, null)
             Log.d(TAG, "$logPrefix: requestPinShortcut() result=$result")
             result
         } catch (t: Throwable) {
@@ -173,35 +173,35 @@ class Shortcut(
         if (pinned) {
             Log.d(TAG, "$logPrefix: pinned shortcut created successfully for moduleId=$moduleId")
             Toast.makeText(
-                context,
-                appContext.getString(R.string.module_shortcut_created),
+                ctx,
+                ctx.getString(R.string.module_shortcut_created),
                 Toast.LENGTH_SHORT,
             ).show()
         } else {
             Log.w(TAG, "$logPrefix: pinned shortcut not created, showing permission hint for moduleId=$moduleId")
-            showShortcutPermissionHint(context)
+            showShortcutPermissionHint(ctx)
         }
     }
 
-    fun hasModuleActionShortcut(appContext: Context, moduleId: String): Boolean {
+    fun hasModuleActionShortcut(ctx: Context, moduleId: String): Boolean {
         val id = "module_action_$moduleId"
-        return hasPinnedShortcut(context, id)
+        return hasPinnedShortcut(ctx, id)
     }
 
-    fun hasModuleWebUiShortcut(appContext: Context, moduleId: String): Boolean {
+    fun hasModuleWebUiShortcut(ctx: Context, moduleId: String): Boolean {
         val id = "module_webui_$moduleId"
-        return hasPinnedShortcut(context, id)
+        return hasPinnedShortcut(ctx, id)
     }
 
-    fun deleteModuleActionShortcut(appContext: Context, moduleId: String) {
-        deleteShortcut(context, "module_action_$moduleId")
+    fun deleteModuleActionShortcut(ctx: Context, moduleId: String) {
+        deleteShortcut(ctx, "module_action_$moduleId")
     }
 
-    fun deleteModuleWebUiShortcut(appContext: Context, moduleId: String) {
-        deleteShortcut(context, "module_webui_$moduleId")
+    fun deleteModuleWebUiShortcut(ctx: Context, moduleId: String) {
+        deleteShortcut(ctx, "module_webui_$moduleId")
     }
 
-    fun loadShortcutBitmap(appContext: Context, iconUri: String?): Bitmap? {
+    fun loadShortcutBitmap(ctx: Context, iconUri: String?): Bitmap? {
         if (iconUri.isNullOrBlank()) {
             return null
         }
@@ -218,7 +218,7 @@ class Shortcut(
                     null
                 }
             } else {
-                appContext.contentResolver.openInputStream(uri)?.use { input ->
+                ctx.contentResolver.openInputStream(uri)?.use { input ->
                     BitmapFactory.decodeStream(input)
                 }
             }
@@ -260,14 +260,14 @@ class Shortcut(
         }
     }
 
-    private fun createShortcutIcon(appContext: Context, iconUri: String?): IconCompat? {
-        val bitmap = loadShortcutBitmap(context, iconUri) ?: return null
+    private fun createShortcutIcon(ctx: Context, iconUri: String?): IconCompat? {
+        val bitmap = loadShortcutBitmap(ctx, iconUri) ?: return null
         return IconCompat.createWithBitmap(bitmap)
     }
 
-    private fun hasPinnedShortcut(appContext: Context, id: String): Boolean = try {
+    private fun hasPinnedShortcut(ctx: Context, id: String): Boolean = try {
         val shortcuts = ShortcutManagerCompat.getShortcuts(
-            context,
+            ctx,
             ShortcutManagerCompat.FLAG_MATCH_PINNED,
         )
         val exists = shortcuts.any { it.id == id && it.isEnabled }
@@ -278,15 +278,15 @@ class Shortcut(
         false
     }
 
-    private fun deleteShortcut(appContext: Context, id: String) {
+    private fun deleteShortcut(ctx: Context, id: String) {
         try {
-            ShortcutManagerCompat.removeDynamicShortcuts(context, listOf(id))
+            ShortcutManagerCompat.removeDynamicShortcuts(ctx, listOf(id))
             Log.d(TAG, "deleteShortcut: removed dynamic shortcut id=$id")
         } catch (t: Throwable) {
             Log.w(TAG, "deleteShortcut: removeDynamicShortcuts exception for id=$id: ${t.message}", t)
         }
         try {
-            ShortcutManagerCompat.disableShortcuts(context, listOf(id), "")
+            ShortcutManagerCompat.disableShortcuts(ctx, listOf(id), "")
             Log.d(TAG, "deleteShortcut: disabled shortcut id=$id")
         } catch (t: Throwable) {
             Log.w(TAG, "deleteShortcut: disableShortcuts exception for id=$id: ${t.message}", t)
@@ -300,12 +300,12 @@ class Shortcut(
         Unknown,
     }
 
-    private fun checkMiuiShortcutPermission(appContext: Context): ShortcutPermissionState {
+    private fun checkMiuiShortcutPermission(ctx: Context): ShortcutPermissionState {
         return try {
-            val appOps = appContext.getSystemService(Context.APP_OPS_SERVICE) as? AppOpsManager
+            val appOps = ctx.getSystemService(Context.APP_OPS_SERVICE) as? AppOpsManager
                 ?: return ShortcutPermissionState.Unknown
-            val pkg = appContext.applicationContext.packageName
-            val uid = appContext.applicationInfo.uid
+            val pkg = ctx.applicationContext.packageName
+            val uid = ctx.applicationInfo.uid
             Log.d(TAG, "checkMiuiShortcutPermission: pkg=$pkg, uid=$uid")
             val appOpsClass = Class.forName(AppOpsManager::class.java.name)
             val method = appOpsClass.getDeclaredMethod(
@@ -334,8 +334,8 @@ class Shortcut(
         }
     }
 
-    private fun checkOppoShortcutPermission(appContext: Context): ShortcutPermissionState {
-        val resolver = appContext.contentResolver ?: run {
+    private fun checkOppoShortcutPermission(ctx: Context): ShortcutPermissionState {
+        val resolver = ctx.contentResolver ?: run {
             Log.w(TAG, "checkOppoShortcutPermission: contentResolver is null")
             return ShortcutPermissionState.Unknown
         }
@@ -345,7 +345,7 @@ class Shortcut(
             return ShortcutPermissionState.Unknown
         }
         cursor.use { c ->
-            val pkg = appContext.applicationContext.packageName
+            val pkg = ctx.applicationContext.packageName
             val index = c.getColumnIndex("value")
             if (index == -1) {
                 Log.w(TAG, "checkOppoShortcutPermission: 'value' column not found")
@@ -370,42 +370,42 @@ class Shortcut(
         return ShortcutPermissionState.Unknown
     }
 
-    private fun tryGrantMiuiShortcutPermissionByRoot(appContext: Context): Boolean {
-        val pkg = appContext.applicationContext.packageName
+    private fun tryGrantMiuiShortcutPermissionByRoot(ctx: Context): Boolean {
+        val pkg = ctx.applicationContext.packageName
         return shortcutRepository.grantShortcutPermission(pkg).also { success ->
             Log.d(TAG, "tryGrantMiuiShortcutPermissionByRoot: package=$pkg, success=$success")
         }
     }
 
-    private fun getShortcutPermissionState(appContext: Context): ShortcutPermissionState = when {
-        isMiui() || isHyperOS() -> checkMiuiShortcutPermission(context)
-        isColorOS() -> checkOppoShortcutPermission(context)
+    private fun getShortcutPermissionState(ctx: Context): ShortcutPermissionState = when {
+        isMiui() || isHyperOS() -> checkMiuiShortcutPermission(ctx)
+        isColorOS() -> checkOppoShortcutPermission(ctx)
         else -> ShortcutPermissionState.Unknown
     }
 
-    private fun showShortcutPermissionHint(appContext: Context) {
-        val state = getShortcutPermissionState(context)
+    private fun showShortcutPermissionHint(ctx: Context) {
+        val state = getShortcutPermissionState(ctx)
         val messageRes = when {
             isMiui() || isHyperOS() -> R.string.module_shortcut_permission_tip_xiaomi
             isColorOS() -> R.string.module_shortcut_permission_tip_oppo
             else -> R.string.module_shortcut_permission_tip_default
         }
         Log.d(TAG, "showShortcutPermissionHint: state=$state, messageRes=$messageRes")
-        Toast.makeText(context, appContext.getString(messageRes), Toast.LENGTH_LONG).show()
+        Toast.makeText(ctx, ctx.getString(messageRes), Toast.LENGTH_LONG).show()
         if (state != ShortcutPermissionState.Granted) {
             Log.d(TAG, "showShortcutPermissionHint: state is not Granted, opening app details settings")
-            openAppDetailsSettings(context)
+            openAppDetailsSettings(ctx)
         }
     }
 
-    private fun openAppDetailsSettings(appContext: Context) {
+    private fun openAppDetailsSettings(ctx: Context) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", appContext.packageName, null)
+            data = Uri.fromParts("package", ctx.packageName, null)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         try {
-            Log.d(TAG, "openAppDetailsSettings: launching settings for package=${appContext.packageName}")
-            appContext.startActivity(intent)
+            Log.d(TAG, "openAppDetailsSettings: launching settings for package=${ctx.packageName}")
+            ctx.startActivity(intent)
         } catch (t: Throwable) {
             Log.w(TAG, "openAppDetailsSettings: failed to launch settings: ${t.message}", t)
         }

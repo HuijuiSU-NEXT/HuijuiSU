@@ -79,7 +79,7 @@ class HorizonKernelState {
 }
 
 class HorizonKernelWorker(
-    private val appContext: Context,
+    private val ctx: Context,
     private val state: HorizonKernelState,
     private val ksuCliRepository: KsuCliRepository,
     private val slot: String? = null,
@@ -89,20 +89,20 @@ class HorizonKernelWorker(
 
     override fun run() {
         state.startFlashing()
-        state.updateStep(appContext.getString(R.string.horizon_preparing))
+        state.updateStep(ctx.getString(R.string.horizon_preparing))
 
-        val zipFile = File(appContext.cacheDir, "anykernel3.zip")
+        val zipFile = File(ctx.cacheDir, "anykernel3.zip")
         try {
             if (!ksuCliRepository.rootAvailable()) {
-                state.setError(appContext.getString(R.string.root_required))
+                state.setError(ctx.getString(R.string.root_required))
                 return
             }
 
-            state.updateStep(appContext.getString(R.string.horizon_copying_files))
+            state.updateStep(ctx.getString(R.string.horizon_copying_files))
             state.updateProgress(0.2f)
             copyToCache(zipFile)
 
-            state.updateStep(appContext.getString(R.string.horizon_flashing))
+            state.updateStep(ctx.getString(R.string.horizon_flashing))
             state.updateProgress(0.7f)
             val succeeded = ksuCliRepository.flashAnyKernel(
                 zipFile = zipFile,
@@ -111,7 +111,7 @@ class HorizonKernelWorker(
                 onStderr = ::handleConsoleOutput,
             )
             if (!succeeded) {
-                state.setError(appContext.getString(R.string.flash_failed_message))
+                state.setError(ctx.getString(R.string.flash_failed_message))
                 return
             }
 
@@ -120,11 +120,11 @@ class HorizonKernelWorker(
                     Log.w(TAG, "Failed to refresh ksud after a successful kernel flash", error)
                 }
             }
-            state.updateStep(appContext.getString(R.string.horizon_flash_complete_status))
+            state.updateStep(ctx.getString(R.string.horizon_flash_complete_status))
             state.completeFlashing()
         } catch (error: Exception) {
             state.setError(
-                error.message ?: appContext.getString(R.string.horizon_unknown_error),
+                error.message ?: ctx.getString(R.string.horizon_unknown_error),
             )
         } finally {
             if (zipFile.exists()) {
@@ -136,16 +136,16 @@ class HorizonKernelWorker(
     private fun copyToCache(zipFile: File) {
         zipFile.delete()
         val source = uri
-            ?: throw IOException(appContext.getString(R.string.horizon_copy_failed))
-        val input = appContext.contentResolver.openInputStream(source)
-            ?: throw IOException(appContext.getString(R.string.horizon_copy_failed))
+            ?: throw IOException(ctx.getString(R.string.horizon_copy_failed))
+        val input = ctx.contentResolver.openInputStream(source)
+            ?: throw IOException(ctx.getString(R.string.horizon_copy_failed))
         input.use {
             zipFile.outputStream().use { output ->
                 it.copyTo(output)
             }
         }
         if (!zipFile.isFile) {
-            throw IOException(appContext.getString(R.string.horizon_copy_failed))
+            throw IOException(ctx.getString(R.string.horizon_copy_failed))
         }
     }
 

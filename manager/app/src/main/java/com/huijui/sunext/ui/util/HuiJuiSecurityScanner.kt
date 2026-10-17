@@ -62,15 +62,15 @@ object HuiJuiSecurityScanner {
     /**
      * 扫描模块 URI (安全防护)
      */
-    fun scanModule(context: android.content.Context, uri: android.net.Uri): Pair<Boolean, String> {
+    fun scanModule(ctx: android.content.Context, uri: android.net.Uri): Pair<Boolean, String> {
         var tempFile: java.io.File? = null
         return try {
             // 只检查 .zip 模块，防止把内核 img 误判
             if (!uri.lastPathSegment.orEmpty().endsWith(".zip", ignoreCase = true)) {
                 return Pair(true, "非 zip 模块，跳过扫描")
             }
-            tempFile = java.io.File.createTempFile("module_scan", ".zip", appContext.cacheDir)
-            appContext.contentResolver.openInputStream(uri)?.use { input ->
+            tempFile = java.io.File.createTempFile("module_scan", ".zip", ctx.cacheDir)
+            ctx.contentResolver.openInputStream(uri)?.use { input ->
                 tempFile.outputStream().use { output ->
                     input.copyTo(output)
                 }

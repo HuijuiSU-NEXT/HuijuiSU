@@ -382,7 +382,7 @@ fun OnlineModuleItem(
 ) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val navigator = LocalNavigator.current
     val coroutineScope = rememberCoroutineScope()
@@ -553,7 +553,7 @@ fun OnlineModuleItem(
                                     if (assets.size <= 1) {
                                         assets.firstOrNull()?.let { asset ->
                                             downloadAssetAndInstall(
-                                                context,
+                                                ctx,
                                                 permissionRequestInterface,
                                                 module,
                                                 asset,
@@ -590,7 +590,7 @@ fun OnlineModuleItem(
 }
 
 fun downloadAssetAndInstall(
-    appContext: Context,
+    ctx: Context,
     permissionRequestInterface: PermissionRequestInterface,
     module: CatalogModule,
     asset: ModuleReleaseAsset,
@@ -599,11 +599,11 @@ fun downloadAssetAndInstall(
     enqueueDownload: EnqueueDownloadUseCase,
     observeDownload: ObserveDownloadUseCase,
 ) {
-    val downloadingText = appContext.getText(R.string.module_downloading).toString()
+    val downloadingText = ctx.getText(R.string.module_downloading).toString()
     coroutineScope.launch {
         withContext(Dispatchers.IO) {
             download(
-                context = context,
+                ctx = ctx,
                 permissionRequestInterface = permissionRequestInterface,
                 url = asset.downloadUrl,
                 fileName = asset.name,
@@ -616,7 +616,7 @@ fun downloadAssetAndInstall(
                 },
                 onDownloading = {
                     launch(Dispatchers.Main) {
-                        Toast.makeText(context, downloadingText.format(module.moduleName), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(ctx, downloadingText.format(module.moduleName), Toast.LENGTH_SHORT).show()
                     }
                 },
             )
@@ -633,7 +633,7 @@ fun ChooseDialogContent(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val module = currentModuleForChooseDialog.value
     if (module == null || module.latestAsset == null) {
@@ -712,13 +712,13 @@ fun ChooseDialogContent(
                     TextButton(
                         onClick = {
                             if (selectedAsset == null) {
-                                Toast.makeText(context, R.string.assets_multiple_select_dialog_warning, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(ctx, R.string.assets_multiple_select_dialog_warning, Toast.LENGTH_SHORT).show()
                                 return@TextButton
                             }
                             selectedAsset?.let { selected ->
                                 dismiss()
                                 downloadAssetAndInstall(
-                                    context = context,
+                                    ctx = ctx,
                                     permissionRequestInterface = permissionRequestInterface,
                                     module = module,
                                     asset = selected,

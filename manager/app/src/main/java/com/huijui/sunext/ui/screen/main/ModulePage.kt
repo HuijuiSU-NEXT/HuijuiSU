@@ -189,7 +189,7 @@ fun ModulePage(bottomPadding: Dp) {
     val extractModuleName = koinInject<ExtractModuleNameUseCase>()
     val zipFileDetector = koinInject<ZipFileDetector>()
     val navigator = LocalNavigator.current
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val viewModel = koinViewModel<ModuleViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val homeState by koinViewModel<HomeViewModel>().uiState.collectAsStateWithLifecycle()
@@ -263,7 +263,7 @@ fun ModulePage(bottomPadding: Dp) {
                 }
                 selectedModules.forEach { it ->
                     val info =
-                        withContext(Dispatchers.IO) { zipFileDetector.parseModuleInfo(context, it) }
+                        withContext(Dispatchers.IO) { zipFileDetector.parseModuleInfo(ctx, it) }
                     zipFiles.add(info)
                 }
                 pendingZipFiles = zipFiles
@@ -283,7 +283,7 @@ fun ModulePage(bottomPadding: Dp) {
 
                     val info = withContext(Dispatchers.IO) {
                         zipFileDetector.parseModuleInfo(
-                            context,
+                            ctx,
                             uri,
                         )
                     }
@@ -466,8 +466,8 @@ fun ModulePage(bottomPadding: Dp) {
 
                         if (hasWebUi) {
                             try {
-                                appContext.startActivity(
-                                    Intent(context, WebUIActivity::class.java)
+                                ctx.startActivity(
+                                    Intent(ctx, WebUIActivity::class.java)
                                         .setData(
                                             Uri.Builder()
                                                 .scheme("kernelsu")
@@ -485,7 +485,7 @@ fun ModulePage(bottomPadding: Dp) {
                             return@ModuleList
                         }
                     },
-                    context = context,
+                    ctx = ctx,
                     snackBarHost = snackBarHost,
                     bottomPadding = bottomPadding + innerPadding.calculateBottomPadding(),
                     topPadding = innerPadding.calculateTopPadding(),

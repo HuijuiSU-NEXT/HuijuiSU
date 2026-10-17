@@ -86,7 +86,7 @@ fun TemplateEditorScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val template = state.template
     val autoSave = !isCreation && !readOnly
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val saveTemplateFailed = stringResource(id = R.string.app_profile_template_save_failed)
 
     val scrollBehavior =
@@ -103,7 +103,7 @@ fun TemplateEditorScreen(
                 -> navigator.setResult("template_edit", true)
 
                 is TemplateEditorUiEvent.Error -> Toast.makeText(
-                    context,
+                    ctx,
                     saveTemplateFailed,
                     Toast.LENGTH_SHORT,
                 ).show()
@@ -246,7 +246,7 @@ fun TemplateEditorScreen(
                                 gid = it.gid,
                                 groups = it.groups,
                                 capabilities = it.capabilities,
-                                context = it.context,
+                                ctx = it.ctx,
                                 namespace = it.namespace,
                                 rules = it.rules.split("\n"),
                                 flags = it.flags.toRootProfileFlags().map { flag -> flag.ordinal },
@@ -281,7 +281,7 @@ fun toAppProfile(templateInfo: ProfileTemplate): AppProfile {
         gid = templateInfo.gid,
         groups = templateInfo.groups,
         capabilities = templateInfo.capabilities,
-        context = templateInfo.context,
+        ctx = templateInfo.ctx,
         namespace = templateInfo.namespace,
         rules = templateInfo.rules.joinToString("\n").ifBlank { "" },
         flags = mappedFlags.toRawFlags(),

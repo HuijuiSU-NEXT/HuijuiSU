@@ -154,20 +154,20 @@ class BackgroundManager(
     }
 
     suspend fun saveAndApplyCustomBackground(
-        appContext: Context,
+        ctx: Context,
         uri: Uri,
     ): Boolean {
-        val appContext = appContext.applicationContext
+        val ctx = ctx.applicationContext
         return try {
             val finalUri = withContext(Dispatchers.IO) {
-                copyImageToInternalStorage(appContext, uri)
+                copyImageToInternalStorage(ctx, uri)
             } ?: return false
 
             saveBackgroundUri(finalUri)
             config.customBackgroundUri = finalUri
             cardConfig.updateBackground(true)
             withContext(Dispatchers.IO) {
-                clearBackgroundBlurCache(appContext)
+                clearBackgroundBlurCache(ctx)
             }
             config.backgroundImageLoaded = false
 
@@ -180,11 +180,11 @@ class BackgroundManager(
         }
     }
 
-    fun clearCustomBackground(appContext: Context) {
+    fun clearCustomBackground(ctx: Context) {
         saveBackgroundUri(null)
         config.customBackgroundUri = null
         cardConfig.updateBackground(false)
-        clearBackgroundBlurCache(appContext)
+        clearBackgroundBlurCache(ctx)
         config.backgroundImageLoaded = false
     }
 
@@ -211,20 +211,20 @@ class BackgroundManager(
         settings.putString("custom_background", uri?.toString())
     }
 
-    fun clearBackgroundBlurCache(appContext: Context) {
+    fun clearBackgroundBlurCache(ctx: Context) {
         runCatching {
-            backgroundBlurCacheFile(appContext).delete()
-            legacyBackgroundBlurCacheDir(appContext).deleteRecursively()
+            backgroundBlurCacheFile(ctx).delete()
+            legacyBackgroundBlurCacheDir(ctx).deleteRecursively()
         }.onFailure {
             Log.w(tag, "Failed to clear background blur cache: ${it.message}")
         }
     }
 
-    private fun copyImageToInternalStorage(appContext: Context, uri: Uri): Uri? {
+    private fun copyImageToInternalStorage(ctx: Context, uri: Uri): Uri? {
         return try {
-            val inputStream = appContext.contentResolver.openInputStream(uri) ?: return null
+            val inputStream = ctx.contentResolver.openInputStream(uri) ?: return null
             val fileName = "custom_background.jpg"
-            val file = File(appContext.filesDir, fileName)
+            val file = File(ctx.filesDir, fileName)
 
             FileOutputStream(file).use { outputStream ->
                 val buffer = ByteArray(8 * 1024)
@@ -259,12 +259,12 @@ fun KernelSUTheme(
     val backgroundRenderState = remember { BackgroundRenderState() }
     val resolvedDarkTheme = darkTheme ?: isInDarkTheme(themeConfig.forceDarkMode)
     val resolvedDynamicColor = dynamicColor ?: themeConfig.useDynamicColor
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val systemIsDark = isSystemInDarkTheme()
 
     // 初始化主题
     ThemeInitializer(
-        context = context,
+        ctx = ctx,
         systemIsDark = systemIsDark,
         themeConfig = themeConfig,
         themeRepository = themeRepository,
@@ -315,7 +315,7 @@ fun KernelSUTheme(
 
 @Composable
 private fun ThemeInitializer(
-    appContext: Context,
+    ctx: Context,
     systemIsDark: Boolean,
     themeConfig: ThemeConfig,
     themeRepository: ThemeRepository,
@@ -541,8 +541,8 @@ private fun createColorScheme(
 
 @Composable
 private fun SystemBarController(darkMode: Boolean) {
-    val appContext = LocalContext.current
-    val activity = context as ComponentActivity
+    val ctx = LocalContext.current
+    val activity = ctx as ComponentActivity
 
     SideEffect {
         activity.enableEdgeToEdge(

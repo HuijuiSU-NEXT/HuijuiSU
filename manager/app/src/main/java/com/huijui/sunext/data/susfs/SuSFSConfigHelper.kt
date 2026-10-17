@@ -274,7 +274,7 @@ class SuSFSConfigHelper(
 
     suspend fun showEnabledFeatures(): String = loadStatusInfo().enabledFeatures
 
-    suspend fun exportConfigToUri(appContext: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
+    suspend fun exportConfigToUri(ctx: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
         try {
             val result = executeSusfsCommand("config backup")
             if (!result.success || result.stdout.isBlank()) {
@@ -282,7 +282,7 @@ class SuSFSConfigHelper(
                 return@withContext false
             }
 
-            appContext.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { writer ->
+            ctx.contentResolver.openOutputStream(uri)?.bufferedWriter()?.use { writer ->
                 writer.write(result.stdout)
                 writer.newLine()
             } ?: return@withContext false
@@ -294,16 +294,16 @@ class SuSFSConfigHelper(
         }
     }
 
-    suspend fun importConfigFromUri(appContext: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
-        val tempFile = File.createTempFile("susfs_restore", ".json", appContext.cacheDir)
+    suspend fun importConfigFromUri(ctx: Context, uri: Uri): Boolean = withContext(Dispatchers.IO) {
+        val tempFile = File.createTempFile("susfs_restore", ".json", ctx.cacheDir)
         try {
-            val fileName = DocumentFile.fromSingleUri(context, uri)?.name.orEmpty()
+            val fileName = DocumentFile.fromSingleUri(ctx, uri)?.name.orEmpty()
             if (!fileName.endsWith(".json", ignoreCase = true)) {
                 Log.e(TAG, "Rejected SUSFS backup with invalid extension: $fileName")
                 return@withContext false
             }
 
-            appContext.contentResolver.openInputStream(uri)?.use { input ->
+            ctx.contentResolver.openInputStream(uri)?.use { input ->
                 tempFile.outputStream().use { output -> input.copyTo(output) }
             } ?: return@withContext false
 

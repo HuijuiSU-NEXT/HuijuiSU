@@ -13,14 +13,14 @@ import java.time.format.DateTimeFormatter
 import com.huijui.sunext.Natives
 import com.huijui.sunext.data.shell.KsuCliRepository
 
-fun getManagerVersion(appContext: Context): Pair<String, Long> {
-    val packageInfo = appContext.packageManager.getPackageInfo(appContext.packageName, 0)!!
+fun getManagerVersion(ctx: Context): Pair<String, Long> {
+    val packageInfo = ctx.packageManager.getPackageInfo(ctx.packageName, 0)!!
     val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
     return Pair(packageInfo.versionName!!, versionCode)
 }
 
-fun getBugreportFile(appContext: Context, ksuCliRepository: KsuCliRepository): File {
-    val bugreportDir = File(appContext.cacheDir, "bugreport")
+fun getBugreportFile(ctx: Context, ksuCliRepository: KsuCliRepository): File {
+    val bugreportDir = File(ctx.cacheDir, "bugreport")
     bugreportDir.mkdirs()
 
     val processFile = File(bugreportDir, "process.txt")
@@ -88,7 +88,7 @@ fun getBugreportFile(appContext: Context, ksuCliRepository: KsuCliRepository): F
         pw.println("PREVIEW_SDK: " + Build.VERSION.PREVIEW_SDK_INT)
         pw.println("FINGERPRINT: " + Build.FINGERPRINT)
         pw.println("DEVICE: " + Build.DEVICE)
-        pw.println("Manager: " + getManagerVersion(context))
+        pw.println("Manager: " + getManagerVersion(ctx))
         pw.println("SELinux: $selinux")
 
         val uname = Os.uname()
@@ -115,7 +115,7 @@ fun getBugreportFile(appContext: Context, ksuCliRepository: KsuCliRepository): F
     val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH_mm")
     val current = LocalDateTime.now().format(formatter)
 
-    val targetFile = File(appContext.cacheDir, "KernelSU_bugreport_$current.tar.gz")
+    val targetFile = File(ctx.cacheDir, "KernelSU_bugreport_$current.tar.gz")
 
     shell.newJob().add("tar czf ${targetFile.absolutePath} -C ${bugreportDir.absolutePath} .").exec()
     shell.newJob().add("rm -rf ${bugreportDir.absolutePath}").exec()

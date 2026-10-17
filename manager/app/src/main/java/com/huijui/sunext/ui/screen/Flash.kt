@@ -126,19 +126,19 @@ fun FlashScreen(flashIt: FlashIt) {
     val isModuleUriAccessible = koinInject<IsModuleUriAccessibleUseCase>()
     val checkFlashModuleMount = koinInject<CheckFlashModuleMountUseCase>()
     val executeFlashOperation = koinInject<ExecuteFlashOperationUseCase>()
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
 
     // 是否通过从外部启动的模块安装
     val isExternalInstall = remember {
         when (flashIt) {
             is FlashIt.FlashModule -> {
-                (context as? ComponentActivity)?.intent?.let { intent ->
+                (ctx as? ComponentActivity)?.intent?.let { intent ->
                     intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND
                 } ?: false
             }
 
             is FlashIt.FlashModules -> {
-                (context as? ComponentActivity)?.intent?.let { intent ->
+                (ctx as? ComponentActivity)?.intent?.let { intent ->
                     intent.action == Intent.ACTION_VIEW || intent.action == Intent.ACTION_SEND
                 } ?: false
             }
@@ -336,7 +336,7 @@ fun FlashScreen(flashIt: FlashIt) {
                 try {
                     val currentUri = flashIt.uris[flashIt.currentIndex]
                     val moduleName = getModuleNameFromUri(
-                        context,
+                        ctx,
                         currentUri,
                         extractModuleName,
                         isModuleUriAccessible,
@@ -428,7 +428,7 @@ fun FlashScreen(flashIt: FlashIt) {
 
         if (canGoBack) {
             if (isExternalInstall) {
-                (context as? ComponentActivity)?.finish()
+                (ctx as? ComponentActivity)?.finish()
             } else {
                 if (flashIt is FlashIt.FlashModules || flashIt is FlashIt.FlashModuleUpdate) {
                     viewModel.dispatch(ModuleUiAction.MarkNeedRefresh)
@@ -793,7 +793,7 @@ private fun TopBar(
 }
 
 suspend fun getModuleNameFromUri(
-    context: android.content.Context,
+    ctx: android.content.Context,
     uri: String,
     extractModuleName: ExtractModuleNameUseCase,
     isModuleUriAccessible: IsModuleUriAccessibleUseCase,
@@ -801,14 +801,14 @@ suspend fun getModuleNameFromUri(
     return withContext(Dispatchers.IO) {
         try {
             if (uri.isBlank()) {
-                return@withContext appContext.getString(R.string.unknown_module)
+                return@withContext ctx.getString(R.string.unknown_module)
             }
             if (!isModuleUriAccessible(uri)) {
-                return@withContext appContext.getString(R.string.unknown_module)
+                return@withContext ctx.getString(R.string.unknown_module)
             }
             extractModuleName(uri)
         } catch (_: Exception) {
-            appContext.getString(R.string.unknown_module)
+            ctx.getString(R.string.unknown_module)
         }
     }
 }

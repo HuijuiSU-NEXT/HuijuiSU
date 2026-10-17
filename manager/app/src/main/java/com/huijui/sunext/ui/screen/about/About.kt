@@ -80,7 +80,7 @@ import androidx.compose.material.icons.twotone.ContentCopy
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun AboutScreen() {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -202,7 +202,7 @@ fun AboutScreen() {
                             title = stringResource(R.string.join_telegram_group),
                             description = stringResource(R.string.join_telegram_group_detail),
                             onClick = {
-                                val ctx = context
+                                val ctx = ctx
                                 val qqGroupUin = "763278354"
                                 val scheme = "mqqapi://card/show_pslcard?src_type=internal&version=1&card_type=group&uin=$qqGroupUin"
                                 try {

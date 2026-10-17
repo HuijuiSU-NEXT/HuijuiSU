@@ -51,7 +51,7 @@ data class BackupProgress(
 
 @Composable
 fun HuijuiBackup(onDismiss: () -> Unit) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
     var running by remember { mutableStateOf(false) }
     var done by remember { mutableStateOf(false) }
@@ -65,7 +65,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
             done = false
             errorMsg = ""
             progress = emptyList()
-            val result = doBackupSuspend(appContext) { p ->
+            val result = doBackupSuspend(ctx) { p ->
                 withContext(Dispatchers.Main) { progress = p }
             }
             if (result.isSuccess) {
@@ -140,7 +140,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
 }
 
 private suspend fun doBackupSuspend(
-    appContext: Context,
+    ctx: Context,
     onProgress: suspend (List<BackupProgress>) -> Unit,
 ): Result<String> = withContext(Dispatchers.IO) {
     val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
@@ -188,7 +188,7 @@ private suspend fun doBackupSuspend(
     try {
         val snapshot = HuijuiModuleSnapshot.capture()
         android.util.Log.i("HuijuiBackup", "captured ${snapshot.modules.size} modules")
-        val ok = HuijuiModuleSnapshot.writeToFile(context, snapshot, dir)
+        val ok = HuijuiModuleSnapshot.writeToFile(ctx, snapshot, dir)
         items[items.lastIndex] = items.last().copy(
             status = if (ok) "成功" else "失败",
             size = "${snapshot.modules.size} 个模块",

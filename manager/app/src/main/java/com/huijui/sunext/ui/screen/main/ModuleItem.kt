@@ -187,8 +187,8 @@ fun ModuleItem(
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
-    val appContext = LocalContext.current
-    val clipboardManager = appContext.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+    val ctx = LocalContext.current
+    val clipboardManager = ctx.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
     val hapticFeedback = LocalHapticFeedback.current
     val scope = rememberCoroutineScope()
     var isEnabled by remember(module.dirId) { mutableStateOf(module.enabled) }
@@ -304,8 +304,8 @@ fun ModuleItem(
                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 
                                         Toast.makeText(
-                                            context,
-                                            appContext.getString(R.string.module_update_json_copied),
+                                            ctx,
+                                            ctx.getString(R.string.module_update_json_copied),
                                             Toast.LENGTH_SHORT,
                                         ).show()
                                     },

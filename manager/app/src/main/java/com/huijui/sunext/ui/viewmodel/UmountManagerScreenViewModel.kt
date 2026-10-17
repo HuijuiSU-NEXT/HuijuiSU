@@ -35,7 +35,7 @@ sealed interface UmountManagerUiEvent {
 }
 
 class UmountManagerScreenViewModel(
-    private val appContext: Context,
+    private val ctx: Context,
     observeState: ObserveUmountStateUseCase,
     private val refreshPaths: RefreshUmountPathsUseCase,
     private val addPath: AddUmountPathUseCase,
@@ -77,7 +77,7 @@ class UmountManagerScreenViewModel(
     ) {
         viewModelScope.launch {
             val message = if (command().isSuccess) successMessage else R.string.operation_failed
-            mutableEvents.emit(UmountManagerUiEvent.Message(appContext.getString(message)))
+            mutableEvents.emit(UmountManagerUiEvent.Message(ctx.getString(message)))
         }
     }
 }

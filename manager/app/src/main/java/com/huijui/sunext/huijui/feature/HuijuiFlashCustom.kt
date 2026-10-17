@@ -56,7 +56,7 @@ import com.huijui.sunext.huijui.ui.HuijuiDialogHeader
  */
 @Composable
 fun HuijuiFlashCustom(onDismiss: () -> Unit) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val scope = rememberCoroutineScope()
 
     var selectedUri by remember { mutableStateOf<Uri?>(null) }
@@ -89,8 +89,8 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
             scope.launch(Dispatchers.IO) {
                 try {
                     selectedName = uri.lastPathSegment?.substringAfterLast('/') ?: "boot.img"
-                    val tmp = File(appContext.cacheDir, "flash_custom_tmp.img")
-                    appContext.contentResolver.openInputStream(uri)?.use { input ->
+                    val tmp = File(ctx.cacheDir, "flash_custom_tmp.img")
+                    ctx.contentResolver.openInputStream(uri)?.use { input ->
                         tmp.outputStream().use { out -> input.copyTo(out) }
                     }
                     selectedSize = tmp.length()
@@ -141,11 +141,11 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
                     running = true
                     scope.launch {
                         if (fileType == "lkm") {
-                            doLkmInstall(context, selectedUri!!) { line ->
+                            doLkmInstall(ctx, selectedUri!!) { line ->
                                 withContext(Dispatchers.Main) { log += line + "\n" }
                             }
                         } else {
-                            doFlash(context, selectedUri!!, initBootUri, currentSlot) { line ->
+                            doFlash(ctx, selectedUri!!, initBootUri, currentSlot) { line ->
                                 withContext(Dispatchers.Main) { log += line + "\n" }
                             }
                         }
@@ -290,14 +290,14 @@ private suspend fun readCurrentSlot(): String = withContext(Dispatchers.IO) {
 }
 
 private suspend fun doFlash(
-    appContext: Context,
+    ctx: Context,
     uri: Uri,
     initBootUri: Uri?,
     slot: String,
     onLog: suspend (String) -> Unit,
 ): Result<Unit> = withContext(Dispatchers.IO) {
     try {
-        val tmp = File(appContext.cacheDir, "flash_custom_tmp.img")
+        val tmp = File(ctx.cacheDir, "flash_custom_tmp.img")
         if (!tmp.exists()) {
             onLog("源文件不存在")
             return@withContext Result.failure(Exception("源文件不存在"))
@@ -338,9 +338,9 @@ private suspend fun doFlash(
 
             if (initBootUri != null) {
                 onLog("刷入原厂 init_boot（清除 LKM 残留）...")
-                val initTmp = File(appContext.cacheDir, "flash_init_boot_tmp.img")
+                val initTmp = File(ctx.cacheDir, "flash_init_boot_tmp.img")
                 try {
-                    appContext.contentResolver.openInputStream(initBootUri)?.use { input ->
+                    ctx.contentResolver.openInputStream(initBootUri)?.use { input ->
                         initTmp.outputStream().use { out -> input.copyTo(out) }
                     }
                 } catch (t: Throwable) {
@@ -397,15 +397,15 @@ private fun runShell(cmd: String): String =
  * -m 指定 lkm 模块路径
  */
 private suspend fun doLkmInstall(
-    appContext: Context,
+    ctx: Context,
     uri: Uri,
     onLog: suspend (String) -> Unit,
 ): Result<Unit> = withContext(Dispatchers.IO) {
     try {
-        val tmp = File(appContext.cacheDir, "lkm_install_tmp.ko")
+        val tmp = File(ctx.cacheDir, "lkm_install_tmp.ko")
         onLog("复制 .ko 到临时目录 ...")
         try {
-            appContext.contentResolver.openInputStream(uri)?.use { input ->
+            ctx.contentResolver.openInputStream(uri)?.use { input ->
                 tmp.outputStream().use { out -> input.copyTo(out) }
             }
         } catch (t: Throwable) {

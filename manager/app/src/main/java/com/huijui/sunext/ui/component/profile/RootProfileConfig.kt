@@ -151,7 +151,7 @@ fun SegmentedColumnScope.rootProfileConfig(
             onSELinuxChange = { domain, rules ->
                 onProfileChange(
                     profile.copy(
-                        context = domain,
+                        ctx = domain,
                         rules = rules,
                         rootUseDefault = false,
                     ),
@@ -363,14 +363,14 @@ private fun SELinuxPanel(
     SettingsBaseWidget(
         title = stringResource(R.string.profile_selinux_context),
         iconPlaceholder = false,
-        description = profile.context,
+        description = profile.ctx,
         onClick = {
             showDialog = true
         },
     ) {}
 
     if (showDialog) {
-        var domain by remember(profile.context) { mutableStateOf(profile.context) }
+        var domain by remember(profile.ctx) { mutableStateOf(profile.ctx) }
         var rules by remember(profile.rules) { mutableStateOf(profile.rules) }
         LaunchedEffect(rules) { onValidateSepolicy(rules) }
         val canConfirm = isSELinuxDomainValid(domain) && sepolicyValid

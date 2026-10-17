@@ -251,7 +251,7 @@ object Natives {
         val gid: Int = ROOT_GID,
         val groups: List<Int> = mutableListOf(),
         val capabilities: List<Int> = mutableListOf(),
-        val context: String = KERNEL_SU_DOMAIN,
+        val ctx: String = KERNEL_SU_DOMAIN,
         val namespace: Int = Namespace.INHERITED.ordinal,
 
         val nonRootUseDefault: Boolean = true,

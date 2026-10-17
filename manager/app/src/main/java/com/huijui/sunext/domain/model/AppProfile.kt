@@ -12,7 +12,7 @@ data class AppProfile(
     val gid: Int = Natives.ROOT_GID,
     val groups: List<Int> = emptyList(),
     val capabilities: List<Int> = emptyList(),
-    val context: String = Natives.KERNEL_SU_DOMAIN,
+    val ctx: String = Natives.KERNEL_SU_DOMAIN,
     val namespace: Int = Natives.Profile.Namespace.INHERITED.ordinal,
     val nonRootUseDefault: Boolean = true,
     val umountModules: Boolean = true,

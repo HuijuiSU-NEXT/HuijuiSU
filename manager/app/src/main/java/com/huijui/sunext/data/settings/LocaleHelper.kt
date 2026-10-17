@@ -14,13 +14,13 @@ import com.huijui.sunext.data.AppSettingsRepository
 /**
  * Launch system app locale settings (Android 13+)
  */
-fun launchSystemLanguageSettings(appContext: Context) {
+fun launchSystemLanguageSettings(ctx: Context) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         try {
             val intent = Intent(Settings.ACTION_APP_LOCALE_SETTINGS).apply {
-                data = Uri.fromParts("package", appContext.packageName, null)
+                data = Uri.fromParts("package", ctx.packageName, null)
             }
-            appContext.startActivity(intent)
+            ctx.startActivity(intent)
         } catch (_: Exception) {
             // Fallback to app language settings if system settings not available
         }
@@ -28,56 +28,56 @@ fun launchSystemLanguageSettings(appContext: Context) {
 }
 
 /**
- * Apply saved language setting to context (for Android < 13)
+ * Apply saved language setting to ctx (for Android < 13)
  */
 class LocaleHelper(
     private val settings: AppSettingsRepository,
 ) {
-    fun applyLanguage(appContext: Context): Context {
+    fun applyLanguage(ctx: Context): Context {
         // On Android 13+, language is handled by system
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            return context
+            return ctx
         }
 
         val localeTag = settings.getString("app_locale", "system") ?: "system"
 
         return if (localeTag == "system") {
-            context
+            ctx
         } else {
             val locale = parseLocaleTag(localeTag)
-            setLocale(context, locale)
+            setLocale(ctx, locale)
         }
     }
 
 /**
-     * Set locale for context (Android < 13)
+     * Set locale for ctx (Android < 13)
      */
     @SuppressLint("ObsoleteSdkInt")
-    private fun setLocale(appContext: Context, locale: Locale): Context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        updateResources(context, locale)
+    private fun setLocale(ctx: Context, locale: Locale): Context = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        updateResources(ctx, locale)
     } else {
-        updateResourcesLegacy(context, locale)
+        updateResourcesLegacy(ctx, locale)
     }
 
     @SuppressLint("UseRequiresApi", "ObsoleteSdkInt")
     @TargetApi(Build.VERSION_CODES.N)
-    private fun updateResources(appContext: Context, locale: Locale): Context {
+    private fun updateResources(ctx: Context, locale: Locale): Context {
         val configuration = Configuration()
         configuration.setLocale(locale)
         configuration.setLayoutDirection(locale)
-        return appContext.createConfigurationContext(configuration)
+        return ctx.createConfigurationContext(configuration)
     }
 
     @Suppress("DEPRECATION")
     @SuppressWarnings("deprecation")
-    private fun updateResourcesLegacy(appContext: Context, locale: Locale): Context {
+    private fun updateResourcesLegacy(ctx: Context, locale: Locale): Context {
         Locale.setDefault(locale)
-        val resources = appContext.resources
+        val resources = ctx.resources
         val configuration = resources.configuration
         configuration.locale = locale
         configuration.setLayoutDirection(locale)
         resources.updateConfiguration(configuration, resources.displayMetrics)
-        return context
+        return ctx
     }
 
 /**
@@ -103,10 +103,10 @@ class LocaleHelper(
      * Get current app locale
      */
     @SuppressLint("ObsoleteSdkInt")
-    fun getCurrentAppLocale(appContext: Context): Locale? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    fun getCurrentAppLocale(ctx: Context): Locale? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         try {
             val localeManager =
-                appContext.getSystemService(Context.LOCALE_SERVICE) as? android.app.LocaleManager
+                ctx.getSystemService(Context.LOCALE_SERVICE) as? android.app.LocaleManager
             val locales = localeManager?.applicationLocales
             if (locales != null && !locales.isEmpty) {
                 locales.get(0)

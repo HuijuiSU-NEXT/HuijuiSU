@@ -59,13 +59,13 @@ private fun buildInternalWebUiUri(moduleId: String): Uri = Uri.Builder()
     .appendQueryParameter(PARAM_ID, moduleId)
     .build()
 
-private fun resolveIntent(appContext: Context, intent: Intent, intentToken: String, zipFileDetector: ZipFileDetector): PendingAction? {
+private fun resolveIntent(ctx: Context, intent: Intent, intentToken: String, zipFileDetector: ZipFileDetector): PendingAction? {
     if (intent.action == DownloadService.ACTION_INSTALL_MODULE) {
         val token = intent.getStringExtra(DownloadService.EXTRA_TOKEN)?.takeIf { it.isNotBlank() } ?: return null
         if (token != intentToken) return null
         val uriString = intent.getStringExtra(DownloadService.EXTRA_MODULE_URI) ?: return null
         val uri = uriString.toUri()
-        val zipFileInfo = zipFileDetector.parseZipFile(context, uri)
+        val zipFileInfo = zipFileDetector.parseZipFile(ctx, uri)
         // no need check that, because this call is from DownloadService, and it must install module
         // if (zipFileInfo.type == ZipType.UNKNOWN) return null
 
@@ -118,7 +118,7 @@ private fun resolveIntent(appContext: Context, intent: Intent, intentToken: Stri
     }
 
     val zipFileInfos = zipUri?.map { uri ->
-        zipFileDetector.parseZipFile(context, uri)
+        zipFileDetector.parseZipFile(ctx, uri)
     }?.filter { it.type != ZipType.UNKNOWN }
 
     if (zipFileInfos == null) return null
@@ -128,8 +128,8 @@ private fun resolveIntent(appContext: Context, intent: Intent, intentToken: Stri
 
     if (hasKernel && hasModule) {
         Toast.makeText(
-            context,
-            appContext.getString(R.string.both_kernel_and_module_files),
+            ctx,
+            ctx.getString(R.string.both_kernel_and_module_files),
             Toast.LENGTH_SHORT,
         ).show()
         return null
@@ -139,8 +139,8 @@ private fun resolveIntent(appContext: Context, intent: Intent, intentToken: Stri
         // all is kernels
         if (zipFileInfos.count { it.type == ZipType.KERNEL } != 1) {
             Toast.makeText(
-                context,
-                appContext.getString(R.string.more_than_one_kernel_file),
+                ctx,
+                ctx.getString(R.string.more_than_one_kernel_file),
                 Toast.LENGTH_SHORT,
             ).show()
             return null
@@ -174,7 +174,7 @@ private fun parseValidatedDeepLink(uri: Uri?, intentToken: String): KsuDeepLink?
 @SuppressLint("StringFormatInvalid")
 @Composable
 fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val activity = LocalActivity.current
     val navigator = LocalNavigator.current
     val isManager = Natives.isManager
@@ -202,7 +202,7 @@ fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
 
     CollectIntentChannel(intentChannel) { intent ->
         if (!isManager) return@CollectIntentChannel
-        val action = resolveIntent(context, intent, settings.intentToken, zipFileDetector) ?: return@CollectIntentChannel
+        val action = resolveIntent(ctx, intent, settings.intentToken, zipFileDetector) ?: return@CollectIntentChannel
 
         when (action) {
             is PendingAction.InstallModules -> {
@@ -222,9 +222,9 @@ fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
             }
 
             is PendingAction.OpenWebUI -> {
-                val webIntent = Intent(context, WebUIActivity::class.java)
+                val webIntent = Intent(ctx, WebUIActivity::class.java)
                     .setData(buildInternalWebUiUri(action.moduleId))
-                appContext.startActivity(webIntent)
+                ctx.startActivity(webIntent)
             }
         }
     }

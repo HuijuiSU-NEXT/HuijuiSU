@@ -185,7 +185,7 @@ class ProfileTemplateRepository(
             gid = optInt("gid", Natives.ROOT_GID),
             groups = enumOrdinals<Groups>(optJSONArray("groups")).map(Groups::gid),
             capabilities = enumOrdinals<Capabilities>(optJSONArray("capabilities")).map(Capabilities::cap),
-            context = optString("context").ifBlank { Natives.KERNEL_SU_DOMAIN },
+            ctx = optString("ctx").ifBlank { Natives.KERNEL_SU_DOMAIN },
             rules = optJSONArray("rules").strings(),
             flags = optJSONArray("flags")?.let {
                 enumOrdinals<RootProfileFlag>(it).map(RootProfileFlag::ordinal)
@@ -214,7 +214,7 @@ class ProfileTemplateRepository(
                 JSONArray(Capabilities.entries.filter { it.cap in capabilities }.map { it.name }),
             )
         }
-        if (appContext.isNotEmpty()) put("context", context)
+        if (ctx.isNotEmpty()) put("ctx", ctx)
         if (rules.isNotEmpty()) put("rules", JSONArray(rules))
         put(
             "flags",

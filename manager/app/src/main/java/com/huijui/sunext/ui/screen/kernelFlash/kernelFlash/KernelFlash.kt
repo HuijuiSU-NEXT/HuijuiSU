@@ -93,7 +93,7 @@ fun KernelFlashScreen(
     selectedSlot: String? = null,
     skipKsud: Boolean = false,
 ) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
 
     val scrollState = rememberScrollState()
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(rememberTopAppBarState())
@@ -129,7 +129,7 @@ fun KernelFlashScreen(
         if (flashState.isCompleted && uiState.autoExit) {
             delay(1500.milliseconds)
             viewModel.dispatch(KernelFlashUiAction.ConsumeAutoExit)
-            (context as? ComponentActivity)?.finish()
+            (ctx as? ComponentActivity)?.finish()
         }
     }
 

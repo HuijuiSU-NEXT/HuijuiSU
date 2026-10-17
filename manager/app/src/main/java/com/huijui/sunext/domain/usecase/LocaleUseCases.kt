@@ -4,7 +4,7 @@ import android.content.Context
 import com.huijui.sunext.data.settings.LocaleRepository
 
 class ApplyLanguageUseCase(private val repository: LocaleRepository) {
-    operator fun invoke(appContext: Context): Context = repository.applyLanguage(context)
+    operator fun invoke(ctx: Context): Context = repository.applyLanguage(ctx)
 }
 
 class IsSystemLanguageSettingsUseCase(private val repository: LocaleRepository) {
@@ -12,5 +12,5 @@ class IsSystemLanguageSettingsUseCase(private val repository: LocaleRepository) 
 }
 
 class LaunchSystemLanguageSettingsUseCase(private val repository: LocaleRepository) {
-    operator fun invoke(appContext: Context) = repository.launchSystemLanguageSettings(context)
+    operator fun invoke(ctx: Context) = repository.launchSystemLanguageSettings(ctx)
 }

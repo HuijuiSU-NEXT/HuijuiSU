@@ -89,10 +89,10 @@ fun rememberCustomOverscrollFactory(
     glowColor: Color = DefaultGlowColor,
     glowDrawPadding: PaddingValues = DefaultGlowPaddingValues,
 ): OverscrollFactory {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val density = LocalDensity.current
     return AndroidEdgeEffectOverscrollFactory(
-        context,
+        ctx,
         density,
         glowColor,
         glowDrawPadding,
@@ -101,14 +101,14 @@ fun rememberCustomOverscrollFactory(
 }
 
 private class AndroidEdgeEffectOverscrollFactory(
-    private val appContext: Context,
+    private val ctx: Context,
     private val density: Density,
     private val glowColor: Color = DefaultGlowColor,
     private val glowDrawPadding: PaddingValues = DefaultGlowPaddingValues,
     private val compensationState: StretchOverscrollCompensationState,
 ) : OverscrollFactory {
     override fun createOverscrollEffect(): OverscrollEffect = AndroidEdgeEffectOverscrollEffect(
-        context,
+        ctx,
         density,
         glowColor,
         glowDrawPadding,
@@ -121,7 +121,7 @@ private class AndroidEdgeEffectOverscrollFactory(
 
         other as AndroidEdgeEffectOverscrollFactory
 
-        if (context != other.appContext) return false
+        if (ctx != other.ctx) return false
         if (density != other.density) return false
         if (glowColor != other.glowColor) return false
         if (glowDrawPadding != other.glowDrawPadding) return false
@@ -131,7 +131,7 @@ private class AndroidEdgeEffectOverscrollFactory(
     }
 
     override fun hashCode(): Int {
-        var result = appContext.hashCode()
+        var result = ctx.hashCode()
         result = 31 * result + density.hashCode()
         result = 31 * result + glowColor.hashCode()
         result = 31 * result + glowDrawPadding.hashCode()
@@ -594,7 +594,7 @@ private class GlowOverscrollNode(
 }
 
 internal class AndroidEdgeEffectOverscrollEffect(
-    appContext: Context,
+    ctx: Context,
     private val density: Density,
     glowColor: Color,
     glowDrawPadding: PaddingValues,
@@ -604,7 +604,7 @@ internal class AndroidEdgeEffectOverscrollEffect(
 
     private var pointerPosition: Offset = Offset.Unspecified
 
-    private val edgeEffectWrapper = EdgeEffectWrapper(context, glowColor = glowColor.toArgb())
+    private val edgeEffectWrapper = EdgeEffectWrapper(ctx, glowColor = glowColor.toArgb())
 
     internal val redrawSignal = mutableStateOf(Unit, neverEqualPolicy())
 
@@ -1018,7 +1018,7 @@ internal class AndroidEdgeEffectOverscrollEffect(
 
 /** Handles lazy creation of [EdgeEffect]s used to render overscroll. */
 private class EdgeEffectWrapper(
-    private val appContext: Context,
+    private val ctx: Context,
     @ColorInt private val glowColor: Int,
 ) {
     private var size: IntSize = IntSize.Zero
@@ -1119,7 +1119,7 @@ private class EdgeEffectWrapper(
     fun getOrCreateRightEffectNegation(): EdgeEffect = rightEffectNegation
         ?: createEdgeEffect(Orientation.Horizontal).also { rightEffectNegation = it }
 
-    private fun createEdgeEffect(orientation: Orientation) = EdgeEffectCompat.create(appContext).apply {
+    private fun createEdgeEffect(orientation: Orientation) = EdgeEffectCompat.create(ctx).apply {
         color = glowColor
         if (size != IntSize.Zero) {
             if (orientation == Orientation.Vertical) {

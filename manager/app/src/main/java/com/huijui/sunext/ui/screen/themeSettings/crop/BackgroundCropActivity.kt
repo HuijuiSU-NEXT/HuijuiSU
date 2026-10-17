@@ -183,7 +183,7 @@ private fun BackgroundCropScreen(
     onCropped: (Uri, Int, Int, Int, Int) -> Unit,
     onError: (Throwable) -> Unit,
 ) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     var cropView by remember { mutableStateOf<UCropView?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     var isCropping by remember { mutableStateOf(false) }
@@ -238,14 +238,14 @@ private fun BackgroundCropScreen(
                     imageWidth: Int,
                     imageHeight: Int,
                 ) {
-                    (context as Activity).runOnUiThread {
+                    (ctx as Activity).runOnUiThread {
                         isCropping = false
                         onCropped(resultUri, imageWidth, imageHeight, offsetX, offsetY)
                     }
                 }
 
                 override fun onCropFailure(t: Throwable) {
-                    (context as Activity).runOnUiThread {
+                    (ctx as Activity).runOnUiThread {
                         isCropping = false
                         onError(t)
                     }

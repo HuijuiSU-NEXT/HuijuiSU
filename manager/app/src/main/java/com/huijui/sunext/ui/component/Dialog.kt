@@ -474,8 +474,8 @@ private fun MarkdownContent(content: String) {
             .padding(12.dp),
     ) {
         AndroidView(
-            factory = { context ->
-                TextView(context).apply {
+            factory = { ctx ->
+                TextView(ctx).apply {
                     movementMethod = LinkMovementMethod.getInstance()
                     setSpannableFactory(NoCopySpannableFactory.getInstance())
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {

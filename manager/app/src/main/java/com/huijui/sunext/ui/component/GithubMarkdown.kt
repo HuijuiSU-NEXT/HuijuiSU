@@ -121,9 +121,9 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
     val resourceRepository = koinInject<WebResourceRepository>()
 
     AndroidView(
-        factory = { context ->
-            val frameLayout = FrameLayout(context)
-            val webView = WebView(context).apply {
+        factory = { ctx ->
+            val frameLayout = FrameLayout(ctx)
+            val webView = WebView(ctx).apply {
                 try {
                     setBackgroundColor(Color.TRANSPARENT)
                     isVerticalScrollBarEnabled = false
@@ -144,7 +144,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
                     addJavascriptInterface(scrollInterface, "AndroidScroll")
                     webViewClient = object : WebViewClient() {
                         private val assetLoader = WebViewAssetLoader.Builder()
-                            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(context))
+                            .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(ctx))
                             .build()
 
                         override fun onPageFinished(view: WebView, url: String) {
@@ -221,7 +221,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
                             val url = request.url.toString()
                             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            appContext.startActivity(intent)
+                            ctx.startActivity(intent)
                             return true
                         }
 

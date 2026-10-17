@@ -1352,11 +1352,11 @@ private fun Bitmap.blurBitmap(blurRadius: Float): Bitmap {
 
 @RequiresApi(Build.VERSION_CODES.S)
 private suspend fun Bitmap.createBackgroundBlurImage(
-    appContext: Context,
+    ctx: Context,
     viewportSize: IntSize,
     blurRadius: Float,
 ): ImageBitmap = withContext(Dispatchers.Default) {
-    val cacheFile = backgroundBlurCacheFile(appContext)
+    val cacheFile = backgroundBlurCacheFile(ctx)
 
     BitmapFactory.decodeFile(cacheFile.absolutePath)?.let { cachedBitmap ->
         if (
@@ -1414,9 +1414,9 @@ private fun Bitmap.createBackgroundBlurSource(viewportSize: IntSize): Bitmap {
     }
 }
 
-internal fun backgroundBlurCacheFile(appContext: Context): File = File(appContext.filesDir, "blured_custom_background.jpg")
+internal fun backgroundBlurCacheFile(ctx: Context): File = File(ctx.filesDir, "blured_custom_background.jpg")
 
-internal fun legacyBackgroundBlurCacheDir(appContext: Context): File = File(appContext.filesDir, "background_blur_cache")
+internal fun legacyBackgroundBlurCacheDir(ctx: Context): File = File(ctx.filesDir, "background_blur_cache")
 
 private fun saveBackgroundBlurCache(cacheFile: File, bitmap: Bitmap) {
     runCatching {
@@ -1441,7 +1441,7 @@ internal fun BackgroundInitializer(
     settings: AppSettingsRepository,
     renderState: BackgroundRenderState,
 ) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
     val dynamicColorFromSystem = themeConfig.monetCompatSeedColor
@@ -1461,7 +1461,7 @@ internal fun BackgroundInitializer(
 
                 val bitmap = (it.state as AsyncImagePainter.State.Success).result.drawable.toBitmap()
                 renderState.blurImageBitmap = bitmap.createBackgroundBlurImage(
-                    context = context,
+                    ctx = ctx,
                     viewportSize = renderState.blurViewportSize,
                     blurRadius = BACKGROUND_BLUR_RADIUS,
                 )
@@ -1472,7 +1472,7 @@ internal fun BackgroundInitializer(
     }
 
     renderState.imagePainter = rememberAsyncImagePainter(
-        model = ImageRequest.Builder(appContext)
+        model = ImageRequest.Builder(ctx)
             .data(uri)
             .allowHardware(false)
             .crossfade(true)
@@ -1497,7 +1497,7 @@ internal fun BackgroundInitializer(
             ) {
                 coroutineScope.launch {
                     renderState.blurImageBitmap = bitmap.createBackgroundBlurImage(
-                        context = context,
+                        ctx = ctx,
                         viewportSize = renderState.blurViewportSize,
                         blurRadius = BACKGROUND_BLUR_RADIUS,
                     )

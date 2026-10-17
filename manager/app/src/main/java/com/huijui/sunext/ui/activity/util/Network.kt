@@ -4,8 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
-fun isNetworkAvailable(appContext: Context): Boolean {
-    val cm = appContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+fun isNetworkAvailable(ctx: Context): Boolean {
+    val cm = ctx.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     val network = cm.activeNetwork ?: return false
     val caps = cm.getNetworkCapabilities(network) ?: return false
 

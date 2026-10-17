@@ -141,13 +141,14 @@ class WebViewInterface(
 
     @JavascriptInterface
     fun fullScreen(enable: Boolean) {
-        val appContext = webView.context as? android.app.Activity
-        if (context is Activity) {
+        // 使用安全转换，避免 ClassCastException
+        val ctx = webView.context as? android.app.Activity
+        if (ctx != null) {
             Handler(Looper.getMainLooper()).post {
                 if (enable) {
-                    hideSystemUI(appContext?.window)
+                    hideSystemUI(ctx.window)
                 } else {
-                    showSystemUI(appContext?.window)
+                    showSystemUI(ctx.window)
                 }
             }
         }

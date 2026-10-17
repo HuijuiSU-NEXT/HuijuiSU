@@ -71,7 +71,7 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
     val moduleActionState by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHost = LocalSnackbarHost.current
     val state = rememberLazyListState()
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val activity = LocalActivity.current
     val navigator = LocalNavigator.current
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
@@ -90,8 +90,8 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
                 is ExecuteModuleActionUiEvent.Completed -> {
                     if (event.successful && fromShortcut) {
                         Toast.makeText(
-                            context,
-                            appContext.getString(R.string.module_action_success),
+                            ctx,
+                            ctx.getString(R.string.module_action_success),
                             Toast.LENGTH_SHORT,
                         ).show()
                         activity?.finishAndRemoveTask()

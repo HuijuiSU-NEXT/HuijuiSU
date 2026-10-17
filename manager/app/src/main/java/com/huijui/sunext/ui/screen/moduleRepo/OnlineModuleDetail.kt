@@ -454,7 +454,7 @@ fun ReleaseCard(
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val permissionRequestInterface = LocalPermissionRequestInterface.current
     val enqueueDownload = koinInject<EnqueueDownloadUseCase>()
     val observeDownload = koinInject<ObserveDownloadUseCase>()
@@ -532,7 +532,7 @@ fun ReleaseCard(
                             if (result == ConfirmResult.Canceled) return@launch
 
                             downloadAssetAndInstall(
-                                context,
+                                ctx,
                                 permissionRequestInterface,
                                 module,
                                 assetInfo,

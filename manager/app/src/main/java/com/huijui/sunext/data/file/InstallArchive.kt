@@ -8,13 +8,13 @@ import org.apache.commons.compress.archivers.zip.ZipFile
 
 /** Reads selected entries without decompressing unrelated files in the installation ZIP. */
 internal fun <T> withInstallArchive(
-    appContext: Context,
+    ctx: Context,
     uri: Uri,
     read: (ZipFile) -> T,
 ): T {
-    val archive = File.createTempFile("install-archive-", ".zip", appContext.cacheDir)
+    val archive = File.createTempFile("install-archive-", ".zip", ctx.cacheDir)
     try {
-        val input = appContext.contentResolver.openInputStream(uri)
+        val input = ctx.contentResolver.openInputStream(uri)
             ?: throw FileNotFoundException(uri.toString())
         input.use { source ->
             archive.outputStream().use { target -> source.copyTo(target) }

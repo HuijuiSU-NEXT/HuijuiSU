@@ -260,10 +260,10 @@ private fun AppManagerRow(
 
 @Composable
 private fun AppIcon(packageName: String, size: Dp) {
-    val appContext = LocalContext.current
+    val ctx = LocalContext.current
     val bitmap = remember(packageName) {
         try {
-            val drawable = appContext.packageManager.getApplicationIcon(packageName)
+            val drawable = ctx.packageManager.getApplicationIcon(packageName)
             val w = drawable.intrinsicWidth.coerceAtLeast(1)
             val h = drawable.intrinsicHeight.coerceAtLeast(1)
             val bmp = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)

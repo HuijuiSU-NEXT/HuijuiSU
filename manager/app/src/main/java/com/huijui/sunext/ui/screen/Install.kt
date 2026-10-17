@@ -123,7 +123,7 @@ fun InstallScreen(
             when (event) {
                 is InstallUiEvent.Error -> {
                     val message = event.message.ifBlank { failedReboot }
-                    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(ctx, message, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -242,6 +242,7 @@ private fun LKMInstallPage(
     availablePartitions: List<String>,
     defaultPartition: String,
 ) {
+    val ctx = LocalContext.current
     val navigator = LocalNavigator.current
     val selectFileTip = stringResource(
         id = R.string.select_file_tip,
@@ -302,9 +303,9 @@ private fun LKMInstallPage(
     ) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
-                val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(context, uri)
+                val scanResult = com.huijui.sunext.ui.util.HuiJuiSecurityScanner.scanModule(ctx, uri)
                 if (!scanResult.first) {
-                    android.widget.Toast.makeText(context, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
+                    android.widget.Toast.makeText(ctx, scanResult.second, android.widget.Toast.LENGTH_LONG).show()
                     return@let
                 }
                 lkmInstallMethod = InstallMethod.SelectFile(
@@ -328,7 +329,7 @@ private fun LKMInstallPage(
                     lkmSelection = LkmSelection.KmiNone
                     lkmFileName = null
                     Toast.makeText(
-                        context,
+                        ctx,
                         installOnlySupportKoFile,
                         Toast.LENGTH_SHORT,
                     ).show()
@@ -867,7 +868,7 @@ private fun TopBar(
     }
 }
 
-private fun isKoFile(appContext: Context, uri: Uri): Boolean {
+private fun isKoFile(ctx: Context, uri: Uri): Boolean {
     val seg = uri.lastPathSegment ?: ""
     if (seg.endsWith(".ko", ignoreCase = true)) return true
 

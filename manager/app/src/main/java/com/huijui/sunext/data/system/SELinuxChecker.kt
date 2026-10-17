@@ -14,21 +14,21 @@ fun isSELinuxPermissive(): Boolean {
     return result.isSuccess && stdoutList.joinToString("").trim() == "Permissive"
 }
 
-fun getSELinuxStatus(appContext: Context) = SuFile("/sys/fs/selinux/enforce").run {
+fun getSELinuxStatus(ctx: Context) = SuFile("/sys/fs/selinux/enforce").run {
     when {
-        !exists() -> appContext.getString(R.string.selinux_status_disabled)
+        !exists() -> ctx.getString(R.string.selinux_status_disabled)
 
-        !isFile -> appContext.getString(R.string.unknown)
+        !isFile -> ctx.getString(R.string.unknown)
 
-        !canRead() -> appContext.getString(R.string.selinux_status_enforcing)
+        !canRead() -> ctx.getString(R.string.selinux_status_enforcing)
 
         else -> when (
             runCatching { newInputStream() }.getOrNull()?.bufferedReader()
                 ?.use { it.runCatching { readLine() }.getOrNull()?.trim()?.toIntOrNull() }
         ) {
-            1 -> appContext.getString(R.string.selinux_status_enforcing)
-            0 -> appContext.getString(R.string.selinux_status_permissive)
-            else -> appContext.getString(R.string.unknown)
+            1 -> ctx.getString(R.string.selinux_status_enforcing)
+            0 -> ctx.getString(R.string.selinux_status_permissive)
+            else -> ctx.getString(R.string.unknown)
         }
     }
 }
