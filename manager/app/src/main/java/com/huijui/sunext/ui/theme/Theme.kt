@@ -1,4 +1,3 @@
-@file:Suppress("OPT_IN_USAGE")
 
 package com.huijui.sunext.ui.theme
 
@@ -244,7 +243,6 @@ class BackgroundManager(
     }
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun KernelSUTheme(
     dpi: Int = 0,
