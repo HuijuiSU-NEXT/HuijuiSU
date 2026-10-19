@@ -40,7 +40,6 @@ val isReleaseTask =
     project.gradle.startParameter.taskNames.any { it.contains("Release", ignoreCase = true) }
 
 android {
-    setProperty("archivesBaseName", "HuiJuiSU_NEXT_Ultra_v4.4.0")
     namespace = "org.bakasu.bakasu"
 
     buildTypes {
