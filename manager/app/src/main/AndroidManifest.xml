@@ -19,6 +19,7 @@
     <uses-sdk tools:overrideLibrary="top.yukonga.miuix.kmp.blur" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:name=".KernelSUApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"

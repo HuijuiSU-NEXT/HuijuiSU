@@ -74,7 +74,7 @@ class CardConfig(
         isCustomBackgroundEnabled = enabled
         if (enabled) {
             if (!isCustomAlphaSet) {
-                updateAlpha(0.55f, isCustom = false)
+                updateAlpha(0.45f, isCustom = false)
             }
             updateShadow(false)
         }
@@ -99,7 +99,7 @@ class CardConfig(
         if (!isCustomAlphaSet) {
             updateAlpha(
                 if (isCustomBackgroundEnabled) {
-                    0.55f
+                    0.45f
                 } else if (isDarkMode) {
                     0.88f
                 } else {

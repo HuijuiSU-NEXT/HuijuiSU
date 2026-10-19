@@ -8,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -108,5 +109,45 @@ fun LogcatDialog(onDismiss: () -> Unit) {
                 modifier = Modifier.fillMaxWidth()
             ) { Text("一键抓取 Logcat") }
         }
+    }
+}
+
+@Composable
+fun WebAdminDialog(onDismiss: () -> Unit) {
+    var isRunning by remember { mutableStateOf(false) }
+    var serverUrl by remember { mutableStateOf("未启动") }
+    var token by remember { mutableStateOf("") }
+
+    UltraDialogWrapper("网页管理 (WebUI)", "通过局域网在电脑上管理手机", Icons.TwoTone.Computer) {
+        Column {
+            Text("确保手机和电脑在同一 Wi-Fi 下", style = MaterialTheme.typography.bodySmall)
+            Spacer(Modifier.height(16.dp))
+            if (isRunning) {
+                Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp)) {
+                        Text("访问地址: $serverUrl?token=$token", fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall)
+                        Spacer(Modifier.height(4.dp))
+                        Text("安全 Token: $token", fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    }
+                }
+                Spacer(Modifier.height(16.dp))
+                Button(onClick = { HuijuiWebServer.stop(); isRunning = false; serverUrl = "未启动" }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
+                    Text("停止服务器")
+                }
+            } else {
+                Button(onClick = {
+                    HuijuiWebServer.start { url ->
+                        serverUrl = url
+                        token = HuijuiWebServer.currentToken
+                        isRunning = true
+                    }
+                }, modifier = Modifier.fillMaxWidth()) {
+                    Text("启动 Web 服务器")
+                }
+            }
+        }
+    }
+    DisposableEffect(Unit) {
+        onDispose { HuijuiWebServer.stop() }
     }
 }

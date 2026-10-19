@@ -91,6 +91,8 @@ fun KernelFlashScreen(
     selectedSlot: String? = null,
     skipKsud: Boolean = false,
 ) {
+    val cardConfig = koinInject<CardConfig>()
+
     val context = LocalContext.current
 
     val scrollState = rememberScrollState()

@@ -132,8 +132,8 @@ class ThemeConfig(
     var backgroundImageLoaded by mutableStateOf(false)
     var isThemeChanging by mutableStateOf(false)
     var isHighContrastMode by mutableStateOf(false)
-    var isEnableBlur by mutableStateOf(false)
-    var isEnableBlurExp by mutableStateOf(false)
+    var isEnableBlur by mutableStateOf(true)
+    var isEnableBlurExp by mutableStateOf(true)
     var isUseBackgroundSeedColor by mutableStateOf(false)
     var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
 

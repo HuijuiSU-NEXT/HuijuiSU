@@ -120,6 +120,8 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FlashScreen(flashIt: FlashIt) {
+    val cardConfig = koinInject<CardConfig>()
+
     val extractModuleName = koinInject<ExtractModuleNameUseCase>()
     val isModuleUriAccessible = koinInject<IsModuleUriAccessibleUseCase>()
     val checkFlashModuleMount = koinInject<CheckFlashModuleMountUseCase>()

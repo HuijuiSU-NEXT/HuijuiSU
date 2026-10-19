@@ -655,6 +655,14 @@ private fun AppearanceSettings(
 
         item(visible = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             SettingsSwitchWidget(
+                icon = Icons.TwoTone.AutoAwesome, // 确保文件顶部有 import androidx.compose.material.icons.twotone.AutoAwesome
+                title = { Text("全局液态玻璃强度") },
+                description = { Text("降低卡片透明度，透出壁纸颜色（关闭则恢复纯色）") },
+                checked = themeConfig.isEnableBlurExp,
+                onCheckedChange = { backgroundManager.saveEnableBlurExp(it) },
+            )
+            
+            SettingsSwitchWidget(
                 icon = Icons.TwoTone.BlurOn,
                 title = stringResource(id = R.string.settings_config_enable_blur),
                 description = stringResource(id = R.string.settings_config_enable_blur_summary),
