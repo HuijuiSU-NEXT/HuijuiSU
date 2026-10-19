@@ -12,6 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.bakasu.bakasu.ui.theme.CardConfig
 import org.koin.compose.koinInject
+import org.bakasu.bakasu.ui.theme.blurEffect
 
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
@@ -43,11 +44,13 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                 )
 
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .blurEffect(),
                     shape = RoundedCornerShape(24.dp),
                     // 核心：透明度联动全局滑块
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = cardConfig.cardAlpha)
+                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
                     )
                 ) {
                     Column {
