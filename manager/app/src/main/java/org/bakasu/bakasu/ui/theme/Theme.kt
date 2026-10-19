@@ -548,7 +548,7 @@ private fun SystemBarController(darkMode: Boolean) {
                 Color.Transparent.toArgb(),
                 Color.Transparent.toArgb(),
             ) { darkMode },
-            navigationBarStyle = if (darkMode) {
+            navigationBarStyle = if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f) {
                 SystemBarStyle.dark(Color.Transparent.toArgb())
             } else {
                 SystemBarStyle.light(
