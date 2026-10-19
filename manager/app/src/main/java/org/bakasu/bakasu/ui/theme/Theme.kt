@@ -122,13 +122,11 @@ class BackgroundManager(
     private val tag = "BackgroundManager"
 
     
+    
     init {
-        // 🔥 核心：检测配置版本号，强制覆盖旧数据！
         val configVersion = settings.getInt("ultra_config_version", 0)
-        if (configVersion < 2) {
-            // 强制重置所有设置
-            settings.putInt("ultra_config_version", 2)
-            
+        if (configVersion < 3) { // 注意这里改成了 < 3，强制触发！
+            settings.putInt("ultra_config_version", 3)
             settings.putBoolean("enable_blur", true)
             settings.putBoolean("enable_blur_exp", true)
             settings.putBoolean("high_contrast_mode", true)
@@ -137,20 +135,15 @@ class BackgroundManager(
             settings.putInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal)
             settings.putFloat("card_alpha", 0.25f)
             settings.putFloat("background_dim", 0f)
-            
-            // 强制壁纸路径
-            settings.putString("custom_background", "android.resource://${application.packageName}/drawable/default_wallpaper")
-            
-            // 覆盖内存状态
+            settings.putString("custom_background", "android.resource://${BuildConfig.APPLICATION_ID}/drawable/default_wallpaper")
+
             config.isEnableBlur = true
             config.isEnableBlurExp = true
             config.isHighContrastMode = true
             config.bottomBarStyle = BottomBarStyle.FLOATING
             config.backgroundDim = 0f
-            config.customBackgroundUri = android.net.Uri.parse("android.resource://${application.packageName}/drawable/default_wallpaper")
-            
+            config.customBackgroundUri = android.net.Uri.parse("android.resource://${BuildConfig.APPLICATION_ID}/drawable/default_wallpaper")
         } else {
-            // 正常读取用户设置
             config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
             config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
             config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
@@ -162,6 +155,7 @@ class BackgroundManager(
             }
         }
     }
+
 
 
     fun saveBackgroundDim(dim: Float) {
