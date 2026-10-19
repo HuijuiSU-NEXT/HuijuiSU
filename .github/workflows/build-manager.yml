@@ -210,8 +210,8 @@ jobs:
             ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PIS_PR_BUILD=true $BUILD_EXTRA_ARGS
           else
             # HuiJuiSU NEXT: force custom name + package
-            KSU_NAME="HuiJuiSU NEXT"
-            KSU_PACKAGE_NAME="com.huijui.sunext"
+            KSU_NAME="HuiJuiSU NEXT Ultra"
+            KSU_PACKAGE_NAME="com.huijui.sunext.ultra"
             ./gradlew assemble${{ matrix.build_type }} -Pcommit=${{ steps.commit.outputs.COMMIT_SHA }} -PKSU_NAME="$KSU_NAME" -PKSU_PACKAGE_NAME="$KSU_PACKAGE_NAME"
           fi
 
