@@ -466,7 +466,7 @@ private fun generateTypography(themeConfig: ThemeConfig): androidx.compose.mater
             blurRadius = 0f,
         )
         return shadow.copy(
-            color = if (darkMode) if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f),
+            color = if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f),
         )
     }
 
@@ -548,7 +548,7 @@ private fun SystemBarController(darkMode: Boolean) {
                 Color.Transparent.toArgb(),
                 Color.Transparent.toArgb(),
             ) { darkMode },
-            navigationBarStyle = if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f) {
+            navigationBarStyle = if (darkMode) {
                 SystemBarStyle.dark(Color.Transparent.toArgb())
             } else {
                 SystemBarStyle.light(
