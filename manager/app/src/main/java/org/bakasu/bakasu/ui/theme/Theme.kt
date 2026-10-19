@@ -121,18 +121,48 @@ class BackgroundManager(
 ) {
     private val tag = "BackgroundManager"
 
+    
     init {
-        config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
-        config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
-        config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
-        config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
-        config.isUseBackgroundSeedColor = settings.getBoolean("use_background_seed_color", config.isUseBackgroundSeedColor)
-        val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
-        config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
-        settings.getString("custom_background", null)?.let { uriString ->
-            if (uriString.isNotEmpty()) config.customBackgroundUri = Uri.parse(uriString)
+        // 🔥 核心：检测配置版本号，强制覆盖旧数据！
+        val configVersion = settings.getInt("ultra_config_version", 0)
+        if (configVersion < 2) {
+            // 强制重置所有设置
+            settings.putInt("ultra_config_version", 2)
+            
+            settings.putBoolean("enable_blur", true)
+            settings.putBoolean("enable_blur_exp", true)
+            settings.putBoolean("high_contrast_mode", true)
+            settings.putBoolean("use_background_seed_color", false)
+            settings.putBoolean("custom_background_enabled", true)
+            settings.putInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal)
+            settings.putFloat("card_alpha", 0.25f)
+            settings.putFloat("background_dim", 0f)
+            
+            // 强制壁纸路径
+            settings.putString("custom_background", "android.resource://${application.packageName}/drawable/default_wallpaper")
+            
+            // 覆盖内存状态
+            config.isEnableBlur = true
+            config.isEnableBlurExp = true
+            config.isHighContrastMode = true
+            config.bottomBarStyle = BottomBarStyle.FLOATING
+            config.backgroundDim = 0f
+            config.customBackgroundUri = android.net.Uri.parse("android.resource://${application.packageName}/drawable/default_wallpaper")
+            
+        } else {
+            // 正常读取用户设置
+            config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
+            config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
+            config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
+            config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
+            val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
+            config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
+            settings.getString("custom_background", null)?.let { uriString ->
+                if (uriString.isNotEmpty()) config.customBackgroundUri = android.net.Uri.parse(uriString)
+            }
         }
     }
+
 
     fun saveBackgroundDim(dim: Float) {
         config.backgroundDim = dim
