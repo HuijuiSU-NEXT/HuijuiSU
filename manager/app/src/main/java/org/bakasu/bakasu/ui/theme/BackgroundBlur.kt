@@ -141,6 +141,19 @@ fun Modifier.blurEffect(
 ): Modifier {
     val themeConfig = koinInject<ThemeConfig>()
     val cardConfig = koinInject<CardConfig>()
+    // 🔥 紧急止血（v4.4.0 / HyperOS4 / Android 16+ 连续崩溃）：
+    // miuix-kmp 0.9.4 的 drawBackdrop + layerBackdrop 生成的 RenderEffect 节点，
+    // 在 HyperOS4 的 MiBackgroundBlurBlend::postUpdateInfo 里沿 RenderNode 树遍历时
+    // 无限递归 512 层后爆栈（SIGSEGV，RenderThread，连续崩溃被系统拉黑）。
+    // 先一刀切：Android 13+ 全部降级为 renderBackgroundFallback（纯色背景）。
+    // TODO: 等 miuix-kmp 升级到修复 Android 16 兼容的版本后再放开。
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        return renderBackgroundFallback(
+            compensateHorizontalOverscroll = compensateHorizontalOverscroll,
+            compensateVerticalOverscroll = compensateVerticalOverscroll,
+            useFixedSurfaceBoundsForOverscroll = useFixedSurfaceBoundsForOverscroll,
+        )
+    }
     if (!themeConfig.isEnableBlur || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
         return renderBackgroundFallback(
             compensateHorizontalOverscroll = compensateHorizontalOverscroll,
@@ -1323,6 +1336,11 @@ private fun Bitmap.blurBitmap(blurRadius: Float): Bitmap {
     val outputCanvas = Canvas(outputBitmap)
 
     if (outputCanvas.isHardwareAccelerated) {
+        // 🔥 修复 RenderNode 泄漏（v4.4.0 / HyperOS4 切壁纸后重启爆栈）：
+        // RenderNode 里的 RenderEffect 如果跨 Activity 生命周期没释放，会残留在
+        // libhwui 全局注册表，下次启动时 MiBackgroundBlurBlend::postUpdateInfo 遍历
+        // 到僵尸节点 + 新节点形成引用环，512 层递归爆栈（SIGSEGV，RenderThread）。
+        // 必须 try/finally 保证 RenderEffect 清空 + display list 丢弃。
         val renderNode = RenderNode("BlurEffectNode").apply {
             setPosition(0, 0, width, height)
             setRenderEffect(
@@ -1334,11 +1352,19 @@ private fun Bitmap.blurBitmap(blurRadius: Float): Bitmap {
             )
         }
 
-        val recordingCanvas = renderNode.beginRecording()
-        recordingCanvas.drawBitmap(this, 0f, 0f, null)
-        renderNode.endRecording()
+        try {
+            val recordingCanvas = renderNode.beginRecording()
+            recordingCanvas.drawBitmap(this, 0f, 0f, null)
+            renderNode.endRecording()
 
-        outputCanvas.drawRenderNode(renderNode)
+            outputCanvas.drawRenderNode(renderNode)
+        } finally {
+            // 🔥 关键：无论成功、异常、还是协程被 CancellationException 取消，
+            // 都必须清空 RenderEffect 并丢弃 display list，否则僵尸节点会残留在
+            // libhwui 全局表里，下次启动直接爆栈。
+            runCatching { renderNode.setRenderEffect(null) }
+            runCatching { renderNode.discardDisplayList() }
+        }
     } else {
         val radiusInt = blurRadius.toInt().coerceIn(1, 25)
         return this.softwareFastBlur(radiusInt)
@@ -1408,6 +1434,18 @@ private fun Bitmap.createBackgroundBlurSource(viewportSize: IntSize): Bitmap {
             RectF(left, top, left + scaledWidth, top + scaledHeight),
             Paint(Paint.ANTI_ALIAS_FLAG or Paint.FILTER_BITMAP_FLAG),
         )
+    }
+}
+
+
+/**
+ * 🔥 切换壁纸时必须调用：清空旧的 blured bitmap 缓存 + 通知 RenderEffect 树失效。
+ * 否则旧 cache 会跟新壁纸的 blurImageBitmap 同时存在，触发 RenderNode 引用环爆栈。
+ */
+internal fun clearBackgroundBlurCache(context: Context) {
+    runCatching { backgroundBlurCacheFile(context).delete() }
+    runCatching {
+        legacyBackgroundBlurCacheDir(context).listFiles()?.forEach { it.deleteRecursively() }
     }
 }
 
