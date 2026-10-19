@@ -244,7 +244,7 @@ class BackgroundManager(
     private fun copyImageToInternalStorage(context: Context, uri: Uri): Uri? {
         return try {
             val inputStream = context.contentResolver.openInputStream(uri) ?: return null
-            val fileName = "custom_background.jpg"
+            val fileName = "custom_background.png"
             val file = File(context.filesDir, fileName)
 
             FileOutputStream(file).use { outputStream ->

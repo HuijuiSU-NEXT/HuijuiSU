@@ -19,7 +19,7 @@ class CardConfig(
     private val settings: AppSettingsRepository,
 ) {
     // 卡片透明度
-    private var _cardAlpha by mutableFloatStateOf(0.25f)
+    private var _cardAlpha by mutableFloatStateOf(1f)
 
     var cardAlpha: Float
         get() = run {
@@ -40,10 +40,10 @@ class CardConfig(
     // 功能开关
     var isShadowEnabled by mutableStateOf(true)
         internal set
-    var isCustomBackgroundEnabled by mutableStateOf(true)
+    var isCustomBackgroundEnabled by mutableStateOf(false)
         internal set
 
-    var isCustomAlphaSet by mutableStateOf(true)
+    var isCustomAlphaSet by mutableStateOf(false)
         internal set
     var isUserDarkModeEnabled by mutableStateOf(false)
         internal set

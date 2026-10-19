@@ -464,7 +464,7 @@ private fun Context.backgroundCropSize(): Pair<Int, Int> {
 }
 
 private fun createBackgroundCropOutputUri(context: Context, prefix: String): Uri {
-    val outputFile = File(context.cacheDir, "${prefix}_${System.currentTimeMillis()}.jpg").apply {
+    val outputFile = File(context.cacheDir, "${prefix}_${System.currentTimeMillis()}.png").apply {
         parentFile?.mkdirs()
         delete()
         createNewFile()

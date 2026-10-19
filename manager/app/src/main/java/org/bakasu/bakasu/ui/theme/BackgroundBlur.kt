@@ -1449,7 +1449,7 @@ internal fun clearBackgroundBlurCache(context: Context) {
     }
 }
 
-internal fun backgroundBlurCacheFile(context: Context): File = File(context.filesDir, "blured_custom_background.jpg")
+internal fun backgroundBlurCacheFile(context: Context): File = File(context.filesDir, "blured_custom_background.png")
 
 internal fun legacyBackgroundBlurCacheDir(context: Context): File = File(context.filesDir, "background_blur_cache")
 
@@ -1458,7 +1458,7 @@ private fun saveBackgroundBlurCache(cacheFile: File, bitmap: Bitmap) {
         cacheFile.parentFile?.mkdirs()
         val tempFile = File(cacheFile.parentFile, "${cacheFile.name}.tmp")
         FileOutputStream(tempFile).use { output ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
         }
         if (!tempFile.renameTo(cacheFile)) {
             tempFile.copyTo(cacheFile, overwrite = true)
