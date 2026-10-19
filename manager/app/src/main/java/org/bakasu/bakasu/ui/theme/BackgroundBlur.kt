@@ -1480,6 +1480,15 @@ internal fun BackgroundInitializer(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    // 🔥 修复 3（v4.4.0 / HyperOS4 切壁纸后重启爆栈）：
+    // uri 一旦变化（切壁纸），立刻把内存里的旧 bitmap 清空，
+    // 防止旧 blurImageBitmap 跨壁纸/跨 Activity 生命周期残留，
+    // 与新壁纸的 AsyncImagePainter 形成引用环。
+    LaunchedEffect(uri) {
+        renderState.imageBitmap = null
+        renderState.blurImageBitmap = null
+    }
+
     val dynamicColorFromSystem = themeConfig.monetCompatSeedColor
 
     val calcedCachedSeedColor =

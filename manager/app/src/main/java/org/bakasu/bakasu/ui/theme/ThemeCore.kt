@@ -132,9 +132,9 @@ class ThemeConfig(
     // 背景状态
     var backgroundImageLoaded by mutableStateOf(false)
     var isThemeChanging by mutableStateOf(false)
-    var isHighContrastMode by mutableStateOf(true)
-    var isEnableBlur by mutableStateOf(true)
-    var isEnableBlurExp by mutableStateOf(true)
+    var isHighContrastMode by mutableStateOf(false)
+    var isEnableBlur by mutableStateOf(false)
+    var isEnableBlurExp by mutableStateOf(false)
     var isUseBackgroundSeedColor by mutableStateOf(false)
     var bottomBarStyle by mutableStateOf(BottomBarStyle.FLOATING)
 
