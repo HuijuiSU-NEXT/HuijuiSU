@@ -8,14 +8,18 @@ import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.bakasu.bakasu.ui.theme.CardConfig
+import org.bakasu.bakasu.ui.theme.ThemeConfig
 import org.bakasu.bakasu.ui.theme.blurEffect
+import org.bakasu.bakasu.ui.theme.blurSource
 import org.koin.compose.koinInject
 
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
+    val themeConfig = koinInject<ThemeConfig>()
     val cardConfig = koinInject<CardConfig>()
 
     var showSelinux by remember { mutableStateOf(false) }
@@ -33,7 +37,8 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
     var showSchedule by remember { mutableStateOf(false) }
     var showMonitor by remember { mutableStateOf(false) }
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    // 核心：外层必须包裹 blurSource()，底层的 RenderEffect 才知道从哪里抓取背景
+    LazyColumn(modifier = Modifier.fillMaxSize().blurSource()) {
         item { Spacer(modifier = Modifier.height(80.dp)) }
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -47,11 +52,11 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .blurEffect(), // 核心：开启原生底层毛玻璃
+                        .blurEffect(), // 开启卡片模糊
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        // 透明度设定为 0.5f，刚好透出壁纸颜色又不会瞎眼
-                        containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                        // 完美复刻 CardManage 里的透明度逻辑，开启实验性模糊时全透明，让底下的 RenderEffect 透出来
+                        containerColor = if (themeConfig.isEnableBlurExp) Color.Transparent else MaterialTheme.colorScheme.surface.copy(alpha = cardConfig.cardAlpha)
                     )
                 ) {
                     Column {
