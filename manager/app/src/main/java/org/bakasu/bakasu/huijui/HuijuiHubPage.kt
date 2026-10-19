@@ -37,7 +37,7 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
     var showSchedule by remember { mutableStateOf(false) }
     var showMonitor by remember { mutableStateOf(false) }
 
-    // 核心：外层必须包裹 blurSource()，底层的 RenderEffect 才知道从哪里抓取背景
+    // 完全复刻主页：外层必须包 blurSource()，提供抓取背景的锚点
     LazyColumn(modifier = Modifier.fillMaxSize().blurSource()) {
         item { Spacer(modifier = Modifier.height(80.dp)) }
         item {
@@ -49,14 +49,19 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
 
+                // 完全复刻主页的玻璃卡片写法
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .blurEffect(), // 开启卡片模糊
+                        .blurEffect(), // 开启毛玻璃
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
-                        // 完美复刻 CardManage 里的透明度逻辑，开启实验性模糊时全透明，让底下的 RenderEffect 透出来
-                        containerColor = if (themeConfig.isEnableBlurExp) Color.Transparent else MaterialTheme.colorScheme.surface.copy(alpha = cardConfig.cardAlpha)
+                        // 主页的逻辑是：开启了模糊就用全透明，没开启就用带透明度的纯色
+                        containerColor = if (themeConfig.isEnableBlur) {
+                            Color.Transparent
+                        } else {
+                            MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
+                        }
                     )
                 ) {
                     Column {
