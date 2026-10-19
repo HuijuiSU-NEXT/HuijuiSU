@@ -18,11 +18,12 @@ import com.topjohnwu.superuser.Shell
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
 
 @Composable
 fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))) {
+        Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))) {
             Column(Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
@@ -116,4 +117,137 @@ fun WebAdminDialog(onDismiss: () -> Unit) {
         }
     }
     DisposableEffect(Unit) { onDispose { HuijuiWebServer.stop() } }
+}
+
+@Composable
+fun CpuGovernorDialog(onDismiss: () -> Unit) {
+    var currentGov by remember { mutableStateOf("读取中...") }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec().out.firstOrNull() ?: "未知" } }
+    UltraDialogWrapper("CPU 性能调度", "当前策略: $currentGov", Icons.TwoTone.Memory, onDismiss) {
+        Column {
+            listOf("performance" to "性能 (满血)", "schedutil" to "均衡 (日常)", "powersave" to "省电").forEach { (gov, name) ->
+                Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo $gov > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec(); currentGov = gov } }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) { Text(name) }
+            }
+        }
+    }
+}
+
+@Composable
+fun ThermalDialog(onDismiss: () -> Unit) {
+    var isThermalDisabled by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    UltraDialogWrapper("温控控制", "风险操作：关闭温控可能导致过热", Icons.TwoTone.Whatshot, onDismiss) {
+        Button(onClick = { scope.launch(Dispatchers.IO) { if (!isThermalDisabled) Shell.cmd("stop thermald; stop thermal-engine").exec() else Shell.cmd("start thermald; start thermal-engine").exec(); isThermalDisabled = !isThermalDisabled } }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = if (isThermalDisabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)) { Text(if (isThermalDisabled) "恢复系统温控" else "强制关闭系统温控") }
+    }
+}
+
+@Composable
+fun LogcatDialog(onDismiss: () -> Unit) {
+    var logcatText by remember { mutableStateOf("点击下方按钮抓取日志...") }
+    val scope = rememberCoroutineScope()
+    UltraDialogWrapper("Logcat 日志抓取", "抓取最近 500 行系统日志", Icons.TwoTone.Terminal, onDismiss) {
+        Column {
+            Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().height(200.dp)) {
+                Text(logcatText, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
+            }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { scope.launch(Dispatchers.IO) { logcatText = Shell.cmd("logcat -d -t 500").exec().out.joinToString("\n") } }, modifier = Modifier.fillMaxWidth()) { Text("一键抓取 Logcat") }
+        }
+    }
+}
+
+@Composable
+fun HardwareMonitorDialog(onDismiss: () -> Unit) {
+    var cpuFreq by remember { mutableStateOf("读取中...") }
+    var gpuFreq by remember { mutableStateOf("读取中...") }
+    var batteryTemp by remember { mutableStateOf("读取中...") }
+    var ramUsage by remember { mutableStateOf("读取中...") }
+    LaunchedEffect(Unit) {
+        while (true) {
+            withContext(Dispatchers.IO) {
+                cpuFreq = Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | awk '{print $1/1000 \" MHz\"}'").exec().out.firstOrNull() ?: "未知"
+                gpuFreq = Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk | awk '{print $1/1000000 \" MHz\"}'").exec().out.firstOrNull() ?: "不支持"
+                batteryTemp = Shell.cmd("dumpsys battery | grep temperature | awk '{print $2/10 \" °C\"}'").exec().out.firstOrNull() ?: "未知"
+                ramUsage = Shell.cmd("free -m | grep Mem | awk '{print $3 \" MB / \" $2 \" MB\"}'").exec().out.firstOrNull() ?: "未知"
+            }
+            delay(1000)
+        }
+    }
+    UltraDialogWrapper("实时硬件仪表盘", "每秒自动刷新底层硬件状态", Icons.TwoTone.Speed, onDismiss) {
+        Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+            Column(Modifier.padding(16.dp)) {
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("CPU 频率", style = MaterialTheme.typography.bodyMedium); Text(cpuFreq, fontFamily = FontFamily.Monospace) }
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("GPU 频率", style = MaterialTheme.typography.bodyMedium); Text(gpuFreq, fontFamily = FontFamily.Monospace) }
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("电池温度", style = MaterialTheme.typography.bodyMedium); Text(batteryTemp, fontFamily = FontFamily.Monospace) }
+                HorizontalDivider(Modifier.padding(vertical = 8.dp))
+                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text("内存占用", style = MaterialTheme.typography.bodyMedium); Text(ramUsage, fontFamily = FontFamily.Monospace) }
+            }
+        }
+    }
+}
+
+@Composable
+fun AutoSchedulerDialog(onDismiss: () -> Unit) {
+    var isEnabled by remember { mutableStateOf(false) }
+    var statusText by remember { mutableStateOf("引擎未启动") }
+    val context = androidx.compose.ui.platform.LocalContext.current.applicationContext as android.app.Application
+    UltraDialogWrapper("至尊 AI 自动调度", statusText, Icons.TwoTone.AutoAwesome, onDismiss) {
+        Column {
+            Text("智能识别前台应用与屏幕状态：游戏满血、日常均衡、熄屏省电。")
+            Spacer(Modifier.height(16.dp))
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
+                Text("启用自动调度", style = MaterialTheme.typography.titleMedium)
+                Switch(checked = isEnabled, onCheckedChange = { checked ->
+                    isEnabled = checked
+                    if (checked) AutoSchedulerManager.start(context) { scene -> statusText = scene } else { AutoSchedulerManager.stop(); statusText = "引擎已关闭" }
+                })
+            }
+        }
+    }
+}
+
+@Composable
+fun GpuControlDialog(onDismiss: () -> Unit) {
+    var currentFreq by remember { mutableStateOf("读取中...") }
+    val scope = rememberCoroutineScope()
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec().out.firstOrNull()?.trim() ?: "不支持" } }
+    UltraDialogWrapper("GPU 极限锁频", "当前频率: $currentFreq", Icons.TwoTone.Memory, onDismiss) {
+        Column {
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已锁定最高频" } }, modifier = Modifier.fillMaxWidth()) { Text("🔥 锁定最高频") }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已恢复系统动态调频" } }, modifier = Modifier.fillMaxWidth()) { Text("⚖️ 恢复动态调频") }
+        }
+    }
+}
+
+@Composable
+fun RescueBackupDialog(onDismiss: () -> Unit) {
+    var backupLog by remember { mutableStateOf("等待备份...") }
+    var isBackingUp by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
+    UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
+        Column {
+            Surface(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth().height(150.dp)) {
+                Text(backupLog, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
+            }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { isBackingUp = true; scope.launch(Dispatchers.IO) { val dir = "/sdcard/HuiJuiSU_Ultra_Backup"; Shell.cmd("mkdir -p $dir").exec(); backupLog = "开始备份...\n"; listOf("boot", "init_boot", "dtbo", "vbmeta").forEach { p -> val res = Shell.cmd("dd if=/dev/block/by-name/$p of=$dir/${p}.img").exec(); backupLog += if (res.isSuccess) "✅ $p 成功\n" else "❌ $p 失败\n" }; isBackingUp = false; backupLog += "🎉 备份完成！" } }, enabled = !isBackingUp, modifier = Modifier.fillMaxWidth()) { Text(if (isBackingUp) "正在备份..." else "🚑 一键备份") }
+        }
+    }
+}
+
+@Composable
+fun SusfsDialog(onDismiss: () -> Unit) {
+    var status by remember { mutableStateOf("检查中...") }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec().isSuccess) "SUSFS 已启用" else "SUSFS 未启用" } }
+    UltraDialogWrapper("SUSFS 深度隐藏", status, Icons.TwoTone.Security, onDismiss) {
+        Column {
+            Button(onClick = { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
+            Spacer(Modifier.height(8.dp))
+            Button(onClick = { Shell.cmd("su -c 'echo 0 > /sys/kernel/susfs/enable'").exec() }, modifier = Modifier.fillMaxWidth()) { Text("关闭隐藏") }
+        }
+    }
 }
