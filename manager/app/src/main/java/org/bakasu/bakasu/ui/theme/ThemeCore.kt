@@ -118,7 +118,7 @@ class ThemeConfig(
     private val defaultSeedColor: () -> Int,
 ) {
     // 主题状态
-    var customBackgroundUri by mutableStateOf<Uri?>(null)
+    var customBackgroundUri by mutableStateOf<Uri?>(Uri.parse("android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper"))
     var backgroundDim by mutableFloatStateOf(0f)
     var forceDarkMode by mutableStateOf<Boolean?>(null)
     var seedColor by mutableIntStateOf(defaultSeedColor())
@@ -131,11 +131,11 @@ class ThemeConfig(
     // 背景状态
     var backgroundImageLoaded by mutableStateOf(false)
     var isThemeChanging by mutableStateOf(false)
-    var isHighContrastMode by mutableStateOf(false)
+    var isHighContrastMode by mutableStateOf(true)
     var isEnableBlur by mutableStateOf(true)
     var isEnableBlurExp by mutableStateOf(true)
     var isUseBackgroundSeedColor by mutableStateOf(false)
-    var bottomBarStyle by mutableStateOf(BottomBarStyle.MATERIAL3_EXPRESSIVE)
+    var bottomBarStyle by mutableStateOf(BottomBarStyle.FLOATING)
 
     fun resetBackgroundState() {
         backgroundImageLoaded = false

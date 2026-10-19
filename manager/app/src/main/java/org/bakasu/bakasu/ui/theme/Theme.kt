@@ -121,6 +121,19 @@ class BackgroundManager(
 ) {
     private val tag = "BackgroundManager"
 
+    init {
+        config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
+        config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
+        config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
+        config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
+        config.isUseBackgroundSeedColor = settings.getBoolean("use_background_seed_color", config.isUseBackgroundSeedColor)
+        val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
+        config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
+        settings.getString("custom_background", null)?.let { uriString ->
+            if (uriString.isNotEmpty()) config.customBackgroundUri = Uri.parse(uriString)
+        }
+    }
+
     fun saveBackgroundDim(dim: Float) {
         config.backgroundDim = dim
         settings.putFloat("background_dim", dim)
