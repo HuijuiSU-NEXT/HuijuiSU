@@ -13,8 +13,6 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.bakasu.bakasu.ui.theme.CardConfig
 import org.bakasu.bakasu.ui.theme.ThemeConfig
-import org.bakasu.bakasu.ui.theme.blurEffect
-import org.bakasu.bakasu.ui.theme.blurSource
 import org.koin.compose.koinInject
 
 @Composable
@@ -38,7 +36,7 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
     var showMonitor by remember { mutableStateOf(false) }
 
     // 完全复刻主页：外层必须包 blurSource()，提供抓取背景的锚点
-    LazyColumn(modifier = Modifier.fillMaxSize().blurSource()) {
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { Spacer(modifier = Modifier.height(80.dp)) }
         item {
             Column(modifier = Modifier.padding(horizontal = 16.dp)) {
@@ -53,15 +51,11 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .blurEffect(), // 开启毛玻璃
+                        , // 开启毛玻璃
                     shape = RoundedCornerShape(24.dp),
                     colors = CardDefaults.cardColors(
                         // 主页的逻辑是：开启了模糊就用全透明，没开启就用带透明度的纯色
-                        containerColor = if (themeConfig.isEnableBlur) {
-                            Color.Transparent
-                        } else {
-                            MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                        }
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 ) {
                     Column {

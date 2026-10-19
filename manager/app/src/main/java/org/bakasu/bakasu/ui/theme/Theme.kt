@@ -124,22 +124,23 @@ class BackgroundManager(
     
     
     
+    
     init {
-        // 最安全的读取方式：如果没有存过，就用 ThemeCore 里的默认值
         config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
         config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
         config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
         config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
-        
+
         val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
         config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
-        
+
         settings.getString("custom_background", null)?.let { uriString ->
             if (uriString.isNotEmpty()) {
                 config.customBackgroundUri = android.net.Uri.parse(uriString)
             }
         }
     }
+
 
 
 
