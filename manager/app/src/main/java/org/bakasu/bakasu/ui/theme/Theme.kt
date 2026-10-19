@@ -123,38 +123,24 @@ class BackgroundManager(
 
     
     
+    
     init {
-        val configVersion = settings.getInt("ultra_config_version", 0)
-        if (configVersion < 3) { // 注意这里改成了 < 3，强制触发！
-            settings.putInt("ultra_config_version", 3)
-            settings.putBoolean("enable_blur", true)
-            settings.putBoolean("enable_blur_exp", true)
-            settings.putBoolean("high_contrast_mode", true)
-            settings.putBoolean("use_background_seed_color", false)
-            settings.putBoolean("custom_background_enabled", true)
-            settings.putInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal)
-            settings.putFloat("card_alpha", 0.25f)
-            settings.putFloat("background_dim", 0f)
-            settings.putString("custom_background", "android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper")
-
-            config.isEnableBlur = true
-            config.isEnableBlurExp = true
-            config.isHighContrastMode = true
-            config.bottomBarStyle = BottomBarStyle.FLOATING
-            config.backgroundDim = 0f
-            config.customBackgroundUri = android.net.Uri.parse("android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper")
-        } else {
-            config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
-            config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
-            config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
-            config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
-            val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
-            config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
-            settings.getString("custom_background", null)?.let { uriString ->
-                if (uriString.isNotEmpty()) config.customBackgroundUri = android.net.Uri.parse(uriString)
+        // 最安全的读取方式：如果没有存过，就用 ThemeCore 里的默认值
+        config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
+        config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
+        config.isEnableBlurExp = settings.getBoolean("enable_blur_exp", config.isEnableBlurExp)
+        config.isHighContrastMode = settings.getBoolean("high_contrast_mode", config.isHighContrastMode)
+        
+        val barStyleOrdinal = settings.getInt("bottom_bar_style", config.bottomBarStyle.ordinal)
+        config.bottomBarStyle = BottomBarStyle.fromOrdinal(barStyleOrdinal)
+        
+        settings.getString("custom_background", null)?.let { uriString ->
+            if (uriString.isNotEmpty()) {
+                config.customBackgroundUri = android.net.Uri.parse(uriString)
             }
         }
     }
+
 
 
 
