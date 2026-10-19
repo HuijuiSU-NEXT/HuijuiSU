@@ -1,6 +1,5 @@
 package org.bakasu.bakasu.ui.theme
 
-import org.bakasu.bakasu.BuildConfig
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -120,7 +119,7 @@ class ThemeConfig(
     private val defaultSeedColor: () -> Int,
 ) {
     // 主题状态
-    var customBackgroundUri by mutableStateOf<Uri?>(Uri.parse("android.resource://${BuildConfig.APPLICATION_ID}/drawable/default_wallpaper")))
+    var customBackgroundUri by mutableStateOf<Uri?>(Uri.parse("android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper"))))
     var backgroundDim by mutableFloatStateOf(0f)
     var forceDarkMode by mutableStateOf<Boolean?>(null)
     var seedColor by mutableIntStateOf(defaultSeedColor())
