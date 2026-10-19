@@ -135,14 +135,14 @@ class BackgroundManager(
             settings.putInt("bottom_bar_style", BottomBarStyle.FLOATING.ordinal)
             settings.putFloat("card_alpha", 0.25f)
             settings.putFloat("background_dim", 0f)
-            settings.putString("custom_background", "android.resource://${BuildConfig.APPLICATION_ID}/drawable/default_wallpaper")
+            settings.putString("custom_background", "android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper")
 
             config.isEnableBlur = true
             config.isEnableBlurExp = true
             config.isHighContrastMode = true
             config.bottomBarStyle = BottomBarStyle.FLOATING
             config.backgroundDim = 0f
-            config.customBackgroundUri = android.net.Uri.parse("android.resource://${BuildConfig.APPLICATION_ID}/drawable/default_wallpaper")
+            config.customBackgroundUri = android.net.Uri.parse("android.resource://com.huijui.sunext.ultra/drawable/default_wallpaper")
         } else {
             config.backgroundDim = settings.getFloat("background_dim", config.backgroundDim)
             config.isEnableBlur = settings.getBoolean("enable_blur", config.isEnableBlur)
