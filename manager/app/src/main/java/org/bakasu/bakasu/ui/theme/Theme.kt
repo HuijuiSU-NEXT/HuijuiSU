@@ -466,7 +466,7 @@ private fun generateTypography(themeConfig: ThemeConfig): androidx.compose.mater
             blurRadius = 0f,
         )
         return shadow.copy(
-            color = if (darkMode) MaterialTheme.colorScheme.surface.copy(alpha = 0.7f),
+            color = if (darkMode) if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f),
         )
     }
 

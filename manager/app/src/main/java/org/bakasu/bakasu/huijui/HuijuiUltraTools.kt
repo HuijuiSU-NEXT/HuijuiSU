@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontFamily
@@ -23,7 +22,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))) {
+        Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f))) {
             Column(Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
@@ -43,71 +42,51 @@ fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.u
 }
 
 @Composable
-fun CpuGovernorDialog(onDismiss: () -> Unit) {
-    var currentGov by remember { mutableStateOf("读取中...") }
+fun SelinuxDialog(onDismiss: () -> Unit) {
+    var status by remember { mutableStateOf("正在获取...") }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            currentGov = Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec().out.firstOrNull() ?: "未知"
-        }
-    }
-    UltraDialogWrapper("CPU 性能调度", "当前调度策略: $currentGov", Icons.TwoTone.Memory) {
-        Column {
-            listOf("performance" to "性能 (满血)", "schedutil" to "均衡 (日常)", "powersave" to "省电").forEach { (gov, name) ->
-                Button(
-                    onClick = { 
-                        scope.launch(Dispatchers.IO) {
-                            Shell.cmd("echo $gov > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec()
-                            currentGov = gov
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                ) { Text(name) }
-            }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (Shell.cmd("getenforce").exec().out.firstOrNull() ?: "Unknown").trim() } }
+    UltraDialogWrapper("SELinux 控制器", "当前状态: $status", Icons.TwoTone.Security, onDismiss) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 0").exec(); status = "Permissive" } }) { Text("Permissive") }
         }
     }
 }
 
 @Composable
-fun ThermalDialog(onDismiss: () -> Unit) {
-    var isThermalDisabled by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    UltraDialogWrapper("温控控制", "风险操作：关闭温控可能导致设备过热", Icons.TwoTone.Whatshot) {
-        Button(
-            onClick = { 
-                scope.launch(Dispatchers.IO) {
-                    if (!isThermalDisabled) {
-                        Shell.cmd("stop thermald; stop thermal-engine").exec()
-                    } else {
-                        Shell.cmd("start thermald; start thermal-engine").exec()
-                    }
-                    isThermalDisabled = !isThermalDisabled
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(containerColor = if (isThermalDisabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)
-        ) { Text(if (isThermalDisabled) "恢复系统温控" else "强制关闭系统温控") }
+fun DpiDialog(onDismiss: () -> Unit) {
+    var dpi by remember { mutableStateOf("") }
+    UltraDialogWrapper("屏幕 DPI 修改", "输入自定义 DPI (如 420)", Icons.TwoTone.Tune, onDismiss) {
+        OutlinedTextField(value = dpi, onValueChange = { dpi = it.filter { c -> c.isDigit() } }, label = { Text("DPI 数值") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = { if (dpi.isNotBlank()) { Shell.cmd("wm density $dpi").exec(); onDismiss() } }, modifier = Modifier.fillMaxWidth()) { Text("应用") }
     }
 }
 
 @Composable
-fun LogcatDialog(onDismiss: () -> Unit) {
-    var logcatText by remember { mutableStateOf("点击下方按钮抓取日志...") }
-    val scope = rememberCoroutineScope()
-    UltraDialogWrapper("Logcat 日志抓取", "抓取最近 500 行系统日志", Icons.TwoTone.Terminal) {
-        Column {
-            Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().height(200.dp)) {
-                Text(logcatText, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
-            }
-            Spacer(Modifier.height(8.dp))
-            Button(
-                onClick = { 
-                    scope.launch(Dispatchers.IO) {
-                        logcatText = Shell.cmd("logcat -d -t 500").exec().out.joinToString("\n")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) { Text("一键抓取 Logcat") }
+fun TcpDialog(onDismiss: () -> Unit) {
+    UltraDialogWrapper("TCP 拥塞控制", "切换网络算法，优化延迟", Icons.TwoTone.NetworkCheck, onDismiss) {
+        Button(onClick = { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=bbr").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 BBR (提速)") }
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=cubic").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 CUBIC (稳定)") }
+    }
+}
+
+@Composable
+fun DropCachesDialog(onDismiss: () -> Unit) {
+    UltraDialogWrapper("内存与缓存清理", "释放 RAM，缓解卡顿", Icons.TwoTone.CleaningServices, onDismiss) {
+        Button(onClick = { Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("立即执行 drop_caches") }
+    }
+}
+
+@Composable
+fun BatteryHealthDialog(onDismiss: () -> Unit) {
+    var health by remember { mutableStateOf("读取中...") }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { health = Shell.cmd("dumpsys battery").exec().out.joinToString("\n").ifBlank { "无法读取电池信息" } } }
+    UltraDialogWrapper("电池健康", "底层状态信息", Icons.TwoTone.BatteryChargingFull, onDismiss) {
+        Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
+            Text(health, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()))
         }
     }
 }
@@ -117,8 +96,7 @@ fun WebAdminDialog(onDismiss: () -> Unit) {
     var isRunning by remember { mutableStateOf(false) }
     var serverUrl by remember { mutableStateOf("未启动") }
     var token by remember { mutableStateOf("") }
-
-    UltraDialogWrapper("网页管理 (WebUI)", "通过局域网在电脑上管理手机", Icons.TwoTone.Computer) {
+    UltraDialogWrapper("网页管理 (WebUI)", "通过局域网在电脑上管理手机", Icons.TwoTone.Computer, onDismiss) {
         Column {
             Text("确保手机和电脑在同一 Wi-Fi 下", style = MaterialTheme.typography.bodySmall)
             Spacer(Modifier.height(16.dp))
@@ -131,23 +109,11 @@ fun WebAdminDialog(onDismiss: () -> Unit) {
                     }
                 }
                 Spacer(Modifier.height(16.dp))
-                Button(onClick = { HuijuiWebServer.stop(); isRunning = false; serverUrl = "未启动" }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) {
-                    Text("停止服务器")
-                }
+                Button(onClick = { HuijuiWebServer.stop(); isRunning = false; serverUrl = "未启动" }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) { Text("停止服务器") }
             } else {
-                Button(onClick = {
-                    HuijuiWebServer.start { url ->
-                        serverUrl = url
-                        token = HuijuiWebServer.currentToken
-                        isRunning = true
-                    }
-                }, modifier = Modifier.fillMaxWidth()) {
-                    Text("启动 Web 服务器")
-                }
+                Button(onClick = { HuijuiWebServer.start { url -> serverUrl = url; token = HuijuiWebServer.currentToken; isRunning = true } }, modifier = Modifier.fillMaxWidth()) { Text("启动 Web 服务器") }
             }
         }
     }
-    DisposableEffect(Unit) {
-        onDispose { HuijuiWebServer.stop() }
-    }
+    DisposableEffect(Unit) { onDispose { HuijuiWebServer.stop() } }
 }
