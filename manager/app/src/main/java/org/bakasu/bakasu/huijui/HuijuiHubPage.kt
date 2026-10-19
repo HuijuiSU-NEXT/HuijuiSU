@@ -1,138 +1,42 @@
 package org.bakasu.bakasu.huijui
 
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.twotone.Apps
-import androidx.compose.material.icons.twotone.Build
-import androidx.compose.material.icons.twotone.Cloud
-import androidx.compose.material.icons.twotone.Favorite
-import androidx.compose.material.icons.twotone.Memory
-import androidx.compose.material.icons.twotone.SaveAlt
-import androidx.compose.material.icons.twotone.Speed
+import androidx.compose.material.icons.twotone.*
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import org.bakasu.bakasu.huijui.feature.HuijuiAppManager
-import org.bakasu.bakasu.huijui.feature.HuijuiBackup
-import org.bakasu.bakasu.huijui.feature.HuijuiCheckup
-import org.bakasu.bakasu.huijui.feature.HuijuiFlashCustom
-import org.bakasu.bakasu.huijui.feature.HuijuiPerfMode
-import org.bakasu.bakasu.huijui.feature.HuijuiRescue
-import org.bakasu.bakasu.huijui.ui.HuijuiGkiDownload
-import org.bakasu.bakasu.huijui.ui.HuijuiToolCard
-import org.bakasu.bakasu.ui.component.settings.SegmentedColumn
 
-/**
- * HuiJuiSU NEXT 工具 Hub 页
- *
- * 独立 tab 页面，集合所有内置工具入口。
- */
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
-    var showCheckup by remember { mutableStateOf(false) }
-    var showBackup by remember { mutableStateOf(false) }
-    var showRescue by remember { mutableStateOf(false) }
-    var showPerfMode by remember { mutableStateOf(false) }
-    var showGkiDownload by remember { mutableStateOf(false) }
-    var showFlashCustom by remember { mutableStateOf(false) }
-    var showAppManager by remember { mutableStateOf(false) }
+    var showSelinux by remember { mutableStateOf(false) }
+    var showDpi by remember { mutableStateOf(false) }
+    var showTcp by remember { mutableStateOf(false) }
+    var showDropCaches by remember { mutableStateOf(false) }
+    var showBatteryHealth by remember { mutableStateOf(false) }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
+        item { Spacer(modifier = Modifier.height(80.dp)) }
         item {
-            Spacer(modifier = Modifier.height(80.dp))
-        }
-        item {
-            SegmentedColumn(
-                modifier = Modifier.fillMaxWidth(),
-                title = "HuiJuiSU 工具",
-                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-            ) {
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Favorite,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "一键体检",
-                        description = "电量 / 温度 / BL / 内核 / Root / SELinux / 存储",
-                        onClick = { showCheckup = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Speed,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "性能模式",
-                        description = "省电 / 均衡 / 性能 / 游戏，一键切换系统调度",
-                        onClick = { showPerfMode = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.SaveAlt,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "一键备份包",
-                        description = "备份 boot + init_boot + vbmeta，附带 restore.bat",
-                        onClick = { showBackup = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Build,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "一键救砖",
-                        description = "从历史备份目录一键刷回",
-                        onClick = { showRescue = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Cloud,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "GKI 内核下载",
-                        description = "内置模式（built-in）专用，跳转社区预编译内核",
-                        onClick = { showGkiDownload = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Memory,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "刷入定制内核",
-                        description = "刷自己的 boot.img，自动处理 vbmeta 校验",
-                        onClick = { showFlashCustom = true },
-                    )
-                }
-                item {
-                    HuijuiToolCard(
-                        icon = Icons.TwoTone.Apps,
-                        iconTint = MaterialTheme.colorScheme.primary,
-                        title = "应用管理器",
-                        description = "冻结 / 卸载 / 强停 已安装应用",
-                        onClick = { showAppManager = true },
-                    )
-                }
+            Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                Text("HuiJuiSU Ultra 工具", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.primary, modifier = Modifier.padding(bottom = 8.dp))
+                HuijuiToolCard(icon = Icons.TwoTone.Security, iconTint = MaterialTheme.colorScheme.primary, title = "SELinux 控制器", description = "Enforcing / Permissive 一键切换", onClick = { showSelinux = true })
+                HuijuiToolCard(icon = Icons.TwoTone.Tune, iconTint = MaterialTheme.colorScheme.primary, title = "屏幕 DPI 修改", description = "突破系统限制，自由调整显示 DPI", onClick = { showDpi = true })
+                HuijuiToolCard(icon = Icons.TwoTone.NetworkCheck, iconTint = MaterialTheme.colorScheme.primary, title = "TCP 拥塞控制", description = "切换 BBR / CUBIC，优化网络延迟", onClick = { showTcp = true })
+                HuijuiToolCard(icon = Icons.TwoTone.CleaningServices, iconTint = MaterialTheme.colorScheme.primary, title = "内存与缓存清理", description = "底层 drop_caches，极速释放 RAM", onClick = { showDropCaches = true })
+                HuijuiToolCard(icon = Icons.TwoTone.BatteryChargingFull, iconTint = MaterialTheme.colorScheme.primary, title = "电池健康与温度", description = "直读底层节点，查看循环次数", onClick = { showBatteryHealth = true })
             }
         }
-        item {
-            Spacer(modifier = Modifier.height(bottomPadding + 24.dp))
-        }
+        item { Spacer(modifier = Modifier.height(bottomPadding + 120.dp)) }
     }
 
-    if (showCheckup) HuijuiCheckup(onDismiss = { showCheckup = false })
-    if (showPerfMode) HuijuiPerfMode(onDismiss = { showPerfMode = false })
-    if (showBackup) HuijuiBackup(onDismiss = { showBackup = false })
-    if (showRescue) HuijuiRescue(onDismiss = { showRescue = false })
-    if (showGkiDownload) HuijuiGkiDownload(onDismiss = { showGkiDownload = false })
-    if (showFlashCustom) HuijuiFlashCustom(onDismiss = { showFlashCustom = false })
-    if (showAppManager) HuijuiAppManager(onDismiss = { showAppManager = false })
+    if (showSelinux) SelinuxDialog(onDismiss = { showSelinux = false })
+    if (showDpi) DpiDialog(onDismiss = { showDpi = false })
+    if (showTcp) TcpDialog(onDismiss = { showTcp = false })
+    if (showDropCaches) DropCachesDialog(onDismiss = { showDropCaches = false })
+    if (showBatteryHealth) BatteryHealthDialog(onDismiss = { showBatteryHealth = false })
 }

@@ -58,4 +58,5 @@
     <string name="learn_more">বিস্তারিত জানুন</string>
     <string name="home_susfs_version">SuSFS সংস্করণ</string>
     <string name="home_seccomp_status">Seccomp-এর অবস্থা</string>
+    <string name="tools">工具</string>
 </resources>

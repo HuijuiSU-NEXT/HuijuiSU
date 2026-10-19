@@ -162,4 +162,5 @@
     <string name="settings_selinux_hide">ซ่อนการแก้ไข SELinux</string>
     <string name="settings_selinux_hide_summary">ป้องกันไม่ให้แอปพลิเคชันตรวจพบการแก้ไขปรับเปลี่ยน SELinux</string>
     <string name="settings_selinux_hide_reboot_required">รีบูตเพื่อให้มีผล</string>
+    <string name="tools">工具</string>
 </resources>

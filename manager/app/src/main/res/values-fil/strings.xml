@@ -65,4 +65,5 @@
     <string name="settings_sucompat_summary">Payagan ang root access gamit ang /system/bin/su, sa mga bagong proseso.</string>
     <string name="home_kernel">Bersyon ng Kernel</string>
     <string name="home_susfs_version">Bersyon ng SuSFS</string>
+    <string name="tools">工具</string>
 </resources>

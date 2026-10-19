@@ -45,4 +45,5 @@
     <string name="module">Modullar</string>
     <string name="module_repo">Modul Repo</string>
     <string name="module_sort_action_first">Tertiple (Ilki hereket)</string>
+    <string name="tools">工具</string>
 </resources>

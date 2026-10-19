@@ -174,4 +174,5 @@
     <string name="installing_module">Modul wird installiert %1$d/%2$d</string>
     <string name="module_failed_count">%d Fehler bei der Installation eines neuen Moduls</string>
     <string name="kernel_flashing">Kernel-Flashen</string>
+    <string name="tools">工具</string>
 </resources>

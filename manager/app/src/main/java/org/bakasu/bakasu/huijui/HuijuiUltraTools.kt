@@ -1,4 +1,4 @@
-package com.huijui.sunext.huijui
+package org.bakasu.bakasu.huijui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -25,10 +25,7 @@ import kotlinx.coroutines.withContext
 @Composable
 fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onDismiss: () -> Unit, content: @Composable () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
-        Card(
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))
-        ) {
+        Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f))) {
             Column(Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(icon, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(32.dp))
@@ -51,9 +48,7 @@ fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.u
 fun SelinuxDialog(onDismiss: () -> Unit) {
     var status by remember { mutableStateOf("正在获取...") }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) { status = (Shell.cmd("getenforce").exec().out.firstOrNull() ?: "Unknown").trim() }
-    }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (Shell.cmd("getenforce").exec().out.firstOrNull() ?: "Unknown").trim() } }
     UltraDialogWrapper("SELinux 控制器", "当前状态: $status", Icons.TwoTone.Security, onDismiss) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
@@ -91,9 +86,7 @@ fun DropCachesDialog(onDismiss: () -> Unit) {
 @Composable
 fun BatteryHealthDialog(onDismiss: () -> Unit) {
     var health by remember { mutableStateOf("读取中...") }
-    LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) { health = Shell.cmd("dumpsys battery").exec().out.joinToString("\n").ifBlank { "无法读取电池信息" } }
-    }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { health = Shell.cmd("dumpsys battery").exec().out.joinToString("\n").ifBlank { "无法读取电池信息" } } }
     UltraDialogWrapper("电池健康", "底层状态信息", Icons.TwoTone.BatteryChargingFull, onDismiss) {
         Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
             Text(health, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()))
