@@ -11,12 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.bakasu.bakasu.ui.theme.CardConfig
-import org.koin.compose.koinInject
 import org.bakasu.bakasu.ui.theme.blurEffect
+import org.koin.compose.koinInject
 
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
-    // 核心：注入全局卡片配置
     val cardConfig = koinInject<CardConfig>()
 
     var showSelinux by remember { mutableStateOf(false) }
@@ -31,6 +30,8 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
     var showRescue by remember { mutableStateOf(false) }
     var showSusfs by remember { mutableStateOf(false) }
     var showWebAdmin by remember { mutableStateOf(false) }
+    var showSchedule by remember { mutableStateOf(false) }
+    var showMonitor by remember { mutableStateOf(false) }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item { Spacer(modifier = Modifier.height(80.dp)) }
@@ -46,10 +47,10 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .blurEffect(),
+                        .blurEffect(), // 核心：开启原生底层毛玻璃
                     shape = RoundedCornerShape(24.dp),
-                    // 核心：透明度联动全局滑块
                     colors = CardDefaults.cardColors(
+                        // 透明度设定为 0.5f，刚好透出壁纸颜色又不会瞎眼
                         containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
                     )
                 ) {
@@ -77,6 +78,10 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                         HuijuiToolCard(icon = Icons.TwoTone.Security, iconTint = MaterialTheme.colorScheme.primary, title = "SUSFS 深度隐藏", description = "内核级 Root 隐藏，躲避检测", onClick = { showSusfs = true })
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                         HuijuiToolCard(icon = Icons.TwoTone.Computer, iconTint = MaterialTheme.colorScheme.primary, title = "网页管理 (WebUI)", description = "通过局域网在电脑上管理手机", onClick = { showWebAdmin = true })
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                        HuijuiToolCard(icon = Icons.TwoTone.Speed, iconTint = MaterialTheme.colorScheme.primary, title = "实时硬件仪表盘", description = "监控 CPU / GPU 频率与电池温度", onClick = { showMonitor = true })
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
+                        HuijuiToolCard(icon = Icons.TwoTone.Gamepad, iconTint = MaterialTheme.colorScheme.primary, title = "至尊 AI 自动调度", description = "智能识别游戏/日常/熄屏，自动调整底层", onClick = { showSchedule = true })
                     }
                 }
             }
@@ -96,4 +101,6 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
     if (showRescue) RescueBackupDialog(onDismiss = { showRescue = false })
     if (showSusfs) SusfsDialog(onDismiss = { showSusfs = false })
     if (showWebAdmin) WebAdminDialog(onDismiss = { showWebAdmin = false })
+    if (showMonitor) HardwareMonitorDialog(onDismiss = { showMonitor = false })
+    if (showSchedule) AutoSchedulerDialog(onDismiss = { showSchedule = false })
 }
