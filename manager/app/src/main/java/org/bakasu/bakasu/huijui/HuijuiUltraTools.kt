@@ -234,7 +234,9 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
         Column {
             Surface(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth().height(150.dp)) {
-                Text(backupLog, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
+                androidx.compose.foundation.text.selection.SelectionContainer {
+                    Text(backupLog, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
+                }
             }
             Spacer(Modifier.height(8.dp))
             Button(
@@ -242,7 +244,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                     isBackingUp = true
                     scope.launch(Dispatchers.IO) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
-                        val dir = context.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
+                        val dir = "/storage/emulated/0/HuiJuiSU_Backup"
                         // 强制提权创建目录
                         Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec()
                         backupLog = "开始备份...\n"
@@ -257,7 +259,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                             backupLog += if (res.isSuccess) "✅ $targetPart 成功\n" else "❌ $targetPart 失败\n"
                         }
                         isBackingUp = false
-                        backupLog += "🎉 备份完成！"
+                        backupLog += "🎉 备份完成！\n\n📁 文件保存路径：\n$dir"
                     }
                 },
                 enabled = !isBackingUp,
