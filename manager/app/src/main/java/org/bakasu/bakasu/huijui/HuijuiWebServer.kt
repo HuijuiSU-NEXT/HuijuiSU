@@ -69,10 +69,10 @@ object HuijuiWebServer {
             var line: String?
             var queryString = ""
             while (reader.readLine().also { line = it } != null) {
-                if (line!!.startsWith("GET /")) {
-                    queryString = line!!.substring(5).split(" ")[0]
+                if (line?.startsWith("GET /") == true) {
+                    queryString = line.substring(5).split(" ")[0]
                 }
-                if (line!!.isEmpty()) break
+                if (line.isNullOrEmpty()) break
             }
 
             // 鉴权处理

@@ -260,7 +260,7 @@ class KsuCliRepository(context: Context) {
             }
             val cmd = "module install ${file.absolutePath}"
             val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
-            Log.i("KernelSU", "install module $uri result: $result")
+// Log Removed for stealth
 
             file.delete()
 
@@ -307,8 +307,7 @@ class KsuCliRepository(context: Context) {
             newJob().add("${getKsuDaemonPath()} module action $moduleId")
                 .to(stdoutCallback, stderrCallback).exec()
         }
-
-        Log.i("KernelSU", "Module runAction result: $result")
+// Log Removed for stealth
 
         return result.isSuccess
     }
@@ -385,7 +384,7 @@ class KsuCliRepository(context: Context) {
         when (lkm) {
             is LkmSelection.LkmUri -> {
                 lkmFile = with(resolver.openInputStream(lkm.uri.toUri())) {
-                    val file = File(context.cacheDir, "kernelsu-tmp-lkm.ko")
+                    val file = File(context.cacheDir, "sys-tmp-lkm.ko")
                     file.outputStream().use { output ->
                         this?.copyTo(output)
                     }
@@ -406,9 +405,10 @@ class KsuCliRepository(context: Context) {
 
         // output dir
         if (bootFile != null) {
-            val downloadsDir =
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-            cmd += " -o $downloadsDir"
+            // 修复：使用 App 专属外部下载目录，高版本免权限，且 ksud 能直接读写
+            val downloadsDir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) 
+                ?: context.cacheDir
+            cmd += " -o \"${downloadsDir.absolutePath}\""
         }
 
         partition?.let { part ->
@@ -426,7 +426,7 @@ class KsuCliRepository(context: Context) {
         }
 
         val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
-        Log.i("KernelSU", "install boot result: ${result.isSuccess}")
+// Log Removed for stealth
 
         bootFile?.delete()
         lkmFile?.delete()

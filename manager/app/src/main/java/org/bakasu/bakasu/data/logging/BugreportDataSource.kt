@@ -118,7 +118,7 @@ fun getBugreportFile(context: Context, ksuCliRepository: KsuCliRepository): File
     val targetFile = File(context.cacheDir, "KernelSU_bugreport_$current.tar.gz")
 
     shell.newJob().add("tar czf ${targetFile.absolutePath} -C ${bugreportDir.absolutePath} .").exec()
-    shell.newJob().add("rm -rf ${bugreportDir.absolutePath}").exec()
+    shell.newJob().add("rm -rf \"${bugreportDir.absolutePath}\"").exec()
     shell.newJob().add("chmod 0644 ${targetFile.absolutePath}").exec()
 
     return targetFile

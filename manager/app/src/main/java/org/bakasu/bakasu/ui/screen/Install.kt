@@ -32,7 +32,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -820,7 +820,7 @@ private fun TopBar(
     onTabSelected: (Int) -> Unit,
 ) {
     Column(modifier = Modifier.blurEffect()) {
-        LargeFlexibleTopAppBar(
+        TopAppBar(
             title = {
                 Text(stringResource(R.string.install))
             },

@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Scaffold
@@ -232,7 +232,7 @@ fun SuSFSConfigScreen() {
     Scaffold(
         topBar = {
             Column(modifier = Modifier.blurEffect()) {
-                LargeFlexibleTopAppBar(
+                TopAppBar(
                     title = { Text(stringResource(R.string.susfs_config_title)) },
                     scrollBehavior = scrollBehavior,
                     navigationIcon = {

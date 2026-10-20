@@ -117,7 +117,7 @@ class HorizonKernelWorker(
 
             if (!skipKsud) {
                 runCatching { ksuCliRepository.install() }.onFailure { error ->
-                    Log.w(TAG, "Failed to refresh ksud after a successful kernel flash", error)
+                    // Log removed for stealth
                 }
             }
             state.updateStep(context.getString(R.string.horizon_flash_complete_status))
@@ -137,11 +137,18 @@ class HorizonKernelWorker(
         zipFile.delete()
         val source = uri
             ?: throw IOException(context.getString(R.string.horizon_copy_failed))
-        val input = context.contentResolver.openInputStream(source)
-            ?: throw IOException(context.getString(R.string.horizon_copy_failed))
+        // 修复：高版本 content:// 权限过期会抛 SecurityException，增加严格捕获
+        val input = try {
+            context.contentResolver.openInputStream(source)
+        } catch (e: SecurityException) {
+            throw IOException("文件读取权限已过期，请重新选择文件", e)
+        } catch (e: Exception) {
+            throw IOException("无法读取文件流，请确认文件存在", e)
+        } ?: throw IOException(context.getString(R.string.horizon_copy_failed))
+        
         input.use {
             zipFile.outputStream().use { output ->
-                it.copyTo(output)
+                it.buffered().copyTo(output.buffered())
             }
         }
         if (!zipFile.isFile) {
@@ -150,7 +157,7 @@ class HorizonKernelWorker(
     }
 
     private fun handleOutput(line: String) {
-        Log.i(TAG, line)
+        // Log removed for stealth
         state.addLog(line)
 
         when {
@@ -169,7 +176,7 @@ class HorizonKernelWorker(
     }
 
     private fun handleConsoleOutput(line: String) {
-        Log.i(TAG, line)
+        // Log removed for stealth
         state.addConsoleLog(line)
     }
 

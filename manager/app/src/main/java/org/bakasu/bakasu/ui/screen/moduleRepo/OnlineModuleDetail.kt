@@ -43,7 +43,7 @@ import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.PrimaryTabRow
@@ -165,7 +165,7 @@ private fun OnlineModuleDetailContent(module: CatalogModule) {
             Column(
                 modifier = Modifier.blurEffect(),
             ) {
-                LargeFlexibleTopAppBar(
+                TopAppBar(
                     title = { Text(module.moduleName) },
                     scrollBehavior = scrollBehavior,
                     navigationIcon = {

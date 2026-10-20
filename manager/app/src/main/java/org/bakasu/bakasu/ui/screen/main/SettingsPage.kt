@@ -48,7 +48,7 @@ import androidx.compose.material.icons.twotone.Update
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -190,17 +190,7 @@ fun SettingsPage(bottomPadding: Dp) {
                     SegmentedColumn(
                         title = stringResource(R.string.configuration),
                         content = {
-                            item {
-                                // 配置文件模板入口
-                                SettingsJumpPageWidget(
-                                    icon = Icons.TwoTone.Fence,
-                                    title = stringResource(R.string.settings_profile_template),
-                                    description = stringResource(R.string.settings_profile_template_summary),
-                                    onClick = {
-                                        navigator.push(Route.AppProfileTemplate)
-                                    },
-                                )
-                            }
+                            // [已砍] 配置文件模板入口已移除，只留最纯粹功能
 
                             item {
                                 val suSummary = when (uiState.suStatus) {
@@ -427,17 +417,7 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
-                        item {
-                            // 更多设置
-                            SettingsJumpPageWidget(
-                                icon = Icons.TwoTone.Settings,
-                                title = stringResource(R.string.theme_settings),
-                                description = stringResource(R.string.theme_settings),
-                                onClick = {
-                                    navigator.push(Route.ThemeSettings)
-                                },
-                            )
-                        }
+                        // [已砍] 主题设置入口已移除，专注极简
                     },
                 )
             }
@@ -457,29 +437,7 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
-                        if (homeState.systemStatus.isFullFeatured) {
-                            item {
-                                SettingsJumpPageWidget(
-                                    icon = Icons.TwoTone.Security,
-                                    title = stringResource(R.string.dynamic_manager_title),
-                                    description = stringResource(R.string.dynamic_manager_settings_summary),
-                                    onClick = {
-                                        navigator.push(Route.DynamicManager)
-                                    },
-                                )
-                            }
-
-                            item(visible = uiState.isKernelUmountEnabled) {
-                                SettingsJumpPageWidget(
-                                    icon = Icons.TwoTone.FolderOff,
-                                    title = stringResource(R.string.umount_path_manager),
-                                    description = stringResource(R.string.umount_path_manager_summary),
-                                    onClick = {
-                                        navigator.push(Route.UmountManager)
-                                    },
-                                )
-                            }
-                        }
+                        // [已砍] 动态管理 和 卸载管理 已移除，降低底层崩溃率
                         item(visible = homeState.systemStatus.lkmMode == true && !homeState.systemStatus.isLateLoadMode) {
                             UninstallItem {
                                 loadingDialog.withLoading(it)
@@ -689,7 +647,7 @@ private fun TopBar(
 ) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
-    LargeFlexibleTopAppBar(
+    TopAppBar(
         modifier = Modifier.blurEffect(),
         title = {
             Text(text = stringResource(R.string.settings))

@@ -144,7 +144,7 @@ fun ManualAddDialog(
             scope.launch {
                 val decodedContent = withContext(Dispatchers.IO) {
                     runCatching {
-                        checkNotNull(context.contentResolver.openInputStream(it)).use { stream ->
+                        context.contentResolver.openInputStream(it)?.use { stream ->
                             stream.readBytes().decodeToString(throwOnInvalidSequence = true)
                         }
                     }

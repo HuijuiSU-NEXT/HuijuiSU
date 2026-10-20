@@ -18,7 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -297,7 +297,7 @@ private fun TopBar(
     onSave: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
 ) {
-    LargeFlexibleTopAppBar(
+    TopAppBar(
         modifier = Modifier.blurEffect(),
         title = {
             Text(

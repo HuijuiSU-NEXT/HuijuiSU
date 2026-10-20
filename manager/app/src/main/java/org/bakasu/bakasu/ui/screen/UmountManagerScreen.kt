@@ -25,7 +25,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -115,7 +115,7 @@ fun UmountManagerScreen() {
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
         topBar = {
-            LargeFlexibleTopAppBar(
+            TopAppBar(
                 modifier = Modifier
                     .blurEffect(),
                 title = { Text(stringResource(R.string.umount_path_manager)) },

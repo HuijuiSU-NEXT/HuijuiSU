@@ -234,7 +234,28 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                 Text(backupLog, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
             }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { isBackingUp = true; scope.launch(Dispatchers.IO) { val dir = "/sdcard/HuiJuiSU_Ultra_Backup"; Shell.cmd("mkdir -p $dir").exec(); backupLog = "开始备份...\n"; listOf("boot", "init_boot", "dtbo", "vbmeta").forEach { p -> val res = Shell.cmd("dd if=/dev/block/by-name/$p of=$dir/${p}.img").exec(); backupLog += if (res.isSuccess) "✅ $p 成功\n" else "❌ $p 失败\n" }; isBackingUp = false; backupLog += "🎉 备份完成！" } }, enabled = !isBackingUp, modifier = Modifier.fillMaxWidth()) { Text(if (isBackingUp) "正在备份..." else "🚑 一键备份") }
+            Button(
+                onClick = {
+                    isBackingUp = true
+                    scope.launch(Dispatchers.IO) {
+                        // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
+                        val dir = context.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
+                        Shell.cmd("mkdir -p \"$dir\"").exec()
+                        backupLog = "开始备份...\n"
+                        
+                        listOf("boot", "init_boot", "dtbo", "vbmeta").forEach { p ->
+                            val res = Shell.cmd("dd if=/dev/block/by-name/$p of=\"$dir/${p}.img\"").exec()
+                            backupLog += if (res.isSuccess) "✅ $p 成功\n" else "❌ $p 失败\n"
+                        }
+                        isBackingUp = false
+                        backupLog += "🎉 备份完成！"
+                    }
+                },
+                enabled = !isBackingUp,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(if (isBackingUp) "正在备份..." else "🚑 一键备份")
+            }
         }
     }
 }

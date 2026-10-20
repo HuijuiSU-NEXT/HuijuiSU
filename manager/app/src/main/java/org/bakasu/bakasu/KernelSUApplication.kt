@@ -6,7 +6,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import org.bakasu.bakasu.di.appModules
 import org.bakasu.bakasu.huijui.data.HuijuiDefaultsApplier
 import org.bakasu.bakasu.domain.usecase.InitializeApplicationUseCase
@@ -30,8 +29,13 @@ class KernelSUApplication : Application() {
             androidContext(this@KernelSUApplication)
             modules(appModules)
         }.koin
-        runBlocking(Dispatchers.IO) {
-            koin.get<InitializeApplicationUseCase>()()
+        // 修复：绝对不能在 Application 中 runBlocking 阻塞主线程，改为纯异步协程
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
+            try {
+                koin.get<InitializeApplicationUseCase>()()
+            } catch (e: Exception) {
+                // 忽略初始化异常，防止 App 启动直接闪退
+            }
         }
 
         // 后台静默应用内置隐藏规则（不阻塞启动）

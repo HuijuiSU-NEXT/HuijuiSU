@@ -56,7 +56,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LargeFlexibleTopAppBar
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Scaffold
@@ -480,95 +480,23 @@ fun RebootDropdownItems(
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     uiState: HomeUiState,
     onReboot: (String) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    val themeConfig: ThemeConfig = koinInject()
-    val cardConfig: CardConfig = koinInject()
-    val navigator = LocalNavigator.current
-
-    LargeFlexibleTopAppBar(
-        modifier = Modifier.blurEffect(),
+    TopAppBar(
         title = {
             Text(
                 text = stringResource(R.string.app_name),
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor =
-                if (themeConfig.isEnableBlur) {
-                    Color.Transparent
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
-            scrolledContainerColor =
-                if (themeConfig.isEnableBlur) {
-                    Color.Transparent
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
+            containerColor = MaterialTheme.colorScheme.surfaceContainer,
         ),
-        actions = {
-            if (uiState.isCoreDataLoaded) {
-                // SuSFS 配置按钮
-                if (uiState.systemInfo.susfsVersionSupported) {
-                    IconButton(onClick = {
-                        navigator.push(Route.SuSFSConfig)
-                    }) {
-                        Icon(
-                            imageVector = Icons.TwoTone.Tune,
-                            contentDescription = stringResource(R.string.susfs_config_setting_title),
-                        )
-                    }
-                }
-
-                // 重启按钮
-                var showDropdown by remember { mutableStateOf(false) }
-                KsuIsValid(uiState.systemStatus) {
-                    if (uiState.systemStatus.isRootAvailable) {
-                        IconButton(onClick = {
-                            showDropdown = true
-                        }) {
-                            Icon(
-                                imageVector = Icons.TwoTone.PowerSettingsNew,
-                                contentDescription = stringResource(id = R.string.reboot),
-                            )
-
-                            DropdownMenuPopup(expanded = showDropdown, onDismissRequest = {
-                                showDropdown = false
-                            }) {
-                                DropdownMenuGroup(
-                                    shapes = MenuDefaults.groupShapes(),
-                                ) {
-                                    val pm =
-                                        LocalContext.current.getSystemService(Context.POWER_SERVICE) as PowerManager?
-                                    var methods = mapOf(
-                                        R.string.reboot to "",
-                                        R.string.reboot_soft to "soft_reboot",
-                                        R.string.reboot_recovery to "recovery",
-                                        R.string.reboot_bootloader to "bootloader",
-                                        R.string.reboot_download to "download",
-                                        R.string.reboot_edl to "edl",
-                                    )
-
-                                    @Suppress("DEPRECATION")
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && pm?.isRebootingUserspaceSupported == true) {
-                                        methods = methods + (R.string.reboot_userspace to "userspace")
-                                    }
-
-                                    RebootDropdownItems(methods, onReboot)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        },
         windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
-        scrollBehavior = scrollBehavior,
     )
 }
 
