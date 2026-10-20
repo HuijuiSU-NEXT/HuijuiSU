@@ -239,7 +239,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                     isBackingUp = true
                     scope.launch(Dispatchers.IO) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
-                        val dir = context.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
+                        val dir = androidx.compose.ui.platform.LocalContext.current.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
                         Shell.cmd("mkdir -p \"$dir\"").exec()
                         backupLog = "开始备份...\n"
                         

@@ -110,6 +110,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
         }
 
         val inputLength = input?.length ?: 0
+        val safeInput = input ?: ""
         val sb = StringBuilder()
         var tokenType = Token.LATIN
 

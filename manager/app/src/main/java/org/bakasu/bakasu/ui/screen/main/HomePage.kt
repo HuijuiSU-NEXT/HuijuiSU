@@ -480,7 +480,6 @@ fun RebootDropdownItems(
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     uiState: HomeUiState,

@@ -304,23 +304,14 @@ private fun TopBar(
                 text = title,
             )
         },
-        subtitle = if (summary.isNotEmpty()) {
-            {
-                Text(
-                    text = summary,
-                )
-            }
-        } else {
-            null
-        },
         navigationIcon = {
             AppBackButton(
                 onClick = onBack,
             )
         },
-        actions = {
+        actions = actionsLabel@ {
             if (readOnly) {
-                return@LargeFlexibleTopAppBar
+                return@actionsLabel
             }
             IconButton(onClick = onDelete) {
                 Icon(

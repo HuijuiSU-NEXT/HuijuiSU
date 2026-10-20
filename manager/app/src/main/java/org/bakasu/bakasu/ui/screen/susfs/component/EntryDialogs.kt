@@ -158,7 +158,7 @@ fun ManualAddDialog(
                     return@launch
                 }
 
-                decodedContent.getOrThrow().takeIf { content -> content.isNotEmpty() }?.let {
+                decodedContent.getOrThrow()?.takeIf { content -> content.isNotEmpty() }?.let {
                     onImportFromFileState(it)
                 }
             }
