@@ -6,6 +6,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.bakasu.bakasu.di.appModules
 import org.bakasu.bakasu.huijui.data.HuijuiDefaultsApplier
 import org.bakasu.bakasu.domain.usecase.InitializeApplicationUseCase
