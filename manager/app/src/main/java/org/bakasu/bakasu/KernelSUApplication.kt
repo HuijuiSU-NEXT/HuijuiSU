@@ -24,23 +24,29 @@ class KernelSUApplication : Application() {
             }
         }
 
-        val koin = startKoin {
-            androidLogger()
-            androidContext(this@KernelSUApplication)
-            modules(appModules)
-        }.koin
-        // 修复：绝对不能在 Application 中 runBlocking 阻塞主线程，改为纯异步协程
+        // 防御性初始化：防止 Activity 重建或进程快速重启时重复启动 Koin
+        val koin = runCatching {
+            startKoin {
+                androidLogger()
+                androidContext(this@KernelSUApplication)
+                modules(appModules)
+            }.koin
+        }.getOrElse { 
+            // 如果已经启动过，则直接获取现有的 Koin 实例
+            org.koin.core.context.GlobalContext.get() 
+        }
+        // 修复：合并为一个协程串行执行，防止底层 Shell 并发冲突导致 "The main shell was already created"
         CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
                 koin.get<InitializeApplicationUseCase>()()
             } catch (e: Exception) {
-                // 忽略初始化异常，防止 App 启动直接闪退
+                // 忽略初始化异常
             }
-        }
-
-        // 后台静默应用内置隐藏规则（不阻塞启动）
-        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            HuijuiDefaultsApplier.applyIfNeeded(this@KernelSUApplication)
+            try {
+                HuijuiDefaultsApplier.applyIfNeeded(this@KernelSUApplication)
+            } catch (e: Exception) {
+                // 忽略隐藏规则应用异常
+            }
         }
     }
 }
