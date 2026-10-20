@@ -417,7 +417,17 @@ fun SettingsPage(bottomPadding: Dp) {
                             )
                         }
 
-                        // [已砍] 主题设置入口已移除，专注极简
+                                                item {
+                            // 更多设置
+                            SettingsJumpPageWidget(
+                                icon = Icons.TwoTone.Settings,
+                                title = stringResource(R.string.theme_settings),
+                                description = stringResource(R.string.theme_settings),
+                                onClick = {
+                                    navigator.push(Route.ThemeSettings)
+                                },
+                            )
+                        }
                     },
                 )
             }

@@ -59,33 +59,33 @@ fun HuijuiHubPage(bottomPadding: Dp = 0.dp) {
                     )
                 ) {
                     Column {
-                        HuijuiToolCard(icon = Icons.TwoTone.Security, iconTint = MaterialTheme.colorScheme.primary, title = "SELinux 控制器", description = "Enforcing / Permissive 一键切换", onClick = { showSelinux = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Memory, iconTint = MaterialTheme.colorScheme.primary, title = "CPU 性能调度", description = "一键切换 CPU governor 调度策略", onClick = { showCpu = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Whatshot, iconTint = MaterialTheme.colorScheme.error, title = "系统温控开关", description = "一键停用系统温控服务（极客专用）", onClick = { showThermal = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Terminal, iconTint = MaterialTheme.colorScheme.primary, title = "Logcat 日志抓取", description = "一键抓取底层系统日志排查 Bug", onClick = { showLogcat = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Tune, iconTint = MaterialTheme.colorScheme.primary, title = "屏幕 DPI 修改", description = "突破系统限制，自由调整显示 DPI", onClick = { showDpi = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.NetworkCheck, iconTint = MaterialTheme.colorScheme.primary, title = "TCP 拥塞控制", description = "切换 BBR / CUBIC，优化网络延迟", onClick = { showTcp = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.CleaningServices, iconTint = MaterialTheme.colorScheme.primary, title = "内存与缓存清理", description = "底层 drop_caches，极速释放 RAM", onClick = { showDropCaches = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.BatteryChargingFull, iconTint = MaterialTheme.colorScheme.primary, title = "电池健康与温度", description = "直读底层节点，查看循环次数", onClick = { showBattery = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Memory, iconTint = MaterialTheme.colorScheme.primary, title = "GPU 极限锁频", description = "一键锁定最高频，释放独显性能", onClick = { showGpu = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                         HuijuiToolCard(icon = Icons.TwoTone.SaveAlt, iconTint = MaterialTheme.colorScheme.primary, title = "分区备份救援", description = "一键备份 boot/dtbo 等核心分区防变砖", onClick = { showRescue = true })
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
                         HuijuiToolCard(icon = Icons.TwoTone.Security, iconTint = MaterialTheme.colorScheme.primary, title = "SUSFS 深度隐藏", description = "内核级 Root 隐藏，躲避检测", onClick = { showSusfs = true })
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Computer, iconTint = MaterialTheme.colorScheme.primary, title = "网页管理 (WebUI)", description = "通过局域网在电脑上管理手机", onClick = { showWebAdmin = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Speed, iconTint = MaterialTheme.colorScheme.primary, title = "实时硬件仪表盘", description = "监控 CPU / GPU 频率与电池温度", onClick = { showMonitor = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
-                        HuijuiToolCard(icon = Icons.TwoTone.Gamepad, iconTint = MaterialTheme.colorScheme.primary, title = "至尊 AI 自动调度", description = "智能识别游戏/日常/熄屏，自动调整底层", onClick = { showSchedule = true })
+                        // [已安全切除] 高危/无用功能入口已隐藏
                     }
                 }
             }

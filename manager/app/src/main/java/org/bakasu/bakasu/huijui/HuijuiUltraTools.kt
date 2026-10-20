@@ -283,56 +283,8 @@ object AutoSchedulerManager {
     private var currentScene = "等待检测"
 
     fun start(application: android.app.Application, onSceneChanged: (String) -> Unit) {
-        if (isRunning) return
-        isRunning = true
-        val powerManager = application.getSystemService(android.content.Context.POWER_SERVICE) as android.os.PowerManager
-
-        job = kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
-            while (isRunning) {
-                try {
-                    val isScreenOn = powerManager.isInteractive
-                    var newScene = ""
-
-                    if (!isScreenOn) {
-                        newScene = "熄屏省电"
-                        if (currentScene != newScene) {
-                            Shell.cmd("echo powersave > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec()
-                            Shell.cmd("echo powersave > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor").exec()
-                            Shell.cmd("echo powersave > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor").exec()
-                        }
-                    } else {
-                        val topPkg = Shell.cmd("dumpsys activity activities | grep mResumedActivity | tail -1 | awk -F ' ' '{print \$4}' | cut -d'/' -f1").exec().out.firstOrNull()?.trim() ?: ""
-                        val isGame = topPkg.contains("game") || topPkg.contains("tmgp") || topPkg.contains("mihoyo") || topPkg.contains("tencent")
-                        
-                        if (isGame) {
-                            newScene = "电竞满血模式"
-                            if (currentScene != newScene) {
-                                Shell.cmd("echo performance > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec()
-                                Shell.cmd("echo performance > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor").exec()
-                                Shell.cmd("echo performance > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor").exec()
-                                Shell.cmd("stop thermal-engine; stop thermald").exec()
-                            }
-                        } else {
-                            newScene = "日常均衡模式"
-                            if (currentScene != newScene) {
-                                Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec()
-                                Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu4/cpufreq/scaling_governor").exec()
-                                Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu7/cpufreq/scaling_governor").exec()
-                                Shell.cmd("start thermal-engine; start thermald").exec()
-                            }
-                        }
-                    }
-                    
-                    if (currentScene != newScene) {
-                        currentScene = newScene
-                        withContext(Dispatchers.Main) { onSceneChanged(currentScene) }
-                    }
-                } catch (e: Exception) {
-                    // ignore
-                }
-                delay(3000)
-            }
-        }
+        // [已物理阉割] 防止后台死循环疯狂跑 Shell 导致手机发烫死机
+        return
     }
 
     fun stop() {
