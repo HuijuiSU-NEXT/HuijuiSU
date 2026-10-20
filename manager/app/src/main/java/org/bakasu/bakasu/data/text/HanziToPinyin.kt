@@ -115,7 +115,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
         var tokenType = Token.LATIN
 
         for (i in 0 until inputLength) {
-            val character = input[i]
+            val character = safeInput[i]
             when {
                 character == ' ' -> {
                     if (sb.isNotEmpty()) {

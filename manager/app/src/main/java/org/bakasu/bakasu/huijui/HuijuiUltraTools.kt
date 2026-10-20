@@ -22,6 +22,7 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.ui.graphics.vector.ImageVector, onDismiss: () -> Unit, content: @Composable () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = Modifier.fillMaxWidth().padding(16.dp), colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.85f))) {
             Column(Modifier.padding(20.dp)) {
@@ -225,6 +226,8 @@ fun GpuControlDialog(onDismiss: () -> Unit) {
 
 @Composable
 fun RescueBackupDialog(onDismiss: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+
     var backupLog by remember { mutableStateOf("等待备份...") }
     var isBackingUp by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
@@ -239,7 +242,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                     isBackingUp = true
                     scope.launch(Dispatchers.IO) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
-                        val dir = androidx.compose.ui.platform.LocalContext.current.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
+                        val dir = context.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
                         Shell.cmd("mkdir -p \"$dir\"").exec()
                         backupLog = "开始备份...\n"
                         
