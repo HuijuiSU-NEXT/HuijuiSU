@@ -90,94 +90,65 @@ class ModuleCatalogRepository(
         }
     }
 
-    private suspend fun parseModule(item: JSONObject): CatalogModule? {
-        val moduleId = item.optString("moduleId").takeIf(String::isNotEmpty) ?: return null
-        val authorList = item.optJSONArray("authors")?.let { authors ->
-            (0 until authors.length()).mapNotNull { index ->
-                authors.optJSONObject(index)?.let { author ->
-                    val name = author.optString("name").trim()
-                    name.takeIf(String::isNotEmpty)?.let {
-                        CatalogAuthor(it, stripTicks(author.optString("link")))
-                    }
-                }
-            }
-        }.orEmpty()
-        val latestReleaseObject = item.optJSONObject("latestRelease")
-        val latestRelease = latestReleaseObject?.optString(
-            "name",
-            latestReleaseObject.optString("version"),
-        ).orEmpty()
-        val detail = fetchModuleDetail(moduleId)
-        val releases = detail?.releases.orEmpty()
+    private fun parseModule(item: JSONObject): CatalogModule? {
+        // 适配咱们爬虫的 "id" 字段
+        val moduleId = item.optString("id").takeIf(String::isNotEmpty) ?: return null
+        val authorStr = item.optString("author")
+        val authorList = if (authorStr.isNotEmpty()) {
+            listOf(CatalogAuthor(authorStr, ""))
+        } else emptyList()
+        
+        val versionName = item.optString("version")
+        val versionCode = item.opt("versionCode").toIntCompat()
+        val zipUrl = item.optString("zipUrl")
+        val size = item.optLong("size")
+        val downloadCount = item.opt("downloadCount").toIntCompat()
+        
+        // 构建咱们的 Asset
+        val latestAsset = if (zipUrl.isNotEmpty()) {
+            ModuleReleaseAsset(
+                name = "${moduleId}-${versionName}.zip",
+                downloadUrl = zipUrl,
+                size = size,
+                downloadCount = downloadCount
+            )
+        } else null
+
+        // 把单个版本伪装成 releases 列表，防止 UI 报错
+        val releases = if (latestAsset != null) {
+            listOf(
+                ModuleRelease(
+                    name = versionName,
+                    tagName = versionName,
+                    publishedAt = item.optString("updatedAt"),
+                    descriptionHTML = "",
+                    assets = listOf(latestAsset)
+                )
+            )
+        } else emptyList()
 
         return CatalogModule(
             moduleId = moduleId,
-            moduleName = item.optString("moduleName"),
-            authors = authorList.takeIf { it.isNotEmpty() }
-                ?.joinToString(", ") { it.name }
-                ?: item.optString("authors"),
+            moduleName = item.optString("name"),
+            authors = authorStr,
             authorList = authorList,
-            summary = item.optString("summary"),
-            metamodule = item.optBoolean("metamodule"),
-            stargazerCount = item.optInt("stargazerCount"),
+            summary = item.optString("description"),
+            metamodule = false,
+            stargazerCount = item.optInt("stars"),
             updatedAt = item.optString("updatedAt"),
-            createdAt = item.optString("createdAt"),
-            latestRelease = latestRelease,
-            latestReleaseTime = latestReleaseObject?.optString("time").orEmpty(),
-            latestVersionCode = latestReleaseObject?.opt("versionCode").toIntCompat(),
-            latestAsset = releases.firstOrNull { it.name == latestRelease },
+            createdAt = item.optString("updatedAt"),
+            latestRelease = versionName,
+            latestReleaseTime = item.optString("updatedAt"),
+            latestVersionCode = versionCode,
+            latestAsset = latestAsset,
             installed = SuFile.open("/data/adb/modules/$moduleId/module.prop").exists(),
-            readme = detail?.readme.orEmpty(),
-            sourceUrl = detail?.sourceUrl.orEmpty(),
+            readme = "", // 没有单独详情了，置空
+            sourceUrl = "",
             releases = releases,
         )
     }
 
-    private suspend fun fetchModuleDetail(moduleId: String): Detail? = networkRequestRepository
-        .fetch("https://hhcdxii-ship-it.github.io/Huijui_Module_Repo/modules.json")
-        .getOrNull()
-        ?.let { body ->
-            val json = JSONObject(body)
-            val releases = json.optJSONArray("releases")?.let { array ->
-                (0 until array.length()).mapNotNull { index ->
-                    array.optJSONObject(index)?.toRelease()
-                }
-            }.orEmpty()
-            Detail(
-                readme = json.optString("readmeHTML"),
-                sourceUrl = stripTicks(json.optString("sourceUrl")),
-                releases = releases,
-            )
-        }
 
-    private fun JSONObject.toRelease(): ModuleRelease {
-        val releaseName = optString("name", optString("tagName", optString("version")))
-        val assets = optJSONArray("releaseAssets")?.let { array ->
-            (0 until array.length()).mapNotNull { index ->
-                array.optJSONObject(index)?.let { asset ->
-                    val name = asset.optString("name")
-                    val url = stripTicks(asset.optString("downloadUrl"))
-                    if (name.isBlank() || url.isBlank()) {
-                        null
-                    } else {
-                        ModuleReleaseAsset(
-                            name = name,
-                            downloadUrl = url,
-                            size = asset.optLong("size"),
-                            downloadCount = asset.opt("downloadCount").toIntCompat(),
-                        )
-                    }
-                }
-            }
-        }.orEmpty()
-        return ModuleRelease(
-            name = releaseName,
-            tagName = optString("tagName", releaseName),
-            publishedAt = optString("publishedAt"),
-            descriptionHTML = optString("descriptionHTML"),
-            assets = assets,
-        )
-    }
 
     private fun stripTicks(value: String): String = value.trim().let {
         if (it.startsWith('`') && it.endsWith('`') && it.length >= 2) {
@@ -193,9 +164,5 @@ class ModuleCatalogRepository(
         else -> 0
     }
 
-    private data class Detail(
-        val readme: String,
-        val sourceUrl: String,
-        val releases: List<ModuleRelease>,
-    )
+
 }
