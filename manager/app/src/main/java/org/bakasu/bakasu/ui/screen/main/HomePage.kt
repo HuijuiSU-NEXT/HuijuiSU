@@ -158,6 +158,7 @@ fun HomePage(
     val scope = rememberCoroutineScope()
 
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection), // 修复：恢复主界面滑动联动
         topBar = {
             TopBar(
                 uiState = uiState,
@@ -486,16 +487,50 @@ private fun TopBar(
     onReboot: (String) -> Unit,
     scrollBehavior: TopAppBarScrollBehavior? = null,
 ) {
-    TopAppBar(
+    val themeConfig: ThemeConfig = koinInject()
+    val cardConfig: CardConfig = koinInject()
+    val navigator = LocalNavigator.current
+
+    LargeFlexibleTopAppBar(
+        modifier = Modifier.blurEffect(), // 恢复原版玻璃特效
         title = {
-            Text(
-                text = stringResource(R.string.app_name),
-            )
+            Text(text = stringResource(R.string.app_name))
         },
         colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainer,
+            containerColor = if (themeConfig.isEnableBlur) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
+            scrolledContainerColor = if (themeConfig.isEnableBlur) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
         ),
+        actions = {
+            if (uiState.isCoreDataLoaded) {
+                // SuSFS 配置按钮
+                if (uiState.systemInfo.susfsVersionSupported) {
+                    IconButton(onClick = { navigator.push(Route.SuSFSConfig) }) {
+                        Icon(Icons.TwoTone.Tune, contentDescription = "SuSFS")
+                    }
+                }
+                // 重启按钮
+                var showDropdown by remember { mutableStateOf(false) }
+                KsuIsValid(uiState.systemStatus) {
+                    if (uiState.systemStatus.isRootAvailable) {
+                        IconButton(onClick = { showDropdown = true }) {
+                            Icon(Icons.TwoTone.PowerSettingsNew, contentDescription = "Reboot")
+                            DropdownMenuPopup(expanded = showDropdown, onDismissRequest = { showDropdown = false }) {
+                                DropdownMenuGroup(shapes = MenuDefaults.groupShapes()) {
+                                    val methods = mapOf(
+                                        R.string.reboot to "", R.string.reboot_soft to "soft_reboot",
+                                        R.string.reboot_recovery to "recovery", R.string.reboot_bootloader to "bootloader",
+                                        R.string.reboot_download to "download", R.string.reboot_edl to "edl",
+                                    )
+                                    RebootDropdownItems(methods, onReboot)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+        scrollBehavior = scrollBehavior,
     )
 }
 
