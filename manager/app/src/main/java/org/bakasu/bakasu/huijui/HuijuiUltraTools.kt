@@ -243,12 +243,18 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                     scope.launch(Dispatchers.IO) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
                         val dir = context.getExternalFilesDir(null)?.absolutePath + "/Ultra_Backup"
-                        Shell.cmd("mkdir -p \"$dir\"").exec()
+                        // 强制提权创建目录
+                        Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec()
                         backupLog = "开始备份...\n"
                         
+                        // 动态获取当前槽位 (A/B分区)
+                        val slot = Shell.cmd("su -c 'getprop ro.boot.slot_suffix'").exec().out.firstOrNull()?.trim() ?: ""
+                        
                         listOf("boot", "init_boot", "dtbo", "vbmeta").forEach { p ->
-                            val res = Shell.cmd("dd if=/dev/block/by-name/$p of=\"$dir/${p}.img\"").exec()
-                            backupLog += if (res.isSuccess) "✅ $p 成功\n" else "❌ $p 失败\n"
+                            // 动态尝试 带后缀 和 不带后缀 的分区名
+                            val targetPart = if (Shell.cmd("su -c 'ls /dev/block/by-name/${p}$slot'").exec().isSuccess) "${p}$slot" else p
+                            val res = Shell.cmd("su -c 'dd if=/dev/block/by-name/$targetPart of=\"$dir/$targetPart.img\"'").exec()
+                            backupLog += if (res.isSuccess) "✅ $targetPart 成功\n" else "❌ $targetPart 失败\n"
                         }
                         isBackingUp = false
                         backupLog += "🎉 备份完成！"
@@ -266,7 +272,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
 @Composable
 fun SusfsDialog(onDismiss: () -> Unit) {
     var status by remember { mutableStateOf("检查中...") }
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec().isSuccess) "SUSFS 已启用" else "SUSFS 未启用" } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec().isSuccess) "SUSFS 状态 (需内核支持)" else "SUSFS 未启用" } }
     UltraDialogWrapper("SUSFS 深度隐藏", status, Icons.TwoTone.Security, onDismiss) {
         Column {
             Button(onClick = { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
