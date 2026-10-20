@@ -1,0 +1,6 @@
+id=huijui_ultimate_hide
+name=HuiJuiSU Ultimate Hide (5-Layer)
+version=v6.0.0
+versionCode=6
+author=HuiJuiSU
+description=五层纵深防御终极隐藏模块。集成伪回锁、SUSFS、Zygisk注入与应用列表隐藏。

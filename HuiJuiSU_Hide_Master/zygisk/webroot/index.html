@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Zygisk Next</title>
+
+        <!-- Window Safe Area Insets -->
+        <link rel="stylesheet" type="text/css" href="/internal/insets.css" />
+
+        <style>
+            .root_layout {
+                padding-top: var(--window-inset-top);
+            }
+
+            .n-layout-scroll-container {
+                padding-bottom: var(--window-inset-bottom);
+            }
+
+            @media (prefers-color-scheme: dark) {
+                body {
+                    background-color: black;
+                }
+            }
+        </style>
+      <script type="module" crossorigin src="/assets/index-C9wvo2f2.js"></script>
+      <link rel="stylesheet" crossorigin href="/assets/index-BTrU_GM1.css">
+    </head>
+    <body>
+        <div id="app"></div>
+        <script>
+            if (window.apatch !== undefined && window.apatch.ksu === undefined) {
+                window.ksu = window.apatch
+            }
+        </script>
+    </body>
+</html>

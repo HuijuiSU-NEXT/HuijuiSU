@@ -1,0 +1,6 @@
+id=huijui_hide_master
+name=Huijui一键隐藏模块
+version=v1.0.0
+versionCode=1
+author=HuiJuiSU
+description=集成 Zygisk Next、Zygisk-Assistant、TrickyStore 与 SUSFS 的六边形终极隐藏方案。刷入即用，通杀 Momo/春秋！

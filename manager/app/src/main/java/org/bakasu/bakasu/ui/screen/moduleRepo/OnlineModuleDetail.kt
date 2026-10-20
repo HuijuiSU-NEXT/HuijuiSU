@@ -178,7 +178,7 @@ private fun OnlineModuleDetailContent(module: CatalogModule) {
                     actions = {
                         IconButton(
                             onClick = {
-                                uriHandler.openUri("https://modules.kernelsu.org/module/${module.moduleId}")
+                                uriHandler.openUri("https://github.com/hhcdxii-ship-it/Huijui_Module_Repo")
                             },
                         ) {
                             Icon(

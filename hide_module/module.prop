@@ -1,0 +1,6 @@
+id=huijui_env_hide
+name=HuiJuiSU Ultimate Env Hide
+version=v1.0.0
+versionCode=1
+author=HuiJuiSU
+description=底层物理级环境隐藏模块，专治各类 Root 检测、Momo 扫描。集成文件挂载隐藏与进程伪装。

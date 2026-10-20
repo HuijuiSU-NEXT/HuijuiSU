@@ -1,0 +1,6 @@
+id=huijui_hide_system
+name=HuiJuiSU 终极防检测系统
+version=v5.0.0
+versionCode=5
+author=HuiJuiSU
+description=集成了 Zygisk 注入、TrickyStore 硬件密钥伪造与 SUSFS 内核级隐藏。专治春秋、Momo 等强检测。

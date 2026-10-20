@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HuiJuiSU 隐藏配置</title>
+    <style>
+        body { font-family: -apple-system, sans-serif; background: #121212; color: #e0e0e0; padding: 20px; margin: 0; }
+        .card { background: #1e1e1e; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+        h2 { color: #00e5ff; margin-top: 0; }
+        .status { font-size: 16px; margin: 12px 0; padding: 12px; background: #2a2a2a; border-radius: 8px; }
+        button { background: #00e5ff; color: #000; border: none; padding: 12px 20px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 16px; cursor: pointer; }
+        button:active { opacity: 0.8; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>🛡️ 环境隐藏控制台</h2>
+        <div class="status" id="status">点击下方按钮检查当前挂载状态</div>
+        <button onclick="checkStatus()">一键检测环境</button>
+    </div>
+
+    <script>
+        async function checkStatus() {
+            const statusEl = document.getElementById('status');
+            statusEl.innerText = "正在扫描...";
+            
+            // KernelSU / Magisk WebUI 标准 API
+            try {
+                const result = await ksu.exec("mount | grep '/data/data' | wc -l");
+                if (result.errno === 0) {
+                    const count = parseInt(result.stdout.trim());
+                    if (count > 0) {
+                        statusEl.innerHTML = `✅ <b>隐藏生效中</b><br>已成功覆盖 ${count} 个数据目录的挂载点。`;
+                        statusEl.style.color = "#4caf50";
+                    } else {
+                        statusEl.innerHTML = `⚠️ <b>未检测到挂载</b><br>请确认模块已刷入并重启。`;
+                        statusEl.style.color = "#ff9800";
+                    }
+                }
+            } catch (e) {
+                statusEl.innerText = "❌ 执行失败，请确认管理器已获取 Root 权限。";
+                statusEl.style.color = "#f44336";
+            }
+        }
+    </script>
+</body>
+</html>
