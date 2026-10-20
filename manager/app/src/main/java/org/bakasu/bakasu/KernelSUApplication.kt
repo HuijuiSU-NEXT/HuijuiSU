@@ -35,13 +35,17 @@ class KernelSUApplication : Application() {
             // 如果已经启动过，则直接获取现有的 Koin 实例
             org.koin.core.context.GlobalContext.get() 
         }
-        // 修复：合并为一个协程串行执行，防止底层 Shell 并发冲突导致 "The main shell was already created"
-        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
-            try {
+        // 恢复核心：必须在主线程前完成 Shell 初始化，否则会导致 The main shell was already created
+        try {
+            runBlocking(Dispatchers.IO) {
                 koin.get<InitializeApplicationUseCase>()()
-            } catch (e: Exception) {
-                // 忽略初始化异常
             }
+        } catch (e: Exception) {
+            // 捕获异常，防止初始化失败导致崩溃
+        }
+
+        // 隐藏规则放在后台慢慢跑
+        CoroutineScope(SupervisorJob() + Dispatchers.IO).launch {
             try {
                 HuijuiDefaultsApplier.applyIfNeeded(this@KernelSUApplication)
             } catch (e: Exception) {
