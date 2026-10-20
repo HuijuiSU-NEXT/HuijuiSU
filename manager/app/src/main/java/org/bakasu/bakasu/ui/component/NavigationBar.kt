@@ -75,7 +75,7 @@ fun NavigationBar(
     val handlePageChange = LocalHandlePageChange.current
     val pagerState = LocalPagerState.current
 
-    if (false /* 物理禁用液态玻璃底栏，提升低端机性能 */) {
+    if (isBottomBar && themeConfig.bottomBarStyle == BottomBarStyle.FLOATING && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
