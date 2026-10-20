@@ -5,27 +5,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material.icons.twotone.Security
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HuijuiHubPage() {
+fun HuijuiHubPage(bottomPadding: Dp) {
     var showRescue by remember { mutableStateOf(false) }
     var showSusfs by remember { mutableStateOf(false) }
 
-    // 弹窗挂载
     if (showRescue) RescueBackupDialog(onDismiss = { showRescue = false })
     if (showSusfs) SusfsDialog(onDismiss = { showSusfs = false })
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
+        contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = bottomPadding + 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
@@ -36,7 +33,7 @@ fun HuijuiHubPage() {
             )
         }
 
-        // 只保留两个最安全的功能
+        // 直接调用项目原本的 HuijuiToolCard，完美继承所有项目内样式，绝不冲突！
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
@@ -55,32 +52,6 @@ fun HuijuiHubPage() {
                 description = "内核级 Root 隐藏，躲避检测",
                 onClick = { showSusfs = true }
             )
-        }
-    }
-}
-
-@Composable
-fun HuijuiToolCard(
-    icon: ImageVector,
-    iconTint: androidx.compose.ui.graphics.Color,
-    title: String,
-    description: String,
-    onClick: () -> Unit
-) {
-    androidx.compose.material3.Card(
-        onClick = onClick,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(32.dp))
-            Spacer(Modifier.width(16.dp))
-            Column {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Text(text = description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
         }
     }
 }
