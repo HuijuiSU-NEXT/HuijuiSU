@@ -132,7 +132,7 @@ android {
         minSdk = androidMinSdkVersion
         targetSdk = androidTargetSdkVersion
         versionCode = managerVersionCode
-        versionName = "v4.4.1-Ultra-Stable"
+        versionName = "v4.5.1-rc1"
         applicationId = managerPackageName
 
         val isPrBuild = rootProject.extra["isPrBuild"] as Boolean
