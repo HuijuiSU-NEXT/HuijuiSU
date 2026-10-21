@@ -237,14 +237,18 @@ fun ModulePage(bottomPadding: Dp) {
                 suspend fun processUri(uri: Uri) {
                     try {
                         val uriString = uri.toString()
-                        if (!isModuleUriAccessible(uriString)) {
-                            return
+                        // 🚀 极客手术：将所有系统底层 IO 和解析全部移入 Dispatchers.IO，彻底解放主线程！
+                        val moduleName = withContext(Dispatchers.IO) {
+                            if (!isModuleUriAccessible(uriString)) {
+                                return@withContext null
+                            }
+                            takeModuleUriPermission(uriString)
+                            extractModuleName(uriString)
                         }
-                        takeModuleUriPermission(uriString)
-                        val moduleName =
-                            withContext(Dispatchers.IO) { extractModuleName(uriString) }
-                        selectedModules.add(uri)
-                        selectedModuleNames[uri] = moduleName
+                        if (moduleName != null) {
+                            selectedModules.add(uri)
+                            selectedModuleNames[uri] = moduleName
+                        }
                     } catch (e: Exception) {
                         Log.e("ModuleScreen", "Error while processing URI: $uri, Error: ${e.message}")
                     }
