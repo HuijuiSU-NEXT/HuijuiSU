@@ -28,7 +28,12 @@ class ModuleCatalogRepository(
     private val networkRequestRepository: NetworkRequestRepository,
 ) {
     private companion object {
-        const val MODULES_URL = "https://hhcdxii-ship-it.github.io/Huijui_Module_Repo/modules.json"
+        // 🚨 多源地址池：主站打不开自动切国内 CDN
+        val MODULES_URLS = listOf(
+            "https://hhcdxii-ship-it.github.io/Huijui_Module_Repo/modules.json",
+            "https://cdn.jsdelivr.net/gh/hhcdxii-ship-it/Huijui_Module_Repo@gh-pages/modules.json",
+            "https://ghproxy.net/https://raw.githubusercontent.com/hhcdxii-ship-it/Huijui_Module_Repo/gh-pages/modules.json"
+        )
     }
 
     private val refreshMutex = Mutex()
@@ -81,7 +86,24 @@ class ModuleCatalogRepository(
     }
 
     private suspend fun fetchModules(): List<CatalogModule> {
-        val body = networkRequestRepository.fetch(MODULES_URL).getOrThrow()
+        var body: String? = null
+        var lastException: Exception? = null
+
+        // 循环尝试所有节点
+        for (url in MODULES_URLS) {
+            try {
+                body = networkRequestRepository.fetch(url).getOrThrow()
+                if (!body.isNullOrEmpty()) break // 成功拿到数据就跳出循环
+            } catch (e: Exception) {
+                lastException = e
+                // 失败则静默处理，继续尝试下一个 URL
+            }
+        }
+
+        if (body.isNullOrEmpty()) {
+            throw lastException ?: Exception("All module repo URLs failed")
+        }
+
         val json = JSONArray(body)
         return coroutineScope {
             (0 until json.length()).map { index ->
@@ -104,8 +126,8 @@ class ModuleCatalogRepository(
         val size = item.optLong("size")
         val downloadCount = item.opt("downloadCount").toIntCompat()
         
-        // 构建咱们的 Asset
-        val latestAsset = if (zipUrl.isNotEmpty()) {
+        // 1. 构建 Asset (单个文件)
+        val releaseAsset = if (zipUrl.isNotEmpty()) {
             ModuleReleaseAsset(
                 name = "${moduleId}-${versionName}.zip",
                 downloadUrl = zipUrl,
@@ -114,17 +136,20 @@ class ModuleCatalogRepository(
             )
         } else null
 
-        // 把单个版本伪装成 releases 列表，防止 UI 报错
-        val releases = if (latestAsset != null) {
-            listOf(
-                ModuleRelease(
-                    name = versionName,
-                    tagName = versionName,
-                    publishedAt = item.optString("updatedAt"),
-                    descriptionHTML = "",
-                    assets = listOf(latestAsset)
-                )
+        // 2. 构建 Release (版本信息，包含 Asset)
+        val releaseObj = if (releaseAsset != null) {
+            ModuleRelease(
+                name = versionName,
+                tagName = versionName,
+                publishedAt = item.optString("updatedAt"),
+                descriptionHTML = "",
+                assets = listOf(releaseAsset)
             )
+        } else null
+
+        // 3. 把单个版本伪装成 releases 列表
+        val releases = if (releaseObj != null) {
+            listOf(releaseObj)
         } else emptyList()
 
         return CatalogModule(
@@ -140,29 +165,14 @@ class ModuleCatalogRepository(
             latestRelease = versionName,
             latestReleaseTime = item.optString("updatedAt"),
             latestVersionCode = versionCode,
-            latestAsset = latestAsset,
+            latestAsset = releaseObj, // 🌟 核心修复：传 Release 对象！
             installed = SuFile.open("/data/adb/modules/$moduleId/module.prop").exists(),
-            readme = "", // 没有单独详情了，置空
+            readme = "", 
             sourceUrl = "",
             releases = releases,
         )
     }
 
-
-
     private fun stripTicks(value: String): String = value.trim().let {
         if (it.startsWith('`') && it.endsWith('`') && it.length >= 2) {
-            it.substring(1, it.length - 1)
-        } else {
-            it
-        }
-    }
-
-    private fun Any?.toIntCompat(): Int = when (this) {
-        is Number -> toInt()
-        is String -> toIntOrNull() ?: 0
-        else -> 0
-    }
-
-
-}
+            it.s
