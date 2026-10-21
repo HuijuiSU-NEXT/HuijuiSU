@@ -49,8 +49,7 @@ internal const val CenterOpticallyCoefficient = 0.11f
 @Stable
 internal class AnimatedShapeState(
     val shape: RoundedCornerShape,
-    val spec: FiniteAnimationSpec<Float>,
-) {
+    val spec: FiniteAnimationSpec<Float>) {
     var size: Size = Size.Zero
     var density: Density = Density(0f, 0f)
 
@@ -109,8 +108,7 @@ private fun rememberAnimatedShape(state: AnimatedShapeState): Shape {
             override fun createOutline(
                 size: Size,
                 layoutDirection: LayoutDirection,
-                density: Density,
-            ): Outline {
+                density: Density): Outline {
                 state.size = size
 
                 clampedRange = 0f..size.height / 2
@@ -119,8 +117,7 @@ private fun rememberAnimatedShape(state: AnimatedShapeState): Shape {
                         topStart = CornerSize(state.topStart().coerceIn(clampedRange)),
                         topEnd = CornerSize(state.topEnd().coerceIn(clampedRange)),
                         bottomStart = CornerSize(state.bottomStart().coerceIn(clampedRange)),
-                        bottomEnd = CornerSize(state.bottomEnd().coerceIn(clampedRange)),
-                    )
+                        bottomEnd = CornerSize(state.bottomEnd().coerceIn(clampedRange)))
                     .createOutline(size, layoutDirection, density)
             }
         }
@@ -130,8 +127,7 @@ private fun rememberAnimatedShape(state: AnimatedShapeState): Shape {
 @Composable
 internal fun rememberAnimatedShape(
     currentShape: RoundedCornerShape,
-    animationSpec: FiniteAnimationSpec<Float>,
-): Shape {
+    animationSpec: FiniteAnimationSpec<Float>): Shape {
     val state =
         remember(animationSpec) { AnimatedShapeState(shape = currentShape, spec = animationSpec) }
 
@@ -151,8 +147,7 @@ internal fun rememberAnimatedShape(
 @Stable
 internal class AnimatedCornerBasedShapeState(
     val shape: CornerBasedShape,
-    val spec: FiniteAnimationSpec<Float>,
-) {
+    val spec: FiniteAnimationSpec<Float>) {
     var size: Size = Size.Zero
     var density: Density = Density(0f, 0f)
 
@@ -211,8 +206,7 @@ private fun rememberAnimatedShape(state: AnimatedCornerBasedShapeState): Shape {
             override fun createOutline(
                 size: Size,
                 layoutDirection: LayoutDirection,
-                density: Density,
-            ): Outline {
+                density: Density): Outline {
                 state.size = size
 
                 clampedRange = 0f..size.height / 2
@@ -220,8 +214,7 @@ private fun rememberAnimatedShape(state: AnimatedCornerBasedShapeState): Shape {
                     topStart = state.topStart().coerceIn(clampedRange),
                     topEnd = state.topEnd().coerceIn(clampedRange),
                     bottomStart = state.bottomStart().coerceIn(clampedRange),
-                    bottomEnd = state.bottomEnd().coerceIn(clampedRange),
-                )
+                    bottomEnd = state.bottomEnd().coerceIn(clampedRange))
                     .createOutline(size, layoutDirection, density)
             }
         }
@@ -231,8 +224,7 @@ private fun rememberAnimatedShape(state: AnimatedCornerBasedShapeState): Shape {
 @Composable
 internal fun rememberAnimatedShape(
     currentShape: CornerBasedShape,
-    animationSpec: FiniteAnimationSpec<Float>,
-): Shape {
+    animationSpec: FiniteAnimationSpec<Float>): Shape {
     val state =
         remember(animationSpec) {
             AnimatedCornerBasedShapeState(shape = currentShape, spec = animationSpec)

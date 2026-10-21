@@ -15,8 +15,7 @@ import top.yukonga.miuix.kmp.blur.Backdrop
 @Stable
 class CombinedBackdrop(
     val first: Backdrop,
-    val second: Backdrop,
-) : Backdrop {
+    val second: Backdrop) : Backdrop {
 
     override val isCoordinatesDependent: Boolean = first.isCoordinatesDependent || second.isCoordinatesDependent
 
@@ -27,8 +26,7 @@ class CombinedBackdrop(
         density: Density,
         coordinates: LayoutCoordinates?,
         layerBlock: (GraphicsLayerScope.() -> Unit)?,
-        downscaleFactor: Int,
-    ) {
+        downscaleFactor: Int) {
         with(first) { drawBackdrop(density, coordinates, layerBlock, downscaleFactor) }
         with(second) { drawBackdrop(density, coordinates, layerBlock, downscaleFactor) }
     }

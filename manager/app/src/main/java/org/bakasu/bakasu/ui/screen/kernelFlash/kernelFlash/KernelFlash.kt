@@ -89,8 +89,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun KernelFlashScreen(
     kernelUri: String,
     selectedSlot: String? = null,
-    skipKsud: Boolean = false,
-) {
+    skipKsud: Boolean = false) {
     val cardConfig = koinInject<CardConfig>()
 
     val context = LocalContext.current
@@ -158,14 +157,12 @@ fun KernelFlashScreen(
                         val date = format.format(Date())
                         val file = File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "KernelSU_kernel_flash_log_$date.log",
-                        )
+                            "KernelSU_kernel_flash_log_$date.log")
                         file.writeText(uiState.fullLog)
                         snackBarHost.showReplacingSnackbar(logSavedString.format(file.absolutePath))
                     }
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
             if (flashState.isCompleted) {
@@ -176,22 +173,19 @@ fun KernelFlashScreen(
                     icon = {
                         Icon(
                             Icons.TwoTone.Refresh,
-                            contentDescription = stringResource(id = R.string.reboot),
-                        )
+                            contentDescription = stringResource(id = R.string.reboot))
                     },
                     text = {
                         Text(text = stringResource(id = R.string.reboot))
                     },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    expanded = true,
-                )
+                    expanded = true)
             }
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        containerColor = MaterialTheme.colorScheme.background,
-    ) { innerPadding ->
+        containerColor = MaterialTheme.colorScheme.background) { innerPadding ->
         KeyEventBlocker {
             it.key == Key.VolumeDown || it.key == Key.VolumeUp
         }
@@ -200,15 +194,13 @@ fun KernelFlashScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-        ) {
+                .nestedScroll(scrollBehavior.nestedScrollConnection)) {
             FlashProgressIndicator(flashState)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(scrollState),
-            ) {
+                    .verticalScroll(scrollState)) {
                 LaunchedEffect(logText) {
                     scrollState.animateScrollTo(scrollState.maxValue)
                 }
@@ -217,8 +209,7 @@ fun KernelFlashScreen(
                     text = logText,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = monospaceFontFamily(),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                    color = MaterialTheme.colorScheme.onSurface)
             }
         }
     }
@@ -227,8 +218,7 @@ fun KernelFlashScreen(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun FlashProgressIndicator(
-    flashState: FlashProgress,
-) {
+    flashState: FlashProgress) {
     val progressColor = when {
         flashState.error.isNotEmpty() -> MaterialTheme.colorScheme.error
         flashState.isCompleted -> MaterialTheme.colorScheme.tertiary
@@ -237,27 +227,22 @@ private fun FlashProgressIndicator(
 
     val progress = animateFloatAsState(
         targetValue = flashState.progress,
-        label = "FlashProgress",
-    )
+        label = "FlashProgress")
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceBright,
-        ),
-    ) {
+            containerColor = MaterialTheme.colorScheme.surfaceBright)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-        ) {
+                .padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+                horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = when {
                         flashState.error.isNotEmpty() -> stringResource(R.string.flash_failed)
@@ -266,24 +251,21 @@ private fun FlashProgressIndicator(
                     },
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
-                    color = progressColor,
-                )
+                    color = progressColor)
 
                 when {
                     flashState.error.isNotEmpty() -> {
                         Icon(
                             imageVector = Icons.TwoTone.Error,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.error,
-                        )
+                            tint = MaterialTheme.colorScheme.error)
                     }
 
                     flashState.isCompleted -> {
                         Icon(
                             imageVector = Icons.TwoTone.CheckCircle,
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.tertiary,
-                        )
+                            tint = MaterialTheme.colorScheme.tertiary)
                     }
                 }
             }
@@ -294,8 +276,7 @@ private fun FlashProgressIndicator(
                 Text(
                     text = flashState.currentStep,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -306,21 +287,18 @@ private fun FlashProgressIndicator(
                     .fillMaxWidth()
                     .height(8.dp),
                 color = progressColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
+                trackColor = MaterialTheme.colorScheme.surfaceVariant)
 
             if (flashState.error.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
+                    verticalAlignment = Alignment.CenterVertically) {
                     Icon(
                         imageVector = Icons.TwoTone.Error,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.size(16.dp),
-                    )
+                        modifier = Modifier.size(16.dp))
                 }
 
                 Spacer(modifier = Modifier.height(4.dp))
@@ -333,10 +311,8 @@ private fun FlashProgressIndicator(
                         .fillMaxWidth()
                         .background(
                             MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-                            shape = MaterialTheme.shapes.small,
-                        )
-                        .padding(8.dp),
-                )
+                            shape = MaterialTheme.shapes.small)
+                        .padding(8.dp))
             }
         }
     }
@@ -348,8 +324,7 @@ private fun TopBar(
     flashState: FlashProgress,
     onBack: () -> Unit,
     onSave: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
+    scrollBehavior: TopAppBarScrollBehavior? = null) {
     val cardConfig: CardConfig = koinInject()
     val statusColor = when {
         flashState.error.isNotEmpty() -> MaterialTheme.colorScheme.error
@@ -373,35 +348,29 @@ private fun TopBar(
                         flashState.error.isNotEmpty() -> R.string.flash_failed
                         flashState.isCompleted -> R.string.flash_success
                         else -> R.string.kernel_flashing
-                    },
-                ),
+                    }),
                 style = MaterialTheme.typography.titleLarge,
-                color = statusColor,
-            )
+                color = statusColor)
         },
         navigationIcon = {
             IconButton(onClick = onBack) {
                 Icon(
                     imageVector = Icons.AutoMirrored.TwoTone.ArrowBack,
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+                    tint = MaterialTheme.colorScheme.onSurface)
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = cardColor.copy(alpha = cardAlpha),
-            scrolledContainerColor = cardColor.copy(alpha = cardAlpha),
-        ),
+            scrolledContainerColor = cardColor.copy(alpha = cardAlpha)),
         actions = {
             IconButton(onClick = onSave) {
                 Icon(
                     imageVector = Icons.TwoTone.Save,
                     contentDescription = stringResource(id = R.string.save_log),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         },
         windowInsets = adaptiveScaffoldWindowInsets(includeBottom = false),
-        scrollBehavior = scrollBehavior,
-    )
+        scrollBehavior = scrollBehavior)
 }

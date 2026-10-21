@@ -55,35 +55,29 @@ fun HuijuiGkiDownload(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.Cloud,
                     iconTint = MaterialTheme.colorScheme.primary,
                     title = "GKI 内核下载",
-                    subtitle = "内置模式（built-in）专用",
-                )
+                    subtitle = "内置模式（built-in）专用")
                 Spacer(Modifier.height(16.dp))
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                    modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text(
                             "当前设备信息",
                             style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                            color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Spacer(Modifier.height(4.dp))
                         Text(
                             "内核版本：$kernelRelease",
                             style = MaterialTheme.typography.bodySmall,
-                            fontFamily = FontFamily.Monospace,
-                        )
+                            fontFamily = FontFamily.Monospace)
                         Spacer(Modifier.height(4.dp))
                         Text(
                             "KMI：${if (currentKmi.isBlank()) "未识别" else currentKmi}",
                             style = MaterialTheme.typography.bodyMedium,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
+                            color = MaterialTheme.colorScheme.primary)
                     }
                 }
 
@@ -92,8 +86,7 @@ fun HuijuiGkiDownload(onDismiss: () -> Unit) {
                 Text(
                     "说明",
                     style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
+                    fontWeight = FontWeight.SemiBold)
                 Spacer(Modifier.height(6.dp))
                 Text(
                     "GKI 设备（内核 5.10+）官方不支持 built-in 模式。\n\n" +
@@ -101,15 +94,13 @@ fun HuijuiGkiDownload(onDismiss: () -> Unit) {
                         "推荐项目：WildKernels/GKI_KernelSU_SUSFS\n" +
                         "该项目提供 android12-5.10 到 android16-6.12 的预编译内核，已集成 KernelSU + SUSFS。",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                 Spacer(Modifier.height(16.dp))
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
+                    horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = onDismiss) { Text("关闭") }
                     Spacer(Modifier.width(8.dp))
                     TextButton(
@@ -118,8 +109,7 @@ fun HuijuiGkiDownload(onDismiss: () -> Unit) {
                                 data = Uri.parse("https://github.com/WildKernels/GKI_KernelSU_SUSFS/releases")
                             }
                             context.startActivity(intent)
-                        },
-                    ) {
+                        }) {
                         Text("去下载")
                     }
                 }

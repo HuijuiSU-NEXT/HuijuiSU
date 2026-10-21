@@ -14,8 +14,7 @@ fun BackdropEffectScope.lens(
     refractionHeight: Float,
     refractionAmount: Float,
     depthEffect: Boolean = false,
-    chromaticAberration: Float = 0f,
-) {
+    chromaticAberration: Float = 0f) {
     if (!isRuntimeShaderSupported()) return
     if (refractionHeight <= 0f || refractionAmount <= 0f) return
 
@@ -45,8 +44,7 @@ fun BackdropEffectScope.lens(
     runtimeShaderEffect(
         key = key,
         shaderString = shaderString,
-        uniformShaderName = "content",
-    ) {
+        uniformShaderName = "content") {
         setFloatUniform("size", scaledSizeW, scaledSizeH)
         setFloatUniform("offset", -scaledPadding, -scaledPadding)
         setFloatUniform("cornerRadii", scaledRadii)
@@ -72,8 +70,7 @@ private fun BackdropEffectScope.roundedRectCornerRadii(): FloatArray? {
         topLeft.fastCoerceAtMost(maxRadius),
         topRight.fastCoerceAtMost(maxRadius),
         bottomRight.fastCoerceAtMost(maxRadius),
-        bottomLeft.fastCoerceAtMost(maxRadius),
-    )
+        bottomLeft.fastCoerceAtMost(maxRadius))
 }
 
 private const val ROUNDED_RECT_SDF = """

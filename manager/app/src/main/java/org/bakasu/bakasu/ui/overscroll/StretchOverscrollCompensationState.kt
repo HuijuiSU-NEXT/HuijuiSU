@@ -24,8 +24,7 @@ class StretchOverscrollCompensationState {
     internal fun update(
         owner: Any,
         horizontal: StretchOverscrollAxis?,
-        vertical: StretchOverscrollAxis?,
-    ) {
+        vertical: StretchOverscrollAxis?) {
         horizontalAxes.update(owner, horizontal)
         verticalAxes.update(owner, vertical)
     }
@@ -38,13 +37,11 @@ class StretchOverscrollCompensationState {
 
 private fun LinkedHashMap<Any, StretchOverscrollAxis>.update(
     owner: Any,
-    axis: StretchOverscrollAxis?,
-) {
+    axis: StretchOverscrollAxis?) {
     remove(owner)
     if (axis != null) put(owner, axis)
 }
 
 class StretchOverscrollAxis internal constructor(
     val amount: Float,
-    val coordinates: LayoutCoordinates,
-)
+    val coordinates: LayoutCoordinates)

@@ -8,5 +8,4 @@ data class InstalledPackageInfo(
     val isSystem: Boolean,
     val uid: Int,
     val apkPath: String = "",
-    val nativeLibraryDir: String? = null,
-)
+    val nativeLibraryDir: String? = null)

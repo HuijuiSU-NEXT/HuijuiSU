@@ -17,8 +17,7 @@ import org.bakasu.bakasu.domain.usecase.SaveModuleActionLogUseCase
 
 data class ExecuteModuleActionUiState(
     val output: String = "",
-    val running: Boolean = true,
-)
+    val running: Boolean = true)
 
 sealed interface ExecuteModuleActionUiAction {
     data object SaveLog : ExecuteModuleActionUiAction
@@ -33,8 +32,7 @@ sealed interface ExecuteModuleActionUiEvent {
 class ExecuteModuleActionViewModel(
     private val moduleId: String,
     private val executeModuleAction: ExecuteModuleActionUseCase,
-    private val saveModuleActionLog: SaveModuleActionLogUseCase,
-) : ViewModel() {
+    private val saveModuleActionLog: SaveModuleActionLogUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(ExecuteModuleActionUiState())
     private val mutableEvents =
         MutableSharedFlow<ExecuteModuleActionUiEvent>(extraBufferCapacity = 1)

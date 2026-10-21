@@ -32,54 +32,46 @@ import org.bakasu.bakasu.ui.theme.renderBackgroundBlur
 fun NetworkRefreshContent(
     offline: Boolean,
     onRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
+    modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
+        contentAlignment = Alignment.Center) {
         if (offline) {
             Column(
                 modifier = Modifier
                     .clip(RoundedCornerShape(16.dp))
                     .renderBackgroundBlur(MaterialTheme.colorScheme.surfaceContainer)
                     .padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 Box(
                     modifier = Modifier
                         .size(64.dp)
                         .clip(CircleShape)
                         .background(MaterialTheme.colorScheme.surfaceVariant),
-                    contentAlignment = Alignment.Center,
-                ) {
+                    contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.TwoTone.SignalWifiOff,
                         contentDescription = null,
                         modifier = Modifier.size(32.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(12.dp))
 
                 Text(
                     text = stringResource(R.string.network_offline),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.titleMediumEmphasized,
-                )
+                    style = MaterialTheme.typography.titleMediumEmphasized)
                 Spacer(modifier = Modifier.height(1.dp))
 
                 Text(
                     text = stringResource(R.string.please_check_network),
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    style = MaterialTheme.typography.bodyMediumEmphasized,
-                )
+                    style = MaterialTheme.typography.bodyMediumEmphasized)
                 Spacer(modifier = Modifier.height(10.dp))
 
                 Button(
                     contentPadding = PaddingValues(horizontal = 50.dp),
-                    onClick = onRetry,
-                ) {
+                    onClick = onRetry) {
                     Text(text = stringResource(R.string.network_retry))
                 }
             }

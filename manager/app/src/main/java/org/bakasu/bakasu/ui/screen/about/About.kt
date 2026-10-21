@@ -86,23 +86,20 @@ fun AboutScreen() {
         rememberTopAppBarState(
             initialHeightOffset = -154f,
             initialHeightOffsetLimit = -154f, // from debugger
-        ),
-    )
+        ))
 
     Scaffold(
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
         topBar = {
             TopAppBar(
                 modifier = Modifier.blurEffect(),
-                ,
                 title = { Text(text = stringResource(id = R.string.about)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
                     AppBackButton(
                         onClick = {
                             navigator.pop()
-                        },
-                    )
+                        })
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor =
@@ -116,21 +113,17 @@ fun AboutScreen() {
                             Color.Transparent
                         } else {
                             MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                        },
-                ),
-            )
+                        }))
         },
         contentColor = MaterialTheme.colorScheme.onSurface,
-        containerColor = Color.Transparent,
-    ) { innerPadding ->
+        containerColor = Color.Transparent) { innerPadding ->
         val uriHandler = LocalUriHandler.current
 
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .blurSource(),
-        ) {
+                .blurSource()) {
             item {
                 Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
             }
@@ -139,8 +132,7 @@ fun AboutScreen() {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp, bottom = 12.dp),
-                ) {
+                        .padding(top = 8.dp, bottom = 12.dp)) {
                     StatusCard()
                 }
             }
@@ -151,39 +143,30 @@ fun AboutScreen() {
                         .padding(horizontal = 16.dp)
                         .padding(top = 8.dp, bottom = 12.dp),
                     color = MaterialTheme.colorScheme.secondaryContainer.copy(
-                        alpha = cardConfig.cardAlpha,
-                    ),
+                        alpha = cardConfig.cardAlpha),
                     message = AnnotatedString.fromHtml(
                         htmlString = stringResource(
                             id = R.string.about_app_icon,
-                            "<b><a href=\"https://github.com/hhcdxii-ship-it\">Huijui123</a></b>",
-                        ),
+                            "<b><a href=\"https://github.com/hhcdxii-ship-it\">Huijui123</a></b>"),
                         linkStyles = TextLinkStyles(
                             style = SpanStyle(
                                 color = MaterialTheme.colorScheme.primary,
-                                textDecoration = TextDecoration.Underline,
-                            ),
+                                textDecoration = TextDecoration.Underline),
                             pressedStyle = SpanStyle(
                                 color = MaterialTheme.colorScheme.primary,
                                 background = MaterialTheme.colorScheme.secondaryContainer,
-                                textDecoration = TextDecoration.Underline,
-                            ),
-                        ),
-                    ),
+                                textDecoration = TextDecoration.Underline))),
                     icon = {
                         Icon(
                             imageVector = Icons.TwoTone.Info,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    },
-                )
+                            modifier = Modifier.size(18.dp))
+                    })
             }
 
             item {
                 SegmentedColumn(
-                    title = stringResource(R.string.about),
-                ) {
+                    title = stringResource(R.string.about)) {
                     item {
                         SettingsJumpPageWidget(
                             icon = Icons.TwoTone.Code,
@@ -191,8 +174,7 @@ fun AboutScreen() {
                             description = stringResource(R.string.get_source_code_detail),
                             onClick = {
                                 uriHandler.openUri("https://github.com/hhcdxii-ship-it/HuijuiSU")
-                            },
-                        )
+                            })
                     }
                     item {
                         SettingsJumpPageWidget(
@@ -212,8 +194,7 @@ fun AboutScreen() {
                                     clipboard.setPrimaryClip(ClipData.newPlainText("QQ Group", qqGroupUin))
                                     Toast.makeText(ctx, "群号已复制：$qqGroupUin", Toast.LENGTH_LONG).show()
                                 }
-                            },
-                        )
+                            })
                     }
                     item {
                         SettingsJumpPageWidget(
@@ -222,8 +203,7 @@ fun AboutScreen() {
                             description = stringResource(R.string.open_source_license_settings_description),
                             onClick = {
                                 navigator.push(Route.OpenSourceLicense)
-                            },
-                        )
+                            })
                     }
                 }
             }
@@ -239,11 +219,9 @@ fun AboutScreen() {
 @Composable
 private fun AboutScreenPreview() {
     CompositionLocalProvider(
-        LocalNavigator provides Navigator(Route.About),
-    ) {
+        LocalNavigator provides Navigator(Route.About)) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-        ) {
+            color = MaterialTheme.colorScheme.surfaceContainer) {
             AboutScreen()
         }
     }
@@ -263,14 +241,12 @@ private fun StatusCard() {
             } else {
                 MaterialTheme.colorScheme.primaryContainer.copy(cardConfig.cardAlpha)
             },
-        shape = RoundedCornerShape(16.dp),
-    ) {
+        shape = RoundedCornerShape(16.dp)) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
             CompositionLocalProvider(LocalContentColor provides MaterialTheme.colorScheme.secondary) {
                 Box(modifier = Modifier.align(Alignment.CenterHorizontally)) {
                     Image(
@@ -280,11 +256,8 @@ private fun StatusCard() {
                         painter = rememberDrawablePainter(
                             drawable = ContextCompat.getDrawable(
                                 LocalContext.current,
-                                R.mipmap.ic_launcher,
-                            ),
-                        ),
-                        contentDescription = stringResource(id = R.string.app_name),
-                    )
+                                R.mipmap.ic_launcher)),
+                        contentDescription = stringResource(id = R.string.app_name))
                 }
             }
             ProvideTextStyle(value = MaterialTheme.typography.titleLarge) {
@@ -292,20 +265,17 @@ private fun StatusCard() {
                     Text(
                         modifier = Modifier,
                         text = stringResource(id = R.string.app_name),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+                        style = MaterialTheme.typography.titleMedium)
                 }
             }
             Box {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
                         text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
-                        style = MaterialTheme.typography.bodyMedium,
-                    )
+                        style = MaterialTheme.typography.bodyMedium)
                 }
             }
         }

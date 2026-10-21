@@ -41,8 +41,7 @@ internal suspend fun prepareWebView(
     packageRepository: InstalledPackageRepository,
     appIconDataSource: AppIconDataSource,
     webUiRepository: WebUiRepository,
-    colorsCssProvider: () -> String,
-) {
+    colorsCssProvider: () -> String) {
     withContext(Dispatchers.IO) {
         val moduleInfo = try {
             webUiRepository.getModuleInfo(moduleId)
@@ -50,8 +49,7 @@ internal suspend fun prepareWebView(
             if (error is CancellationException) throw error
             withContext(Dispatchers.Main) {
                 webUIState.uiEvent = WebUIEvent.Error(
-                    activity.getString(R.string.module_unavailable, moduleId),
-                )
+                    activity.getString(R.string.module_unavailable, moduleId))
             }
             return@withContext
         }
@@ -91,8 +89,7 @@ internal suspend fun prepareWebView(
             webView.setBackgroundColor(Color.TRANSPARENT)
 
             WebView.setWebContentsDebuggingEnabled(
-                settingsRepository.getBoolean("enable_web_debugging", false),
-            )
+                settingsRepository.getBoolean("enable_web_debugging", false))
 
             webView.settings.apply {
                 javaScriptEnabled = true
@@ -110,9 +107,7 @@ internal suspend fun prepareWebView(
                         webUiRepository,
                         { webUIState.currentInsets },
                         { enable -> webUIState.isInsetsEnabled = enable },
-                        colorsCssProvider,
-                    ),
-                )
+                        colorsCssProvider))
                 .build()
 
             // WebViewClient
@@ -132,8 +127,7 @@ internal suspend fun prepareWebView(
                                     200,
                                     "OK",
                                     mapOf("Access-Control-Allow-Origin" to "*"),
-                                    ByteArrayInputStream(stream.toByteArray()),
-                                )
+                                    ByteArrayInputStream(stream.toByteArray()))
                             }
                         }
                     }
@@ -170,8 +164,7 @@ internal suspend fun prepareWebView(
                 override fun onShowFileChooser(
                     webView: WebView?,
                     filePathCallback: ValueCallback<Array<Uri>>?,
-                    fileChooserParams: FileChooserParams?,
-                ): Boolean {
+                    fileChooserParams: FileChooserParams?): Boolean {
                     webUIState.filePathCallback?.onReceiveValue(null)
                     webUIState.filePathCallback = filePathCallback
 

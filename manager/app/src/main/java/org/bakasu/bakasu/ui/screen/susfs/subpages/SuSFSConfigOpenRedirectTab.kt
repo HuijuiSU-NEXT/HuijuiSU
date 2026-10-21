@@ -48,8 +48,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun OpenRedirectTab(
     nestedScrollConnection: NestedScrollConnection,
     innerPadding: PaddingValues,
-    onRegisterRefresh: SuSFSRefreshRegistrar,
-) {
+    onRegisterRefresh: SuSFSRefreshRegistrar) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -68,8 +67,7 @@ fun OpenRedirectTab(
         UidScheme.RootExceptSu to stringResource(R.string.susfs_uid_scheme_root_except_su),
         UidScheme.NonSu to stringResource(R.string.susfs_uid_scheme_non_su),
         UidScheme.UnmountedApp to stringResource(R.string.susfs_uid_scheme_unmounted_app),
-        UidScheme.Unmounted to stringResource(R.string.susfs_uid_scheme_unmounted),
-    )
+        UidScheme.Unmounted to stringResource(R.string.susfs_uid_scheme_unmounted))
 
     RegisterSuSFSRefresh(onRegisterRefresh) { config, _ ->
         entries = config.open_redirect
@@ -98,8 +96,7 @@ fun OpenRedirectTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection),
-    ) {
+            .nestedScroll(nestedScrollConnection)) {
         item {
             Spacer(Modifier.height(innerPadding.calculateTopPadding()))
         }
@@ -107,16 +104,13 @@ fun OpenRedirectTab(
         item {
             SuSFSDescriptionCard(
                 title = stringResource(R.string.susfs_tab_open_redirect),
-                description = stringResource(R.string.susfs_redirect_description),
-            ) {
+                description = stringResource(R.string.susfs_redirect_description)) {
                 Text(
                     text = stringResource(R.string.susfs_redirect_uid_schemes_description),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = stringResource(R.string.susfs_redirect_important_notes),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -126,18 +120,15 @@ fun OpenRedirectTab(
             emptyTitle = noEntriesMsg,
             emptyDescription = noEntriesHint,
             entryKey = { "${it.target_path}|${it.redirected_path}|${it.uid_scheme.value}" },
-            onAddEntry = { showManualAdd = true },
-        ) { item ->
+            onAddEntry = { showManualAdd = true }) { item ->
             SettingsJumpPageWidget(
                 iconPlaceholder = false,
                 title = item.target_path,
                 description = stringResource(
                     R.string.susfs_redirect_entry_description,
                     item.redirected_path,
-                    item.uid_scheme.localizedLabel(),
-                ),
-                onClick = { detailItem = item },
-            )
+                    item.uid_scheme.localizedLabel()),
+                onClick = { detailItem = item })
         }
 
         item {
@@ -180,8 +171,7 @@ fun OpenRedirectTab(
                     useLabelAsPlaceholder = true,
                     enabled = !isLoading,
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    renderBackgroundBlur = false,
-                )
+                    renderBackgroundBlur = false)
             }
             item {
                 SettingsTextFieldWidget(
@@ -190,8 +180,7 @@ fun OpenRedirectTab(
                     useLabelAsPlaceholder = true,
                     enabled = !isLoading,
                     lineLimits = TextFieldLineLimits.SingleLine,
-                    renderBackgroundBlur = false,
-                )
+                    renderBackgroundBlur = false)
             }
             item {
                 SettingsDropdownWidget(
@@ -202,11 +191,9 @@ fun OpenRedirectTab(
                         .coerceAtLeast(0),
                     data = uidSchemeOptions.map { it.second },
                     renderBackgroundBlur = false,
-                    onChoiceChange = { index -> manualUidScheme = uidSchemeOptions[index].first },
-                )
+                    onChoiceChange = { index -> manualUidScheme = uidSchemeOptions[index].first })
             }
-        },
-    )
+        })
 
     detailItem?.let { item ->
         EntryDetailDialog(
@@ -215,8 +202,7 @@ fun OpenRedirectTab(
             fields = listOf(
                 targetPathLabel to item.target_path,
                 redirectedPathLabel to item.redirected_path,
-                uidSchemeLabel to item.uid_scheme.localizedLabel(),
-            ),
+                uidSchemeLabel to item.uid_scheme.localizedLabel()),
             onDismiss = { detailItem = null },
             onDelete = {
                 scope.launch {
@@ -234,7 +220,6 @@ fun OpenRedirectTab(
                     }
                     isLoading = false
                 }
-            },
-        )
+            })
     }
 }

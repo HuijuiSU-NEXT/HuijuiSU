@@ -50,8 +50,7 @@ fun GithubMarkdown(
     content: String,
     backgroundColor: androidx.compose.ui.graphics.Color,
     loading: MutableState<Boolean> = remember { mutableStateOf(true) },
-    callerProvideLoadingIndicator: Boolean = false,
-) {
+    callerProvideLoadingIndicator: Boolean = false) {
     val themeConfig: ThemeConfig = koinInject()
     val isDark = isInDarkTheme(themeConfig.forceDarkMode)
     val dir = if (LocalLayoutDirection.current == LayoutDirection.Rtl) "rtl" else "ltr"
@@ -104,8 +103,7 @@ fun GithubMarkdown(
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center,
-        ) {
+            horizontalArrangement = Arrangement.Center) {
             LoadingIndicator()
         }
     }
@@ -214,8 +212,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
 
                         override fun shouldOverrideUrlLoading(
                             view: WebView,
-                            request: WebResourceRequest,
-                        ): Boolean {
+                            request: WebResourceRequest): Boolean {
                             val url = request.url.toString()
                             val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -225,21 +222,18 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
 
                         override fun shouldInterceptRequest(
                             view: WebView,
-                            request: WebResourceRequest,
-                        ): WebResourceResponse? {
+                            request: WebResourceRequest): WebResourceResponse? {
                             assetLoader.shouldInterceptRequest(request.url)?.let { return it }
                             val scheme = request.url.scheme ?: return null
                             if (!scheme.startsWith("http")) return null
                             return resourceRepository.load(
                                 url = request.url.toString(),
                                 method = request.method,
-                                requestHeaders = request.requestHeaders,
-                            )?.let { resource ->
+                                requestHeaders = request.requestHeaders)?.let { resource ->
                                 WebResourceResponse(
                                     resource.mimeType,
                                     resource.encoding,
-                                    resource.body,
-                                )
+                                    resource.body)
                             }
                         }
 
@@ -295,8 +289,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
                         html,
                         "text/html",
                         StandardCharsets.UTF_8.name(),
-                        null,
-                    )
+                        null)
                 } catch (e: Throwable) {
                     Log.e("GithubMarkdown", "WebView setup failed", e)
                 }
@@ -315,8 +308,7 @@ private fun GithubMarkdownWebView(loading: MutableState<Boolean>, html: String) 
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clipToBounds(),
-    )
+            .clipToBounds())
 }
 
 class MarkdownScrollInterface {

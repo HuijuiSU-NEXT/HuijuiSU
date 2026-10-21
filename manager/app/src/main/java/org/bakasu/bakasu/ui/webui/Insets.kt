@@ -18,8 +18,7 @@ data class Insets(
     val top: Int,
     val bottom: Int,
     val left: Int,
-    val right: Int,
-) {
+    val right: Int) {
     val css
         get() = buildString {
             appendLine(":root {")

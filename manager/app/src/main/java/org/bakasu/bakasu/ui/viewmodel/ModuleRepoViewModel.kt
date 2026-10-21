@@ -27,8 +27,7 @@ data class ModuleRepoUiState(
     val sortStargazerCountFirst: Boolean = false,
     val isRefreshing: Boolean = false,
     val offline: Boolean = false,
-    val search: String = "",
-)
+    val search: String = "")
 
 sealed interface ModuleRepoUiAction {
     data object Refresh : ModuleRepoUiAction
@@ -48,12 +47,10 @@ class ModuleRepoViewModel(
     private val refreshCatalog: RefreshModuleCatalogUseCase,
     getBooleanPreference: GetBooleanPreferenceUseCase,
     private val setBooleanPreference: SetBooleanPreferenceUseCase,
-    private val transliterateText: TransliterateTextUseCase,
-) : ViewModel() {
+    private val transliterateText: TransliterateTextUseCase) : ViewModel() {
     private val search = MutableStateFlow("")
     private val sortStarsFirst = MutableStateFlow(
-        getBooleanPreference("module_repo_sort_star_first", false),
-    )
+        getBooleanPreference("module_repo_sort_star_first", false))
     private val mutableEvents = MutableSharedFlow<ModuleRepoUiEvent>(extraBufferCapacity = 1)
 
     val events: SharedFlow<ModuleRepoUiEvent> = mutableEvents.asSharedFlow()
@@ -62,8 +59,7 @@ class ModuleRepoViewModel(
         observeRefreshing(),
         observeOffline(),
         search,
-        sortStarsFirst,
-    ) { modules, refreshing, offline, query, starsFirst ->
+        sortStarsFirst) { modules, refreshing, offline, query, starsFirst ->
         ModuleRepoUiState(
             modules = modules.filter { module ->
                 module.moduleId.contains(query, true) ||
@@ -71,18 +67,15 @@ class ModuleRepoViewModel(
                     transliterateText(module.moduleName).contains(query, true)
             }.sortedWith(
                 compareByDescending<CatalogModule> { it.installed }
-                    .thenByDescending { if (starsFirst) it.stargazerCount else 0 },
-            ),
+                    .thenByDescending { if (starsFirst) it.stargazerCount else 0 }),
             sortStargazerCountFirst = starsFirst,
             isRefreshing = refreshing,
             offline = offline,
-            search = query,
-        )
+            search = query)
     }.stateIn(
         viewModelScope,
         SharingStarted.Eagerly,
-        ModuleRepoUiState(),
-    )
+        ModuleRepoUiState())
     val uiState: StateFlow<ModuleRepoUiState> = state
 
     fun updateSearch(value: String) {
@@ -105,12 +98,10 @@ class ModuleRepoViewModel(
                         ModuleCatalogFailure.Offline -> mutableEvents.emit(ModuleRepoUiEvent.Offline)
 
                         ModuleCatalogFailure.NotFound -> mutableEvents.emit(
-                            ModuleRepoUiEvent.Error("Module not found"),
-                        )
+                            ModuleRepoUiEvent.Error("Module not found"))
 
                         is ModuleCatalogFailure.Network -> mutableEvents.emit(
-                            ModuleRepoUiEvent.Error(reason.message),
-                        )
+                            ModuleRepoUiEvent.Error(reason.message))
                     }
                 }
             }

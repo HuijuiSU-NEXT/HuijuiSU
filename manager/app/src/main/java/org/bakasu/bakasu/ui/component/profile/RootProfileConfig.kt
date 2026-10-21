@@ -49,15 +49,13 @@ fun RootProfileConfig(
     profile: AppProfile,
     sepolicyValid: Boolean = true,
     onValidateSepolicy: (String) -> Unit = {},
-    onProfileChange: (AppProfile) -> Unit,
-) {
+    onProfileChange: (AppProfile) -> Unit) {
     SegmentedColumn {
         rootProfileConfig(
             profile,
             sepolicyValid,
             onValidateSepolicy,
-            onProfileChange,
-        )
+            onProfileChange)
     }
 }
 
@@ -65,16 +63,13 @@ fun SegmentedColumnScope.rootProfileConfig(
     profile: AppProfile,
     sepolicyValid: Boolean,
     onValidateSepolicy: (String) -> Unit,
-    onProfileChange: (AppProfile) -> Unit,
-) {
+    onProfileChange: (AppProfile) -> Unit) {
     item {
         UidPanel(uid = profile.uid, label = "uid", onUidChange = {
             onProfileChange(
                 profile.copy(
                     uid = it,
-                    rootUseDefault = false,
-                ),
-            )
+                    rootUseDefault = false))
         })
     }
 
@@ -83,9 +78,7 @@ fun SegmentedColumnScope.rootProfileConfig(
             onProfileChange(
                 profile.copy(
                     gid = it,
-                    rootUseDefault = false,
-                ),
-            )
+                    rootUseDefault = false))
         })
     }
 
@@ -99,9 +92,7 @@ fun SegmentedColumnScope.rootProfileConfig(
             onProfileChange(
                 profile.copy(
                     groups = it.map { group -> group.gid }.ifEmpty { listOf(0) },
-                    rootUseDefault = false,
-                ),
-            )
+                    rootUseDefault = false))
         }
     }
 
@@ -114,9 +105,7 @@ fun SegmentedColumnScope.rootProfileConfig(
             onProfileChange(
                 profile.copy(
                     capabilities = it.map { cap -> cap.cap },
-                    rootUseDefault = false,
-                ),
-            )
+                    rootUseDefault = false))
         }
     }
 
@@ -125,9 +114,7 @@ fun SegmentedColumnScope.rootProfileConfig(
             onProfileChange(
                 profile.copy(
                     namespace = it,
-                    rootUseDefault = false,
-                ),
-            )
+                    rootUseDefault = false))
         }
     }
 
@@ -135,9 +122,7 @@ fun SegmentedColumnScope.rootProfileConfig(
         RootProfileFlagPanel(selected = profile.flags.toRootProfileFlags()) {
             onProfileChange(
                 profile.copy(
-                    flags = it.toRawFlags(),
-                ),
-            )
+                    flags = it.toRawFlags()))
         }
     }
 
@@ -151,11 +136,8 @@ fun SegmentedColumnScope.rootProfileConfig(
                     profile.copy(
                         context = domain,
                         rules = rules,
-                        rootUseDefault = false,
-                    ),
-                )
-            },
-        )
+                        rootUseDefault = false))
+            })
     }
 }
 
@@ -173,10 +155,8 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
                             Groups.SHELL -> 2
                             else -> Int.MAX_VALUE
                         }
-                    },
-                )
-                .then(compareBy { it.name }),
-        )
+                    })
+                .then(compareBy { it.name }))
     }
     val selectedIndices = remember(groups, selected) {
         groups.mapIndexedNotNull { index, group -> index.takeIf { group in selected } }.toSet()
@@ -198,25 +178,21 @@ fun GroupsPanel(selected: List<Groups>, closeSelection: (selection: Set<Groups>)
                     AssistChip(
                         modifier = Modifier.padding(3.dp),
                         onClick = {},
-                        label = { Text(group.display) },
-                    )
+                        label = { Text(group.display) })
                 }
             }
-        },
-    )
+        })
 }
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun CapsPanel(
     selected: Collection<Capabilities>,
-    closeSelection: (selection: Set<Capabilities>) -> Unit,
-) {
+    closeSelection: (selection: Set<Capabilities>) -> Unit) {
     val caps = remember(selected) {
         Capabilities.entries.toTypedArray().sortedWith(
             compareBy<Capabilities> { if (selected.contains(it)) 0 else 1 }
-                .then(compareBy { it.name }),
-        )
+                .then(compareBy { it.name }))
     }
     val selectedIndices = remember(caps, selected) {
         caps.mapIndexedNotNull { index, capability -> index.takeIf { capability in selected } }
@@ -238,12 +214,10 @@ fun CapsPanel(
                     AssistChip(
                         modifier = Modifier.padding(3.dp),
                         onClick = {},
-                        label = { Text(group.display) },
-                    )
+                        label = { Text(group.display) })
                 }
             }
-        },
-    )
+        })
 }
 
 @Composable
@@ -261,12 +235,10 @@ private fun UidPanel(uid: Int, label: String, onUidChange: (Int) -> Unit) {
         state = state,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Number,
-            imeAction = ImeAction.Done,
-        ),
+            imeAction = ImeAction.Done),
         onKeyboardAction = {
             keyboardController?.hide()
-        },
-    )
+        })
 
     LaunchedEffect(state.text) {
         val currentText = state.text.toString()
@@ -291,34 +263,29 @@ private fun UidPanel(uid: Int, label: String, onUidChange: (Int) -> Unit) {
 @Composable
 fun MountNameSpacePanel(
     profile: AppProfile,
-    onMntNamespaceChange: (namespaceType: Int) -> Unit,
-) {
+    onMntNamespaceChange: (namespaceType: Int) -> Unit) {
     SettingsChooseWidget(
         iconPlaceholder = false,
         title = stringResource(id = R.string.profile_namespace),
         items = listOf(
             stringResource(id = R.string.profile_namespace_inherited),
             stringResource(id = R.string.profile_namespace_global),
-            stringResource(id = R.string.profile_namespace_individual),
-        ),
+            stringResource(id = R.string.profile_namespace_individual)),
         selectedIndex = profile.namespace,
         onSelectedIndexChange = { index ->
             onMntNamespaceChange(index)
-        },
-    )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RootProfileFlagPanel(
     selected: List<RootProfileFlag>,
-    onFlagChange: (flags: List<RootProfileFlag>) -> Unit,
-) {
+    onFlagChange: (flags: List<RootProfileFlag>) -> Unit) {
     val caps = remember(selected) {
         RootProfileFlag.entries.toTypedArray().sortedWith(
             compareBy<RootProfileFlag> { if (selected.contains(it)) 0 else 1 }
-                .then(compareBy { it.name }),
-        )
+                .then(compareBy { it.name }))
     }
     val selectedIndices = remember(caps, selected) {
         caps.mapIndexedNotNull { index, flag -> index.takeIf { flag in selected } }.toSet()
@@ -340,12 +307,10 @@ fun RootProfileFlagPanel(
                     AssistChip(
                         modifier = Modifier.padding(3.dp),
                         onClick = {},
-                        label = { Text(group.display) },
-                    )
+                        label = { Text(group.display) })
                 }
             }
-        },
-    )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -354,8 +319,7 @@ private fun SELinuxPanel(
     profile: AppProfile,
     sepolicyValid: Boolean,
     onValidateSepolicy: (String) -> Unit,
-    onSELinuxChange: (domain: String, rules: String) -> Unit,
-) {
+    onSELinuxChange: (domain: String, rules: String) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     SettingsBaseWidget(
@@ -364,8 +328,7 @@ private fun SELinuxPanel(
         description = profile.context,
         onClick = {
             showDialog = true
-        },
-    ) {}
+        }) {}
 
     if (showDialog) {
         var domain by remember(profile.context) { mutableStateOf(profile.context) }
@@ -380,32 +343,27 @@ private fun SELinuxPanel(
             },
             text = {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedTextField(
                         value = domain,
                         onValueChange = { domain = it },
                         label = { Text(text = stringResource(R.string.profile_selinux_domain)) },
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Ascii,
-                            imeAction = ImeAction.Next,
-                        ),
+                            imeAction = ImeAction.Next),
                         singleLine = true,
                         isError = domain.isNotEmpty() && !isSELinuxDomainValid(domain),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                        modifier = Modifier.fillMaxWidth())
                     OutlinedTextField(
                         value = rules,
                         onValueChange = { rules = it },
                         label = { Text(text = stringResource(R.string.profile_selinux_rules)) },
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Ascii,
-                        ),
+                            keyboardType = KeyboardType.Ascii),
                         singleLine = false,
                         minLines = 4,
                         isError = !sepolicyValid,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
+                        modifier = Modifier.fillMaxWidth())
                 }
             },
             confirmButton = {
@@ -414,8 +372,7 @@ private fun SELinuxPanel(
                     onClick = {
                         onSELinuxChange(domain, rules)
                         showDialog = false
-                    },
-                ) {
+                    }) {
                     Text(text = stringResource(android.R.string.ok))
                 }
             },
@@ -423,8 +380,7 @@ private fun SELinuxPanel(
                 TextButton(onClick = { showDialog = false }) {
                     Text(text = stringResource(android.R.string.cancel))
                 }
-            },
-        )
+            })
     }
 }
 

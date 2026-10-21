@@ -73,8 +73,7 @@ import org.koin.compose.viewmodel.koinViewModel
 private class SuSFSConfigSubpage(
     val requirePersist: Boolean,
     val title: String,
-    val content: @Composable (PaddingValues, NestedScrollConnection) -> Unit,
-)
+    val content: @Composable (PaddingValues, NestedScrollConnection) -> Unit)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -138,8 +137,7 @@ fun SuSFSConfigScreen() {
     val subpages = listOf(
         SuSFSConfigSubpage(
             requirePersist = false,
-            title = stringResource(R.string.susfs_tab_status),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_status)) { innerPadding, nestedScrollConnection ->
             StatusTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
@@ -147,65 +145,52 @@ fun SuSFSConfigScreen() {
                 configEnabled = configEnabled ?: false,
                 configEnabledLoaded = configEnabled != null,
                 onConfigEnabledChange = handleConfigEnabledChange,
-                onConfigRestored = ::requestRefresh,
-            )
+                onConfigRestored = ::requestRefresh)
         },
         SuSFSConfigSubpage(
             requirePersist = true,
-            title = stringResource(R.string.susfs_tab_standard),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_standard)) { innerPadding, nestedScrollConnection ->
             StandardFeaturesTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
-                onRegisterRefresh = onRegisterRefresh,
-            )
+                onRegisterRefresh = onRegisterRefresh)
         },
         SuSFSConfigSubpage(
             requirePersist = true,
-            title = stringResource(R.string.susfs_tab_sus_path),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_sus_path)) { innerPadding, nestedScrollConnection ->
             SusPathTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
-                onRegisterRefresh = onRegisterRefresh,
-            )
+                onRegisterRefresh = onRegisterRefresh)
         },
         SuSFSConfigSubpage(
             requirePersist = true,
-            title = stringResource(R.string.susfs_tab_sus_kstat),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_sus_kstat)) { innerPadding, nestedScrollConnection ->
             SusKstatTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
-                onRegisterRefresh = onRegisterRefresh,
-            )
+                onRegisterRefresh = onRegisterRefresh)
         },
         SuSFSConfigSubpage(
             requirePersist = true,
-            title = stringResource(R.string.susfs_tab_open_redirect),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_open_redirect)) { innerPadding, nestedScrollConnection ->
             OpenRedirectTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
-                onRegisterRefresh = onRegisterRefresh,
-            )
+                onRegisterRefresh = onRegisterRefresh)
         },
         SuSFSConfigSubpage(
             requirePersist = true,
-            title = stringResource(R.string.susfs_tab_sus_map),
-        ) { innerPadding, nestedScrollConnection ->
+            title = stringResource(R.string.susfs_tab_sus_map)) { innerPadding, nestedScrollConnection ->
             SusMapTab(
                 nestedScrollConnection = nestedScrollConnection,
                 innerPadding = innerPadding,
-                onRegisterRefresh = onRegisterRefresh,
-            )
-        },
-    )
+                onRegisterRefresh = onRegisterRefresh)
+        })
     val defaultPage = subpages.indexOfFirst { !it.requirePersist }.coerceAtLeast(0)
     val pagerState = rememberPagerState(
         initialPage = defaultPage,
-        pageCount = { subpages.size },
-    )
+        pageCount = { subpages.size })
     val visibleSubpages = subpages.withIndex().filter { (_, subpage) ->
         !subpage.requirePersist || configEnabled == true
     }
@@ -239,8 +224,7 @@ fun SuSFSConfigScreen() {
                         AppBackButton(
                             onClick = {
                                 navigator.pop()
-                            },
-                        )
+                            })
                     },
                     colors = TopAppBarDefaults.topAppBarColors().copy(
                         containerColor =
@@ -254,10 +238,7 @@ fun SuSFSConfigScreen() {
                                 Color.Transparent
                             } else {
                                 MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                            },
-                    ),
-                    ,
-                )
+                            }))
 
                 PrimaryScrollableTabRow(
                     selectedTabIndex = selectedTabIndex,
@@ -269,15 +250,13 @@ fun SuSFSConfigScreen() {
                         },
                     edgePadding = 0.dp,
                     minTabWidth = 0.dp,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                    modifier = Modifier.fillMaxWidth()) {
                     subpages.forEachIndexed { index, subpage ->
                         val tabVisible = !subpage.requirePersist || configEnabled == true
                         AnimatedVisibility(
                             visible = tabVisible,
                             enter = fadeIn() + expandHorizontally(expandFrom = Alignment.Start),
-                            exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start),
-                        ) {
+                            exit = fadeOut() + shrinkHorizontally(shrinkTowards = Alignment.Start)) {
                             Tab(
                                 selected = tabVisible && pagerState.currentPage == index,
                                 onClick = {
@@ -286,18 +265,15 @@ fun SuSFSConfigScreen() {
                                     }
                                 },
                                 modifier = Modifier.widthIn(
-                                    min = TabRowDefaults.ScrollableTabRowMinTabWidth,
-                                ),
+                                    min = TabRowDefaults.ScrollableTabRowMinTabWidth),
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                text = { Text(subpage.title) },
-                            )
+                                text = { Text(subpage.title) })
                         }
                     }
                 }
 
                 BackHandler(
-                    enabled = pagerState.currentPage != defaultPage,
-                ) {
+                    enabled = pagerState.currentPage != defaultPage) {
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(defaultPage)
                     }
@@ -307,8 +283,7 @@ fun SuSFSConfigScreen() {
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
-    ) { innerPadding ->
+        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) }) { innerPadding ->
         PullToRefreshBox(
             state = pullRefreshState,
             isRefreshing = isRefreshing,
@@ -322,19 +297,15 @@ fun SuSFSConfigScreen() {
                         .padding(top = innerPadding.calculateTopPadding())
                         .align(Alignment.TopCenter),
                     state = pullRefreshState,
-                    isRefreshing = isRefreshing,
-                )
-            },
-        ) {
+                    isRefreshing = isRefreshing)
+            }) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize(),
-            ) {
+                    .fillMaxSize()) {
                 HorizontalPagerWithInteraction(
                     state = pagerState,
                     modifier = Modifier.fillMaxSize(),
-                    userScrollEnabled = configEnabled == true,
-                ) { page ->
+                    userScrollEnabled = configEnabled == true) { page ->
                     subpages[page].content(innerPadding, scrollBehavior.nestedScrollConnection)
                 }
             }

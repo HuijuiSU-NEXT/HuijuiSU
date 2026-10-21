@@ -182,8 +182,7 @@ object Natives {
             NON_ROOT_DEFAULT_PROFILE_KEY,
             NOBODY_UID,
             false,
-            umountModules = umountModules,
-        ).let {
+            umountModules = umountModules).let {
             return setAppProfile(it)
         }
     }
@@ -207,8 +206,7 @@ object Natives {
     @Keep
     data class DynamicManagerConfig(
         val size: Int = 0,
-        val hash: String = "",
-    ) : Parcelable {
+        val hash: String = "") : Parcelable {
 
         fun isValid(): Boolean = size > 0 && hash.length == 64 && hash.all {
             it in '0'..'9' || it in 'a'..'f' || it in 'A'..'F'
@@ -220,16 +218,14 @@ object Natives {
     @Keep
     data class ManagersList(
         val count: Int = 0,
-        val managers: List<ManagerInfo> = emptyList(),
-    ) : Parcelable
+        val managers: List<ManagerInfo> = emptyList()) : Parcelable
 
     @Immutable
     @Parcelize
     @Keep
     data class ManagerInfo(
         val uid: Int = 0,
-        val signatureIndex: Int = 0,
-    ) : Parcelable
+        val signatureIndex: Int = 0) : Parcelable
 
     @Immutable
     @Parcelize
@@ -258,14 +254,12 @@ object Natives {
         val umountModules: Boolean = true,
         var rules: String = "", // this field is save in ksud!!
 
-        val flags: Long = FLAG_KSU_NO_NEW_PRIVS,
-    ) : Parcelable {
+        val flags: Long = FLAG_KSU_NO_NEW_PRIVS) : Parcelable {
         @Keep
         enum class RootProfileFlag(val display: String, @param:StringRes val desc: Int) {
             NO_NEW_PRIVS(
                 "NO_NEW_PRIVS",
-                R.string.profile_flags_desc_no_new_privs,
-            ),
+                R.string.profile_flags_desc_no_new_privs),
         }
 
         enum class Namespace {

@@ -14,17 +14,14 @@ import org.bakasu.bakasu.domain.model.AppProfile
 
 data class AppProfileKey(
     val packageName: String,
-    val uid: Int,
-)
+    val uid: Int)
 
 data class AppProfileSnapshot(
     val profile: AppProfile,
-    val shouldUmount: Boolean,
-)
+    val shouldUmount: Boolean)
 
 class ProfileRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val mutableProfiles =
         MutableStateFlow<Map<AppProfileKey, AppProfileSnapshot>>(emptyMap())
     val profiles: StateFlow<Map<AppProfileKey, AppProfileSnapshot>> =
@@ -35,8 +32,7 @@ class ProfileRepository(
     suspend fun getProfileSnapshot(packageName: String, uid: Int): AppProfileSnapshot = withContext(Dispatchers.IO) {
         AppProfileSnapshot(
             profile = Natives.getAppProfile(packageName, uid).toDomain(),
-            shouldUmount = Natives.uidShouldUmount(uid),
-        ).also { snapshot ->
+            shouldUmount = Natives.uidShouldUmount(uid)).also { snapshot ->
             updateProfile(AppProfileKey(packageName, uid), snapshot)
         }
     }
@@ -48,9 +44,7 @@ class ProfileRepository(
                     key = AppProfileKey(profile.name, profile.currentUid),
                     snapshot = AppProfileSnapshot(
                         profile = profile,
-                        shouldUmount = Natives.uidShouldUmount(profile.currentUid),
-                    ),
-                )
+                        shouldUmount = Natives.uidShouldUmount(profile.currentUid)))
             }
         }
     }
@@ -71,8 +65,7 @@ class ProfileRepository(
             Natives.ALLOWLIST_RESTORE_UNSUPPORTED_VERSION -> AllowlistRestoreResult.UnsupportedVersion
 
             Natives.ALLOWLIST_RESTORE_PROFILE_ERROR -> AllowlistRestoreResult.ProfileUpdateFailed(
-                failedUid[0],
-            )
+                failedUid[0])
 
             else -> AllowlistRestoreResult.Failed
         }
@@ -88,8 +81,7 @@ class ProfileRepository(
 
     suspend fun controlApp(
         packageName: String,
-        action: AppControlAction,
-    ): Result<Unit> = withContext(Dispatchers.IO) {
+        action: AppControlAction): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             when (action) {
                 AppControlAction.LAUNCH -> ksuCliRepository.launchApp(packageName)

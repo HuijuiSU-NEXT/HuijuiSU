@@ -13,8 +13,7 @@ internal val FastOutExtraSlowIn: Easing = run {
         (0.208333f - knotX) / (1f - knotX),
         (0.82f - knotY) / (1f - knotY),
         (0.25f - knotX) / (1f - knotX),
-        (1f - knotY) / (1f - knotY),
-    )
+        (1f - knotY) / (1f - knotY))
     Easing { fraction ->
         if (fraction < knotX) {
             knotY * first.transform(fraction / knotX)

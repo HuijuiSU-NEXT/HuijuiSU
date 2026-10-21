@@ -10,12 +10,10 @@ import org.bakasu.bakasu.data.shell.KsuCliRepository
 
 data class CountState(
     val superuserCount: Int = 0,
-    val moduleCount: Int = 0,
-)
+    val moduleCount: Int = 0)
 
 class CountRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val mutableState = MutableStateFlow(CountState())
     val state: StateFlow<CountState> = mutableState.asStateFlow()
 

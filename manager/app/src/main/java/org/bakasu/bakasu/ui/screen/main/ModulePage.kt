@@ -208,20 +208,16 @@ fun ModulePage(bottomPadding: Dp) {
             navigator.push(
                 Route.Flash.modules(
                     info.filter { it.type == ZipType.MODULE }
-                        .map { it.uri.toString() },
-                ),
-            )
+                        .map { it.uri.toString() }))
             viewModel.dispatch(ModuleUiAction.MarkNeedRefresh)
         },
         onDismiss = {
             showConfirmationDialog = false
             pendingZipFiles = emptyList()
-        },
-    )
+        })
 
     val selectZipLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) {
+        contract = ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode != RESULT_OK) {
             return@rememberLauncherForActivityResult
         }
@@ -286,8 +282,7 @@ fun ModulePage(bottomPadding: Dp) {
                     val info = withContext(Dispatchers.IO) {
                         zipFileDetector.parseModuleInfo(
                             context,
-                            uri,
-                        )
+                            uri)
                     }
                     zipFiles.add(info)
                     pendingZipFiles = zipFiles
@@ -313,8 +308,7 @@ fun ModulePage(bottomPadding: Dp) {
 
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = rememberSearchAppBarScrollBehavior(
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState),
-    )
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState))
 
     Scaffold(
         topBar = {
@@ -326,36 +320,30 @@ fun ModulePage(bottomPadding: Dp) {
                 },
                 dropdownContent = {
                     IconButton(
-                        onClick = { showDropdown = true },
-                    ) {
+                        onClick = { showDropdown = true }) {
                         Icon(
                             imageVector = Icons.TwoTone.MoreVert,
-                            contentDescription = stringResource(id = R.string.settings),
-                        )
+                            contentDescription = stringResource(id = R.string.settings))
 
                         ModuleDropdown(
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false },
                             viewModel = viewModel,
-                            uiState = uiState,
-                        )
+                            uiState = uiState)
                     }
                 },
                 navigationContent = {
                     IconButton(
                         onClick = {
                             navigator.push(Route.ModuleRepo)
-                        },
-                    ) {
+                        }) {
                         Icon(
                             imageVector = Icons.TwoTone.Cloud,
-                            contentDescription = stringResource(id = R.string.module_repo),
-                        )
+                            contentDescription = stringResource(id = R.string.module_repo))
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                searchBarPlaceHolderText = stringResource(R.string.search_modules),
-            )
+                searchBarPlaceHolderText = stringResource(R.string.search_modules))
         },
         floatingActionButton = {
             if (hideInstallButton) return@Scaffold
@@ -369,50 +357,41 @@ fun ModulePage(bottomPadding: Dp) {
                         Intent(Intent.ACTION_GET_CONTENT).apply {
                             type = "application/zip"
                             putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
-                        },
-                    )
+                        })
                 },
                 content = {
                     Icon(
                         painter = painterResource(id = R.drawable.package_import),
-                        contentDescription = null,
-                    )
-                },
-            )
+                        contentDescription = null)
+                })
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         contentWindowInsets = adaptiveScaffoldWindowInsets(includeBottom = false),
         snackbarHost = {
             SwipeableSnackbarHost(
-                hostState = snackBarHost,
-            )
-        },
-    ) { innerPadding ->
+                hostState = snackBarHost)
+        }) { innerPadding ->
         when {
             uiState.hasMagisk -> {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
+                    contentAlignment = Alignment.Center) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
+                        verticalArrangement = Arrangement.Center) {
                         Icon(
                             imageVector = Icons.TwoTone.Warning,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(64.dp)
-                                .padding(bottom = 16.dp),
-                        )
+                                .padding(bottom = 16.dp))
                         Text(
                             stringResource(R.string.module_magisk_conflict),
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                            style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
@@ -422,19 +401,16 @@ fun ModulePage(bottomPadding: Dp) {
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(24.dp),
-                    contentAlignment = Alignment.Center,
-                ) {
+                    contentAlignment = Alignment.Center) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center,
-                    ) {
+                        verticalArrangement = Arrangement.Center) {
                         Icon(
                             imageVector = Icons.TwoTone.Extension,
                             contentDescription = null,
                             modifier = Modifier
                                 .size(96.dp)
-                                .padding(bottom = 16.dp),
-                        )
+                                .padding(bottom = 16.dp))
                         Text(
                             text =
                                 if (uiState.search.isNotEmpty()) {
@@ -443,8 +419,7 @@ fun ModulePage(bottomPadding: Dp) {
                                     stringResource(R.string.module_empty)
                                 },
                             textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                            style = MaterialTheme.typography.bodyLarge)
                     }
                 }
             }
@@ -475,9 +450,7 @@ fun ModulePage(bottomPadding: Dp) {
                                                 .scheme("kernelsu")
                                                 .authority("webui")
                                                 .appendQueryParameter("id", id)
-                                                .build(),
-                                        ),
-                                )
+                                                .build()))
                             } catch (e: Exception) {
                                 Log.e("ModuleScreen", "Error launching WebUI: ${e.message}", e)
                                 scope.launch {
@@ -490,8 +463,7 @@ fun ModulePage(bottomPadding: Dp) {
                     context = context,
                     snackBarHost = snackBarHost,
                     bottomPadding = bottomPadding + innerPadding.calculateBottomPadding(),
-                    topPadding = innerPadding.calculateTopPadding(),
-                )
+                    topPadding = innerPadding.calculateTopPadding())
             }
         }
     }
@@ -503,41 +475,32 @@ private fun ModuleDropdown(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     viewModel: ModuleViewModel,
-    uiState: ModuleUiState,
-) {
+    uiState: ModuleUiState) {
     DropdownMenuPopup(
         expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
+        onDismissRequest = onDismissRequest) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShapes(),
-        ) {
+            shapes = MenuDefaults.groupShapes()) {
             CheckableDropdownMenuItem(
                 checked = uiState.sortActionFirst,
                 onCheckedChange = {
                     viewModel.dispatch(
-                        ModuleUiAction.Sort(uiState.sortEnabledFirst, it),
-                    )
+                        ModuleUiAction.Sort(uiState.sortEnabledFirst, it))
                 },
                 text = { Text(stringResource(R.string.module_sort_action_first)) },
                 shapes = MenuDefaults.itemShape(
                     index = 0,
-                    count = 2,
-                ),
-            )
+                    count = 2))
             CheckableDropdownMenuItem(
                 checked = uiState.sortEnabledFirst,
                 onCheckedChange = {
                     viewModel.dispatch(
-                        ModuleUiAction.Sort(it, uiState.sortActionFirst),
-                    )
+                        ModuleUiAction.Sort(it, uiState.sortActionFirst))
                 },
                 text = { Text(stringResource(R.string.module_sort_enabled_first)) },
                 shapes = MenuDefaults.itemShape(
                     index = 1,
-                    count = 2,
-                ),
-            )
+                    count = 2))
         }
     }
 }

@@ -15,8 +15,7 @@ import org.bakasu.bakasu.getKernelVersion
 
 class KernelRepository(
     private val application: Application,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     suspend fun getStatus(): KernelStatus = withContext(Dispatchers.IO) {
         val kernelVersion = getKernelVersion()
         val isManager = runCatching { Natives.isManager }.getOrDefault(false)
@@ -46,8 +45,7 @@ class KernelRepository(
             hookType = runCatching { Natives.getHookType() }.getOrDefault(""),
             isSafeMode = runCatching { Natives.isSafeMode }.getOrDefault(false),
             isLateLoadMode = runCatching { Natives.isLateLoadMode }.getOrDefault(false),
-            isPrBuild = runCatching { Natives.isPrBuild }.getOrDefault(false),
-        )
+            isPrBuild = runCatching { Natives.isPrBuild }.getOrDefault(false))
     }
 
     suspend fun getManagerRuntimeInfo(): ManagerRuntimeInfo = withContext(Dispatchers.IO) {
@@ -57,8 +55,7 @@ class KernelRepository(
                 .map { ManagerRecord(it.uid, it.signatureIndex) },
             dynamicSignatureEnabled = runCatching {
                 Natives.getDynamicManager()?.isValid() == true
-            }.getOrDefault(false),
-        )
+            }.getOrDefault(false))
     }
 
     suspend fun getFeatureSettings(): KernelFeatureSettings = withContext(Dispatchers.IO) {
@@ -68,9 +65,7 @@ class KernelRepository(
             suLogEnabled = runCatching { Natives.isSuLogEnabled() }.getOrDefault(false),
             selinuxHideEnabled = runCatching { Natives.isSelinuxHideEnabled() }.getOrDefault(false),
             defaultUmountModules = runCatching { Natives.isDefaultUmountModules() }.getOrDefault(
-                false,
-            ),
-        )
+                false))
     }
 
     suspend fun setSuEnabled(enabled: Boolean): Boolean = saveFeature {

@@ -14,8 +14,7 @@ import androidx.lifecycle.repeatOnLifecycle
 @Composable
 fun ActivityResumeEffect(
     vararg keys: Any?,
-    block: suspend () -> Unit,
-) {
+    block: suspend () -> Unit) {
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentBlock by rememberUpdatedState(block)
 

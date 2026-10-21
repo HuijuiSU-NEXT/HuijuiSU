@@ -5,8 +5,7 @@ interface WebUiProcess {
     fun start(
         onStdout: (String) -> Unit,
         onStderr: (String) -> Unit,
-        onComplete: (WebUiCommandResult) -> Unit,
-    )
+        onComplete: (WebUiCommandResult) -> Unit)
 
     fun close()
 }

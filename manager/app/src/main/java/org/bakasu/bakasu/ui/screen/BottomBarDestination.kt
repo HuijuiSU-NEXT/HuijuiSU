@@ -22,43 +22,37 @@ enum class BottomBarDestination(
     @param:StringRes val label: Int,
     val iconSelected: ImageVector,
     val iconNotSelected: ImageVector,
-    val rootRequired: Boolean,
-) {
+    val rootRequired: Boolean) {
     Home(
         { bottomPadding -> HomePage(bottomPadding) },
         R.string.home,
         Icons.TwoTone.Home,
         Icons.TwoTone.Home,
-        false,
-    ),
+        false),
     Tools(
         { bottomPadding -> HuijuiHubPage(bottomPadding) },
         R.string.tools,
         Icons.TwoTone.Apps,
         Icons.TwoTone.Apps,
-        false,
-    ),
+        false),
     SuperUser(
         { bottomPadding -> SuperUserPage(bottomPadding) },
         R.string.superuser,
         Icons.TwoTone.AdminPanelSettings,
         Icons.TwoTone.AdminPanelSettings,
-        true,
-    ),
+        true),
     Module(
         { bottomPadding -> ModulePage(bottomPadding) },
         R.string.module,
         Icons.TwoTone.Extension,
         Icons.TwoTone.Extension,
-        true,
-    ),
+        true),
     Settings(
         { bottomPadding -> SettingsPage(bottomPadding) },
         R.string.settings,
         Icons.TwoTone.Settings,
         Icons.TwoTone.Settings,
-        false,
-    ),
+        false),
     ;
 
     companion object {

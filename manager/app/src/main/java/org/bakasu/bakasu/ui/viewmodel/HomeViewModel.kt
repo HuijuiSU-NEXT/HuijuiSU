@@ -63,14 +63,12 @@ class HomeViewModel(
     private val isNetworkAvailable: IsNetworkAvailableUseCase,
     private val getBooleanPreference: GetBooleanPreferenceUseCase,
     private val setBooleanPreference: SetBooleanPreferenceUseCase,
-    private val reboot: RebootUseCase,
-) : ViewModel() {
+    private val reboot: RebootUseCase) : ViewModel() {
     val uiState = combine(
         homeStateRepository.state,
         superUserRepository.state,
         moduleRepository.installedModules,
-        countRepository.state,
-    ) { homeState, superUserState, moduleState, countState ->
+        countRepository.state) { homeState, superUserState, moduleState, countState ->
         val superuserCount = if (superUserState.groups.isNotEmpty()) {
             superUserState.groups.filter { it.allowSu }.size
         } else {
@@ -86,14 +84,11 @@ class HomeViewModel(
                 moduleCount = moduleCount,
                 superuserCount = superuserCount,
                 zygiskImplement = ksuCliRepository.getZygiskImplement(),
-                metaModuleImplement = ksuCliRepository.getMetaModuleImplement(),
-            ),
-        )
+                metaModuleImplement = ksuCliRepository.getMetaModuleImplement()))
     }.flowOn(Dispatchers.IO).stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5_000),
-        initialValue = HomeUiState(),
-    )
+        initialValue = HomeUiState())
 
     private val mutableEvents = MutableSharedFlow<HomeUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<HomeUiEvent> = mutableEvents.asSharedFlow()
@@ -132,8 +127,7 @@ class HomeViewModel(
                     val basic = async {
                         getBasicInfo(
                             managerUapiVersion = kernelStatus.managerUAPIVersion,
-                            includeSelinuxStatus = includeSelinuxStatus,
-                        )
+                            includeSelinuxStatus = includeSelinuxStatus)
                     }
                     val managers = async { getManagerRuntimeInfo() }
                     val susfs = async { getSuSFSStatus() }
@@ -156,11 +150,9 @@ class HomeViewModel(
                                 susfsFeatures = susfsInfo.enabledFeatures,
                                 managersList = managerInfo,
                                 isDynamicSignEnabled = managerInfo.dynamicSignatureEnabled,
-                                seccompStatus = basicInfo.seccompStatus,
-                            ),
+                                seccompStatus = basicInfo.seccompStatus),
                             isInitialDataLoaded = true,
-                            isExtendedDataLoaded = true,
-                        )
+                            isExtendedDataLoaded = true)
                     }
                 } catch (error: CancellationException) {
                     throw error
@@ -212,8 +204,7 @@ class HomeViewModel(
                 it.copy(
                     stableManagerUpdate = null,
                     betaManagerUpdate = null,
-                    isBetaManagerUpdateCheckFailed = false,
-                )
+                    isBetaManagerUpdateCheckFailed = false)
             }
             return
         }
@@ -234,8 +225,7 @@ class HomeViewModel(
                     homeStateRepository.update {
                         it.copy(
                             betaManagerUpdate = result.getOrNull(),
-                            isBetaManagerUpdateCheckFailed = result.isFailure,
-                        )
+                            isBetaManagerUpdateCheckFailed = result.isFailure)
                     }
                 }
             }
@@ -248,18 +238,15 @@ class HomeViewModel(
                 isSimpleMode = getBooleanPreference(PREF_SIMPLE_MODE),
                 showNavigationBarBadge = getBooleanPreference(
                     PREF_SHOW_NAVIGATION_BAR_BADGE,
-                    true,
-                ),
-                showHomeCardIcons = getBooleanPreference(PREF_SHOW_HOME_CARD_ICONS),
-            )
+                    true),
+                showHomeCardIcons = getBooleanPreference(PREF_SHOW_HOME_CARD_ICONS))
         }
     }
 
     private fun updatePreference(
         key: String,
         value: Boolean,
-        reducer: (HomeUiState) -> HomeUiState,
-    ) {
+        reducer: (HomeUiState) -> HomeUiState) {
         setBooleanPreference(key, value)
         homeStateRepository.update(reducer)
     }

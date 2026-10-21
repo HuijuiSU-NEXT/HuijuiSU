@@ -66,8 +66,7 @@ class KsuCliRepository(context: Context) {
 
     inline fun <T> withNewRootShell(
         globalMnt: Boolean = false,
-        block: Shell.() -> T,
-    ): T = createRootShell(globalMnt).use(block)
+        block: Shell.() -> T): T = createRootShell(globalMnt).use(block)
 
     fun createRootShell(globalMnt: Boolean = false): Shell {
         Shell.enableVerboseLogging = BuildConfig.DEBUG
@@ -105,8 +104,7 @@ class KsuCliRepository(context: Context) {
 
     data class DynamicManagerCliConfig(
         val size: Int = 0,
-        val hash: String = "",
-    ) {
+        val hash: String = "") {
         fun isValid(): Boolean = size > 0 && hash.length == 64
     }
 
@@ -122,8 +120,7 @@ class KsuCliRepository(context: Context) {
             val obj = JSONObject(result.out.joinToString("\n"))
             DynamicManagerCliConfig(
                 size = obj.optInt("size", 0),
-                hash = obj.optString("hash", ""),
-            )
+                hash = obj.optString("hash", ""))
         }.getOrNull()
     }
 
@@ -226,8 +223,7 @@ class KsuCliRepository(context: Context) {
     private fun flashWithIO(
         cmd: String,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Shell.Result {
+        onStderr: (String) -> Unit): Shell.Result {
         val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
             override fun onAddElement(s: String?) {
                 onStdout(s ?: "")
@@ -250,8 +246,7 @@ class KsuCliRepository(context: Context) {
         uri: Uri,
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val resolver = context.contentResolver
         with(resolver.openInputStream(uri)) {
             val file = File(context.cacheDir, "module.zip")
@@ -273,8 +268,7 @@ class KsuCliRepository(context: Context) {
         zipFile: File,
         slot: String?,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val command = buildString {
             append("${getKsuDaemonPath()} anykernel3 ${shellQuote(zipFile.absolutePath)}")
             slot?.let {
@@ -289,8 +283,7 @@ class KsuCliRepository(context: Context) {
     fun runModuleAction(
         moduleId: String,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val stdoutCallback: CallbackList<String?> = object : CallbackList<String?>() {
             override fun onAddElement(s: String?) {
                 onStdout(s ?: "")
@@ -315,13 +308,11 @@ class KsuCliRepository(context: Context) {
     fun restoreBoot(
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val result = flashWithIO(
             "${getKsuDaemonPath()} boot-restore -f",
             onStdout,
-            onStderr,
-        )
+            onStderr)
         onFinish(result.isSuccess, result.code)
         return result.isSuccess
     }
@@ -329,14 +320,12 @@ class KsuCliRepository(context: Context) {
     fun uninstallPermanently(
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val result =
             flashWithIO(
                 "${getKsuDaemonPath()} uninstall --package-name ${BuildConfig.APPLICATION_ID}",
                 onStdout,
-                onStderr,
-            )
+                onStderr)
         onFinish(result.isSuccess, result.code)
         return result.isSuccess
     }
@@ -352,8 +341,7 @@ class KsuCliRepository(context: Context) {
         forceBackup: Boolean = false,
         onFinish: (Boolean, Int) -> Unit,
         onStdout: (String) -> Unit,
-        onStderr: (String) -> Unit,
-    ): Boolean {
+        onStderr: (String) -> Unit): Boolean {
         val resolver = context.contentResolver
 
         val bootFile = bootUri?.let { uri ->
@@ -453,8 +441,7 @@ class KsuCliRepository(context: Context) {
         }
         ShellUtils.fastCmd(
             shell,
-            "/system/bin/svc power reboot $reason || /system/bin/reboot $reason",
-        )
+            "/system/bin/svc power reboot $reason || /system/bin/reboot $reason")
     }
 
     fun rootAvailable(): Boolean {
@@ -621,8 +608,7 @@ class KsuCliRepository(context: Context) {
     fun getZygiskImplement(): String {
         val zygiskModuleIds = listOf(
             "zygisksu",
-            "rezygisk",
-        )
+            "rezygisk")
 
         for (moduleId in zygiskModuleIds) {
             if (SuFile.open("/data/adb/modules/$moduleId/disable").isFile || SuFile.open("/data/adb/modules/$moduleId/remove").isFile) continue

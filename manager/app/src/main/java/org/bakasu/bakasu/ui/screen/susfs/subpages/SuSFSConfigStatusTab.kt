@@ -61,8 +61,7 @@ fun StatusTab(
     configEnabled: Boolean,
     configEnabledLoaded: Boolean,
     onConfigEnabledChange: (Boolean) -> Unit,
-    onConfigRestored: () -> Unit,
-) {
+    onConfigRestored: () -> Unit) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     var statusInfo by remember { mutableStateOf(SuSFSStatusInfo("", "", "")) }
 
@@ -74,20 +73,17 @@ fun StatusTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection),
-    ) {
+            .nestedScroll(nestedScrollConnection)) {
         item {
             Spacer(Modifier.height(innerPadding.calculateTopPadding()))
         }
 
         item {
             AnimatedVisibility(
-                visible = configEnabledLoaded && !configEnabled,
-            ) {
+                visible = configEnabledLoaded && !configEnabled) {
                 WarningCard(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    message = stringResource(R.string.susfs_config_disable_warning),
-                )
+                    message = stringResource(R.string.susfs_config_disable_warning))
             }
         }
 
@@ -100,8 +96,7 @@ fun StatusTab(
                         description = stringResource(R.string.susfs_enable_config_summary),
                         checked = configEnabled,
                         enabled = configEnabledLoaded,
-                        onCheckedChange = onConfigEnabledChange,
-                    )
+                        onCheckedChange = onConfigEnabledChange)
                 }
                 item {
                     SettingsBaseWidget(
@@ -109,8 +104,7 @@ fun StatusTab(
                         title = stringResource(R.string.susfs_status_version),
                         description = statusInfo.version.ifBlank {
                             stringResource(R.string.susfs_status_no_data)
-                        },
-                    )
+                        })
                 }
                 item {
                     SettingsBaseWidget(
@@ -118,8 +112,7 @@ fun StatusTab(
                         title = stringResource(R.string.susfs_status_variant),
                         description = statusInfo.variant.ifBlank {
                             stringResource(R.string.susfs_status_no_data)
-                        },
-                    )
+                        })
                 }
                 item {
                     SettingsBaseWidget(
@@ -127,8 +120,7 @@ fun StatusTab(
                         title = stringResource(R.string.susfs_status_enabled_features),
                         description = statusInfo.enabledFeatures.ifBlank {
                             stringResource(R.string.susfs_status_no_data)
-                        },
-                    )
+                        })
                 }
             }
         }
@@ -146,8 +138,7 @@ fun StatusTab(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupRestoreSection(
-    onConfigRestored: () -> Unit,
-) {
+    onConfigRestored: () -> Unit) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -173,8 +164,7 @@ fun BackupRestoreSection(
     val operationFailedMsg = stringResource(R.string.susfs_operation_failed)
 
     val exportLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.CreateDocument("application/json"),
-    ) { uri: Uri? ->
+        ActivityResultContracts.CreateDocument("application/json")) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         scope.launch {
             val ok = awaitSuSFSBoolean(configHelper) { reply ->
@@ -187,8 +177,7 @@ fun BackupRestoreSection(
     }
 
     val importLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument(),
-    ) { uri: Uri? ->
+        ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         if (uri == null) return@rememberLauncherForActivityResult
         pendingImportUri = uri
         showImportConfirm = true
@@ -202,8 +191,7 @@ fun BackupRestoreSection(
                 description = exportDesc,
                 onClick = {
                     exportLauncher.launch("susfs_backup.json")
-                },
-            )
+                })
         }
         item {
             SettingsJumpPageWidget(
@@ -212,8 +200,7 @@ fun BackupRestoreSection(
                 description = importDesc,
                 onClick = {
                     importLauncher.launch(arrayOf("application/json"))
-                },
-            )
+                })
         }
         item {
             RestoreDefaultRow(
@@ -222,8 +209,7 @@ fun BackupRestoreSection(
                 snackbarHost = snackbarHost,
                 operationSuccessMsg = operationSuccessMsg,
                 operationFailedMsg = operationFailedMsg,
-                onConfigRestored = onConfigRestored,
-            )
+                onConfigRestored = onConfigRestored)
         }
     }
 
@@ -254,8 +240,7 @@ fun BackupRestoreSection(
                                 }
                             }
                         }
-                    },
-                ) {
+                    }) {
                     Text(importLabel)
                 }
             },
@@ -266,8 +251,7 @@ fun BackupRestoreSection(
                 }) {
                     Text(cancelLabel)
                 }
-            },
-        )
+            })
     }
 }
 
@@ -278,8 +262,7 @@ private fun RestoreDefaultRow(
     snackbarHost: SnackbarHostState,
     operationSuccessMsg: String,
     operationFailedMsg: String,
-    onConfigRestored: () -> Unit,
-) {
+    onConfigRestored: () -> Unit) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val scope = rememberCoroutineScope()
     SettingsJumpPageWidget(
@@ -296,6 +279,5 @@ private fun RestoreDefaultRow(
                 }
                 snackbarHost.showReplacingSnackbar(if (ok) operationSuccessMsg else operationFailedMsg)
             }
-        },
-    )
+        })
 }

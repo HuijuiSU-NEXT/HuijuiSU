@@ -74,8 +74,7 @@ private data class ConfirmDialogVisualsImpl(
     override val isMarkdown: Boolean,
     override val isHtml: Boolean,
     override val confirm: String?,
-    override val dismiss: String?,
-) : ConfirmDialogVisuals {
+    override val dismiss: String?) : ConfirmDialogVisuals {
     companion object {
         val Empty: ConfirmDialogVisuals = ConfirmDialogVisualsImpl(
             "",
@@ -83,8 +82,7 @@ private data class ConfirmDialogVisualsImpl(
             isMarkdown = false,
             isHtml = false,
             confirm = null,
-            dismiss = null,
-        )
+            dismiss = null)
     }
 }
 
@@ -114,8 +112,7 @@ interface ConfirmDialogHandle : DialogHandle {
         markdown: Boolean = false,
         html: Boolean = false,
         confirm: String? = null,
-        dismiss: String? = null,
-    )
+        dismiss: String? = null)
 
     suspend fun awaitConfirm(
         title: String,
@@ -123,14 +120,12 @@ interface ConfirmDialogHandle : DialogHandle {
         markdown: Boolean = false,
         html: Boolean = false,
         confirm: String? = null,
-        dismiss: String? = null,
-    ): ConfirmResult
+        dismiss: String? = null): ConfirmResult
 }
 
 private abstract class DialogHandleBase(
     val visible: MutableState<Boolean>,
-    val coroutineScope: CoroutineScope,
-) : DialogHandle {
+    val coroutineScope: CoroutineScope) : DialogHandle {
     override val isShown: Boolean
         get() = visible.value
 
@@ -151,8 +146,7 @@ private abstract class DialogHandleBase(
 
 private class LoadingDialogHandleImpl(
     visible: MutableState<Boolean>,
-    coroutineScope: CoroutineScope,
-) : DialogHandleBase(visible, coroutineScope),
+    coroutineScope: CoroutineScope) : DialogHandleBase(visible, coroutineScope),
     LoadingDialogHandle {
     override suspend fun <R> withLoading(block: suspend () -> R): R = coroutineScope.async {
         try {
@@ -183,8 +177,7 @@ interface ConfirmCallback {
     companion object {
         operator fun invoke(
             onConfirmProvider: () -> NullableCallback,
-            onDismissProvider: () -> NullableCallback,
-        ): ConfirmCallback = object : ConfirmCallback {
+            onDismissProvider: () -> NullableCallback): ConfirmCallback = object : ConfirmCallback {
             override val onConfirm: NullableCallback
                 get() = onConfirmProvider()
             override val onDismiss: NullableCallback
@@ -198,12 +191,10 @@ private class ConfirmDialogHandleImpl(
     coroutineScope: CoroutineScope,
     callback: ConfirmCallback,
     override var visuals: ConfirmDialogVisuals = ConfirmDialogVisualsImpl.Empty,
-    private val resultFlow: ReceiveChannel<ConfirmResult>,
-) : DialogHandleBase(visible, coroutineScope),
+    private val resultFlow: ReceiveChannel<ConfirmResult>) : DialogHandleBase(visible, coroutineScope),
     ConfirmDialogHandle {
     private class ResultCollector(
-        private val callback: ConfirmCallback,
-    ) : FlowCollector<ConfirmResult> {
+        private val callback: ConfirmCallback) : FlowCollector<ConfirmResult> {
         fun handleResult(result: ConfirmResult) {
             Log.d(TAG, "handleResult: ${result.javaClass.simpleName}")
             when (result) {
@@ -276,8 +267,7 @@ private class ConfirmDialogHandleImpl(
         markdown: Boolean,
         html: Boolean,
         confirm: String?,
-        dismiss: String?,
-    ) {
+        dismiss: String?) {
         coroutineScope.launch {
             updateVisuals(ConfirmDialogVisualsImpl(title, content, markdown, html, confirm, dismiss))
             show()
@@ -290,8 +280,7 @@ private class ConfirmDialogHandleImpl(
         markdown: Boolean,
         html: Boolean,
         confirm: String?,
-        dismiss: String?,
-    ): ConfirmResult {
+        dismiss: String?): ConfirmResult {
         coroutineScope.launch {
             updateVisuals(ConfirmDialogVisualsImpl(title, content, markdown, html, confirm, dismiss))
             show()
@@ -308,23 +297,20 @@ private class ConfirmDialogHandleImpl(
             visible: MutableState<Boolean>,
             coroutineScope: CoroutineScope,
             callback: ConfirmCallback,
-            resultChannel: ReceiveChannel<ConfirmResult>,
-        ) = Saver<ConfirmDialogHandle, ConfirmDialogVisuals>(
+            resultChannel: ReceiveChannel<ConfirmResult>) = Saver<ConfirmDialogHandle, ConfirmDialogVisuals>(
             save = {
                 it.visuals
             },
             restore = {
                 Log.d(TAG, "ConfirmDialog restore, visuals: $it")
                 ConfirmDialogHandleImpl(visible, coroutineScope, callback, it, resultChannel)
-            },
-        )
+            })
     }
 }
 
 private class CustomDialogHandleImpl(
     visible: MutableState<Boolean>,
-    coroutineScope: CoroutineScope,
-) : DialogHandleBase(visible, coroutineScope) {
+    coroutineScope: CoroutineScope) : DialogHandleBase(visible, coroutineScope) {
     override val dialogType: String get() = "CustomDialog"
 }
 
@@ -358,15 +344,13 @@ private fun rememberConfirmDialog(visuals: ConfirmDialogVisuals, callback: Confi
         saver = ConfirmDialogHandleImpl.Saver(visible, coroutineScope, callback, resultChannel),
         init = {
             ConfirmDialogHandleImpl(visible, coroutineScope, callback, visuals, resultChannel)
-        },
-    )
+        })
 
     if (visible.value) {
         ConfirmDialog(
             handle.visuals,
             confirm = { coroutineScope.launch { resultChannel.send(ConfirmResult.Confirmed) } },
-            dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } },
-        )
+            dismiss = { coroutineScope.launch { resultChannel.send(ConfirmResult.Canceled) } })
     }
 
     return handle
@@ -406,15 +390,12 @@ fun rememberCustomDialog(composable: @Composable (dismiss: () -> Unit) -> Unit):
 private fun LoadingDialog() {
     Dialog(
         onDismissRequest = {},
-        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
-    ) {
+        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false)) {
         Surface(
             modifier = Modifier.size(100.dp),
-            shape = RoundedCornerShape(8.dp),
-        ) {
+            shape = RoundedCornerShape(8.dp)) {
             Box(
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
         }
@@ -433,16 +414,14 @@ private fun ConfirmDialog(visuals: ConfirmDialogVisuals, confirm: () -> Unit, di
         text = {
             LazyColumn(
                 modifier = Modifier
-                    .heightIn(max = 325.dp),
-            ) {
+                    .heightIn(max = 325.dp)) {
                 item {
                     if (visuals.isMarkdown) {
                         MarkdownContent(content = visuals.content)
                     } else if (visuals.isHtml) {
                         GithubMarkdown(
                             content = visuals.content,
-                            backgroundColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                        )
+                            backgroundColor = MaterialTheme.colorScheme.surfaceContainerHighest)
                     } else {
                         Text(text = visuals.content)
                     }
@@ -458,8 +437,7 @@ private fun ConfirmDialog(visuals: ConfirmDialogVisuals, confirm: () -> Unit, di
             TextButton(onClick = dismiss) {
                 Text(text = visuals.dismiss ?: stringResource(id = android.R.string.cancel))
             }
-        },
-    )
+        })
 }
 
 @Composable
@@ -469,8 +447,7 @@ private fun MarkdownContent(content: String) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(12.dp),
-    ) {
+            .padding(12.dp)) {
         AndroidView(
             factory = { context ->
                 TextView(context).apply {
@@ -482,14 +459,12 @@ private fun MarkdownContent(content: String) {
                     hyphenationFrequency = Layout.HYPHENATION_FREQUENCY_NONE
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                    )
+                        ViewGroup.LayoutParams.WRAP_CONTENT)
                 }
             },
             update = {
                 Markwon.create(it.context).setMarkdown(it, content)
                 it.setTextColor(contentColor.toArgb())
-            },
-        )
+            })
     }
 }

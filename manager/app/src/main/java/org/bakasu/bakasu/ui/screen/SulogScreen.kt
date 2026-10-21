@@ -116,8 +116,7 @@ fun SulogScreen() {
         selectedFilePath = uiState.selectedFilePath,
         entries = uiState.entries,
         visibleEntries = uiState.visibleEntries,
-        errorMessage = uiState.errorMessage,
-    )
+        errorMessage = uiState.errorMessage)
     val actions = SulogActions(
         onBack = dropUnlessResumed { navigator.pop() },
         onRefresh = { viewModel.dispatch(SulogUiAction.RefreshLatest) },
@@ -125,30 +124,25 @@ fun SulogScreen() {
         onCleanFile = { viewModel.dispatch(SulogUiAction.CleanFile) },
         onSearchTextChange = { viewModel.dispatch(SulogUiAction.Search(it)) },
         onToggleFilter = { viewModel.dispatch(SulogUiAction.ToggleFilter(it)) },
-        onSelectFile = { viewModel.dispatch(SulogUiAction.SelectFile(it)) },
-    )
+        onSelectFile = { viewModel.dispatch(SulogUiAction.SelectFile(it)) })
 
     SulogScreenContent(
         state,
-        actions,
-    )
+        actions)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SulogScreenContent(
     state: SulogScreenState,
-    actions: SulogActions,
-) {
+    actions: SulogActions) {
     val cardConfig: CardConfig = koinInject()
     val scrollBehavior = rememberSearchAppBarScrollBehavior(
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
             rememberTopAppBarState(
                 initialHeightOffset = -154f,
                 initialHeightOffsetLimit = -154f, // from debugger
-            ),
-        ),
-    )
+            )))
     val pullToRefreshState = rememberPullToRefreshState()
     val listState = rememberLazyListState()
     val searchListState = rememberLazyListState()
@@ -166,8 +160,7 @@ private fun SulogScreenContent(
     if (selectedEntry != null) {
         SulogDetailDialog(
             entry = selectedEntry!!,
-            onDismiss = { selectedEntry = null },
-        )
+            onDismiss = { selectedEntry = null })
     }
 
     Scaffold(
@@ -184,22 +177,18 @@ private fun SulogScreenContent(
                     IconButton(onClick = actions.onCleanFile) {
                         Icon(
                             imageVector = Icons.TwoTone.DeleteSweep,
-                            contentDescription = stringResource(R.string.sulog_clean_title),
-                        )
+                            contentDescription = stringResource(R.string.sulog_clean_title))
                     }
                     IconButton(onClick = { showFilterMenu = true }) {
                         Icon(
                             imageVector = Icons.TwoTone.FilterList,
-                            contentDescription = stringResource(R.string.sulog_filter_title),
-                        )
+                            contentDescription = stringResource(R.string.sulog_filter_title))
 
                         DropdownMenuPopup(
                             expanded = showFilterMenu,
-                            onDismissRequest = { showFilterMenu = false },
-                        ) {
+                            onDismissRequest = { showFilterMenu = false }) {
                             DropdownMenuGroup(
-                                shapes = MenuDefaults.groupShapes(),
-                            ) {
+                                shapes = MenuDefaults.groupShapes()) {
                                 Spacer(modifier = Modifier.height(2.dp))
 
                                 SulogEventFilter.entries.forEachIndexed { index, filter ->
@@ -212,9 +201,7 @@ private fun SulogScreenContent(
                                         text = { Text(sulogFilterLabel(filter)) },
                                         shapes = MenuDefaults.itemShape(
                                             index = index,
-                                            count = SulogEventFilter.entries.size,
-                                        ),
-                                    )
+                                            count = SulogEventFilter.entries.size))
                                     Spacer(modifier = Modifier.height(2.dp))
                                 }
                             }
@@ -222,13 +209,11 @@ private fun SulogScreenContent(
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                searchBarPlaceHolderText = stringResource(R.string.sulog_search_placeholder),
-            )
+                searchBarPlaceHolderText = stringResource(R.string.sulog_search_placeholder))
         },
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
         containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) { innerPadding ->
+        contentColor = MaterialTheme.colorScheme.onSurface) { innerPadding ->
         PullToRefreshBox(
             state = pullToRefreshState,
             modifier = Modifier
@@ -244,17 +229,14 @@ private fun SulogScreenContent(
                         .padding(top = innerPadding.calculateTopPadding())
                         .align(Alignment.TopCenter),
                     state = pullToRefreshState,
-                    isRefreshing = state.isRefreshing,
-                )
-            },
-        ) {
+                    isRefreshing = state.isRefreshing)
+            }) {
             if (state.isLoading) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(innerPadding),
-                    contentAlignment = Alignment.Center,
-                ) {
+                    contentAlignment = Alignment.Center) {
                     LoadingIndicator()
                 }
             } else {
@@ -262,8 +244,7 @@ private fun SulogScreenContent(
                     state = listState,
                     modifier = Modifier
                         .fillMaxSize()
-                        .nestedScroll(scrollBehavior.nestedScrollConnection),
-                ) {
+                        .nestedScroll(scrollBehavior.nestedScrollConnection)) {
                     item {
                         Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
                     }
@@ -276,17 +257,13 @@ private fun SulogScreenContent(
                         Box(
                             modifier = Modifier
                                 .padding(bottom = 16.dp)
-                                .padding(horizontal = 16.dp),
-                        ) {
+                                .padding(horizontal = 16.dp)) {
                             Column(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(16.dp))
                                     .background(
                                         MaterialTheme.colorScheme.surfaceBright.copy(
-                                            alpha = cardConfig.cardAlpha,
-                                        ),
-                                    ),
-                            ) {
+                                            alpha = cardConfig.cardAlpha))) {
                                 SettingsChooseWidget(
                                     iconPlaceholder = false,
                                     title = stringResource(R.string.sulog_log_files),
@@ -297,8 +274,7 @@ private fun SulogScreenContent(
                                         state.files.getOrNull(index)?.let { file ->
                                             actions.onSelectFile(file.path)
                                         }
-                                    },
-                                )
+                                    })
                             }
                         }
                     }
@@ -306,13 +282,11 @@ private fun SulogScreenContent(
                     sulogEntriesSection(
                         entries = state.visibleEntries,
                         errorMessage = state.errorMessage,
-                        onEntryClick = { selectedEntry = it },
-                    )
+                        onEntryClick = { selectedEntry = it })
 
                     item {
                         Spacer(
-                            Modifier.height(innerPadding.calculateBottomPadding() + 16.dp),
-                        )
+                            Modifier.height(innerPadding.calculateBottomPadding() + 16.dp))
                     }
                 }
             }
@@ -324,19 +298,16 @@ private fun SulogScreenContent(
 @Composable
 private fun SulogScreenTranslationPreview() {
     CompositionLocalProvider(
-        LocalBlurState provides null,
-    ) {
+        LocalBlurState provides null) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-        ) {
+            color = MaterialTheme.colorScheme.surfaceContainer) {
             SulogScreenContent(
                 state = SulogScreenState(
                     isLoading = false,
                     files = listOf(
                         SulogFile("test.log", "test.log"),
                         SulogFile("test2.log", "test2.log"),
-                        SulogFile("test3.log", "test3.log"),
-                    ),
+                        SulogFile("test3.log", "test3.log")),
                     isSulogEnabled = false,
                     visibleEntries = listOf(
                         SulogEntry(
@@ -344,8 +315,7 @@ private fun SulogScreenTranslationPreview() {
                             eventType = SulogEventType.RootExecve,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.RootExecve,
@@ -354,48 +324,38 @@ private fun SulogScreenTranslationPreview() {
                             fields = mapOf(
                                 "comm" to "comm",
                                 "pid" to "pid",
-                                "uid" to "uid",
-                            ),
-                        ),
+                                "uid" to "uid")),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.DaemonEvent,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.IoctlGrantRoot,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.SuCompat,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.Dropped,
                             rawLine = "test",
                             timestampText = "test",
                             fields = mapOf(
-                                "dropped" to "1",
-                            ),
-                        ),
+                                "dropped" to "1")),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.Unknown,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
-                    ),
-                ),
+                            fields = emptyMap()))),
                 actions = SulogActions(
                     onBack = {},
                     onRefresh = {},
@@ -403,9 +363,7 @@ private fun SulogScreenTranslationPreview() {
                     onCleanFile = {},
                     onSearchTextChange = {},
                     onToggleFilter = {},
-                    onSelectFile = {},
-                ),
-            )
+                    onSelectFile = {}))
         }
     }
 }
@@ -414,19 +372,16 @@ private fun SulogScreenTranslationPreview() {
 @Composable
 private fun SulogScreenPreview() {
     CompositionLocalProvider(
-        LocalBlurState provides null,
-    ) {
+        LocalBlurState provides null) {
         Surface(
-            color = MaterialTheme.colorScheme.surfaceContainer,
-        ) {
+            color = MaterialTheme.colorScheme.surfaceContainer) {
             SulogScreenContent(
                 state = SulogScreenState(
                     isLoading = false,
                     files = listOf(
                         SulogFile("test.log", "test.log"),
                         SulogFile("test2.log", "test2.log"),
-                        SulogFile("test3.log", "test3.log"),
-                    ),
+                        SulogFile("test3.log", "test3.log")),
                     isSulogEnabled = false,
                     visibleEntries = listOf(
                         SulogEntry(
@@ -434,8 +389,7 @@ private fun SulogScreenPreview() {
                             eventType = SulogEventType.RootExecve,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.RootExecve,
@@ -444,48 +398,38 @@ private fun SulogScreenPreview() {
                             fields = mapOf(
                                 "comm" to "comm",
                                 "pid" to "pid",
-                                "uid" to "uid",
-                            ),
-                        ),
+                                "uid" to "uid")),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.DaemonEvent,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.IoctlGrantRoot,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.SuCompat,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
+                            fields = emptyMap()),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.Dropped,
                             rawLine = "test",
                             timestampText = "test",
                             fields = mapOf(
-                                "dropped" to "1",
-                            ),
-                        ),
+                                "dropped" to "1")),
                         SulogEntry(
                             key = "key",
                             eventType = SulogEventType.Unknown,
                             rawLine = "test",
                             timestampText = "test",
-                            fields = emptyMap(),
-                        ),
-                    ),
-                ),
+                            fields = emptyMap()))),
                 actions = SulogActions(
                     onBack = {},
                     onRefresh = {},
@@ -493,9 +437,7 @@ private fun SulogScreenPreview() {
                     onCleanFile = {},
                     onSearchTextChange = {},
                     onToggleFilter = {},
-                    onSelectFile = {},
-                ),
-            )
+                    onSelectFile = {}))
         }
     }
 }
@@ -510,29 +452,22 @@ private fun SulogWarningCardPreview() {
         onCleanFile = {},
         onSearchTextChange = {},
         onToggleFilter = {},
-        onSelectFile = {},
-    )
+        onSelectFile = {})
 
     Column {
         SulogStatusSection(
             state = SulogScreenState(
-                sulogStatus = "unsupported",
-            ),
-            actions = actions,
-        )
+                sulogStatus = "unsupported"),
+            actions = actions)
         SulogStatusSection(
             state = SulogScreenState(
-                sulogStatus = "managed",
-            ),
-            actions = actions,
-        )
+                sulogStatus = "managed"),
+            actions = actions)
         SulogStatusSection(
             state = SulogScreenState(
                 sulogStatus = "supported",
-                isSulogEnabled = false,
-            ),
-            actions = actions,
-        )
+                isSulogEnabled = false),
+            actions = actions)
     }
 }
 
@@ -546,29 +481,22 @@ private fun SulogWarningCardTranslationPreview() {
         onCleanFile = {},
         onSearchTextChange = {},
         onToggleFilter = {},
-        onSelectFile = {},
-    )
+        onSelectFile = {})
 
     Column {
         SulogStatusSection(
             state = SulogScreenState(
-                sulogStatus = "unsupported",
-            ),
-            actions = actions,
-        )
+                sulogStatus = "unsupported"),
+            actions = actions)
         SulogStatusSection(
             state = SulogScreenState(
-                sulogStatus = "managed",
-            ),
-            actions = actions,
-        )
+                sulogStatus = "managed"),
+            actions = actions)
         SulogStatusSection(
             state = SulogScreenState(
                 sulogStatus = "supported",
-                isSulogEnabled = false,
-            ),
-            actions = actions,
-        )
+                isSulogEnabled = false),
+            actions = actions)
     }
 }
 
@@ -576,22 +504,19 @@ private fun SulogWarningCardTranslationPreview() {
 private fun LazyListScope.sulogEntriesSection(
     entries: List<SulogEntry>,
     errorMessage: String?,
-    onEntryClick: (SulogEntry) -> Unit,
-) {
+    onEntryClick: (SulogEntry) -> Unit) {
     when {
         errorMessage != null -> item {
             SulogMessageCard(
                 modifier = Modifier.fillParentMaxSize(),
                 title = stringResource(R.string.sulog_failed_to_load),
-                summary = errorMessage,
-            )
+                summary = errorMessage)
         }
 
         else -> {
             lazySegmentColumn(
                 entries,
-                key = { index, entry -> "$index-${entry.key}" },
-            ) { index, entry ->
+                key = { index, entry -> "$index-${entry.key}" }) { index, entry ->
                 SettingsBaseWidget(
                     onClick = { onEntryClick(entry) },
                     title = sulogEntryTitle(entry),
@@ -603,32 +528,27 @@ private fun LazyListScope.sulogEntriesSection(
                                     it,
                                     style = MaterialTheme.typography.bodySmall,
                                     maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis,
-                                )
+                                    overflow = TextOverflow.Ellipsis)
                             }
                             entry.timestampText?.let {
                                 Text(
                                     it,
                                     style = MaterialTheme.typography.labelMediumEmphasized,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                             Row(horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                 val colors = listOf(
                                     MaterialTheme.colorScheme.primary,
                                     MaterialTheme.colorScheme.secondary,
-                                    MaterialTheme.colorScheme.tertiary,
-                                )
+                                    MaterialTheme.colorScheme.tertiary)
                                 sulogEntrySummaryTags(entry).forEachIndexed { index, tag ->
                                     LabelText(
                                         label = tag,
-                                        containerColor = colors.getOrElse(index) { colors.last() },
-                                    )
+                                        containerColor = colors.getOrElse(index) { colors.last() })
                                 }
                             }
                         }
-                    },
-                ) {
+                    }) {
                     sulogEntryStatus(entry)?.let { Text(it) }
                 }
             }
@@ -639,11 +559,9 @@ private fun LazyListScope.sulogEntriesSection(
 @Composable
 private fun SulogStatusSection(
     state: SulogScreenState,
-    actions: SulogActions,
-) {
+    actions: SulogActions) {
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp),
-    ) {
+        modifier = Modifier.padding(horizontal = 16.dp)) {
         when (state.sulogStatus) {
             "unsupported" -> {
                 WarningCard(message = stringResource(R.string.sulog_unsupported_title))
@@ -663,13 +581,10 @@ private fun SulogStatusSection(
                             onClick = actions.onEnableSulog,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
-                        ) {
+                                contentColor = MaterialTheme.colorScheme.onError)) {
                             Text(stringResource(R.string.sulog_enable_action))
                         }
-                    },
-                )
+                    })
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
@@ -682,12 +597,10 @@ private fun SulogStatusSection(
 private fun SulogMessageCard(
     modifier: Modifier = Modifier,
     title: String,
-    summary: String? = null,
-) {
+    summary: String? = null) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center,
-    ) {
+        contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(title, color = MaterialTheme.colorScheme.outline)
             if (summary != null) {
@@ -696,8 +609,7 @@ private fun SulogMessageCard(
                     color = MaterialTheme.colorScheme.outline,
                     fontSize = MaterialTheme.typography.bodySmall.fontSize,
                     maxLines = 3,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                    overflow = TextOverflow.Ellipsis)
             }
         }
     }
@@ -706,20 +618,17 @@ private fun SulogMessageCard(
 @Composable
 private fun SulogDetailDialog(
     entry: SulogEntry,
-    onDismiss: () -> Unit,
-) {
+    onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(sulogEntryTitle(entry)) },
         text = {
             Column(
-                modifier = Modifier.verticalScroll(rememberScrollState()),
-            ) {
+                modifier = Modifier.verticalScroll(rememberScrollState())) {
                 SelectionContainer {
                     Text(
                         text = sulogEntryDetailText(entry),
-                        fontFamily = FontFamily.Monospace,
-                    )
+                        fontFamily = FontFamily.Monospace)
                 }
             }
         },
@@ -727,8 +636,7 @@ private fun SulogDetailDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(android.R.string.ok))
             }
-        },
-    )
+        })
 }
 
 @Composable
@@ -774,25 +682,20 @@ fun sulogEntrySummaryTags(entry: SulogEntry): List<String> {
             entry.fields["restart"]?.let {
                 stringResource(
                     R.string.sulog_daemon_restart_count,
-                    it,
-                )
-            } ?: stringResource(R.string.sulog_filter_daemon_restart),
-        )
+                    it)
+            } ?: stringResource(R.string.sulog_filter_daemon_restart))
 
         SulogEventType.Dropped -> listOfNotNull(
             entry.fields["dropped"]?.let {
                 stringResource(
                     R.string.sulog_drop_count,
-                    it,
-                )
-            },
-        )
+                    it)
+            })
 
         else -> listOfNotNull(
             comm?.takeIf { it.isNotBlank() },
             uid?.let { "UID $it" },
-            pid?.let { "PID $it" },
-        )
+            pid?.let { "PID $it" })
     }
 }
 
@@ -812,13 +715,11 @@ private fun formatSulogStatus(retval: Int): String = if (retval == 0) "Success" 
 
 fun buildSulogFileSelector(
     files: List<SulogFile>,
-    selectedFilePath: String?,
-): SulogFileSelector {
+    selectedFilePath: String?): SulogFileSelector {
     if (files.isEmpty()) {
         return SulogFileSelector(
             items = emptyList(),
-            selectedIndex = -1,
-        )
+            selectedIndex = -1)
     }
 
     val selectedIndex = files.indexOfFirst { it.path == selectedFilePath }
@@ -827,6 +728,5 @@ fun buildSulogFileSelector(
 
     return SulogFileSelector(
         items = files.map { it.name.toSulogDisplayName() },
-        selectedIndex = selectedIndex,
-    )
+        selectedIndex = selectedIndex)
 }

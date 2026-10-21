@@ -80,25 +80,21 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                         Spacer(Modifier.height(12.dp))
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
+                            modifier = Modifier.fillMaxWidth()) {
                             Switch(
                                 checked = restoreModules,
                                 onCheckedChange = { restoreModules = it },
-                                colors = SwitchDefaults.colors(),
-                            )
+                                colors = SwitchDefaults.colors())
                             Spacer(Modifier.width(10.dp))
                             Column {
                                 Text(
                                     "同时还原模块状态",
                                     style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                )
+                                    fontWeight = FontWeight.SemiBold)
                                 Text(
                                     "恢复备份时的模块启用 / 卸载状态",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
@@ -138,8 +134,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
             },
             dismissButton = {
                 TextButton(onClick = { showConfirm = false }) { Text("取消") }
-            },
-        )
+            })
     }
 
     Dialog(onDismissRequest = { if (!running) onDismiss() }) {
@@ -149,8 +144,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.Build,
                     iconTint = MaterialTheme.colorScheme.secondary,
                     title = "一键救砖",
-                    subtitle = "选择历史备份目录，一键 dd 刷回。顺序：vbmeta → init_boot → boot",
-                )
+                    subtitle = "选择历史备份目录，一键 dd 刷回。顺序：vbmeta → init_boot → boot")
                 Spacer(Modifier.height(16.dp))
 
                 if (dirs.isEmpty()) {
@@ -167,8 +161,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                                 Text(
                                     f.name,
                                     fontFamily = FontFamily.Monospace,
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                                    style = MaterialTheme.typography.bodySmall)
                             }
                         }
                     }
@@ -182,8 +175,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .height(140.dp)
-                            .verticalScroll(rememberScrollState()),
-                    )
+                            .verticalScroll(rememberScrollState()))
                 }
 
                 Spacer(Modifier.height(20.dp))
@@ -192,8 +184,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
                     Spacer(Modifier.width(8.dp))
                     Button(
                         enabled = selected != null && !running,
-                        onClick = { showConfirm = true },
-                    ) { Text("开始刷回") }
+                        onClick = { showConfirm = true }) { Text("开始刷回") }
                 }
             }
         }
@@ -202,8 +193,7 @@ fun HuijuiRescue(onDismiss: () -> Unit) {
 
 private suspend fun doRescueSuspend(
     dir: File,
-    log: suspend (String) -> Unit,
-): Result<Unit> = withContext(Dispatchers.IO) {
+    log: suspend (String) -> Unit): Result<Unit> = withContext(Dispatchers.IO) {
     val order = listOf("vbmeta_a", "vbmeta_b", "init_boot_a", "init_boot_b", "boot_a", "boot_b")
     for (name in order) {
         val img = File(dir, "$name.img")

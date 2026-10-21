@@ -22,8 +22,7 @@ data class SuSFSUiState(
     val isLoading: Boolean = false,
     val isRefreshing: Boolean = false,
     val statusInfo: SuSFSStatusInfo? = null,
-    val slotInfo: List<SuSFSSlotInfo>? = null,
-)
+    val slotInfo: List<SuSFSSlotInfo>? = null)
 
 enum class SusKstatOperation {
     Normal,
@@ -36,36 +35,31 @@ sealed interface SuSFSUiAction {
     data class Refresh(val reply: SuSFSCommandReply? = null) : SuSFSUiAction
     data class SetEnabled(
         val enabled: Boolean,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class RestoreDefault(val reply: SuSFSCommandReply? = null) : SuSFSUiAction
     data class LoadStatusInfo(
         val forceRefresh: Boolean = false,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class AddSusPath(
         val path: String,
         val loop: Boolean,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class RemoveSusPath(val path: String, val reply: SuSFSCommandReply? = null) : SuSFSUiAction
     data class AddSusKstat(
         val path: String,
         val type: SusKstatOperation,
         val values: SusKstatStatically? = null,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class RemoveSusKstat(val path: String, val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class SetUname(
         val release: String,
         val version: String,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class LoadSlotInfo(val reply: SuSFSCommandReply? = null) : SuSFSUiAction
     data class EnableLog(val enabled: Boolean, val reply: SuSFSCommandReply? = null) : SuSFSUiAction
@@ -73,25 +67,21 @@ sealed interface SuSFSUiAction {
 
     data class EnableAvcLogSpoofing(
         val enabled: Boolean,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class SetCmdlineOrBootconfig(
         val path: String,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class AddOpenRedirect(
         val targetPath: String,
         val redirectedPath: String,
         val uidScheme: UidScheme,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class RemoveOpenRedirect(
         val targetPath: String,
-        val reply: SuSFSCommandReply? = null,
-    ) : SuSFSUiAction
+        val reply: SuSFSCommandReply? = null) : SuSFSUiAction
 
     data class AddSusMap(val path: String, val reply: SuSFSCommandReply? = null) : SuSFSUiAction
     data class RemoveSusMap(val path: String, val reply: SuSFSCommandReply? = null) : SuSFSUiAction
@@ -114,8 +104,7 @@ sealed interface SuSFSUiEvent {
 
 /** Coordinates SUSFS operations while keeping the Compose layer independent of the repository. */
 class SuSFSViewModel(
-    private val configUseCase: SuSFSConfigUseCase,
-) : ViewModel() {
+    private val configUseCase: SuSFSConfigUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(SuSFSUiState())
     private val mutableEvents = MutableSharedFlow<SuSFSUiEvent>(extraBufferCapacity = 1)
 
@@ -137,8 +126,7 @@ class SuSFSViewModel(
                     ?.takeIf { it }
                     ?.let {
                         mutableState.value = mutableState.value.copy(
-                            config = mutableState.value.config?.copy(enabled = action.enabled),
-                        )
+                            config = mutableState.value.config?.copy(enabled = action.enabled))
                     }
             }
 
@@ -175,9 +163,7 @@ class SuSFSViewModel(
                             action.path,
                             action.values ?: SusKstatStatically(
                                 null, null, null, null, null, null,
-                                null, null, null, null, null, null,
-                            ),
-                        )
+                                null, null, null, null, null, null))
                     }
                 }
             }
@@ -190,8 +176,7 @@ class SuSFSViewModel(
                 executeBoolean(action.reply) {
                     configUseCase.setUname(
                         action.release,
-                        action.version,
-                    )
+                        action.version)
                 }
             }
 
@@ -222,8 +207,7 @@ class SuSFSViewModel(
                     configUseCase.addOpenRedirect(
                         action.targetPath,
                         action.redirectedPath,
-                        action.uidScheme,
-                    )
+                        action.uidScheme)
                 }
             }
 
@@ -253,16 +237,14 @@ class SuSFSViewModel(
         viewModelScope.launch {
             mutableState.value = mutableState.value.copy(
                 isLoading = !refresh,
-                isRefreshing = refresh,
-            )
+                isRefreshing = refresh)
             runCatching {
                 if (refresh) configUseCase.refreshConfig() else configUseCase.loadConfig()
             }.onSuccess { config ->
                 mutableState.value = mutableState.value.copy(
                     config = config,
                     isLoading = false,
-                    isRefreshing = false,
-                )
+                    isRefreshing = false)
                 reply?.complete(SuSFSCommandResult.ConfigValue(config))
             }.onFailure {
                 mutableState.value =
@@ -275,8 +257,7 @@ class SuSFSViewModel(
 
     private suspend fun executeBoolean(
         reply: SuSFSCommandReply?,
-        operation: suspend () -> Boolean,
-    ): Boolean? = runCatching { operation() }
+        operation: suspend () -> Boolean): Boolean? = runCatching { operation() }
         .onSuccess { value -> reply?.complete(SuSFSCommandResult.BooleanValue(value)) }
         .onFailure { error ->
             reply?.completeExceptionally(error)
@@ -311,8 +292,7 @@ class SuSFSViewModel(
 
 internal suspend fun awaitSuSFSCommand(
     viewModel: SuSFSViewModel,
-    action: (SuSFSCommandReply) -> SuSFSUiAction,
-): SuSFSCommandResult? {
+    action: (SuSFSCommandReply) -> SuSFSUiAction): SuSFSCommandResult? {
     val reply = CompletableDeferred<SuSFSCommandResult>()
     viewModel.dispatch(action(reply))
     return runCatching { reply.await() }.getOrNull()
@@ -320,28 +300,24 @@ internal suspend fun awaitSuSFSCommand(
 
 internal suspend fun awaitSuSFSBoolean(
     viewModel: SuSFSViewModel,
-    action: (SuSFSCommandReply) -> SuSFSUiAction,
-): Boolean = (awaitSuSFSCommand(viewModel, action) as? SuSFSCommandResult.BooleanValue)
+    action: (SuSFSCommandReply) -> SuSFSUiAction): Boolean = (awaitSuSFSCommand(viewModel, action) as? SuSFSCommandResult.BooleanValue)
     ?.value == true
 
 internal suspend fun awaitSuSFSConfig(
     viewModel: SuSFSViewModel,
-    action: (SuSFSCommandReply) -> SuSFSUiAction,
-): SuSFSConfig? = (awaitSuSFSCommand(viewModel, action) as? SuSFSCommandResult.ConfigValue)
+    action: (SuSFSCommandReply) -> SuSFSUiAction): SuSFSConfig? = (awaitSuSFSCommand(viewModel, action) as? SuSFSCommandResult.ConfigValue)
     ?.value
 
 internal suspend fun awaitSuSFSStatusInfo(
     viewModel: SuSFSViewModel,
-    forceRefresh: Boolean,
-): SuSFSStatusInfo? = (
+    forceRefresh: Boolean): SuSFSStatusInfo? = (
     awaitSuSFSCommand(viewModel) { reply ->
         SuSFSUiAction.LoadStatusInfo(forceRefresh, reply)
     } as? SuSFSCommandResult.StatusInfoValue
     )?.value
 
 internal suspend fun awaitSuSFSSlotInfo(
-    viewModel: SuSFSViewModel,
-): List<SuSFSSlotInfo>? = (
+    viewModel: SuSFSViewModel): List<SuSFSSlotInfo>? = (
     awaitSuSFSCommand(viewModel) { reply ->
         SuSFSUiAction.LoadSlotInfo(reply)
     } as? SuSFSCommandResult.SlotInfoValue

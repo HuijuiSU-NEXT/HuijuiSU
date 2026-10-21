@@ -54,8 +54,7 @@ sealed interface Route :
     data class TemplateEditor(
         val templateId: String,
         val readOnly: Boolean,
-        val isCreation: Boolean = false,
-    ) : Route
+        val isCreation: Boolean = false) : Route
 
     @Parcelize
     @Serializable
@@ -86,8 +85,7 @@ sealed interface Route :
         val partition: String? = null,
         val allowShell: Boolean = false,
         val enableAdb: Boolean = false,
-        val forceBackup: Boolean = false,
-    ) : Route {
+        val forceBackup: Boolean = false) : Route {
         companion object {
             const val TYPE_BOOT = "boot"
             const val TYPE_MODULE = "module"
@@ -104,8 +102,7 @@ sealed interface Route :
                 partition: String?,
                 allowShell: Boolean = false,
                 enableAdb: Boolean = false,
-                forceBackup: Boolean = false,
-            ) = Flash(
+                forceBackup: Boolean = false) = Flash(
                 flashType = TYPE_BOOT,
                 bootUri = bootUri,
                 lkmUri = lkmUri,
@@ -114,8 +111,7 @@ sealed interface Route :
                 partition = partition,
                 allowShell = allowShell,
                 enableAdb = enableAdb,
-                forceBackup = forceBackup,
-            )
+                forceBackup = forceBackup)
 
             fun module(uri: String) = Flash(TYPE_MODULE, uris = listOf(uri))
             fun modules(uris: List<String>, currentIndex: Int = 0) = Flash(TYPE_MODULES, uris = uris, currentIndex = currentIndex)
@@ -151,6 +147,5 @@ sealed interface Route :
     data class KernelFlash(
         val kernelUri: String,
         val selectedSlot: String?,
-        val skipKsud: Boolean = false,
-    ) : Route
+        val skipKsud: Boolean = false) : Route
 }

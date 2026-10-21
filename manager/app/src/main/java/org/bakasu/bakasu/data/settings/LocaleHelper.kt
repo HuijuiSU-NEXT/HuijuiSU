@@ -31,8 +31,7 @@ fun launchSystemLanguageSettings(context: Context) {
  * Apply saved language setting to context (for Android < 13)
  */
 class LocaleHelper(
-    private val settings: AppSettingsRepository,
-) {
+    private val settings: AppSettingsRepository) {
     fun applyLanguage(context: Context): Context {
         // On Android 13+, language is handled by system
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {

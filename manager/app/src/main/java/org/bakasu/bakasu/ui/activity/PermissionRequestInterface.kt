@@ -15,8 +15,7 @@ interface PermissionRequestInterface {
     fun requestPermission(
         permission: String,
         callback: (Boolean) -> Unit,
-        requestDescription: String,
-    )
+        requestDescription: String)
 
     /**
      * Requests multiple android permission.
@@ -29,6 +28,5 @@ interface PermissionRequestInterface {
     fun requestPermissions(
         permissions: Array<String>,
         callback: (Map<String, @JvmSuppressWildcards Boolean>) -> Unit,
-        requestDescription: Map<String, String>,
-    )
+        requestDescription: Map<String, String>)
 }

@@ -45,7 +45,6 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
     val context = LocalContext.current
 
-    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showRescue by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }

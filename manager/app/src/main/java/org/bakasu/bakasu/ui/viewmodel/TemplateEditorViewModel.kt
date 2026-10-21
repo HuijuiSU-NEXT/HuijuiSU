@@ -27,8 +27,7 @@ data class TemplateEditorUiState(
     val loading: Boolean = true,
     val loadFailure: ProfileTemplateFailure? = null,
     val readOnly: Boolean = true,
-    val isCreation: Boolean = false,
-)
+    val isCreation: Boolean = false)
 
 sealed interface TemplateEditorUiAction {
     data object Load : TemplateEditorUiAction
@@ -50,11 +49,9 @@ class TemplateEditorViewModel(
     private val isCreation: Boolean,
     private val getTemplate: GetProfileTemplateUseCase,
     private val saveTemplate: SaveProfileTemplateUseCase,
-    private val deleteTemplate: DeleteProfileTemplateUseCase,
-) : ViewModel() {
+    private val deleteTemplate: DeleteProfileTemplateUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(
-        TemplateEditorUiState(readOnly = readOnly, isCreation = isCreation),
-    )
+        TemplateEditorUiState(readOnly = readOnly, isCreation = isCreation))
     private val mutableEvents = MutableSharedFlow<TemplateEditorUiEvent>(extraBufferCapacity = 1)
 
     val state: StateFlow<TemplateEditorUiState> = mutableState.asStateFlow()
@@ -84,8 +81,7 @@ class TemplateEditorViewModel(
                 autoSaveJob?.cancel()
                 deleteTemplate(mutableState.value.template.id).fold(
                     onSuccess = { mutableEvents.tryEmit(TemplateEditorUiEvent.Deleted) },
-                    onFailure = { mutableEvents.tryEmit(TemplateEditorUiEvent.Error(it.toFailure())) },
-                )
+                    onFailure = { mutableEvents.tryEmit(TemplateEditorUiEvent.Error(it.toFailure())) })
             }
         }
     }
@@ -96,8 +92,7 @@ class TemplateEditorViewModel(
                 it.copy(
                     template = ProfileTemplate(id = templateId),
                     loading = false,
-                    loadFailure = null,
-                )
+                    loadFailure = null)
             }
             return
         }
@@ -113,8 +108,7 @@ class TemplateEditorViewModel(
                     mutableState.update {
                         it.copy(loading = false, loadFailure = error.toFailure())
                     }
-                },
-            )
+                })
         }
     }
 
@@ -138,8 +132,7 @@ class TemplateEditorViewModel(
                 onSuccess = {
                     if (emitSuccess) mutableEvents.tryEmit(TemplateEditorUiEvent.Saved)
                 },
-                onFailure = { mutableEvents.tryEmit(TemplateEditorUiEvent.Error(it.toFailure())) },
-            )
+                onFailure = { mutableEvents.tryEmit(TemplateEditorUiEvent.Error(it.toFailure())) })
         }
     }
 

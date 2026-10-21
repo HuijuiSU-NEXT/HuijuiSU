@@ -20,8 +20,7 @@ object HuijuiShellUtils {
     fun runAsRoot(
         cmd: String,
         timeoutSeconds: Long = 30,
-        trim: Boolean = false,
-    ): String = try {
+        trim: Boolean = false): String = try {
         val p = ProcessBuilder("su", "-c", cmd)
             .redirectErrorStream(true)
             .start()

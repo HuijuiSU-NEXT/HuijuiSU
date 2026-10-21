@@ -64,15 +64,13 @@ fun HuijuiPerfMode(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.Speed,
                     iconTint = MaterialTheme.colorScheme.tertiary,
                     title = "性能模式",
-                    subtitle = "一键切换系统调度策略",
-                )
+                    subtitle = "一键切换系统调度策略")
                 Spacer(Modifier.height(16.dp))
 
                 PerfMode.entries.forEach { mode ->
                     Row(
                         modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
+                        verticalAlignment = Alignment.CenterVertically) {
                         RadioButton(
                             selected = currentMode == mode,
                             onClick = {
@@ -85,20 +83,17 @@ fun HuijuiPerfMode(onDismiss: () -> Unit) {
                                     if (ok) currentMode = mode
                                     running = false
                                 }
-                            },
-                        )
+                            })
                         Spacer(Modifier.width(8.dp))
                         Column {
                             Text(
                                 mode.label,
                                 style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.SemiBold,
-                            )
+                                fontWeight = FontWeight.SemiBold)
                             Text(
                                 mode.desc,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                         }
                     }
                 }
@@ -110,15 +105,13 @@ fun HuijuiPerfMode(onDismiss: () -> Unit) {
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier
                             .height(120.dp)
-                            .verticalScroll(rememberScrollState()),
-                    )
+                            .verticalScroll(rememberScrollState()))
                 }
 
                 Spacer(Modifier.height(16.dp))
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
+                    horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = { if (!running) onDismiss() }) { Text("关闭") }
                 }
             }
@@ -129,8 +122,7 @@ fun HuijuiPerfMode(onDismiss: () -> Unit) {
 enum class PerfMode(
     val label: String,
     val desc: String,
-    val governor: String,
-) {
+    val governor: String) {
     POWER_SAVE("省电", "限制 CPU 频率，降低功耗", "powersave"),
     BALANCED("均衡", "日常使用，兼顾性能与功耗", "schedutil"),
     PERFORMANCE("性能", "释放 CPU 满血性能", "performance"),

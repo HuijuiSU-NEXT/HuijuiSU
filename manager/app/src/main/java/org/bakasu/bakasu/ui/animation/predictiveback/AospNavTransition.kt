@@ -37,13 +37,11 @@ private val CrossActivityDrift = 96.dp
 private val CrossActivityEdgeMargin = 8.dp
 
 private val ClassicActivityMotion = NavMotion(
-    programmatic = NavSettleSpec.Tween(durationMillis = 450, easing = FastOutExtraSlowIn),
-)
+    programmatic = NavSettleSpec.Tween(durationMillis = 450, easing = FastOutExtraSlowIn))
 
 private val ClassicActivityOpen: NavTransition = navGraphicsTransition(
     motion = ClassicActivityMotion,
-    scrim = { 0f },
-) { scope ->
+    scrim = { 0f }) { scope ->
     val depth = scope.relativeDepth
     val driftPx = with(scope.density) { CrossActivityDrift.toPx() }
     if (depth <= 0f) {
@@ -67,8 +65,7 @@ private val ClassicActivityOpen: NavTransition = navGraphicsTransition(
 
 private val ClassicActivityClose: NavTransition = navGraphicsTransition(
     motion = ClassicActivityMotion,
-    scrim = { 0f },
-) { scope ->
+    scrim = { 0f }) { scope ->
     val depth = scope.relativeDepth
     val driftPx = with(scope.density) { CrossActivityDrift.toPx() }
     if (depth <= 0f) {
@@ -94,8 +91,7 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
     opaqueDepth = 1f,
     motion = NavMotion(
         commit = NavSettleSpec.Tween(durationMillis = 450, easing = FastOutExtraSlowIn),
-        cancel = NavSettleSpec.Spring(stiffness = 1500f),
-    ),
+        cancel = NavSettleSpec.Spring(stiffness = 1500f)),
     scrim = { scope ->
         val settle = scope.settle
         val gesture = scope.gesture
@@ -111,8 +107,7 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
 
             else -> scope.relativeDepth.coerceIn(0f, 1f)
         }
-    },
-) { scope ->
+    }) { scope ->
     val depth = scope.relativeDepth
     val gesture = scope.gesture
     val settle = scope.settle
@@ -146,25 +141,21 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
                     gesture = gesture,
                     height = heightPx,
                     scale = scaleX,
-                    density = scope.density,
-                ),
+                    density = scope.density),
                 scale = scaleY,
-                extent = heightPx,
-            )
+                extent = heightPx)
         } else {
             val easedProgress = shapedTopProgress(progress, gesture)
             scaleX = snapScaleToPixelExtent(
                 scale = (
                     CROSS_ACTIVITY_MIN_SCALE + (1f - CROSS_ACTIVITY_MIN_SCALE) * easedProgress
                     ) * bounce,
-                extent = widthPx,
-            )
+                extent = widthPx)
             scaleY = scaleX
             translationX = snapTranslationToPixelEdge(
                 translation = if (hugs) (1f - easedProgress) * hugMax else 0f,
                 scale = scaleX,
-                extent = widthPx,
-            )
+                extent = widthPx)
             alpha = when {
                 scope.role == NavRole.Outgoing && gesture != null -> {
                     val releaseProgress = (1f - gesture.progress).coerceAtLeast(0.01f)
@@ -181,11 +172,9 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
                     gesture = gesture,
                     height = heightPx,
                     scale = scaleX,
-                    density = scope.density,
-                ),
+                    density = scope.density),
                 scale = scaleX,
-                extent = heightPx,
-            )
+                extent = heightPx)
         }
     } else {
         val cover = coverProgress(depth)
@@ -207,8 +196,7 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
                 CROSS_ACTIVITY_MIN_SCALE + (1f - CROSS_ACTIVITY_MIN_SCALE) * (1f - eased)
             scaleX = snapScaleToPixelExtent(
                 (liveScale + (1f - liveScale) * post) * bounce,
-                widthPx,
-            )
+                widthPx)
             scaleY = scaleX
         }
         translationX = snapTranslationToPixelEdge(rawTranslationX, scaleX, widthPx)
@@ -217,19 +205,16 @@ private val CrossActivityPredictive: NavTransition = navGraphicsTransition(
                 gesture = gesture,
                 height = heightPx,
                 scale = scaleX,
-                density = scope.density,
-            ),
+                density = scope.density),
             scale = scaleX,
-            extent = heightPx,
-        )
+            extent = heightPx)
     }
 }
 
 internal val AospNavTransition: NavTransition = navDirectionalTransition(
     push = ClassicActivityOpen,
     pop = ClassicActivityClose,
-    predictivePop = CrossActivityPredictive,
-)
+    predictivePop = CrossActivityPredictive)
 
 private fun bounceScale(settle: NavSettle?, gesture: NavGesture?): Float {
     if (settle == null || settle.phase != NavSettlePhase.Commit || gesture == null) return 1f
@@ -252,8 +237,7 @@ private fun crossActivityYShift(
     gesture: NavGesture?,
     height: Float,
     scale: Float,
-    density: Density,
-): Float {
+    density: Density): Float {
     if (gesture == null || height <= 0f) return 0f
     val rawDelta = gesture.touchY - gesture.initialTouchY
     val half = height / 2f

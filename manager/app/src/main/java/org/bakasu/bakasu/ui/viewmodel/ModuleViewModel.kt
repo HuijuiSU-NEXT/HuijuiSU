@@ -39,8 +39,7 @@ data class ModuleUiState(
     val hasMagisk: Boolean = false,
     val metaModuleStatus: MetaModuleStatus = MetaModuleStatus.MISSING,
     val isNeedRefresh: Boolean = false,
-    val showMoreModuleInfo: Boolean = false,
-)
+    val showMoreModuleInfo: Boolean = false)
 
 sealed interface ModuleUiAction {
     data class Refresh(val manual: Boolean = false) : ModuleUiAction
@@ -62,21 +61,18 @@ sealed interface ModuleUiEvent {
     data class EnabledChanged(
         val moduleId: String,
         val enabled: Boolean,
-        val successful: Boolean,
-    ) : ModuleUiEvent
+        val successful: Boolean) : ModuleUiEvent
 
     data class RemovedChanged(
         val moduleId: String,
         val removed: Boolean,
-        val successful: Boolean,
-    ) : ModuleUiEvent
+        val successful: Boolean) : ModuleUiEvent
 }
 
 private data class ModuleControls(
     val search: String = "",
     val isNeedRefresh: Boolean = false,
-    val moduleSizes: Map<String, String> = emptyMap(),
-)
+    val moduleSizes: Map<String, String> = emptyMap())
 
 class ModuleViewModel(
     observeInstalledModules: ObserveInstalledModulesUseCase,
@@ -89,8 +85,7 @@ class ModuleViewModel(
     private val setModuleEnabled: SetModuleEnabledUseCase,
     private val setModuleRemoved: SetModuleRemovedUseCase,
     private val reboot: RebootUseCase,
-    private val isSoftRebootPreferred: IsSoftRebootPreferredUseCase,
-) : ViewModel() {
+    private val isSoftRebootPreferred: IsSoftRebootPreferredUseCase) : ViewModel() {
     private val controls = MutableStateFlow(ModuleControls())
     private val mutableEvents = MutableSharedFlow<ModuleUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<ModuleUiEvent> = mutableEvents.asSharedFlow()
@@ -98,15 +93,13 @@ class ModuleViewModel(
     val state: StateFlow<ModuleUiState> = combine(
         observeInstalledModules(),
         controls,
-        modulePreferences.preferences,
-    ) { source, local, preferences ->
+        modulePreferences.preferences) { source, local, preferences ->
         ModuleUiState(
             moduleList = buildModuleList(
                 modules = source.modules,
                 search = local.search,
                 sortEnabledFirst = preferences.sortEnabledFirst,
-                sortActionFirst = preferences.sortActionFirst,
-            ),
+                sortActionFirst = preferences.sortActionFirst),
             moduleSizes = local.moduleSizes,
             isRefreshing = source.refreshing,
             search = local.search,
@@ -116,8 +109,7 @@ class ModuleViewModel(
             hasMagisk = source.hasMagisk,
             metaModuleStatus = source.metaModuleStatus,
             isNeedRefresh = local.isNeedRefresh,
-            showMoreModuleInfo = preferences.showMoreModuleInfo,
-        )
+            showMoreModuleInfo = preferences.showMoreModuleInfo)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, ModuleUiState())
     val uiState: StateFlow<ModuleUiState> = state
 
@@ -152,15 +144,13 @@ class ModuleViewModel(
             is ModuleUiAction.SetEnabled -> viewModelScope.launch {
                 val successful = setModuleEnabled(action.moduleId, action.enabled).isSuccess
                 mutableEvents.emit(
-                    ModuleUiEvent.EnabledChanged(action.moduleId, action.enabled, successful),
-                )
+                    ModuleUiEvent.EnabledChanged(action.moduleId, action.enabled, successful))
             }
 
             is ModuleUiAction.SetRemoved -> viewModelScope.launch {
                 val successful = setModuleRemoved(action.moduleId, action.removed).isSuccess
                 mutableEvents.emit(
-                    ModuleUiEvent.RemovedChanged(action.moduleId, action.removed, successful),
-                )
+                    ModuleUiEvent.RemovedChanged(action.moduleId, action.removed, successful))
             }
 
             ModuleUiAction.Reboot -> viewModelScope.launch {
@@ -176,8 +166,7 @@ class ModuleViewModel(
     private suspend fun refreshNow(manual: Boolean) {
         val checkUpdates = getBooleanPreference(
             PREF_CHECK_MODULE_UPDATE,
-            getBooleanPreference(PREF_CHECK_UPDATE, true),
-        )
+            getBooleanPreference(PREF_CHECK_UPDATE, true))
         refreshInstalledModules(manual, checkUpdates)
             .onSuccess {
                 controls.update { it.copy(isNeedRefresh = false) }
@@ -192,8 +181,7 @@ class ModuleViewModel(
         modules: List<InstalledModule>,
         search: String,
         sortEnabledFirst: Boolean,
-        sortActionFirst: Boolean,
-    ): List<InstalledModule> {
+        sortActionFirst: Boolean): List<InstalledModule> {
         val comparator = compareBy<InstalledModule>(
             {
                 val executable = it.hasWebUi || it.hasActionScript
@@ -215,8 +203,7 @@ class ModuleViewModel(
                 }
             },
             { if (sortEnabledFirst) !it.enabled else false },
-            { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else false },
-        ).thenBy(Collator.getInstance(Locale.getDefault()), InstalledModule::id)
+            { if (sortActionFirst) !(it.hasWebUi || it.hasActionScript) else false }).thenBy(Collator.getInstance(Locale.getDefault()), InstalledModule::id)
 
         return modules.filter { module ->
             module.id.contains(search, ignoreCase = true) ||

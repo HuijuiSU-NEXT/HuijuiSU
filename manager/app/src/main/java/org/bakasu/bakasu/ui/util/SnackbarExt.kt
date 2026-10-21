@@ -9,13 +9,11 @@ suspend fun SnackbarHostState.showReplacingSnackbar(
     actionLabel: String? = null,
     withDismissAction: Boolean = false,
     duration: SnackbarDuration =
-        if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite,
-): SnackbarResult {
+        if (actionLabel == null) SnackbarDuration.Short else SnackbarDuration.Indefinite): SnackbarResult {
     currentSnackbarData?.dismiss()
     return showSnackbar(
         message = message,
         actionLabel = actionLabel,
         withDismissAction = withDismissAction,
-        duration = duration,
-    )
+        duration = duration)
 }

@@ -46,8 +46,7 @@ fun SettingsSwitchWidget(
     checked: Boolean,
     descriptionColumnContent: (@Composable ColumnScope.() -> Unit)? = null,
     containerColor: Color? = null,
-    onCheckedChange: (Boolean) -> Unit,
-) {
+    onCheckedChange: (Boolean) -> Unit) {
     val haptic = LocalHapticFeedback.current
 
     val handleCheckedChange: (Boolean) -> Unit = { newValue ->
@@ -81,8 +80,7 @@ fun SettingsSwitchWidget(
         clickHaptic = null,
         description = description,
         descriptionColumnContent = descriptionColumnContent,
-        containerColor = containerColor,
-    ) { interactionSource ->
+        containerColor = containerColor) { interactionSource ->
         Switch(
             modifier = Modifier.clearAndSetSemantics {},
             enabled = enabled,
@@ -90,17 +88,14 @@ fun SettingsSwitchWidget(
             interactionSource = interactionSource,
             colors = SwitchDefaults.colors(
                 checkedIconColor = MaterialTheme.colorScheme.primary,
-                uncheckedIconColor = MaterialTheme.colorScheme.surfaceBright,
-            ),
+                uncheckedIconColor = MaterialTheme.colorScheme.surfaceBright),
             thumbContent = {
                 Icon(
                     imageVector = if (checked) Icons.TwoTone.Check else Icons.TwoTone.Close,
                     contentDescription = null,
-                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                )
+                    modifier = Modifier.size(SwitchDefaults.IconSize))
             },
             // Pass null to disable internal touch handling and let BaseWidget calculate the exact ripple coordinates
-            onCheckedChange = null,
-        )
+            onCheckedChange = null)
     }
 }

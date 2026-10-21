@@ -51,8 +51,7 @@ fun EntryDetailDialog(
     title: String,
     fields: List<Pair<String, String>>,
     onDismiss: () -> Unit,
-    onDelete: () -> Unit,
-) {
+    onDelete: () -> Unit) {
     if (showDialog) {
         AlertDialog(
             onDismissRequest = onDismiss,
@@ -62,20 +61,17 @@ fun EntryDetailDialog(
                     modifier = Modifier
                         .heightIn(max = 420.dp)
                         .verticalScroll(rememberScrollState()),
-                    verticalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     fields.forEach { (label, value) ->
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
                                 text = label,
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            )
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
                                 text = value,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = MaterialTheme.colorScheme.onSurface,
-                            )
+                                color = MaterialTheme.colorScheme.onSurface)
                         }
                     }
                 }
@@ -84,9 +80,7 @@ fun EntryDetailDialog(
                 Button(
                     onClick = onDelete,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                    ),
-                ) {
+                        containerColor = MaterialTheme.colorScheme.error)) {
                     Text(stringResource(R.string.delete))
                 }
             },
@@ -94,8 +88,7 @@ fun EntryDetailDialog(
                 TextButton(onClick = onDismiss) {
                     Text(stringResource(R.string.cancel))
                 }
-            },
-        )
+            })
     }
 }
 
@@ -126,8 +119,7 @@ fun ManualAddDialog(
     onConfirm: () -> Unit,
     showImportFromFile: Boolean = false,
     onImportFromFile: (String) -> Unit = {},
-    formContent: SegmentedColumnScope.() -> Unit,
-) {
+    formContent: SegmentedColumnScope.() -> Unit) {
     val context = LocalContext.current
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -138,8 +130,7 @@ fun ManualAddDialog(
     val importFromFileLabel = stringResource(R.string.susfs_entry_import_from_file)
 
     val pickFileLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.OpenDocument(),
-    ) { uri: Uri? ->
+        ActivityResultContracts.OpenDocument()) { uri: Uri? ->
         uri?.let {
             scope.launch {
                 val decodedContent = withContext(Dispatchers.IO) {
@@ -153,8 +144,7 @@ fun ManualAddDialog(
                 val error = decodedContent.exceptionOrNull()
                 if (error != null) {
                     snackbarHost.showReplacingSnackbar(
-                        if (error is CharacterCodingException) fileNotTextMsg else fileReadFailedMsg,
-                    )
+                        if (error is CharacterCodingException) fileNotTextMsg else fileReadFailedMsg)
                     return@launch
                 }
 
@@ -173,8 +163,7 @@ fun ManualAddDialog(
                 Column(
                     modifier = Modifier
                         .heightIn(max = 420.dp)
-                        .verticalScroll(rememberScrollState()),
-                ) {
+                        .verticalScroll(rememberScrollState())) {
                     SegmentedColumn(contentPadding = PaddingValues(0.dp)) {
                         if (subtypes.size > 1) {
                             item {
@@ -185,8 +174,7 @@ fun ManualAddDialog(
                                     choice = subtypes.indexOf(selectedSubtype).coerceAtLeast(0),
                                     data = subtypes,
                                     renderBackgroundBlur = false,
-                                    onChoiceChange = { index -> onSubtypeChange(subtypes[index]) },
-                                )
+                                    onChoiceChange = { index -> onSubtypeChange(subtypes[index]) })
                             }
                         }
                         formContent()
@@ -197,8 +185,7 @@ fun ManualAddDialog(
                                     title = importFromFileLabel,
                                     description = stringResource(R.string.susfs_entry_import_hint),
                                     renderBackgroundBlur = false,
-                                    onClick = { pickFileLauncher.launch(arrayOf("*/*")) },
-                                )
+                                    onClick = { pickFileLauncher.launch(arrayOf("*/*")) })
                             }
                         }
                     }
@@ -206,8 +193,7 @@ fun ManualAddDialog(
             },
             confirmButton = {
                 Button(
-                    onClick = onConfirm,
-                ) {
+                    onClick = onConfirm) {
                     Text(stringResource(R.string.add))
                 }
             },
@@ -215,8 +201,7 @@ fun ManualAddDialog(
                 TextButton(onClick = onDismiss) {
                     Text(stringResource(R.string.cancel))
                 }
-            },
-        )
+            })
     }
 }
 

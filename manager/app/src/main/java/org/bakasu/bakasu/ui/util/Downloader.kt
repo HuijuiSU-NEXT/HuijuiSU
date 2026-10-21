@@ -31,15 +31,13 @@ fun download(
     observeDownload: ObserveDownloadUseCase,
     onDownloaded: (Uri) -> Unit = {},
     onDownloading: () -> Unit = {},
-    onProgress: (Int) -> Unit = {},
-) {
+    onProgress: (Int) -> Unit = {}) {
     fun startDownloadFile(
         url: String,
         fileName: String,
         onDownloaded: (Uri) -> Unit,
         onDownloading: () -> Unit,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         onDownloading()
 
         val downloadId = enqueueDownload(url, fileName)
@@ -64,8 +62,7 @@ fun download(
             fileName = fileName,
             onDownloaded = onDownloaded,
             onDownloading = onDownloading,
-            onProgress = onProgress,
-        )
+            onProgress = onProgress)
     }
 }
 
@@ -73,8 +70,7 @@ fun downloadManagerUpdate(
     context: Context,
     permissionRequestInterface: PermissionRequestInterface,
     update: ManagerUpdateInfo,
-    enqueueManagerUpdate: EnqueueManagerUpdateUseCase,
-) {
+    enqueueManagerUpdate: EnqueueManagerUpdateUseCase) {
     requestDownloadPermissions(context, permissionRequestInterface) {
         enqueueManagerUpdate(update)
     }
@@ -83,8 +79,7 @@ fun downloadManagerUpdate(
 private fun requestDownloadPermissions(
     context: Context,
     permissionRequestInterface: PermissionRequestInterface,
-    onGranted: () -> Unit,
-) {
+    onGranted: () -> Unit) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         // sdk 32+, require post_notifications permission
         permissionRequestInterface.requestPermission(
@@ -94,15 +89,13 @@ private fun requestDownloadPermissions(
                     Toast.makeText(
                         context,
                         context.getString(R.string.notification_permission_denied),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                        Toast.LENGTH_SHORT).show()
                     return@requestPermission
                 }
 
                 onGranted()
             },
-            requestDescription = context.getString(R.string.notification_permission_description),
-        )
+            requestDescription = context.getString(R.string.notification_permission_description))
     } else if (Build.VERSION.SDK_INT == Build.VERSION_CODES.S_V2) {
         // sdk 32, no need any permission
         onGranted()
@@ -111,23 +104,19 @@ private fun requestDownloadPermissions(
         permissionRequestInterface.requestPermissions(
             permissions = arrayOf(
                 Manifest.permission.READ_EXTERNAL_STORAGE,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            ),
+                Manifest.permission.WRITE_EXTERNAL_STORAGE),
             callback = { result ->
                 val success = result.all { it.value }
                 if (!success) {
                     Toast.makeText(
                         context,
                         context.getString(R.string.storage_permission_denied),
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                        Toast.LENGTH_SHORT).show()
                     return@requestPermissions
                 }
                 onGranted()
             },
             requestDescription = mapOf(
-                Manifest.permission.WRITE_EXTERNAL_STORAGE to context.getString(R.string.storage_permission_description),
-            ),
-        )
+                Manifest.permission.WRITE_EXTERNAL_STORAGE to context.getString(R.string.storage_permission_description)))
     }
 }

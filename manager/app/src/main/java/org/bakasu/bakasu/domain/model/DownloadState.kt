@@ -9,5 +9,4 @@ data class DownloadState(
     val progress: Int = 0,
     val status: DownloadStatus = DownloadStatus.PENDING,
     val resultUri: String? = null,
-    val error: String? = null,
-)
+    val error: String? = null)

@@ -45,8 +45,7 @@ fun SlotSelectionDialog(
     show: Boolean,
     currentSlot: String?,
     onDismiss: () -> Unit,
-    onSlotSelected: (String) -> Unit,
-) {
+    onSlotSelected: (String) -> Unit) {
     var selectedSlot by remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(show, currentSlot) {
@@ -69,23 +68,19 @@ fun SlotSelectionDialog(
                 Text(
                     text = stringResource(id = R.string.select_slot_title),
                     style = MaterialTheme.typography.headlineSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                    color = MaterialTheme.colorScheme.onSurface)
             },
             text = {
                 Column(
                     modifier = Modifier.padding(vertical = 8.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(16.dp)) {
                     Text(
                         text = stringResource(
                             id = R.string.current_slot,
-                            currentSlot ?: "Unknown",
-                        ),
+                            currentSlot ?: "Unknown"),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
+                        textAlign = TextAlign.Center)
 
                     Spacer(modifier = Modifier.height(12.dp))
 
@@ -93,8 +88,7 @@ fun SlotSelectionDialog(
                         text = stringResource(id = R.string.select_slot_description),
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
+                        textAlign = TextAlign.Center)
 
                     Spacer(modifier = Modifier.height(24.dp))
 
@@ -103,27 +97,22 @@ fun SlotSelectionDialog(
                         modifier = Modifier
                             .fillMaxWidth()
                             .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
+                        horizontalArrangement = Arrangement.SpaceBetween) {
                         val slotOptions = listOf(
                             ListOption(
                                 titleText = stringResource(id = R.string.slot_a),
                                 subtitleText = null,
-                                icon = Icons.TwoTone.SdStorage,
-                            ),
+                                icon = Icons.TwoTone.SdStorage),
                             ListOption(
                                 titleText = stringResource(id = R.string.slot_b),
                                 subtitleText = null,
-                                icon = Icons.TwoTone.SdStorage,
-                            ),
-                        )
+                                icon = Icons.TwoTone.SdStorage))
 
                         slotOptions.forEachIndexed { index, option ->
                             Column(
                                 modifier = Modifier
                                     .weight(1f)
-                                    .padding(horizontal = 8.dp),
-                            ) {
+                                    .padding(horizontal = 8.dp)) {
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -137,10 +126,8 @@ fun SlotSelectionDialog(
                                                 MaterialTheme.colorScheme.primary.copy(alpha = 0.9f)
                                             } else {
                                                 MaterialTheme.colorScheme.primaryContainer.copy(
-                                                    alpha = 0.3f,
-                                                )
-                                            },
-                                        )
+                                                    alpha = 0.3f)
+                                            })
                                         .clickable {
                                             selectedSlot = when (index) {
                                                 0 -> "a"
@@ -148,8 +135,7 @@ fun SlotSelectionDialog(
                                             }
                                         }
                                         .padding(vertical = 12.dp, horizontal = 16.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                ) {
+                                    verticalAlignment = Alignment.CenterVertically) {
                                     Icon(
                                         imageVector = option.icon,
                                         contentDescription = null,
@@ -164,11 +150,9 @@ fun SlotSelectionDialog(
                                         },
                                         modifier = Modifier
                                             .padding(end = 16.dp)
-                                            .size(24.dp),
-                                    )
+                                            .size(24.dp))
                                     Column(
-                                        modifier = Modifier.weight(1f),
-                                    ) {
+                                        modifier = Modifier.weight(1f)) {
                                         Text(
                                             text = option.titleText,
                                             style = MaterialTheme.typography.titleMedium,
@@ -180,8 +164,7 @@ fun SlotSelectionDialog(
                                                 MaterialTheme.colorScheme.onPrimary
                                             } else {
                                                 MaterialTheme.colorScheme.primary
-                                            },
-                                        )
+                                            })
                                         option.subtitleText?.let {
                                             Text(
                                                 text = it,
@@ -194,8 +177,7 @@ fun SlotSelectionDialog(
                                                     MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
                                                 } else {
                                                     MaterialTheme.colorScheme.onSurfaceVariant
-                                                },
-                                            )
+                                                })
                                         }
                                     }
                                 }
@@ -210,28 +192,23 @@ fun SlotSelectionDialog(
                         selectedSlot?.let { onSlotSelected(it) }
                         onDismiss()
                     },
-                    enabled = selectedSlot != null,
-                ) {
+                    enabled = selectedSlot != null) {
                     Text(
                         text = stringResource(android.R.string.ok),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+                        color = MaterialTheme.colorScheme.primary)
                 }
             },
             dismissButton = {
                 TextButton(
-                    onClick = onDismiss,
-                ) {
+                    onClick = onDismiss) {
                     Text(
                         text = stringResource(android.R.string.cancel),
-                        color = MaterialTheme.colorScheme.primary,
-                    )
+                        color = MaterialTheme.colorScheme.primary)
                 }
             },
             containerColor = cardColor,
             shape = MaterialTheme.shapes.extraLarge,
-            tonalElevation = 4.dp,
-        )
+            tonalElevation = 4.dp)
     }
 }
 
@@ -239,5 +216,4 @@ fun SlotSelectionDialog(
 data class ListOption(
     val titleText: String,
     val subtitleText: String?,
-    val icon: ImageVector,
-)
+    val icon: ImageVector)

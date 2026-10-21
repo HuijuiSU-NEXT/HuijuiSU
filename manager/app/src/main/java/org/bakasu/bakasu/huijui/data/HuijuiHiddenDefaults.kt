@@ -38,8 +38,7 @@ object HuijuiHiddenDefaults {
         "/data/adb/modules_update",
         "/data/adb/magisk",
         "/sbin/.magisk",
-        "/debug_ramdisk",
-    )
+        "/debug_ramdisk")
 
     /**
      * 默认隐藏 kstat 的路径（sus_kstat）。
@@ -49,8 +48,7 @@ object HuijuiHiddenDefaults {
      */
     val SUS_KSTATS = listOf(
         "/system",
-        "/vendor",
-    )
+        "/vendor")
 
     /**
      * 是否开启挂载点隐藏（hide_sus_mnts_for_non_su_procs）。

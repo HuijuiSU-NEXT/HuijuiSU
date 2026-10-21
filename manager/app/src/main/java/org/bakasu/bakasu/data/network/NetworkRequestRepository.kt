@@ -9,8 +9,7 @@ import okhttp3.Request
 
 data class NetworkResponse(
     val body: String?,
-    val headers: Map<String, List<String>>,
-) {
+    val headers: Map<String, List<String>>) {
     fun header(name: String): String? = headers.entries
         .firstOrNull { (key, _) -> key.equals(name, ignoreCase = true) }
         ?.value
@@ -19,19 +18,16 @@ data class NetworkResponse(
 
 class NetworkRequestRepository(
     private val networkStatusRepository: NetworkStatusRepository,
-    private val httpClient: OkHttpClient,
-) {
+    private val httpClient: OkHttpClient) {
     suspend fun fetch(
         url: String,
         headers: Map<String, String> = emptyMap(),
         forceNetwork: Boolean = false,
-        callTimeoutSeconds: Long? = null,
-    ): Result<String> = request(
+        callTimeoutSeconds: Long? = null): Result<String> = request(
         url = url,
         headers = headers,
         forceNetwork = forceNetwork,
-        callTimeoutSeconds = callTimeoutSeconds,
-    ).mapCatching { response ->
+        callTimeoutSeconds = callTimeoutSeconds).mapCatching { response ->
         response.body ?: error("Empty response")
     }
 
@@ -39,8 +35,7 @@ class NetworkRequestRepository(
         url: String,
         headers: Map<String, String> = emptyMap(),
         forceNetwork: Boolean = false,
-        callTimeoutSeconds: Long? = null,
-    ): Result<NetworkResponse> = withContext(Dispatchers.IO) {
+        callTimeoutSeconds: Long? = null): Result<NetworkResponse> = withContext(Dispatchers.IO) {
         if (!networkStatusRepository.isAvailable()) {
             return@withContext Result.failure(IllegalStateException("offline"))
         }
@@ -61,8 +56,7 @@ class NetworkRequestRepository(
                 check(response.isSuccessful) { "HTTP ${response.code}" }
                 NetworkResponse(
                     body = response.body?.string(),
-                    headers = response.headers.toMultimap(),
-                )
+                    headers = response.headers.toMultimap())
             }
         }
     }

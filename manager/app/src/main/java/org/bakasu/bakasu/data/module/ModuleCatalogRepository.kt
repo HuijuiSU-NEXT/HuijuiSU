@@ -24,8 +24,7 @@ import org.json.JSONObject
 
 class ModuleCatalogRepository(
     private val networkStatusRepository: NetworkStatusRepository,
-    private val networkRequestRepository: NetworkRequestRepository,
-) {
+    private val networkRequestRepository: NetworkRequestRepository) {
     private companion object {
         val MODULES_URLS = listOf(
             "https://hhcdxii-ship-it.github.io/Huijui_Module_Repo/modules.json",
@@ -142,7 +141,6 @@ class ModuleCatalogRepository(
             installed = SuFile.open("/data/adb/modules/$moduleId/module.prop").exists(),
             readme = "", 
             sourceUrl = "",
-            releases = releasesList,
-        )
+            releases = releasesList)
     }
 }

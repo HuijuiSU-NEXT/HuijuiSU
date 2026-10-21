@@ -6,8 +6,7 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 
 class NetworkStatusRepository(
-    application: Application,
-) {
+    application: Application) {
     private val connectivityManager =
         application.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 

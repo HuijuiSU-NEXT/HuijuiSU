@@ -31,8 +31,7 @@ data class AppProfileUiState(
     val profile: AppProfile? = null,
     val defaultUmountModules: Boolean = true,
     val isLoading: Boolean = true,
-    val sepolicyValid: Boolean = true,
-)
+    val sepolicyValid: Boolean = true)
 
 sealed interface AppProfileUiAction {
     data object Load : AppProfileUiAction
@@ -57,8 +56,7 @@ class AppProfileViewModel(
     private val getSepolicy: GetAppSepolicyUseCase,
     private val setSepolicy: SetAppSepolicyUseCase,
     private val controlApp: ControlAppUseCase,
-    private val validateSepolicy: ValidateSepolicyUseCase,
-) : ViewModel() {
+    private val validateSepolicy: ValidateSepolicyUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(AppProfileUiState())
     val state: StateFlow<AppProfileUiState> = mutableState.asStateFlow()
 
@@ -83,8 +81,7 @@ class AppProfileViewModel(
                     } else if (profile.allowSu) {
                         profile.copy(
                             rules = runCatching { getSepolicy(packageName) }
-                                .getOrDefault(profile.rules),
-                        )
+                                .getOrDefault(profile.rules))
                     } else {
                         profile
                     }
@@ -92,15 +89,13 @@ class AppProfileViewModel(
                         getAppGroup(uid, packageName),
                         loadedProfile,
                         runCatching { getDefaultUmountModules() }
-                            .getOrDefault(profile.umountModules),
-                    )
+                            .getOrDefault(profile.umountModules))
                 }.onSuccess { (group, profile, defaultUmountModules) ->
                     mutableState.value = AppProfileUiState(
                         appGroup = group,
                         profile = profile,
                         defaultUmountModules = defaultUmountModules,
-                        isLoading = false,
-                    )
+                        isLoading = false)
                 }.onFailure { error ->
                     mutableState.update { it.copy(isLoading = false) }
                     mutableEvents.tryEmit(AppProfileUiEvent.Error(error))

@@ -25,12 +25,10 @@ data class ZipEntryMetadata(
     val compressedSize: Long,
     val uncompressedSize: Long,
     val localHeaderOffset: Long,
-    val canUseRange: Boolean = true,
-)
+    val canUseRange: Boolean = true)
 
 class ZipRangeArchive(
-    client: OkHttpClient,
-) {
+    client: OkHttpClient) {
 
     private val archiveClient = client.newBuilder()
         .connectTimeout(15, TimeUnit.SECONDS)
@@ -59,8 +57,7 @@ class ZipRangeArchive(
         url: String,
         entryName: String,
         target: File,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         val entry = listEntries(url).firstOrNull { it.name == entryName }
             ?: throw IOException("ZIP entry not found")
         extractEntry(url, entry, target, onProgress)
@@ -70,8 +67,7 @@ class ZipRangeArchive(
         url: String,
         entry: ZipEntryMetadata,
         target: File,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         try {
             if (entry.canUseRange) {
                 extractRangedEntry(url, entry, target, onProgress)
@@ -87,16 +83,14 @@ class ZipRangeArchive(
         url: String,
         entry: ZipEntryMetadata,
         target: File,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         if (entry.flags and FLAG_ENCRYPTED != 0) {
             throw IOException("Encrypted ZIP entries are unsupported")
         }
 
         val localHeader = getRangeBytes(
             url,
-            "bytes=${entry.localHeaderOffset}-${entry.localHeaderOffset + LOCAL_FILE_HEADER_SIZE - 1}",
-        ).bytes
+            "bytes=${entry.localHeaderOffset}-${entry.localHeaderOffset + LOCAL_FILE_HEADER_SIZE - 1}").bytes
         if (localHeader.readUIntAt(0) != LOCAL_FILE_HEADER_SIGNATURE) {
             throw IOException("Invalid ZIP local file header")
         }
@@ -112,8 +106,7 @@ class ZipRangeArchive(
 
         withRangeStream(
             url,
-            "bytes=$dataOffset-${dataOffset + entry.compressedSize - 1}",
-        ) { compressedStream ->
+            "bytes=$dataOffset-${dataOffset + entry.compressedSize - 1}") { compressedStream ->
             val decodedStream = when (entry.compressionMethod) {
                 METHOD_STORED -> compressedStream
                 METHOD_DEFLATED -> InflaterInputStream(compressedStream, Inflater(true))
@@ -129,8 +122,7 @@ class ZipRangeArchive(
         url: String,
         entryName: String,
         target: File,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         val parent = target.parentFile ?: throw IOException("Missing target directory")
         if (!parent.exists() && !parent.mkdirs()) {
             throw IOException("Unable to create target directory")
@@ -169,8 +161,7 @@ class ZipRangeArchive(
                     crc32 = zipEntry.crc,
                     compressedSize = zipEntry.compressedSize,
                     uncompressedSize = zipEntry.size,
-                    localHeaderOffset = 0,
-                )
+                    localHeaderOffset = 0)
                 zipFile.getInputStream(zipEntry).use { input ->
                     writeVerified(input, target, entry) { progress ->
                         FULL_ARCHIVE_DOWNLOAD_PROGRESS +
@@ -201,9 +192,7 @@ class ZipRangeArchive(
                                 compressedSize = entry.compressedSize,
                                 uncompressedSize = entry.size,
                                 localHeaderOffset = 0,
-                                canUseRange = false,
-                            ),
-                        )
+                                canUseRange = false))
                     }
                 }
             }
@@ -214,8 +203,7 @@ class ZipRangeArchive(
         input: InputStream,
         target: File,
         entry: ZipEntryMetadata,
-        onProgress: (Int) -> Unit,
-    ) {
+        onProgress: (Int) -> Unit) {
         val parent = target.parentFile ?: throw IOException("Missing target directory")
         if (!parent.exists() && !parent.mkdirs()) {
             throw IOException("Unable to create target directory")
@@ -238,8 +226,7 @@ class ZipRangeArchive(
                     copied += read
                     if (entry.uncompressedSize > 0L) {
                         onProgress(
-                            ((copied * 100L) / entry.uncompressedSize).toInt().coerceIn(0, 100),
-                        )
+                            ((copied * 100L) / entry.uncompressedSize).toInt().coerceIn(0, 100))
                     }
                 }
             }
@@ -274,8 +261,7 @@ class ZipRangeArchive(
     private fun withRangeStream(
         url: String,
         range: String,
-        block: (InputStream) -> Unit,
-    ) {
+        block: (InputStream) -> Unit) {
         withRangeResponse(url, range) { response ->
             val body = response.body ?: throw IOException("Empty body")
             body.byteStream().use(block)
@@ -285,13 +271,11 @@ class ZipRangeArchive(
     private fun <T> withRangeResponse(
         url: String,
         range: String,
-        block: (Response) -> T,
-    ): T {
+        block: (Response) -> T): T {
         var currentUrl = url
         repeat(MAX_RANGE_REDIRECTS) {
             rangeClient.newCall(
-                newRequest(currentUrl).header("Range", range).build(),
-            ).execute().use { response ->
+                newRequest(currentUrl).header("Range", range).build()).execute().use { response ->
                 if (response.code in HTTP_REDIRECT_START..HTTP_REDIRECT_END) {
                     val location = response.header("Location")
                         ?: throw IOException("Missing ZIP redirect location")
@@ -309,8 +293,7 @@ class ZipRangeArchive(
 
     private data class RangeBytes(
         val bytes: ByteArray,
-        val startOffset: Long,
-    ) {
+        val startOffset: Long) {
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
             if (javaClass != other?.javaClass) return false
@@ -371,8 +354,7 @@ object ZipCentralDirectory {
     fun parse(
         tail: ByteArray,
         tailOffset: Long,
-        readRange: (offset: Long, length: Int) -> ByteArray,
-    ): List<ZipEntryMetadata> {
+        readRange: (offset: Long, length: Int) -> ByteArray): List<ZipEntryMetadata> {
         val eocdOffset = findEndOfCentralDirectory(tail)
         val entryCount = tail.readUShort(eocdOffset + 10)
         val centralDirectorySize = tail.readUInt(eocdOffset + 12)
@@ -417,8 +399,7 @@ object ZipCentralDirectory {
 
     private fun parseEntries(
         directory: ByteArray,
-        entryCount: Int,
-    ): List<ZipEntryMetadata> {
+        entryCount: Int): List<ZipEntryMetadata> {
         val entries = ArrayList<ZipEntryMetadata>(entryCount)
         var offset = 0
         repeat(entryCount) {
@@ -456,8 +437,7 @@ object ZipCentralDirectory {
                 crc32 = crc32,
                 compressedSize = compressedSize,
                 uncompressedSize = uncompressedSize,
-                localHeaderOffset = localHeaderOffset,
-            )
+                localHeaderOffset = localHeaderOffset)
             offset = nextOffset
         }
         return entries

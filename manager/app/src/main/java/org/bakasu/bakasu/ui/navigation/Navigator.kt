@@ -14,8 +14,7 @@ import top.yukonga.miuix.kmp.nav.core.NavKey
  * Supports push/replace/pop/popUntil and result APIs: navigateForResult/setResult/observeResult/clearResult.
  */
 class Navigator(
-    val backStack: NavBackStack,
-) {
+    val backStack: NavBackStack) {
     constructor(vararg initial: NavKey) : this(mutableStateListOf(*initial))
 
     private val resultBus = mutableMapOf<String, MutableSharedFlow<Any>>()

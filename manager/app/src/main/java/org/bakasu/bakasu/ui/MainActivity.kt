@@ -171,11 +171,9 @@ class MainActivity : ComponentActivity() {
 private fun StartupFailureContent(reason: String) {
     Column(
         modifier = androidx.compose.ui.Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-    ) {
+        verticalArrangement = Arrangement.Center) {
         Text(
             text = reason,
-            style = MaterialTheme.typography.bodyLarge,
-        )
+            style = MaterialTheme.typography.bodyLarge)
     }
 }

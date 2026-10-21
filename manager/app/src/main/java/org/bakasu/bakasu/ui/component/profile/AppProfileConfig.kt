@@ -18,8 +18,7 @@ fun AppProfileConfig(
     enabled: Boolean,
     profile: AppProfile,
     defaultUmountModules: Boolean = profile.umountModules,
-    onProfileChange: (AppProfile) -> Unit,
-) {
+    onProfileChange: (AppProfile) -> Unit) {
     SettingsSwitchWidget(
         icon = Icons.TwoTone.FolderDelete,
         title = stringResource(R.string.profile_umount_modules),
@@ -34,11 +33,8 @@ fun AppProfileConfig(
             onProfileChange(
                 profile.copy(
                     umountModules = it,
-                    nonRootUseDefault = false,
-                ),
-            )
-        },
-    )
+                    nonRootUseDefault = false))
+        })
 }
 
 @Preview

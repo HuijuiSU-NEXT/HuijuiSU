@@ -81,8 +81,7 @@ fun WebUIScreen(webUIState: WebUIState) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(innerPadding),
-    ) {
+            .padding(innerPadding)) {
         if (webUIState.webView != null) {
             AndroidView(
                 modifier = Modifier.fillMaxSize(),
@@ -90,8 +89,7 @@ fun WebUIScreen(webUIState: WebUIState) {
                     webUIState.webView!!.apply {
                         layoutParams = ViewGroup.LayoutParams(
                             ViewGroup.LayoutParams.MATCH_PARENT,
-                            ViewGroup.LayoutParams.MATCH_PARENT,
-                        )
+                            ViewGroup.LayoutParams.MATCH_PARENT)
                         if (!webUIState.isUrlLoaded) {
                             val homePage = "https://mui.kernelsu.org/index.html"
                             if (width > 0 && height > 0) {
@@ -108,8 +106,7 @@ fun WebUIScreen(webUIState: WebUIState) {
                                         oldLeft: Int,
                                         oldTop: Int,
                                         oldRight: Int,
-                                        oldBottom: Int,
-                                    ) {
+                                        oldBottom: Int) {
                                         if (v.width > 0 && v.height > 0) {
                                             (v as WebView).loadUrl(homePage)
                                             webUIState.isUrlLoaded = true
@@ -124,8 +121,7 @@ fun WebUIScreen(webUIState: WebUIState) {
                 },
                 update = { view ->
                     view.requestLayout()
-                },
-            )
+                })
         }
     }
 
@@ -137,8 +133,7 @@ fun WebUIScreen(webUIState: WebUIState) {
 @Composable
 private fun HandleWebUIEvent(webUIState: WebUIState) {
     val fileLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) { result ->
+        contract = ActivityResultContracts.StartActivityForResult()) { result ->
         val uris: Array<Uri>? = if (result.resultCode == Activity.RESULT_OK) {
             result.data?.let { data ->
                 if (data.clipData != null) {
@@ -176,8 +171,7 @@ private fun HandleWebUIEvent(webUIState: WebUIState) {
                         }) {
                             Text(text = stringResource(R.string.confirm))
                         }
-                    },
-                )
+                    })
             }
         }
 
@@ -211,8 +205,7 @@ private fun HandleWebUIEvent(webUIState: WebUIState) {
                         }) {
                             Text(text = stringResource(R.string.cancel))
                         }
-                    },
-                )
+                    })
             }
         }
 
@@ -232,15 +225,13 @@ private fun HandleWebUIEvent(webUIState: WebUIState) {
                     text = {
                         Surface(
                             modifier = Modifier.clip(RoundedCornerShape(16.dp)),
-                            color = MaterialTheme.colorScheme.surfaceBright,
-                        ) {
+                            color = MaterialTheme.colorScheme.surfaceBright) {
                             SettingsTextFieldWidget(
                                 state = state,
                                 title = event.message,
                                 lineLimits = TextFieldLineLimits.SingleLine,
                                 useLabelAsPlaceholder = true,
-                                renderBackgroundBlur = false,
-                            )
+                                renderBackgroundBlur = false)
                         }
                     },
                     confirmButton = {
@@ -258,8 +249,7 @@ private fun HandleWebUIEvent(webUIState: WebUIState) {
                         }) {
                             Text(text = stringResource(R.string.cancel))
                         }
-                    },
-                )
+                    })
             }
         }
 

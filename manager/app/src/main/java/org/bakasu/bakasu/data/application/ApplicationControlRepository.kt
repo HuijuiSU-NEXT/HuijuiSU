@@ -6,8 +6,7 @@ import org.bakasu.bakasu.Natives
 import org.bakasu.bakasu.data.shell.KsuCliRepository
 
 class ApplicationControlRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     suspend fun ensureManagerInstalled(): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching {
             if (Natives.isFullFeatured() && ksuCliRepository.rootAvailable()) {

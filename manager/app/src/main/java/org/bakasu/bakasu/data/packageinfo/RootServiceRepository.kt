@@ -22,8 +22,7 @@ import kotlinx.coroutines.withTimeoutOrNull
 import org.bakasu.rootService.IKsuInterface
 
 class RootServiceRepository(
-    private val application: Application,
-) {
+    private val application: Application) {
     private val requestMutex = Mutex()
 
     suspend fun getInstalledPackages(): List<PackageInfo> = requestMutex.withLock {

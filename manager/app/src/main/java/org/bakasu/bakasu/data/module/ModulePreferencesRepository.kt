@@ -8,8 +8,7 @@ import org.bakasu.bakasu.data.AppSettingsRepository
 import org.bakasu.bakasu.domain.model.ModulePreferences
 
 class ModulePreferencesRepository(
-    private val settings: AppSettingsRepository,
-) {
+    private val settings: AppSettingsRepository) {
     private val mutablePreferences = MutableStateFlow(readPreferences())
     val preferences: StateFlow<ModulePreferences> = mutablePreferences.asStateFlow()
 
@@ -33,8 +32,7 @@ class ModulePreferencesRepository(
     private fun readPreferences() = ModulePreferences(
         sortEnabledFirst = settings.getBoolean(PREF_SORT_ENABLED, false),
         sortActionFirst = settings.getBoolean(PREF_SORT_ACTION, false),
-        showMoreModuleInfo = settings.getBoolean(PREF_SHOW_MORE_INFO, false),
-    )
+        showMoreModuleInfo = settings.getBoolean(PREF_SHOW_MORE_INFO, false))
 
     private companion object {
         const val PREF_SORT_ENABLED = "module_sort_enabled_first"

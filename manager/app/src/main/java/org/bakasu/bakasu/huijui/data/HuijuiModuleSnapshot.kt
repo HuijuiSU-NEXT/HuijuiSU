@@ -25,13 +25,11 @@ object HuijuiModuleSnapshot {
     data class ModuleEntry(
         val id: String,
         val enabled: Boolean,
-        val remove: Boolean,
-    )
+        val remove: Boolean)
 
     data class Snapshot(
         val createdAt: Long,
-        val modules: List<ModuleEntry>,
-    )
+        val modules: List<ModuleEntry>)
 
     /**
      * 捕获当前模块状态。
@@ -59,14 +57,12 @@ object HuijuiModuleSnapshot {
             ModuleEntry(
                 id = parts[0],
                 enabled = parts[1] == "0",
-                remove = parts[2] == "1",
-            )
+                remove = parts[2] == "1")
         }
         Log.i(TAG, "捕获 ${modules.size} 个模块")
         Snapshot(
             createdAt = System.currentTimeMillis(),
-            modules = modules,
-        )
+            modules = modules)
     }
 
     /**
@@ -85,8 +81,7 @@ object HuijuiModuleSnapshot {
         val out = HuijuiShellUtils.runAsRoot(
             "cp '${tempFile.absolutePath}' '$targetPath' && chmod 644 '$targetPath'",
             timeoutSeconds = 10,
-            trim = true,
-        )
+            trim = true)
         val ok = File(dir, SNAPSHOT_FILE).exists()
         Log.i(TAG, "cp 结果：[$out]，目标存在=$ok")
         ok
@@ -111,13 +106,11 @@ object HuijuiModuleSnapshot {
                 ModuleEntry(
                     id = o.optString("id"),
                     enabled = o.optBoolean("enabled", true),
-                    remove = o.optBoolean("remove", false),
-                )
+                    remove = o.optBoolean("remove", false))
             }
             Snapshot(
                 createdAt = root.optLong("createdAt", 0L),
-                modules = modules,
-            )
+                modules = modules)
         }
     } catch (t: Throwable) {
         Log.w(TAG, "读取快照失败", t)
@@ -140,8 +133,7 @@ object HuijuiModuleSnapshot {
             val exists = HuijuiShellUtils.runAsRoot(
                 "[ -d '$moduleDir' ] && echo yes || echo no",
                 timeoutSeconds = 5,
-                trim = true,
-            ) == "yes"
+                trim = true) == "yes"
             if (!exists) {
                 skipped++
                 return@forEach
@@ -186,6 +178,5 @@ object HuijuiModuleSnapshot {
     data class RestoreResult(
         val restored: Int,
         val skipped: Int,
-        val failures: List<String>,
-    )
+        val failures: List<String>)
 }

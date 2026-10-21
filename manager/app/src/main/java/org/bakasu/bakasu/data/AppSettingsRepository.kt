@@ -28,8 +28,7 @@ import org.bakasu.bakasu.domain.model.PreferenceValue
 
 class AppSettingsRepository(
     context: Context,
-    private val applicationScope: CoroutineScope,
-) {
+    private val applicationScope: CoroutineScope) {
     private val appContext = context.applicationContext
     private val dataStore: DataStore<Preferences> = PreferenceDataStoreFactory.create(
         migrations = listOf(
@@ -37,13 +36,10 @@ class AppSettingsRepository(
             SharedPreferencesMigration(appContext, "theme_prefs"),
             SharedPreferencesMigration(appContext, "card_settings"),
             SharedPreferencesMigration(appContext, "susfs_config"),
-            SharedPreferencesMigration(appContext, "kernel_flash_prefs"),
-        ),
+            SharedPreferencesMigration(appContext, "kernel_flash_prefs")),
         scope = CoroutineScope(
-            applicationScope.coroutineContext + Dispatchers.IO,
-        ),
-        produceFile = { appContext.preferencesDataStoreFile("app_preferences") },
-    )
+            applicationScope.coroutineContext + Dispatchers.IO),
+        produceFile = { appContext.preferencesDataStoreFile("app_preferences") })
     private val cachedPreferences = MutableStateFlow(emptyPreferences())
     private val mutablePreferences = MutableStateFlow(AppPreferences())
 
@@ -63,34 +59,29 @@ class AppSettingsRepository(
 
     fun getBoolean(key: String, defaultValue: Boolean): Boolean = cachedPreferences.value[
         booleanPreferencesKey(
-            key,
-        ),
+            key),
     ] ?: defaultValue
 
     fun getInt(key: String, defaultValue: Int): Int = cachedPreferences.value[intPreferencesKey(key)] ?: defaultValue
 
     fun getLong(key: String, defaultValue: Long): Long = cachedPreferences.value[
         longPreferencesKey(
-            key,
-        ),
+            key),
     ] ?: defaultValue
 
     fun getFloat(key: String, defaultValue: Float): Float = cachedPreferences.value[
         floatPreferencesKey(
-            key,
-        ),
+            key),
     ] ?: defaultValue
 
     fun getString(key: String, defaultValue: String? = null): String? = cachedPreferences.value[
         stringPreferencesKey(
-            key,
-        ),
+            key),
     ] ?: defaultValue
 
     fun getStringSet(key: String, defaultValue: Set<String> = emptySet()): Set<String> = cachedPreferences.value[
         stringSetPreferencesKey(
-            key,
-        ),
+            key),
     ] ?: defaultValue
 
     fun contains(key: String): Boolean = cachedPreferences.value.asMap().keys.any { it.name == key }
@@ -176,8 +167,7 @@ class AppSettingsRepository(
     private fun setPreferences(value: Preferences) {
         cachedPreferences.value = value
         mutablePreferences.value = AppPreferences(
-            value.asMap().mapKeys { it.key.name }.mapValues { (_, raw) -> raw.toDomainValue() },
-        )
+            value.asMap().mapKeys { it.key.name }.mapValues { (_, raw) -> raw.toDomainValue() })
     }
 
     private fun Any.toDomainValue(): PreferenceValue = when (this) {

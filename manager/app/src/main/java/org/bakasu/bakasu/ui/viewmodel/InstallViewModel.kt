@@ -16,8 +16,7 @@ import org.bakasu.bakasu.domain.usecase.RebootUseCase
 
 data class InstallUiState(
     val environment: InstallEnvironment = InstallEnvironment(),
-    val loading: Boolean = true,
-)
+    val loading: Boolean = true)
 
 sealed interface InstallUiAction {
     data object Refresh : InstallUiAction
@@ -30,13 +29,11 @@ sealed interface InstallUiEvent {
 
 class InstallViewModel(
     private val getInstallEnvironment: GetInstallEnvironmentUseCase,
-    private val reboot: RebootUseCase,
-) : ViewModel() {
+    private val reboot: RebootUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(
         getInstallEnvironment.cached()?.let { cached ->
             InstallUiState(environment = cached, loading = false)
-        } ?: InstallUiState(),
-    )
+        } ?: InstallUiState())
     private val mutableEvents = MutableSharedFlow<InstallUiEvent>(extraBufferCapacity = 1)
 
     val state: StateFlow<InstallUiState> = mutableState.asStateFlow()

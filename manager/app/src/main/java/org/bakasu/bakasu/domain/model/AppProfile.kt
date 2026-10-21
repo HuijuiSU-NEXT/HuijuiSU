@@ -17,5 +17,4 @@ data class AppProfile(
     val nonRootUseDefault: Boolean = true,
     val umountModules: Boolean = true,
     val rules: String = "",
-    val flags: Long = Natives.FLAG_KSU_NO_NEW_PRIVS,
-) : java.io.Serializable
+    val flags: Long = Natives.FLAG_KSU_NO_NEW_PRIVS) : java.io.Serializable

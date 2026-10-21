@@ -63,8 +63,7 @@ class MonetColorsProvider {
                 "filledCardContentColor" to colorScheme.onPrimaryContainer.toCssValue(),
                 "filledCardContainerColor" to colorScheme.primaryContainer.toCssValue(),
                 "filledCardDisabledContentColor" to colorScheme.onSurfaceVariant.toCssValue(),
-                "filledCardDisabledContainerColor" to colorScheme.surfaceVariant.toCssValue(),
-            )
+                "filledCardDisabledContainerColor" to colorScheme.surfaceVariant.toCssValue())
 
             monetColors.toCssVars()
         }

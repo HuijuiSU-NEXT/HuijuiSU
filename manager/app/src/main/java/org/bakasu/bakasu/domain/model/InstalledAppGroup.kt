@@ -11,8 +11,7 @@ data class InstalledApp(
     val firstInstallTime: Long = 0L,
     val lastUpdateTime: Long = 0L,
     val profileKey: String = packageName,
-    val special: Boolean = false,
-) {
+    val special: Boolean = false) {
     val displayIdentifier: String
         get() = if (special) profileKey else packageName
 
@@ -26,8 +25,7 @@ data class InstalledAppGroup(
     val apps: List<InstalledApp>,
     val profile: AppProfile? = null,
     val userName: String? = null,
-    val shouldUmount: Boolean = false,
-) {
+    val shouldUmount: Boolean = false) {
     val mainApp: InstalledApp
         get() = apps.first { it.packageName == primaryPackageName }
 
@@ -64,8 +62,7 @@ data class InstalledAppGroup(
 data class SuperUserState(
     val groups: List<InstalledAppGroup> = emptyList(),
     val refreshing: Boolean = false,
-    val loadingProgress: Float = 0f,
-)
+    val loadingProgress: Float = 0f)
 
 sealed interface AllowlistOperationResult {
     data object Success : AllowlistOperationResult

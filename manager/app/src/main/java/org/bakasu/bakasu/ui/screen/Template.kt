@@ -117,8 +117,7 @@ fun AppProfileTemplateScreen() {
                     Toast.makeText(
                         context,
                         appProfileTemplateImportSuccess,
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                        Toast.LENGTH_SHORT).show()
                     viewModel.dispatch(TemplateUiAction.Refresh())
                 }
 
@@ -130,8 +129,7 @@ fun AppProfileTemplateScreen() {
                     Toast.makeText(
                         context,
                         appProfileTemplateExportEmpty,
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                        Toast.LENGTH_SHORT).show()
                 }
 
                 is TemplateUiEvent.Error -> if (event.message.isNotBlank()) {
@@ -170,8 +168,7 @@ fun AppProfileTemplateScreen() {
                         Toast.makeText(
                             context,
                             appProfileTemplateImportEmpty,
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                            Toast.LENGTH_SHORT).show()
                     } else {
                         viewModel.dispatch(TemplateUiAction.Import(clipboardText))
                     }
@@ -179,8 +176,7 @@ fun AppProfileTemplateScreen() {
                 onExport = {
                     viewModel.dispatch(TemplateUiAction.Export)
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
             ExtendedFloatingActionButton(
@@ -190,27 +186,22 @@ fun AppProfileTemplateScreen() {
                         Route.TemplateEditor(
                             templateId = "",
                             readOnly = false,
-                            isCreation = true,
-                        ),
-                        "template_edit",
-                    )
+                            isCreation = true),
+                        "template_edit")
                 },
                 icon = { Icon(Icons.TwoTone.Add, null) },
                 text = { Text(stringResource(id = R.string.app_profile_template_create)) },
-                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        contentWindowInsets = adaptiveScaffoldWindowInsets(),
-    ) { innerPadding ->
+        contentWindowInsets = adaptiveScaffoldWindowInsets()) { innerPadding ->
         if (uiState.templateList.isEmpty()) {
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .blurSource(),
-            ) {
+                    .blurSource()) {
                 item {
                     Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
                 }
@@ -220,8 +211,7 @@ fun AppProfileTemplateScreen() {
                         offline = uiState.isOffline,
                         onRetry = {
                             scope.launch { viewModel.dispatch(TemplateUiAction.Refresh(synchronize = true)) }
-                        },
-                    )
+                        })
                 }
                 item {
                     Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
@@ -232,8 +222,7 @@ fun AppProfileTemplateScreen() {
                 state = pullRefreshState,
                 modifier = Modifier
                     .nestedScroll(
-                        scrollBehavior.nestedScrollConnection,
-                    )
+                        scrollBehavior.nestedScrollConnection)
                     .blurSource(),
                 isRefreshing = isUserRefreshing,
                 onRefresh = {
@@ -252,26 +241,22 @@ fun AppProfileTemplateScreen() {
                         isRefreshing = isUserRefreshing,
                         modifier = Modifier
                             .align(Alignment.TopCenter)
-                            .padding(top = innerPadding.calculateTopPadding()),
-                    )
-                },
-            ) {
+                            .padding(top = innerPadding.calculateTopPadding()))
+                }) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
                         .nestedScroll(scrollBehavior.nestedScrollConnection),
                     contentPadding = remember {
                         PaddingValues(bottom = 16.dp + 56.dp + 16.dp /* Scaffold Fab Spacing + Fab container height */)
-                    },
-                ) {
+                    }) {
                     item {
                         Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
                     }
 
                     lazySegmentColumn(
                         items = uiState.templateList,
-                        key = { _, app -> app.id },
-                    ) { _, app ->
+                        key = { _, app -> app.id }) { _, app ->
                         TemplateItem(app)
                     }
 
@@ -287,8 +272,7 @@ fun AppProfileTemplateScreen() {
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun TemplateItem(
-    template: ProfileTemplate,
-) {
+    template: ProfileTemplate) {
     val navigator = LocalNavigator.current
     SettingsJumpPageWidget(
         title = template.name,
@@ -296,8 +280,7 @@ private fun TemplateItem(
         onClick = {
             navigator.navigateForResult(
                 Route.TemplateEditor(template.id, !template.local),
-                "template_edit",
-            )
+                "template_edit")
         },
         description = "${template.id}${if (template.author.isEmpty()) "" else "@${template.author}"}",
         descriptionStyle = MaterialTheme.typography.bodySmallEmphasized,
@@ -308,39 +291,32 @@ private fun TemplateItem(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 5.dp),
-            ) {
+                    .padding(top = 5.dp)) {
                 LabelText("UID: ${template.uid}")
                 LabelText(
                     label = "GID: ${template.gid}",
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                )
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer)
                 LabelText(
                     label = template.context,
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                )
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer)
                 if (template.local) {
                     LabelText(
                         label = stringResource(R.string.local),
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer)
                 } else {
                     LabelText(
                         label = stringResource(R.string.remote),
-                        containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.secondaryContainer)
                 }
             }
-        },
-    )
+        })
 }
 
 @Preview
 @Composable
 private fun TemplateItemPreview() {
     CompositionLocalProvider(
-        LocalNavigator provides Navigator(Route.AppProfileTemplate),
-    ) {
+        LocalNavigator provides Navigator(Route.AppProfileTemplate)) {
         TemplateItem(ProfileTemplate())
     }
 }
@@ -352,8 +328,7 @@ private fun TopBar(
     onSync: () -> Unit = {},
     onImport: () -> Unit = {},
     onExport: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior,
-) {
+    scrollBehavior: TopAppBarScrollBehavior) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     TopAppBar(
@@ -373,19 +348,16 @@ private fun TopBar(
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
-        ),
+                }),
         navigationIcon = {
             AppBackButton(
-                onClick = onBack,
-            )
+                onClick = onBack)
         },
         actions = {
             IconButton(onClick = onSync) {
                 Icon(
                     Icons.TwoTone.Sync,
-                    contentDescription = stringResource(id = R.string.app_profile_template_sync),
-                )
+                    contentDescription = stringResource(id = R.string.app_profile_template_sync))
             }
 
             var showDropdown by remember { mutableStateOf(false) }
@@ -394,15 +366,13 @@ private fun TopBar(
             }) {
                 Icon(
                     imageVector = Icons.TwoTone.ImportExport,
-                    contentDescription = stringResource(id = R.string.app_profile_import_export),
-                )
+                    contentDescription = stringResource(id = R.string.app_profile_import_export))
 
                 DropdownMenuPopup(expanded = showDropdown, onDismissRequest = {
                     showDropdown = false
                 }) {
                     DropdownMenuGroup(
-                        shapes = MenuDefaults.groupShapes(),
-                    ) {
+                        shapes = MenuDefaults.groupShapes()) {
                         DropdownMenuItem(
                             shape = MenuDefaults.itemShape(0, 2).shape,
                             text = {
@@ -411,8 +381,7 @@ private fun TopBar(
                             onClick = {
                                 onImport()
                                 showDropdown = false
-                            },
-                        )
+                            })
                         DropdownMenuItem(
                             shape = MenuDefaults.itemShape(1, 2).shape,
                             text = {
@@ -421,34 +390,28 @@ private fun TopBar(
                             onClick = {
                                 onExport()
                                 showDropdown = false
-                            },
-                        )
+                            })
                     }
                 }
             }
         },
-        ,
-        scrollBehavior = scrollBehavior,
-    )
+        scrollBehavior = scrollBehavior)
 }
 
 @Composable
 fun LabelText(
     label: String,
     containerColor: Color = MaterialTheme.colorScheme.primary,
-    contentColor: Color = contentColorFor(containerColor),
-) {
+    contentColor: Color = contentColorFor(containerColor)) {
     Surface(
         shape = RoundedCornerShape(4.dp),
-        color = containerColor,
-    ) {
+        color = containerColor) {
         Text(
             text = label,
             style = MaterialTheme.typography.labelSmallEmphasized,
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp),
             color = contentColor,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-        )
+            overflow = TextOverflow.Ellipsis)
     }
 }

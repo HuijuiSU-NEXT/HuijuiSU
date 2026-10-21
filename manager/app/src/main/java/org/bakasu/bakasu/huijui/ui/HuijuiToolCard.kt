@@ -39,34 +39,29 @@ fun HuijuiToolCard(
     iconTint: Color = MaterialTheme.colorScheme.primary,
     title: String,
     description: String,
-    onClick: () -> Unit,
-) {
+    onClick: () -> Unit) {
     val glassState = rememberLiquidGlassState(LiquidGlassQuality.Full)
 
     GlassButton(
         state = glassState,
         onClick = onClick,
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
-    ) {
+        shape = RoundedCornerShape(16.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             Surface(
                 shape = RoundedCornerShape(12.dp),
                 color = iconTint.copy(alpha = 0.18f),
-                modifier = Modifier.size(40.dp),
-            ) {
+                modifier = Modifier.size(40.dp)) {
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
                         tint = iconTint,
-                        modifier = Modifier.size(22.dp),
-                    )
+                        modifier = Modifier.size(22.dp))
                 }
             }
             Spacer(Modifier.width(14.dp))
@@ -75,20 +70,17 @@ fun HuijuiToolCard(
                     text = title,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                    color = MaterialTheme.colorScheme.onSurface)
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-            )
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f))
         }
     }
 }

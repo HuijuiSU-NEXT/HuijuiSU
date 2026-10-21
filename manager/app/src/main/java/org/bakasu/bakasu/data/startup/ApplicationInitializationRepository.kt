@@ -19,8 +19,7 @@ class ApplicationInitializationRepository(
     private val applicationScope: CoroutineScope,
     private val flashRepository: FlashRepository,
     private val ksuCliRepository: KsuCliRepository,
-    private val monetCompatColorSource: MonetCompatColorSource,
-) {
+    private val monetCompatColorSource: MonetCompatColorSource) {
     @SuppressLint("RestrictedApi")
     suspend fun initialize() {
         MainShell.setBuilder(ksuCliRepository.generateMainShellBuilder())

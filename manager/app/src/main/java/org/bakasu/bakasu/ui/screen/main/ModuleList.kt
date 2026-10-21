@@ -173,8 +173,7 @@ fun getMetaModuleWarningText(
     hasModuleRequireMount: Boolean,
     showWarning: Boolean,
     context: Context,
-    status: MetaModuleStatus,
-): String? {
+    status: MetaModuleStatus): String? {
     if (!showWarning) return null
     if (!hasModuleRequireMount) return null
 
@@ -191,18 +190,15 @@ fun getMetaModuleWarningText(
 fun MetaModuleWarningCard(
     text: String,
     visible: Boolean,
-    onClose: () -> Unit,
-) {
+    onClose: () -> Unit) {
     AnimatedVisibility(
         visible = visible,
         enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
-    ) {
+        exit = fadeOut() + shrinkVertically()) {
         WarningCard(
             shape = CardDefaults.elevatedShape,
             message = text,
-            onClose = onClose,
-        )
+            onClose = onClose)
 
         Spacer(Modifier.height(8.dp))
     }
@@ -221,8 +217,7 @@ fun ModuleList(
     context: Context,
     snackBarHost: SnackbarHostState,
     bottomPadding: Dp,
-    topPadding: Dp,
-) {
+    topPadding: Dp) {
     val shortcut = koinInject<Shortcut>()
     val settings = koinInject<SettingsPlatformRepository>()
     var showMetaModuleWarning by rememberSaveable { mutableStateOf(true) }
@@ -260,8 +255,7 @@ fun ModuleList(
                         val result = snackBarHost.showReplacingSnackbar(
                             message = rebootToApply,
                             actionLabel = reboot,
-                            duration = SnackbarDuration.Long,
-                        )
+                            duration = SnackbarDuration.Long)
                         if (result == SnackbarResult.ActionPerformed) {
                             viewModel.dispatch(ModuleUiAction.Reboot)
                         }
@@ -284,8 +278,7 @@ fun ModuleList(
                         val result = snackBarHost.showReplacingSnackbar(
                             message = message.format(moduleName),
                             actionLabel = reboot.takeIf { event.successful },
-                            duration = SnackbarDuration.Long,
-                        )
+                            duration = SnackbarDuration.Long)
                         if (result == SnackbarResult.ActionPerformed) {
                             viewModel.dispatch(ModuleUiAction.Reboot)
                         }
@@ -342,8 +335,7 @@ fun ModuleList(
         name: String,
         iconUri: String?,
         type: ShortcutType,
-        intentToken: String,
-    ) {
+        intentToken: String) {
         when (type) {
             ShortcutType.Action -> {
                 shortcut.createModuleActionShortcut(
@@ -351,8 +343,7 @@ fun ModuleList(
                     moduleId = moduleId,
                     name = name,
                     iconUri = iconUri,
-                    intentToken = intentToken,
-                )
+                    intentToken = intentToken)
             }
 
             ShortcutType.WebUI -> {
@@ -361,15 +352,13 @@ fun ModuleList(
                     moduleId = moduleId,
                     name = name,
                     iconUri = iconUri,
-                    intentToken = intentToken,
-                )
+                    intentToken = intentToken)
             }
         }
     }
 
     val pickShortcutIconLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-    ) { uri ->
+        contract = ActivityResultContracts.GetContent()) { uri ->
         shortcutIconUri = uri?.toString()
     }
 
@@ -404,8 +393,7 @@ fun ModuleList(
         module: InstalledModule,
         changelogUrl: String,
         downloadUrl: String,
-        fileName: String,
-    ) {
+        fileName: String) {
         val changelogResult = loadingDialog.withLoading {
             fetchRemoteText(changelogUrl)
         }
@@ -415,8 +403,7 @@ fun ModuleList(
                 Toast.makeText(
                     context,
                     msg,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                    Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -429,8 +416,7 @@ fun ModuleList(
             changelogText,
             content = changelog,
             markdown = true,
-            confirm = updateText,
-        )
+            confirm = updateText)
 
         if (confirmResult != ConfirmResult.Confirmed) {
             return
@@ -454,8 +440,7 @@ fun ModuleList(
                     launch(Dispatchers.Main) {
                         Toast.makeText(context, downloading, Toast.LENGTH_SHORT).show()
                     }
-                },
-            )
+                })
         }
     }
 
@@ -467,8 +452,7 @@ fun ModuleList(
                 moduleStr,
                 content = formatter.format(module.name),
                 confirm = uninstall,
-                dismiss = cancel,
-            )
+                dismiss = cancel)
             if (confirmResult != ConfirmResult.Confirmed) {
                 return
             }
@@ -513,24 +497,20 @@ fun ModuleList(
                     .padding(top = topPadding)
                     .align(Alignment.TopCenter),
                 state = pullRefreshState,
-                isRefreshing = uiState.isRefreshing,
-            )
+                isRefreshing = uiState.isRefreshing)
         },
-        isRefreshing = uiState.isRefreshing,
-    ) {
+        isRefreshing = uiState.isRefreshing) {
         val metaModuleWarningText by produceState<String?>(
             initialValue = null,
             uiState.hasModuleRequireMount,
             showMetaModuleWarning,
-            uiState.metaModuleStatus,
-        ) {
+            uiState.metaModuleStatus) {
             value = withContext(Dispatchers.IO) {
                 getMetaModuleWarningText(
                     uiState.hasModuleRequireMount,
                     showMetaModuleWarning,
                     context,
-                    uiState.metaModuleStatus,
-                )
+                    uiState.metaModuleStatus)
             }
         }
 
@@ -544,29 +524,25 @@ fun ModuleList(
                     end = 16.dp,
                     bottom = 72.dp + 5.dp + 5.dp, // FAB + bottom padding of FAB
                 )
-            },
-        ) {
+            }) {
             item {
                 Spacer(modifier = Modifier.height(topPadding))
             }
 
             if (metaModuleWarningText != null) {
                 item(
-                    key = "warning",
-                ) {
+                    key = "warning") {
                     MetaModuleWarningCard(
                         text = metaModuleWarningText!!,
                         visible = showMetaModuleWarning,
-                        onClose = { showMetaModuleWarning = false },
-                    )
+                        onClose = { showMetaModuleWarning = false })
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
 
             items(
                 items = uiState.moduleList,
-                key = { "module-$it.id" },
-            ) { module ->
+                key = { "module-$it.id" }) { module ->
                 ModuleItem(
                     viewModel = viewModel,
                     module = module,
@@ -590,8 +566,7 @@ fun ModuleList(
                                     module,
                                     module.moduleUpdate!!.changelog,
                                     module.moduleUpdate.zipUrl,
-                                    "${module.name}-${module.moduleUpdate.version}.zip",
-                                )
+                                    "${module.name}-${module.moduleUpdate.version}.zip")
                             }
                         }
                     },
@@ -601,8 +576,7 @@ fun ModuleList(
                     onModuleAddShortcut = { module, type ->
                         onModuleAddShortcut(module, type)
                     },
-                    showMoreModuleInfo = uiState.showMoreModuleInfo,
-                )
+                    showMoreModuleInfo = uiState.showMoreModuleInfo)
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -617,24 +591,20 @@ fun ModuleList(
         ModalBottomSheet(
             sheetState = rememberBottomSheetState(
                 initialValue = SheetValue.Hidden,
-                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded),
-            ),
+                enabledValues = setOf(SheetValue.Hidden, SheetValue.Expanded)),
             onDismissRequest = {
                 showShortcutDialog.value = false
-            },
-        ) {
+            }) {
             var error by remember { mutableStateOf("") }
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+                horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
                     text = stringResource(R.string.module_shortcut_title),
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
-                        .padding(horizontal = 24.dp),
-                )
+                        .padding(horizontal = 24.dp))
 
                 Box(
                     contentAlignment = Alignment.Center,
@@ -644,15 +614,13 @@ fun ModuleList(
                         .padding(horizontal = 16.dp)
                         .clip(ContinuousRoundedRectangle(20.dp))
                         .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-                        .padding(vertical = 20.dp, horizontal = 12.dp),
-                ) {
+                        .padding(vertical = 20.dp, horizontal = 12.dp)) {
                     val preview = shortcutPreviewIcon.value
                     if (preview != null) {
                         Image(
                             bitmap = preview,
                             modifier = Modifier.size(100.dp),
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     } else {
                         Text(
                             text = stringResource(R.string.huijui_ascii_logo),
@@ -661,8 +629,7 @@ fun ModuleList(
                             lineHeight = 7.sp,
                             color = MaterialTheme.colorScheme.primary,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth(),
-                        )
+                            modifier = Modifier.fillMaxWidth())
                     }
                 }
                 SegmentedColumn {
@@ -674,14 +641,12 @@ fun ModuleList(
                                 title = stringResource(id = R.string.module_shortcut_icon_pick),
                                 onClick = {
                                     pickShortcutIconLauncher.launch("image/*")
-                                },
-                            ) {
+                                }) {
                                 Icon(
                                     imageVector = Icons.TwoTone.ChevronRight,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(24.dp),
-                                )
+                                    modifier = Modifier.size(24.dp))
                             }
                         }
                     } else {
@@ -692,14 +657,12 @@ fun ModuleList(
                                 title = stringResource(id = R.string.restore),
                                 onClick = {
                                     shortcutIconUri = defaultShortcutIconUri
-                                },
-                            ) {
+                                }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.TwoTone.Undo,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(24.dp),
-                                )
+                                    modifier = Modifier.size(24.dp))
                             }
                         }
                     }
@@ -711,8 +674,7 @@ fun ModuleList(
                             state = textFieldState,
                             title = stringResource(id = R.string.module_shortcut_name_label),
                             error = error,
-                            renderBackgroundBlur = false,
-                        )
+                            renderBackgroundBlur = false)
 
                         LaunchedEffect(textFieldState.text) {
                             error = if (textFieldState.text.isBlank()) {
@@ -736,8 +698,7 @@ fun ModuleList(
                                         deleteModuleShortcut(context, moduleId, type)
                                     }
                                     showShortcutDialog.value = false
-                                },
-                            )
+                                })
                         }
                     }
 
@@ -759,22 +720,18 @@ fun ModuleList(
                                 val clipboard = context.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
                                 clipboard.setPrimaryClip(ClipData.newPlainText("KernelSU deep link", url))
                                 Toast.makeText(context, moduleShortcutSchemeCopied, Toast.LENGTH_SHORT).show()
-                            },
-                        )
+                            })
                     }
                 }
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                ) {
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(
                         onClick = { showShortcutDialog.value = false },
                         modifier = Modifier
                             .weight(1f)
-                            .padding(start = 16.dp),
-                    ) {
+                            .padding(start = 16.dp)) {
                         Text(
-                            text = stringResource(id = android.R.string.cancel),
-                        )
+                            text = stringResource(id = android.R.string.cancel))
                     }
 
                     Button(
@@ -788,23 +745,20 @@ fun ModuleList(
                                     name = textFieldState.text.toString(),
                                     iconUri = shortcutIconUri,
                                     type = type,
-                                    intentToken = settings.intentToken,
-                                )
+                                    intentToken = settings.intentToken)
                             }
                             showShortcutDialog.value = false
                         },
                         enabled = error.isBlank(),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(end = 16.dp),
-                    ) {
+                            .padding(end = 16.dp)) {
                         Text(
                             text = if (hasExistingShortcut) {
                                 stringResource(id = R.string.module_update)
                             } else {
                                 stringResource(id = android.R.string.ok)
-                            },
-                        )
+                            })
                     }
                 }
             }

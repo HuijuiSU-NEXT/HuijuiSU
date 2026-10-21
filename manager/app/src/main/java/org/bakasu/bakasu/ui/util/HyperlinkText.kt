@@ -18,8 +18,7 @@ import java.util.regex.Pattern
 @Composable
 fun LinkifyText(
     text: String,
-    modifier: Modifier = Modifier,
-) {
+    modifier: Modifier = Modifier) {
     val uriHandler = LocalUriHandler.current
     val layoutResult = remember {
         mutableStateOf<TextLayoutResult?>(null)
@@ -31,17 +30,14 @@ fun LinkifyText(
             addStyle(
                 style = SpanStyle(
                     color = MaterialTheme.colorScheme.primary,
-                    textDecoration = TextDecoration.Underline,
-                ),
+                    textDecoration = TextDecoration.Underline),
                 start = it.start,
-                end = it.end,
-            )
+                end = it.end)
             addStringAnnotation(
                 tag = "URL",
                 annotation = it.url,
                 start = it.start,
-                end = it.end,
-            )
+                end = it.end)
         }
     }
     Text(
@@ -59,22 +55,19 @@ fun LinkifyText(
                 }
             }
         },
-        onTextLayout = { layoutResult.value = it },
-    )
+        onTextLayout = { layoutResult.value = it })
 }
 
 private val urlPattern: Pattern = Pattern.compile(
     "(?:^|\\W)((ht|f)tp(s?)://|www\\.)" +
         "(([\\w\\-]+\\.)+([\\w\\-.~]+/?)*" +
         "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]*$~@!:/{};']*)",
-    Pattern.CASE_INSENSITIVE or Pattern.MULTILINE or Pattern.DOTALL,
-)
+    Pattern.CASE_INSENSITIVE or Pattern.MULTILINE or Pattern.DOTALL)
 
 private data class LinkInfo(
     val url: String,
     val start: Int,
-    val end: Int,
-)
+    val end: Int)
 
 @Suppress("HttpUrlsUsage")
 private fun extractUrls(text: String): List<LinkInfo> = buildList {

@@ -180,8 +180,7 @@ fun ModuleItem(
     onUpdate: (InstalledModule) -> Unit,
     onClick: (InstalledModule) -> Unit,
     onModuleAddShortcut: (InstalledModule, ShortcutType) -> Unit,
-    showMoreModuleInfo: Boolean,
-) {
+    showMoreModuleInfo: Boolean) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -206,8 +205,7 @@ fun ModuleItem(
             } else {
                 MaterialTheme.colorScheme.surfaceBright.copy(cardConfig.cardAlpha)
             },
-        shape = RoundedCornerShape(16.dp),
-    ) {
+        shape = RoundedCornerShape(16.dp)) {
         val textDecoration = if (!module.remove) null else TextDecoration.LineThrough
         val interactionSource = remember { MutableInteractionSource() }
 
@@ -226,30 +224,25 @@ fun ModuleItem(
                                 if (module.hasWebUi) {
                                     onClick(module)
                                 }
-                            },
-                        )
+                            })
                     } else {
                         this
                     }
                 }
                 .padding(horizontal = 16.dp)
-                .padding(top = 12.dp),
-        ) {
+                .padding(top = 12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 val moduleVersion = stringResource(id = R.string.module_version)
                 val moduleAuthor = stringResource(id = R.string.module_author)
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(0.8f),
-                ) {
+                    modifier = Modifier.fillMaxWidth(0.8f)) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = module.name,
                             fontSize = MaterialTheme.typography.titleMedium.fontSize,
@@ -257,8 +250,7 @@ fun ModuleItem(
                             lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                             fontFamily = MaterialTheme.typography.titleMedium.fontFamily,
                             textDecoration = textDecoration,
-                            modifier = Modifier.weight(1f, false),
-                        )
+                            modifier = Modifier.weight(1f, false))
                     }
 
                     Text(
@@ -266,16 +258,14 @@ fun ModuleItem(
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                         fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                        textDecoration = textDecoration,
-                    )
+                        textDecoration = textDecoration)
 
                     Text(
                         text = "$moduleAuthor: ${module.author}",
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                         fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                        textDecoration = textDecoration,
-                    )
+                        textDecoration = textDecoration)
 
                     // 显示更多模块信息时添加updateJson
                     if (showMoreModuleInfo && module.updateJson.isNotEmpty()) {
@@ -296,19 +286,15 @@ fun ModuleItem(
                                     onLongClick = {
                                         val clipData = ClipData.newPlainText(
                                             "Update JSON URL",
-                                            module.updateJson,
-                                        )
+                                            module.updateJson)
                                         clipboardManager.setPrimaryClip(clipData)
                                         hapticFeedback.performHapticFeedback(HapticFeedbackType.LongPress)
 
                                         Toast.makeText(
                                             context,
                                             context.getString(R.string.module_update_json_copied),
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
-                                    },
-                                ),
-                        )
+                                            Toast.LENGTH_SHORT).show()
+                                    }))
                     }
                 }
 
@@ -316,8 +302,7 @@ fun ModuleItem(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
+                    horizontalArrangement = Arrangement.End) {
                     Switch(
                         enabled = !module.update && !isChangingEnabled,
                         checked = isEnabled,
@@ -340,18 +325,15 @@ fun ModuleItem(
                                     imageVector = Icons.TwoTone.Check,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                                )
+                                    modifier = Modifier.size(SwitchDefaults.IconSize))
                             } else {
                                 Icon(
                                     imageVector = Icons.TwoTone.Close,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.surfaceBright,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize),
-                                )
+                                    modifier = Modifier.size(SwitchDefaults.IconSize))
                             }
-                        },
-                    )
+                        })
                 }
             }
 
@@ -365,29 +347,24 @@ fun ModuleItem(
                 fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 4,
-                textDecoration = textDecoration,
-            )
+                textDecoration = textDecoration)
 
             Spacer(modifier = Modifier.height(12.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+                modifier = Modifier.fillMaxWidth()) {
                 LabelText(
                     label = module.dirId,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                )
+                    containerColor = MaterialTheme.colorScheme.primary)
                 if (module.metamodule) {
                     LabelText(
                         label = "META",
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                    )
+                        containerColor = MaterialTheme.colorScheme.tertiary)
                 }
                 LabelText(
                     label = sizeStr ?: "0 KB",
-                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                )
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -396,8 +373,7 @@ fun ModuleItem(
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 if (module.hasActionScript) {
                     Surface(
                         modifier = Modifier
@@ -411,8 +387,7 @@ fun ModuleItem(
                                 },
                                 onLongClick = {
                                     onModuleAddShortcut(module, ShortcutType.Action)
-                                },
-                            ),
+                                }),
                         color =
                             if (!module.remove && isEnabled) {
                                 ButtonDefaults.filledTonalButtonColors().containerColor
@@ -423,15 +398,13 @@ fun ModuleItem(
                             ButtonDefaults.filledTonalButtonColors().contentColor
                         } else {
                             ButtonDefaults.filledTonalButtonColors().disabledContentColor
-                        },
-                    ) {
+                        }) {
                         Icon(
                             modifier = Modifier
                                 .size(20.dp)
                                 .padding(12.dp, 7.dp, 12.dp, 7.dp),
                             imageVector = Icons.TwoTone.PlayArrow,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     }
                 }
 
@@ -445,8 +418,7 @@ fun ModuleItem(
                                 onClick = { onClick(module) },
                                 onLongClick = {
                                     onModuleAddShortcut(module, ShortcutType.WebUI)
-                                },
-                            ),
+                                }),
                         color =
                             if (!module.remove && isEnabled) {
                                 ButtonDefaults.filledTonalButtonColors().containerColor
@@ -457,15 +429,13 @@ fun ModuleItem(
                             ButtonDefaults.filledTonalButtonColors().contentColor
                         } else {
                             ButtonDefaults.filledTonalButtonColors().disabledContentColor
-                        },
-                    ) {
+                        }) {
                         Icon(
                             modifier = Modifier
                                 .size(20.dp)
                                 .padding(12.dp, 7.dp, 12.dp, 7.dp),
                             imageVector = Icons.AutoMirrored.TwoTone.Wysiwyg,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     }
                 }
 
@@ -490,15 +460,13 @@ fun ModuleItem(
                             ButtonDefaults.filledTonalButtonColors().contentColor
                         } else {
                             ButtonDefaults.filledTonalButtonColors().disabledContentColor
-                        },
-                    ) {
+                        }) {
                         Icon(
                             modifier = Modifier
                                 .size(20.dp)
                                 .padding(12.dp, 7.dp, 12.dp, 7.dp),
                             imageVector = Icons.TwoTone.Download,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     }
                 }
 
@@ -520,16 +488,14 @@ fun ModuleItem(
                         ButtonDefaults.filledTonalButtonColors().contentColor
                     } else {
                         ButtonDefaults.filledTonalButtonColors().disabledContentColor
-                    },
-                ) {
+                    }) {
                     if (!module.remove) {
                         Icon(
                             modifier = Modifier
                                 .size(20.dp)
                                 .padding(12.dp, 7.dp, 12.dp, 7.dp),
                             imageVector = Icons.TwoTone.Delete,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     } else {
                         Icon(
                             modifier = Modifier
@@ -537,8 +503,7 @@ fun ModuleItem(
                                 .rotate(180f)
                                 .padding(12.dp, 7.dp, 12.dp, 7.dp),
                             imageVector = Icons.TwoTone.Refresh,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     }
                 }
             }
@@ -566,8 +531,7 @@ private fun ModuleItemPreview() {
         actionIconPath = null,
         webUiIconPath = null,
         dirId = "dirId",
-        moduleUpdate = null,
-    )
+        moduleUpdate = null)
     ModuleItem(
         koinViewModel<ModuleViewModel>(),
         module,
@@ -578,6 +542,5 @@ private fun ModuleItemPreview() {
         {},
         {},
         { _, _ -> },
-        false,
-    )
+        false)
 }

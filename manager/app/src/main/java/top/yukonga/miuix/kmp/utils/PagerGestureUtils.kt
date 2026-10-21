@@ -83,8 +83,7 @@ enum class PagerInterceptionMode(val title: String) {
 val PagerNavigationSpringSpec: SpringSpec<Float> = spring(
     stiffness = 322.2f,
     dampingRatio = 32.31f / (2f * kotlin.math.sqrt(322.2f)),
-    visibilityThreshold = 0.5f,
-)
+    visibilityThreshold = 0.5f)
 
 /**
  * Animates to [target] using [PagerNavigationSpringSpec] after the first layout.
@@ -100,8 +99,7 @@ suspend fun PagerState.springAnimateToPage(target: Int) {
 private suspend fun PagerState.animateToPage(
     scrollScope: ScrollScope,
     target: Int,
-    initialVelocity: Float = 0f,
-) = with(scrollScope) {
+    initialVelocity: Float = 0f) = with(scrollScope) {
     if (pageCount == 0) return@with
     val destination = target.coerceIn(0, pageCount - 1)
     val pageSize = layoutInfo.pageSize + layoutInfo.pageSpacing
@@ -113,8 +111,7 @@ private suspend fun PagerState.animateToPage(
             initialValue = 0f,
             targetValue = distance,
             initialVelocity = initialVelocity,
-            animationSpec = PagerNavigationSpringSpec,
-        ) { currentValue, _ ->
+            animationSpec = PagerNavigationSpringSpec) { currentValue, _ ->
             previousValue += scrollBy(currentValue - previousValue)
         }
     }
@@ -141,13 +138,11 @@ object PagerGestureNestedScrollConnection : NestedScrollConnection {
 fun Modifier.horizontalPagerSwipeOverride(
     pagerState: PagerState,
     enabled: Boolean = true,
-    onIntercepted: (() -> Unit)? = null,
-): Modifier = if (!enabled) this else then(PagerSwipeElement(pagerState, onIntercepted))
+    onIntercepted: (() -> Unit)? = null): Modifier = if (!enabled) this else then(PagerSwipeElement(pagerState, onIntercepted))
 
 private data class PagerSwipeElement(
     val pagerState: PagerState,
-    val onIntercepted: (() -> Unit)?,
-) : ModifierNodeElement<PagerSwipeNode>() {
+    val onIntercepted: (() -> Unit)?) : ModifierNodeElement<PagerSwipeNode>() {
     override fun create(): PagerSwipeNode = PagerSwipeNode(pagerState, onIntercepted)
 
     override fun update(node: PagerSwipeNode) {
@@ -167,8 +162,7 @@ private sealed interface PagerDragEvent {
 
 private class PagerSwipeNode(
     var pagerState: PagerState,
-    var onIntercepted: (() -> Unit)?,
-) : DelegatingNode(),
+    var onIntercepted: (() -> Unit)?) : DelegatingNode(),
     CompositionLocalConsumerModifierNode,
     SemanticsModifierNode,
     PointerInputModifierNode {
@@ -208,8 +202,7 @@ private class PagerSwipeNode(
                             val velocity = if (dragging) {
                                 change.consume()
                                 velocityTracker.calculateVelocity(
-                                    Velocity(viewConfiguration.maximumFlingVelocity, viewConfiguration.maximumFlingVelocity),
-                                ).x * scrollSign
+                                    Velocity(viewConfiguration.maximumFlingVelocity, viewConfiguration.maximumFlingVelocity)).x * scrollSign
                             } else {
                                 0f
                             }
@@ -245,8 +238,7 @@ private class PagerSwipeNode(
                     events.close()
                 }
             }
-        },
-    )
+        })
 
     private fun scrollSign(): Float = if (
         (currentValueOf(LocalLayoutDirection) == LayoutDirection.Rtl) xor pagerState.layoutInfo.reverseLayout
@@ -411,8 +403,7 @@ class PagerFlingTrackerConnection : NestedScrollConnection {
 fun Modifier.iosStyleMomentumHalt(
     flingTracker: PagerFlingTrackerConnection,
     enabled: Boolean = true,
-    onHalted: (() -> Unit)? = null,
-): Modifier = if (!enabled) {
+    onHalted: (() -> Unit)? = null): Modifier = if (!enabled) {
     this
 } else {
     this.nestedScroll(flingTracker).pointerInput(flingTracker, enabled, onHalted) {
@@ -464,20 +455,17 @@ fun Modifier.pagerGestureOverride(
     mode: PagerInterceptionMode = PagerInterceptionMode.CrossAxisInterceptor,
     enabled: Boolean = true,
     flingTracker: PagerFlingTrackerConnection? = null,
-    onTriggered: (() -> Unit)? = null,
-): Modifier = when (mode) {
+    onTriggered: (() -> Unit)? = null): Modifier = when (mode) {
     PagerInterceptionMode.CrossAxisInterceptor -> horizontalPagerSwipeOverride(
         pagerState = pagerState,
         enabled = enabled,
-        onIntercepted = onTriggered,
-    )
+        onIntercepted = onTriggered)
 
     PagerInterceptionMode.TapToHalt -> if (flingTracker != null) {
         iosStyleMomentumHalt(
             flingTracker = flingTracker,
             enabled = enabled,
-            onHalted = onTriggered,
-        )
+            onHalted = onTriggered)
     } else {
         this
     }
@@ -493,14 +481,12 @@ fun Modifier.pagerGestureOverride(
     mode: Int,
     enabled: Boolean = true,
     flingTracker: PagerFlingTrackerConnection? = null,
-    onTriggered: (() -> Unit)? = null,
-): Modifier = pagerGestureOverride(
+    onTriggered: (() -> Unit)? = null): Modifier = pagerGestureOverride(
     pagerState = pagerState,
     mode = PagerInterceptionMode.entries.getOrElse(mode) { PagerInterceptionMode.Native },
     enabled = enabled,
     flingTracker = flingTracker,
-    onTriggered = onTriggered,
-)
+    onTriggered = onTriggered)
 
 /**
  * Applies [mode] with a remembered [PagerFlingTrackerConnection].
@@ -511,16 +497,14 @@ fun Modifier.pagerGestureOverride(
     pagerState: PagerState,
     mode: PagerInterceptionMode = PagerInterceptionMode.CrossAxisInterceptor,
     enabled: Boolean = true,
-    onTriggered: (() -> Unit)? = null,
-): Modifier {
+    onTriggered: (() -> Unit)? = null): Modifier {
     val flingTracker = remember { PagerFlingTrackerConnection() }
     return pagerGestureOverride(
         pagerState = pagerState,
         mode = mode,
         enabled = enabled,
         flingTracker = flingTracker,
-        onTriggered = onTriggered,
-    )
+        onTriggered = onTriggered)
 }
 
 /**
@@ -531,10 +515,8 @@ fun Modifier.pagerGestureOverride(
     pagerState: PagerState,
     mode: Int,
     enabled: Boolean = true,
-    onTriggered: (() -> Unit)? = null,
-): Modifier = pagerGestureOverride(
+    onTriggered: (() -> Unit)? = null): Modifier = pagerGestureOverride(
     pagerState = pagerState,
     mode = PagerInterceptionMode.entries.getOrElse(mode) { PagerInterceptionMode.Native },
     enabled = enabled,
-    onTriggered = onTriggered,
-)
+    onTriggered = onTriggered)

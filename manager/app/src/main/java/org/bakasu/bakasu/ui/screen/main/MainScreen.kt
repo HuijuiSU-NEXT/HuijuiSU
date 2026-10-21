@@ -56,8 +56,7 @@ import top.yukonga.miuix.kmp.utils.pagerGestureOverride
 
 @Composable
 fun MainScreen(
-    pagerInterceptionMode: Int = PagerInterceptionMode.CrossAxisInterceptor.ordinal,
-) {
+    pagerInterceptionMode: Int = PagerInterceptionMode.CrossAxisInterceptor.ordinal) {
     val themeConfig: ThemeConfig = koinInject()
     val homeViewModel = koinViewModel<HomeViewModel>()
     val homeState by homeViewModel.uiState.collectAsStateWithLifecycle()
@@ -69,8 +68,7 @@ fun MainScreen(
     var uiSelectedPage by rememberSaveable { mutableIntStateOf(0) }
     val pagerState = rememberPagerState(
         initialPage = uiSelectedPage,
-        pageCount = { pages.size },
-    )
+        pageCount = { pages.size })
     var userScrollEnabled by remember { mutableStateOf(true) }
     var animating by remember { mutableStateOf(false) }
     var animateJob by remember { mutableStateOf<Job?>(null) }
@@ -131,8 +129,7 @@ fun MainScreen(
     CompositionLocalProvider(
         LocalPagerState provides pagerState,
         LocalHandlePageChange provides handlePageChange,
-        LocalSelectedPage provides uiSelectedPage,
-    ) {
+        LocalSelectedPage provides uiSelectedPage) {
         val content = @Composable { paddingBottom: Dp ->
             HorizontalPagerWithInteraction(
                 enableGestureOverride = false,
@@ -141,8 +138,7 @@ fun MainScreen(
                     .pagerGestureOverride(
                         pagerState = pagerState,
                         mode = pagerMode,
-                        enabled = userScrollEnabled,
-                    ),
+                        enabled = userScrollEnabled),
                 state = pagerState,
                 userScrollEnabled = userScrollEnabled && !interceptPagerGestures,
                 beyondViewportPageCount = if (homeState.isInitialDataLoaded) 1 else 0,
@@ -151,14 +147,11 @@ fun MainScreen(
                 } else {
                     PagerDefaults.pageNestedScrollConnection(
                         state = pagerState,
-                        orientation = androidx.compose.foundation.gestures.Orientation.Horizontal,
-                    )
+                        orientation = androidx.compose.foundation.gestures.Orientation.Horizontal)
                 },
                 flingBehavior = PagerDefaults.flingBehavior(
                     state = pagerState,
-                    snapAnimationSpec = PagerNavigationSpringSpec,
-                ),
-            ) { pageIndex ->
+                    snapAnimationSpec = PagerNavigationSpringSpec)) { pageIndex ->
                 if (pages.isEmpty()) return@HorizontalPagerWithInteraction
 
                 val snackBarHostState = remember { SnackbarHostState() }
@@ -168,9 +161,7 @@ fun MainScreen(
                     LocalBlurState provides rememberMaterial3BlurBackdrop(
                         enableBlur = themeConfig.isEnableBlur,
                         pagerState = pagerState,
-                        pagerPage = pageIndex,
-                    ),
-                ) {
+                        pagerPage = pageIndex)) {
                     val destination = pages[pageIndex]
                     destination.direction(paddingBottom)
                 }
@@ -186,14 +177,11 @@ fun MainScreen(
                 bottomBar = {
                     NavigationBar(
                         destinations = pages,
-                        isBottomBar = true,
-                    )
+                        isBottomBar = true)
                 },
-                containerColor = Color.Transparent,
-            ) { innerPadding ->
+                containerColor = Color.Transparent) { innerPadding ->
                 Box(
-                    modifier = Modifier.blurSource(),
-                ) {
+                    modifier = Modifier.blurSource()) {
                     content(innerPadding.calculateBottomPadding())
                 }
             }
@@ -202,18 +190,14 @@ fun MainScreen(
             val density = LocalDensity.current
 
             Box(
-                modifier = Modifier.fillMaxSize(),
-            ) {
+                modifier = Modifier.fillMaxSize()) {
                 Row(
                     modifier = Modifier
                         .fillMaxSize()
-                        .blurSource(),
-                ) {
+                        .blurSource()) {
                     Spacer(
                         modifier = Modifier.width(
-                            with(density) { navWidth.toDp() },
-                        ),
-                    )
+                            with(density) { navWidth.toDp() }))
 
                     Box(Modifier.weight(1f)) {
                         content(0.dp)
@@ -227,8 +211,7 @@ fun MainScreen(
                             navWidth = it.width
                         },
                     destinations = pages,
-                    isBottomBar = false,
-                )
+                    isBottomBar = false)
             }
         }
     }

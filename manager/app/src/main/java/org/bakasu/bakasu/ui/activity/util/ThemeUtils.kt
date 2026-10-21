@@ -11,8 +11,7 @@ class ThemeUtils(
     private val themeConfig: ThemeConfig,
     private val themeRepository: ThemeRepository,
     private val cardConfig: CardConfig,
-    private val backgroundManager: BackgroundManager,
-) {
+    private val backgroundManager: BackgroundManager) {
 
     fun initializeThemeSettings(settingsViewModel: SettingsViewModel) {
         settingsViewModel.dispatch(SettingsUiAction.InitializeFirstRun)
@@ -34,8 +33,7 @@ class ThemeUtils(
         themeConfig.useDynamicColor = themeRepository.loadDynamicColorState()
         themeConfig.dynamicColorSpec = themeRepository.loadDynamicColorSpec()
         themeConfig.dynamicPaletteStyle = themeRepository.loadDynamicPaletteStyle(
-            themeConfig.dynamicColorSpec,
-        )
+            themeConfig.dynamicColorSpec)
         cardConfig.load()
         backgroundManager.loadCustomBackground()
     }

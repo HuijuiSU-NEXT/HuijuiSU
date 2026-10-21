@@ -45,8 +45,7 @@ internal fun SuSFSDescriptionCard(
     title: String,
     modifier: Modifier = Modifier,
     description: String? = null,
-    content: @Composable ColumnScope.() -> Unit = {},
-) {
+    content: @Composable ColumnScope.() -> Unit = {}) {
     val themeConfig: ThemeConfig = koinInject()
     Surface(
         modifier = modifier
@@ -55,21 +54,17 @@ internal fun SuSFSDescriptionCard(
             .clip(RoundedCornerShape(16.dp))
             .renderBackgroundBlur(MaterialTheme.colorScheme.primaryContainer),
         color = if (themeConfig.isEnableBlurExp) Color.Transparent else MaterialTheme.colorScheme.primaryContainer,
-        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-    ) {
+        contentColor = MaterialTheme.colorScheme.onPrimaryContainer) {
         Column(
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-        ) {
+            verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleMedium,
-            )
+                style = MaterialTheme.typography.titleMedium)
             description?.let {
                 Text(
                     text = it,
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                    style = MaterialTheme.typography.bodyMedium)
             }
             content()
         }
@@ -83,8 +78,7 @@ internal fun <T> LazyListScope.susfsEntryList(
     emptyDescription: String,
     entryKey: (T) -> Any,
     onAddEntry: () -> Unit,
-    entryContent: @Composable LazyItemScope.(T) -> Unit,
-) {
+    entryContent: @Composable LazyItemScope.(T) -> Unit) {
     val rows: List<SuSFSEntryRow<T>> = buildList {
         add(SuSFSEntryRow.Add)
         entries.forEach { add(SuSFSEntryRow.Entry(it)) }
@@ -103,15 +97,13 @@ internal fun <T> LazyListScope.susfsEntryList(
                 SuSFSEntryRow.Add -> ADD_ENTRY_KEY
                 is SuSFSEntryRow.Entry -> "susfs_entry"
             }
-        },
-    ) { _, row ->
+        }) { _, row ->
         when (row) {
             SuSFSEntryRow.Add -> SettingsJumpPageWidget(
                 iconPlaceholder = false,
                 title = addEntryTitle,
                 trailingIcon = Icons.TwoTone.Add,
-                onClick = { onAddEntry() },
-            )
+                onClick = { onAddEntry() })
 
             is SuSFSEntryRow.Entry -> entryContent(row.value)
         }
@@ -124,31 +116,26 @@ internal fun <T> LazyListScope.susfsEntryList(
                     .fillParentMaxWidth()
                     .fillParentMaxHeight(0.5f)
                     .padding(horizontal = 32.dp),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Icon(
                         imageVector = Icons.TwoTone.Inbox,
                         contentDescription = null,
                         modifier = Modifier
                             .padding(bottom = 6.dp)
                             .size(48.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     Text(
                         text = emptyTitle,
                         style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                    )
+                        textAlign = TextAlign.Center)
                     Text(
                         text = emptyDescription,
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center,
-                    )
+                        textAlign = TextAlign.Center)
                 }
             }
         }

@@ -46,8 +46,7 @@ import org.bakasu.bakasu.huijui.ui.HuijuiDialogHeader
 data class BackupProgress(
     val name: String,
     val status: String,
-    val size: String = "",
-)
+    val size: String = "")
 
 @Composable
 fun HuijuiBackup(onDismiss: () -> Unit) {
@@ -85,8 +84,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.SaveAlt,
                     iconTint = MaterialTheme.colorScheme.primary,
                     title = "一键备份包",
-                    subtitle = "boot / init_boot / vbmeta → /sdcard/HuijuiSU_Backup_日期/",
-                )
+                    subtitle = "boot / init_boot / vbmeta → /sdcard/HuijuiSU_Backup_日期/")
                 Spacer(Modifier.height(16.dp))
 
                 if (progress.isNotEmpty()) {
@@ -113,8 +111,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
                 } else if (!running) {
                     Text(
                         "将备份当前槽位 boot / init_boot / vbmeta。\n完成后同一目录会生成 restore.bat（PC 端 fastboot 一键刷回）。",
-                        style = MaterialTheme.typography.bodySmall,
-                    )
+                        style = MaterialTheme.typography.bodySmall)
                 }
 
                 if (done) {
@@ -141,8 +138,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
 
 private suspend fun doBackupSuspend(
     context: Context,
-    onProgress: suspend (List<BackupProgress>) -> Unit,
-): Result<String> = withContext(Dispatchers.IO) {
+    onProgress: suspend (List<BackupProgress>) -> Unit): Result<String> = withContext(Dispatchers.IO) {
     val date = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
     val dir = File(Environment.getExternalStorageDirectory(), "HuiJuiSU_Backup_$date")
     if (!dir.exists() && !dir.mkdirs()) {
@@ -177,8 +173,7 @@ private suspend fun doBackupSuspend(
         val ok = dst.exists() && dst.length() > 0
         items[items.lastIndex] = items.last().copy(
             status = if (ok) "成功" else "失败",
-            size = if (ok) humanSize(dst.length()) else "",
-        )
+            size = if (ok) humanSize(dst.length()) else "")
         onProgress(items.toList())
     }
 
@@ -191,15 +186,13 @@ private suspend fun doBackupSuspend(
         val ok = HuijuiModuleSnapshot.writeToFile(context, snapshot, dir)
         items[items.lastIndex] = items.last().copy(
             status = if (ok) "成功" else "失败",
-            size = "${snapshot.modules.size} 个模块",
-        )
+            size = "${snapshot.modules.size} 个模块")
         android.util.Log.i("HuijuiBackup", "writeToFile result: $ok")
     } catch (t: Throwable) {
         android.util.Log.e("HuijuiBackup", "module snapshot failed", t)
         items[items.lastIndex] = items.last().copy(
             status = "失败",
-            size = t.message.orEmpty().take(30),
-        )
+            size = t.message.orEmpty().take(30))
     }
     onProgress(items.toList())
 

@@ -19,8 +19,7 @@ import org.json.JSONObject
 class WebViewInterface(
     private val state: WebUIState,
     private val packageRepository: InstalledPackageRepository,
-    private val webUiRepository: WebUiRepository,
-) {
+    private val webUiRepository: WebUiRepository) {
     private val webView get() = state.webView!!
     private val modDir get() = state.modDir
 
@@ -55,8 +54,7 @@ class WebViewInterface(
     fun exec(
         cmd: String,
         options: String?,
-        callbackFunc: String,
-    ) {
+        callbackFunc: String) {
         val finalCommand = StringBuilder()
         processOptions(finalCommand, options)
         finalCommand.append(cmd)
@@ -68,8 +66,7 @@ class WebViewInterface(
         val jsCode =
             "javascript: (function() { try { $callbackFunc(${result.code}, ${
                 JSONObject.quote(
-                    stdout,
-                )
+                    stdout)
             }, ${JSONObject.quote(stderr)}); } catch(e) { console.error(e); } })();"
         webView.post {
             webView.loadUrl(jsCode)
@@ -98,8 +95,7 @@ class WebViewInterface(
             val jsCode =
                 "javascript: (function() { try { $callbackFunc.$name.emit('data', ${
                     JSONObject.quote(
-                        data,
-                    )
+                        data)
                 }); } catch(e) { console.error('emitData', e); } })();"
             webView.post {
                 webView.loadUrl(jsCode)
@@ -121,15 +117,13 @@ class WebViewInterface(
                     val emitErrCode =
                         "javascript: (function() { try { var err = new Error(); err.exitCode = ${result.code}; err.message = ${
                             JSONObject.quote(
-                                result.stderr,
-                            )
+                                result.stderr)
                         };$callbackFunc.emit('error', err); } catch(e) { console.error('emitErr', e); } })();"
                     webView.post {
                         webView.loadUrl(emitErrCode)
                     }
                 }
-            },
-        )
+            })
     }
 
     @JavascriptInterface

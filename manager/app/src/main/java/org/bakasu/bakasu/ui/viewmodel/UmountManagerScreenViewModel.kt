@@ -21,8 +21,7 @@ import org.bakasu.bakasu.domain.usecase.RemoveUmountPathUseCase
 data class UmountManagerUiState(
     val umountPaths: List<UmountPath> = emptyList(),
     val isLoading: Boolean = true,
-    val isRefreshing: Boolean = false,
-)
+    val isRefreshing: Boolean = false)
 
 sealed interface UmountManagerUiAction {
     data class Refresh(val force: Boolean = false) : UmountManagerUiAction
@@ -39,8 +38,7 @@ class UmountManagerScreenViewModel(
     observeState: ObserveUmountStateUseCase,
     private val refreshPaths: RefreshUmountPathsUseCase,
     private val addPath: AddUmountPathUseCase,
-    private val removePath: RemoveUmountPathUseCase,
-) : ViewModel() {
+    private val removePath: RemoveUmountPathUseCase) : ViewModel() {
     private val mutableEvents = MutableSharedFlow<UmountManagerUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<UmountManagerUiEvent> = mutableEvents.asSharedFlow()
 
@@ -49,8 +47,7 @@ class UmountManagerScreenViewModel(
             UmountManagerUiState(
                 umountPaths = source.paths,
                 isLoading = source.isLoading,
-                isRefreshing = source.isRefreshing,
-            )
+                isRefreshing = source.isRefreshing)
         }
         .stateIn(viewModelScope, SharingStarted.Eagerly, UmountManagerUiState())
     val uiState: StateFlow<UmountManagerUiState> = state
@@ -61,20 +58,17 @@ class UmountManagerScreenViewModel(
 
             is UmountManagerUiAction.Remove -> submit(
                 command = { removePath(action.entry) },
-                successMessage = R.string.umount_path_removed,
-            )
+                successMessage = R.string.umount_path_removed)
 
             is UmountManagerUiAction.Add -> submit(
                 command = { addPath(action.path, action.flags) },
-                successMessage = R.string.umount_path_added,
-            )
+                successMessage = R.string.umount_path_added)
         }
     }
 
     private fun submit(
         command: suspend () -> Result<Unit>,
-        successMessage: Int,
-    ) {
+        successMessage: Int) {
         viewModelScope.launch {
             val message = if (command().isSuccess) successMessage else R.string.operation_failed
             mutableEvents.emit(UmountManagerUiEvent.Message(context.getString(message)))

@@ -7,8 +7,7 @@ import java.util.Locale
 
 data class SulogFile(
     val name: String,
-    val path: String,
-)
+    val path: String)
 
 enum class SulogEventType {
     RootExecve,
@@ -31,8 +30,7 @@ data class SulogEntry(
     val eventType: SulogEventType,
     val rawLine: String,
     val timestampText: String?,
-    val fields: Map<String, String>,
-) {
+    val fields: Map<String, String>) {
     val searchableText: String by lazy {
         buildString {
             append(rawLine)
@@ -57,8 +55,7 @@ data class SulogState(
     val entries: List<SulogEntry> = emptyList(),
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
-    val errorMessage: String? = null,
-)
+    val errorMessage: String? = null)
 
 fun defaultSulogEventFilters(): Set<SulogEventFilter> = SulogEventFilter.entries.toSet()
 
@@ -71,8 +68,7 @@ fun String.toSulogDisplayName(): String = if (startsWith("sulog-") && endsWith("
 fun filterSulogEntries(
     entries: List<SulogEntry>,
     searchText: String,
-    selectedFilters: Set<SulogEventFilter>,
-): List<SulogEntry> {
+    selectedFilters: Set<SulogEventFilter>): List<SulogEntry> {
     val normalizedQuery = searchText.trim().lowercase()
     val activeEventTypes = selectedFilters.mapNotNull { it.eventType }.toSet()
     return entries.asReversed().filter { entry ->
@@ -89,8 +85,7 @@ fun parseSulogLines(
     lines: List<String>,
     currentTimeMillis: Long,
     uptimeMillis: Long,
-    zoneId: ZoneId = ZoneId.systemDefault(),
-): List<SulogEntry> = lines.mapNotNull { line ->
+    zoneId: ZoneId = ZoneId.systemDefault()): List<SulogEntry> = lines.mapNotNull { line ->
     line.takeIf { it.isNotBlank() }?.let {
         parseSulogLine(it, currentTimeMillis, uptimeMillis, zoneId)
     }
@@ -100,8 +95,7 @@ fun parseSulogLine(
     line: String,
     currentTimeMillis: Long,
     uptimeMillis: Long,
-    zoneId: ZoneId = ZoneId.systemDefault(),
-): SulogEntry {
+    zoneId: ZoneId = ZoneId.systemDefault()): SulogEntry {
     val fields = parseKeyValueLine(line)
     val eventType = when (fields["type"]) {
         "root_execve" -> SulogEventType.RootExecve
@@ -123,10 +117,8 @@ fun parseSulogLine(
             timestampNs = fields["ts_ns"],
             currentTimeMillis = currentTimeMillis,
             uptimeMillis = uptimeMillis,
-            zoneId = zoneId,
-        ),
-        fields = fields,
-    )
+            zoneId = zoneId),
+        fields = fields)
 }
 
 private fun parseKeyValueLine(line: String): Map<String, String> = buildMap {
@@ -191,8 +183,7 @@ private fun parseSulogTimestampText(
     timestampNs: String?,
     currentTimeMillis: Long,
     uptimeMillis: Long,
-    zoneId: ZoneId,
-): String? {
+    zoneId: ZoneId): String? {
     val timestampNanos = timestampNs?.toLongOrNull() ?: return null
     if (timestampNanos < 0 || uptimeMillis < 0) return null
     val eventTimeMillis = currentTimeMillis - uptimeMillis + timestampNanos / 1_000_000L

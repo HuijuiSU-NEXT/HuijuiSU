@@ -36,8 +36,7 @@ fun AppBackButton(
     onClick: () -> Unit,
     icon: ImageVector = Icons.AutoMirrored.TwoTone.ArrowBack, // Default icon is ArrowBack
     containerColor: Color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.1f),
-    contentDescription: String = stringResource(id = R.string.back),
-) {
+    contentDescription: String = stringResource(id = R.string.back)) {
     Row {
         IconButton(
             onClick = onClick,
@@ -52,13 +51,10 @@ fun AppBackButton(
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 // The background color of the button.
                 // Using a more standard color for a filled icon button variant.
-                containerColor = containerColor,
-            ),
-        ) {
+                containerColor = containerColor)) {
             Icon(
                 imageVector = icon,
-                contentDescription = contentDescription,
-            )
+                contentDescription = contentDescription)
         }
 
         Spacer(modifier = Modifier.size(16.dp))

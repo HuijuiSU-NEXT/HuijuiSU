@@ -33,8 +33,7 @@ object HuijuiAppManagerRepository {
         val out = HuijuiShellUtils.runAsRoot(
             "pm list packages -d | grep -w $pkg",
             timeoutSeconds = 10,
-            trim = true,
-        )
+            trim = true)
         out.isNotBlank() && out.contains(pkg)
     }
 

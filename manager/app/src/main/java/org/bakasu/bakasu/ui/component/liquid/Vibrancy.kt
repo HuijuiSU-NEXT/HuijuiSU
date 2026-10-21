@@ -10,6 +10,5 @@ fun BackdropEffectScope.vibrancy() {
     colorControls(
         brightness = 0f,
         contrast = 1f,
-        saturation = 1.5f,
-    )
+        saturation = 1.5f)
 }

@@ -136,8 +136,7 @@ fun SettingsBaseWidget(
     foreContent: @Composable RowScope.() -> Unit = {},
     descriptionColumnContent: (@Composable ColumnScope.() -> Unit)? = null,
     containerColor: Color? = null,
-    trailingContent: (@Composable BoxScope.(interactionSource: MutableInteractionSource) -> Unit)? = null,
-) {
+    trailingContent: (@Composable BoxScope.(interactionSource: MutableInteractionSource) -> Unit)? = null) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val hapticFeedback = LocalHapticFeedback.current
@@ -166,8 +165,7 @@ fun SettingsBaseWidget(
         ).run {
         if (isOnBackground) {
             copy(
-                alpha = cardConfig.cardAlpha,
-            )
+                alpha = cardConfig.cardAlpha)
         } else {
             this
         }
@@ -222,16 +220,14 @@ fun SettingsBaseWidget(
         disabledContentColor = baseContentColor,
         disabledLeadingContentColor = resolvedIconColor,
         disabledTrailingContentColor = resolvedIconColor,
-        disabledSupportingContentColor = finalDescriptionColor,
-    )
+        disabledSupportingContentColor = finalDescriptionColor)
 
     val shapes = ListItemDefaults.shapes(
         shape = baseShape,
         pressedShape = if (themeConfig.isEnableBlurExp) baseShape else RoundedCornerShape(16.dp),
         selectedShape = baseShape,
         focusedShape = baseShape,
-        hoveredShape = baseShape,
-    )
+        hoveredShape = baseShape)
 
     val clickShape = if (onClick != null || onLongClick != null) {
         val pressed = remember { mutableStateOf(false) }
@@ -243,8 +239,7 @@ fun SettingsBaseWidget(
             pressedState = pressed,
             focusedState = focused,
             hoveredState = hovered,
-            draggedState = dragged,
-        )
+            draggedState = dragged)
 
         val shapeAnimationSpec = MaterialTheme.motionScheme.fastSpatialSpec<Float>()
 
@@ -254,8 +249,7 @@ fun SettingsBaseWidget(
             focused = focused.value,
             hovered = hovered.value,
             dragged = dragged.value,
-            animationSpec = shapeAnimationSpec,
-        )
+            animationSpec = shapeAnimationSpec)
     } else {
         RectangleShape
     }
@@ -266,8 +260,7 @@ fun SettingsBaseWidget(
                 override fun createOutline(
                     size: Size,
                     layoutDirection: LayoutDirection,
-                    density: Density,
-                ): Outline = clickShape.createOutline(size, layoutDirection, density)
+                    density: Density): Outline = clickShape.createOutline(size, layoutDirection, density)
             }
         }
     } else {
@@ -280,8 +273,7 @@ fun SettingsBaseWidget(
             pressedShape = safeClickShape,
             focusedShape = safeClickShape,
             hoveredShape = safeClickShape,
-            draggedShape = safeClickShape,
-        )
+            draggedShape = safeClickShape)
     } else {
         shapes
     }
@@ -312,15 +304,13 @@ fun SettingsBaseWidget(
                         modifier = Modifier
                             .size(24.dp)
                             .alpha(alpha),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                        contentAlignment = Alignment.Center) {
                         if (icon != null) {
                             Icon(
                                 imageVector = icon,
                                 modifier = Modifier.size(iconSize),
                                 contentDescription = null,
-                                tint = resolvedIconColor,
-                            )
+                                tint = resolvedIconColor)
                         } else {
                             Spacer(modifier = Modifier.size(24.dp))
                         }
@@ -336,8 +326,7 @@ fun SettingsBaseWidget(
                     text = text,
                     style = descriptionStyle,
                     modifier = Modifier
-                        .alpha(alpha),
-                )
+                        .alpha(alpha))
             }
 
             descriptionColumnContent?.invoke(this)
@@ -348,8 +337,7 @@ fun SettingsBaseWidget(
         {
             Box(
                 modifier = Modifier.alpha(alpha),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 trailingContent(interactionSource)
             }
         }
@@ -360,16 +348,13 @@ fun SettingsBaseWidget(
     val headline: @Composable () -> Unit = {
         Box(
             modifier = Modifier
-                .alpha(alpha),
-        ) {
+                .alpha(alpha)) {
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 title?.let {
                     Text(
                         text = it,
-                        style = titleStyle,
-                    )
+                        style = titleStyle)
                 }
 
                 foreContent()
@@ -389,9 +374,7 @@ fun SettingsBaseWidget(
                 LocalContentColor provides colors.supportingContentColor(
                     enabled = enabled,
                     selected = selected,
-                    dragged = false,
-                ),
-            ) {
+                    dragged = false)) {
                 supportingContent()
             }
         }
@@ -434,8 +417,7 @@ fun SettingsBaseWidget(
             leadingContent = finalLeadingContent,
             trailingContent = trailing,
             interactionSource = interactionSource,
-            content = expressiveContent,
-        )
+            content = expressiveContent)
     } else {
         /*
          * Non-clickable item:
@@ -452,8 +434,7 @@ fun SettingsBaseWidget(
                         Modifier.semantics { disabled() }
                     } else {
                         Modifier
-                    },
-                ),
+                    }),
             enabled = enabled,
             verticalAlignment = Alignment.CenterVertically,
             shapes = shapes,
@@ -461,8 +442,7 @@ fun SettingsBaseWidget(
             leadingContent = finalLeadingContent,
             trailingContent = trailing,
             contentPadding = ListItemDefaults.ContentPadding,
-            content = expressiveContent,
-        )
+            content = expressiveContent)
     }
 }
 
@@ -497,8 +477,7 @@ private fun InteractionSource.CollectInteractionsAsState(
     pressedState: MutableState<Boolean>? = null,
     focusedState: MutableState<Boolean>? = null,
     hoveredState: MutableState<Boolean>? = null,
-    draggedState: MutableState<Boolean>? = null,
-) {
+    draggedState: MutableState<Boolean>? = null) {
     LaunchedEffect(this) {
         val pressInteractions = pressedState?.let { mutableListOf<PressInteraction.Press>() }
         val focusInteractions = focusedState?.let { mutableListOf<FocusInteraction.Focus>() }
@@ -555,8 +534,7 @@ internal fun ListItemShapes.shapeForInteraction(
     focused: Boolean,
     hovered: Boolean,
     dragged: Boolean,
-    animationSpec: FiniteAnimationSpec<Float>,
-): Shape {
+    animationSpec: FiniteAnimationSpec<Float>): Shape {
     val shape =
         when {
             pressed -> pressedShape
@@ -580,21 +558,18 @@ internal fun ListItemShapes.shapeForInteraction(
 @Composable
 private fun SettingsBaseWidgetPreview() {
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-    ) {
+        verticalArrangement = Arrangement.spacedBy(16.dp)) {
         item {
             SettingsBaseWidget(
                 title = "I am title",
-                description = "I am description, I have iconPlaceholder",
-            ) {}
+                description = "I am description, I have iconPlaceholder") {}
         }
 
         item {
             SettingsBaseWidget(
                 iconPlaceholder = false,
                 title = "I am title",
-                description = "I am description, I don't have iconPlaceholder",
-            ) {}
+                description = "I am description, I don't have iconPlaceholder") {}
         }
 
         item {
@@ -603,8 +578,7 @@ private fun SettingsBaseWidgetPreview() {
                 title = "I am title",
                 descriptionColumnContent = {
                     Text("Hello from descriptionColumnContent")
-                },
-            ) {}
+                }) {}
         }
 
         item {
@@ -612,14 +586,12 @@ private fun SettingsBaseWidgetPreview() {
                 item {
                     SettingsBaseWidget(
                         title = "I can click (widget 1)",
-                        onClick = {},
-                    )
+                        onClick = {})
                 }
                 item {
                     SettingsBaseWidget(
                         title = "I can click (widget 2)",
-                        onClick = {},
-                    )
+                        onClick = {})
                 }
             }
         }

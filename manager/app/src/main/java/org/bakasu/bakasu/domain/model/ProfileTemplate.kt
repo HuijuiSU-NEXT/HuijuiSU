@@ -17,8 +17,7 @@ data class ProfileTemplate(
     val capabilities: List<Int> = emptyList(),
     val context: String = Natives.KERNEL_SU_DOMAIN,
     val rules: List<String> = emptyList(),
-    val flags: List<Int> = listOf(RootProfileFlag.NO_NEW_PRIVS.ordinal),
-)
+    val flags: List<Int> = listOf(RootProfileFlag.NO_NEW_PRIVS.ordinal))
 
 sealed interface ProfileTemplateFailure {
     data object Empty : ProfileTemplateFailure

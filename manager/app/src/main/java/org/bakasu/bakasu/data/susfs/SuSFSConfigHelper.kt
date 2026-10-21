@@ -14,8 +14,7 @@ import kotlinx.coroutines.withContext
 import org.bakasu.bakasu.data.shell.KsuCliRepository
 
 class SuSFSConfigHelper(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     companion object {
         private const val TAG = "SuSFSConfigHelper"
         const val CURRENT_VERSION: Int = 2
@@ -35,8 +34,7 @@ class SuSFSConfigHelper(
     private data class CommandResult(
         val success: Boolean,
         val stdout: String,
-        val stderr: String,
-    )
+        val stderr: String)
 
     suspend fun loadConfig(): SuSFSConfig = configMutex.withLock {
         loadConfigLocked()
@@ -61,8 +59,7 @@ class SuSFSConfigHelper(
             if (config.version != CURRENT_VERSION) {
                 Log.e(
                     TAG,
-                    "Incompatible SUSFS config version: ${config.version}, expected: $CURRENT_VERSION",
-                )
+                    "Incompatible SUSFS config version: ${config.version}, expected: $CURRENT_VERSION")
                 return@withContext SuSFSConfig.createDefault().also { cachedConfig = it }
             }
 
@@ -96,8 +93,7 @@ class SuSFSConfigHelper(
                     version = version.stdout.takeIf { version.success }.orEmpty(),
                     enabledFeatures = enabledFeatures.stdout.takeIf { enabledFeatures.success }
                         .orEmpty(),
-                    variant = variant.stdout.takeIf { variant.success }.orEmpty(),
-                )
+                    variant = variant.stdout.takeIf { variant.success }.orEmpty())
             }
 
             cachedStatusInfo = statusInfo
@@ -107,13 +103,11 @@ class SuSFSConfigHelper(
 
     suspend fun addSusPath(path: String): Boolean = executeConfigMutation(
         command = "sus_path add ${shellQuote(path)}",
-        currentKernelCommands = listOf("add_sus_path ${shellQuote(path)}"),
-    )
+        currentKernelCommands = listOf("add_sus_path ${shellQuote(path)}"))
 
     suspend fun addSusPathLoop(path: String): Boolean = executeConfigMutation(
         command = "sus_path add ${shellQuote(path)} --loop",
-        currentKernelCommands = listOf("add_sus_path_loop ${shellQuote(path)}"),
-    )
+        currentKernelCommands = listOf("add_sus_path_loop ${shellQuote(path)}"))
 
     suspend fun removeSusPath(path: String): Boolean = executeConfigMutation("sus_path remove ${shellQuote(path)}")
 
@@ -123,9 +117,7 @@ class SuSFSConfigHelper(
             command = "sus_kstat add $quotedPath normal",
             currentKernelCommands = listOf(
                 "add_sus_kstat $quotedPath",
-                "update_sus_kstat $quotedPath",
-            ),
-        )
+                "update_sus_kstat $quotedPath"))
     }
 
     suspend fun addSusKstatFullClone(path: String): Boolean {
@@ -134,9 +126,7 @@ class SuSFSConfigHelper(
             command = "sus_kstat add $quotedPath full_clone",
             currentKernelCommands = listOf(
                 "add_sus_kstat $quotedPath",
-                "update_sus_kstat_full_clone $quotedPath",
-            ),
-        )
+                "update_sus_kstat_full_clone $quotedPath"))
     }
 
     suspend fun addSusKstatStatically(
@@ -152,8 +142,7 @@ class SuSFSConfigHelper(
         ctime: Long? = null,
         ctime_nsec: Long? = null,
         blocks: Long? = null,
-        blksize: Long? = null,
-    ): Boolean {
+        blksize: Long? = null): Boolean {
         val values = listOf(
             ino,
             dev,
@@ -166,14 +155,12 @@ class SuSFSConfigHelper(
             ctime,
             ctime_nsec,
             blocks,
-            blksize,
-        ).joinToString(" ") { it?.toString() ?: "default" }
+            blksize).joinToString(" ") { it?.toString() ?: "default" }
 
         val quotedPath = shellQuote(path)
         return executeConfigMutation(
             command = "sus_kstat add $quotedPath statically $values",
-            currentKernelCommands = listOf("add_sus_kstat_statically $quotedPath $values"),
-        )
+            currentKernelCommands = listOf("add_sus_kstat_statically $quotedPath $values"))
     }
 
     suspend fun removeSusKstat(path: String): Boolean = executeConfigMutation("sus_kstat remove ${shellQuote(path)}")
@@ -182,8 +169,7 @@ class SuSFSConfigHelper(
         val arguments = "${shellQuote(release)} ${shellQuote(version)}"
         return executeConfigMutation(
             command = "uname add $arguments",
-            currentKernelCommands = listOf("set_uname $arguments"),
-        )
+            currentKernelCommands = listOf("set_uname $arguments"))
     }
 
     suspend fun loadSlotInfo(): List<SuSFSSlotInfo>? {
@@ -195,15 +181,13 @@ class SuSFSConfigHelper(
 
         return try {
             val slots = checkNotNull(
-                gson.fromJson(result.stdout, Array<SuSFSSlotInfo>::class.java),
-            )
+                gson.fromJson(result.stdout, Array<SuSFSSlotInfo>::class.java))
             check(
                 slots.all { slot ->
                     slot.slotName.isNotBlank() &&
                         slot.uname.isNotBlank() &&
                         slot.buildTime.isNotBlank()
-                },
-            )
+                })
             slots.toList()
         } catch (e: Exception) {
             Log.e(TAG, "Failed to parse SUSFS slot info", e)
@@ -213,22 +197,17 @@ class SuSFSConfigHelper(
 
     suspend fun enableLog(enabled: Boolean): Boolean = executeConfigMutation(
         command = "logging ${if (enabled) "add" else "remove"}",
-        currentKernelCommands = listOf("enable_log ${if (enabled) 1 else 0}"),
-    )
+        currentKernelCommands = listOf("enable_log ${if (enabled) 1 else 0}"))
 
     suspend fun hideSusMntsForNonSuProcs(enabled: Boolean): Boolean = executeConfigMutation(
         command = "hide_sus_mnts_for_non_su_procs ${if (enabled) "add" else "remove"}",
         currentKernelCommands = listOf(
-            "hide_sus_mnts_for_non_su_procs ${if (enabled) 1 else 0}",
-        ),
-    )
+            "hide_sus_mnts_for_non_su_procs ${if (enabled) 1 else 0}"))
 
     suspend fun enableAvcLogSpoofing(enabled: Boolean): Boolean = executeConfigMutation(
         command = "avc_log_spoofing ${if (enabled) "add" else "remove"}",
         currentKernelCommands = listOf(
-            "enable_avc_log_spoofing ${if (enabled) 1 else 0}",
-        ),
-    )
+            "enable_avc_log_spoofing ${if (enabled) 1 else 0}"))
 
     suspend fun setCmdlineOrBootconfig(path: String): Boolean {
         val command = if (path.isBlank()) {
@@ -242,31 +221,26 @@ class SuSFSConfigHelper(
             executeConfigMutation(
                 command = command,
                 currentKernelCommands = listOf(
-                    "set_cmdline_or_bootconfig ${shellQuote(path)}",
-                ),
-            )
+                    "set_cmdline_or_bootconfig ${shellQuote(path)}"))
         }
     }
 
     suspend fun addOpenRedirect(
         targetPath: String,
         redirectedPath: String,
-        uidScheme: UidScheme,
-    ): Boolean {
+        uidScheme: UidScheme): Boolean {
         val arguments =
             "${shellQuote(targetPath)} ${shellQuote(redirectedPath)} ${uidScheme.value}"
         return executeConfigMutation(
             command = "open_redirect add $arguments",
-            currentKernelCommands = listOf("add_open_redirect $arguments"),
-        )
+            currentKernelCommands = listOf("add_open_redirect $arguments"))
     }
 
     suspend fun removeOpenRedirect(targetPath: String): Boolean = executeConfigMutation("open_redirect remove ${shellQuote(targetPath)}")
 
     suspend fun addSusMap(path: String): Boolean = executeConfigMutation(
         command = "sus_map add ${shellQuote(path)}",
-        currentKernelCommands = listOf("add_sus_map ${shellQuote(path)}"),
-    )
+        currentKernelCommands = listOf("add_sus_map ${shellQuote(path)}"))
 
     suspend fun removeSusMap(path: String): Boolean = executeConfigMutation("sus_map remove ${shellQuote(path)}")
 
@@ -318,22 +292,19 @@ class SuSFSConfigHelper(
 
     private suspend fun executeConfigMutation(
         command: String,
-        currentKernelCommands: List<String> = emptyList(),
-    ): Boolean = configMutex.withLock {
+        currentKernelCommands: List<String> = emptyList()): Boolean = configMutex.withLock {
         executeConfigMutationLocked(command, currentKernelCommands)
     }
 
     private suspend fun executeConfigMutationLocked(
         command: String,
-        currentKernelCommands: List<String>,
-    ): Boolean {
+        currentKernelCommands: List<String>): Boolean {
         currentKernelCommands.forEach { currentKernelCommand ->
             val result = executeSusfsCommand(currentKernelCommand)
             if (!result.success) {
                 Log.e(
                     TAG,
-                    "SUSFS kernel command failed: $currentKernelCommand: ${result.stderr}",
-                )
+                    "SUSFS kernel command failed: $currentKernelCommand: ${result.stderr}")
                 return false
             }
         }
@@ -362,8 +333,7 @@ class SuSFSConfigHelper(
             CommandResult(
                 success = result.isSuccess,
                 stdout = stdout.joinToString("\n").trim(),
-                stderr = stderr.joinToString("\n").trim(),
-            )
+                stderr = stderr.joinToString("\n").trim())
         } catch (e: Exception) {
             Log.e(TAG, "Failed to execute ksud susfs $command", e)
             CommandResult(false, "", e.message.orEmpty())
@@ -405,8 +375,7 @@ data class UnameConfig(
     @SerializedName("version")
     val version: String,
     @SerializedName("release")
-    val release: String,
-)
+    val release: String)
 
 data class SuSFSSlotInfo(
     @SerializedName("slot_name")
@@ -414,14 +383,12 @@ data class SuSFSSlotInfo(
     @SerializedName("uname")
     val uname: String,
     @SerializedName("build_time")
-    val buildTime: String,
-)
+    val buildTime: String)
 
 data class SuSFSStatusInfo(
     val version: String,
     val enabledFeatures: String,
-    val variant: String,
-)
+    val variant: String)
 
 data class SusKstatStatically(
     @SerializedName("ino")
@@ -447,8 +414,7 @@ data class SusKstatStatically(
     @SerializedName("blocks")
     val blocks: Long?,
     @SerializedName("blksize")
-    val blksize: Long?,
-)
+    val blksize: Long?)
 
 data class SusKstatItem(
     @SerializedName("path")
@@ -456,15 +422,13 @@ data class SusKstatItem(
     @SerializedName("spoof_type")
     val spoof_type: SusKstatType,
     @SerializedName("statically")
-    val statically: SusKstatStatically?,
-)
+    val statically: SusKstatStatically?)
 
 data class SusPathItem(
     @SerializedName("path")
     val path: String,
     @SerializedName("is_loop")
-    val is_loop: Boolean,
-)
+    val is_loop: Boolean)
 
 data class OpenRedirectItem(
     @SerializedName("target_path")
@@ -472,8 +436,7 @@ data class OpenRedirectItem(
     @SerializedName("redirected_path")
     val redirected_path: String,
     @SerializedName("uid_scheme")
-    val uid_scheme: UidScheme,
-)
+    val uid_scheme: UidScheme)
 
 data class SuSFSConfig(
     @SerializedName("version")
@@ -497,8 +460,7 @@ data class SuSFSConfig(
     @SerializedName("open_redirect")
     val open_redirect: Set<OpenRedirectItem>,
     @SerializedName("sus_map")
-    val sus_map: Set<String>,
-) {
+    val sus_map: Set<String>) {
     companion object {
         fun createDefault(): SuSFSConfig = SuSFSConfig(
             version = SuSFSConfigHelper.CURRENT_VERSION,
@@ -511,7 +473,6 @@ data class SuSFSConfig(
             sus_path = emptySet(),
             sus_kstat = emptySet(),
             open_redirect = emptySet(),
-            sus_map = emptySet(),
-        )
+            sus_map = emptySet())
     }
 }

@@ -78,8 +78,7 @@ fun SettingsTextFieldWidget(
     inputTransformation: InputTransformation? = null,
     textStyle: TextStyle = MaterialTheme.typography.bodyMediumEmphasized.copy(
         color = MaterialTheme.colorScheme.onSurface,
-        fontFamily = MaterialTheme.typography.bodySmallEmphasized.fontFamily,
-    ),
+        fontFamily = MaterialTheme.typography.bodySmallEmphasized.fontFamily),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onKeyboardAction: KeyboardActionHandler? = null,
     lineLimits: TextFieldLineLimits = TextFieldLineLimits.Default,
@@ -89,8 +88,7 @@ fun SettingsTextFieldWidget(
     interactionSource: MutableInteractionSource? = null,
     outputTransformation: OutputTransformation? = null,
     cursorBrush: Brush = SolidColor(MaterialTheme.colorScheme.primary),
-    scrollState: ScrollState = rememberScrollState(),
-) {
+    scrollState: ScrollState = rememberScrollState()) {
     @Suppress("NAME_SHADOWING")
     val interactionSource = interactionSource ?: remember { MutableInteractionSource() }
     val focusRequester = remember { FocusRequester() }
@@ -169,21 +167,15 @@ fun SettingsTextFieldWidget(
                     visible = showFloatingTitle,
                     enter = slideInVertically(
                         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                        initialOffsetY = { it },
-                    ) + fadeIn(
-                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                    ),
+                        initialOffsetY = { it }) + fadeIn(
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
                     exit = slideOutVertically(
                         animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                        targetOffsetY = { it },
-                    ) + fadeOut(
-                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                    ),
-                ) {
+                        targetOffsetY = { it }) + fadeOut(
+                        animationSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
                     Text(
                         text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                    )
+                        style = MaterialTheme.typography.titleMedium)
                 }
             }
         },
@@ -229,36 +221,28 @@ fun SettingsTextFieldWidget(
                                 }
                             } else {
                                 Modifier
-                            },
-                        ) {
+                            }) {
                             placeholderAnimationScope.AnimatedVisibility(
                                 visible = showPlaceholder,
                                 enter = slideInVertically(
                                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                    initialOffsetY = { -it },
-                                ) + fadeIn(
-                                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                ),
+                                    initialOffsetY = { -it }) + fadeIn(
+                                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow)),
                                 exit = slideOutVertically(
                                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                    targetOffsetY = { -it },
-                                ) + fadeOut(
-                                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
-                                ),
-                            ) {
+                                    targetOffsetY = { -it }) + fadeOut(
+                                    animationSpec = spring(stiffness = Spring.StiffnessMediumLow))) {
                                 Text(
                                     text = title,
                                     style = textStyle,
-                                    color = labelColor.copy(alpha = 0.6f),
-                                )
+                                    color = labelColor.copy(alpha = 0.6f))
                             }
 
                             if (error.isNotBlank() && !focused && state.text.isBlank()) {
                                 Text(
                                     text = error,
                                     color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.bodySmall,
-                                )
+                                    style = MaterialTheme.typography.bodySmall)
                             }
 
                             innerTextField()
@@ -279,8 +263,7 @@ fun SettingsTextFieldWidget(
                             ) + shrinkVertically(
                                 animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
                                 shrinkTowards = Alignment.Top, // Unroll downwards like a blind
-                            ),
-                        ) {
+                            )) {
                             Spacer(modifier = Modifier.height(2.dp))
 
                             HorizontalDivider(
@@ -289,12 +272,10 @@ fun SettingsTextFieldWidget(
                                     error.isNotBlank() -> MaterialTheme.colorScheme.error
                                     !enabled -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
                                     else -> MaterialTheme.colorScheme.primary
-                                },
-                            )
+                                })
                         }
                     }
-                },
-            )
+                })
 
             AnimatedVisibility(
                 visible = error.isNotBlank() && (focused || state.text.isNotBlank()),
@@ -311,14 +292,12 @@ fun SettingsTextFieldWidget(
                 ) + shrinkVertically(
                     animationSpec = spring(stiffness = Spring.StiffnessMediumLow),
                     shrinkTowards = Alignment.Top, // Unroll downwards like a blind
-                ),
-            ) {
+                )) {
                 Text(
                     modifier = Modifier.padding(top = 2.dp),
                     text = error,
                     color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
             }
         },
         trailingContent = if (trailingContent != null) {
@@ -327,6 +306,5 @@ fun SettingsTextFieldWidget(
             }
         } else {
             null
-        },
-    )
+        })
 }

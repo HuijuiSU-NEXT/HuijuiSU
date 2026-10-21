@@ -25,16 +25,14 @@ data class ModuleInstallStatus(
     val currentModule: Int = 0,
     val currentModuleName: String = "",
     val failedModules: List<String> = emptyList(),
-    val verifiedModules: List<String> = emptyList(),
-)
+    val verifiedModules: List<String> = emptyList())
 
 data class FlashUiState(
     val flashingStatus: FlashingStatus = FlashingStatus.FLASHING,
     val moduleInstallStatus: ModuleInstallStatus = ModuleInstallStatus(),
     val output: String = "",
     val showReboot: Boolean = false,
-    val exitCode: Int? = null,
-)
+    val exitCode: Int? = null)
 
 sealed interface FlashUiAction {
     data class Start(val operation: FlashOperation) : FlashUiAction
@@ -45,12 +43,10 @@ sealed interface FlashUiAction {
         val currentModule: Int? = null,
         val currentModuleName: String? = null,
         val failedModule: String? = null,
-        val verifiedModule: String? = null,
-    ) : FlashUiAction
+        val verifiedModule: String? = null) : FlashUiAction
 
     data class Reboot(
-        val allowSoftReboot: Boolean,
-    ) : FlashUiAction
+        val allowSoftReboot: Boolean) : FlashUiAction
 }
 
 sealed interface FlashUiEvent {
@@ -60,16 +56,14 @@ sealed interface FlashUiEvent {
     data class Completed(
         val showReboot: Boolean,
         val code: Int,
-        val moduleNeedsMount: Boolean = false,
-    ) : FlashUiEvent
+        val moduleNeedsMount: Boolean = false) : FlashUiEvent
 }
 
 class FlashViewModel(
     private val reboot: RebootUseCase,
     private val isSoftRebootPreferred: IsSoftRebootPreferredUseCase,
     private val executeFlashOperation: ExecuteFlashOperationUseCase? = null,
-    private val checkFlashModuleMount: CheckFlashModuleMountUseCase? = null,
-) : ViewModel() {
+    private val checkFlashModuleMount: CheckFlashModuleMountUseCase? = null) : ViewModel() {
     private val mutableState = MutableStateFlow(FlashUiState())
     val state: StateFlow<FlashUiState> = mutableState.asStateFlow()
 
@@ -92,8 +86,7 @@ class FlashViewModel(
                             flashingStatus = FlashingStatus.FLASHING,
                             output = "",
                             showReboot = false,
-                            exitCode = null,
-                        )
+                            exitCode = null)
                     }
                     useCase(action.operation).collect { update ->
                         when (update) {
@@ -127,16 +120,13 @@ class FlashViewModel(
                                             FlashingStatus.FAILED
                                         },
                                         showReboot = update.showReboot,
-                                        exitCode = update.code,
-                                    )
+                                        exitCode = update.code)
                                 }
                                 mutableEvents.emit(
                                     FlashUiEvent.Completed(
                                         update.showReboot,
                                         update.code,
-                                        moduleNeedsMount,
-                                    ),
-                                )
+                                        moduleNeedsMount))
                             }
                         }
                     }
@@ -152,9 +142,7 @@ class FlashViewModel(
                     flashingStatus = FlashingStatus.FLASHING,
                     moduleInstallStatus = ModuleInstallStatus(
                         totalModules = action.totalModules,
-                        currentModule = if (action.totalModules > 0) 1 else 0,
-                    ),
-                )
+                        currentModule = if (action.totalModules > 0) 1 else 0))
             }
 
             is FlashUiAction.UpdateModule -> mutableState.update { state ->
@@ -167,9 +155,7 @@ class FlashViewModel(
                         failedModules = action.failedModule?.let(current.failedModules::plus)
                             ?: current.failedModules,
                         verifiedModules = action.verifiedModule?.let(current.verifiedModules::plus)
-                            ?: current.verifiedModules,
-                    ),
-                )
+                            ?: current.verifiedModules))
             }
 
             is FlashUiAction.Reboot -> viewModelScope.launch {

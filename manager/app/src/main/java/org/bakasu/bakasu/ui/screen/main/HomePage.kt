@@ -129,8 +129,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun HomePage(
-    bottomPadding: Dp,
-) {
+    bottomPadding: Dp) {
     val context = LocalContext.current
     val viewModel = koinViewModel<HomeViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -164,8 +163,7 @@ fun HomePage(
             TopBar(
                 uiState = uiState,
                 onReboot = { viewModel.dispatch(HomeUiAction.Reboot(it)) },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
@@ -173,10 +171,8 @@ fun HomePage(
         snackbarHost = {
             SwipeableSnackbarHost(
                 modifier = Modifier.padding(bottom = bottomPadding),
-                hostState = LocalSnackbarHost.current,
-            )
-        },
-    ) { innerPadding ->
+                hostState = LocalSnackbarHost.current)
+        }) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -186,10 +182,8 @@ fun HomePage(
                 .padding(
                     top = innerPadding.calculateTopPadding() + 2.dp,
                     start = 16.dp,
-                    end = 16.dp,
-                ),
-            verticalArrangement = Arrangement.spacedBy(0.dp),
-        ) {
+                    end = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(0.dp)) {
             // 状态卡片
             if (uiState.isCoreDataLoaded) {
                 if (uiState.systemStatus.isManager && !uiState.systemStatus.isFullFeatured) {
@@ -205,14 +199,12 @@ fun HomePage(
                                     imageVector = Icons.TwoTone.Error,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.size(18.dp),
-                                )
+                                    modifier = Modifier.size(18.dp))
                             },
                             onClick = {
                                 if (uiState.systemStatus.isLateLoadMode) return@WarningCard
                                 navigator.push(Route.Install(preselectedKernelUri = null))
-                            },
-                        )
+                            })
                     } else {
                         WarningCard(
                             message = if (uiState.systemStatus.lkmMode == true) {
@@ -225,14 +217,12 @@ fun HomePage(
                                     imageVector = Icons.TwoTone.Error,
                                     contentDescription = null,
                                     tint = MaterialTheme.colorScheme.onErrorContainer,
-                                    modifier = Modifier.size(18.dp),
-                                )
+                                    modifier = Modifier.size(18.dp))
                             },
                             onClick = {
                                 if (uiState.systemStatus.isLateLoadMode) return@WarningCard
                                 navigator.push(Route.Install(preselectedKernelUri = null))
-                            },
-                        )
+                            })
                     }
                     Spacer(modifier = Modifier.height(10.dp))
                 }
@@ -246,10 +236,8 @@ fun HomePage(
                                 imageVector = Icons.TwoTone.Error,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                    )
+                                modifier = Modifier.size(18.dp))
+                        })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
@@ -257,51 +245,42 @@ fun HomePage(
                     WarningCard(
                         message = stringResource(
                             R.string.unofficial_version_notice,
-                            stringResource(R.string.app_name),
-                        ),
+                            stringResource(R.string.app_name)),
                         icon = {
                             Icon(
                                 imageVector = Icons.TwoTone.Error,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                    )
+                                modifier = Modifier.size(18.dp))
+                        })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 if (BuildConfig.IS_PR_BUILD || uiState.systemStatus.isPrBuild) {
                     WarningCard(
                         message = stringResource(
-                            id = R.string.home_pr_build_warning,
-                        ),
+                            id = R.string.home_pr_build_warning),
                         icon = {
                             Icon(
                                 imageVector = Icons.TwoTone.Error,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                    )
+                                modifier = Modifier.size(18.dp))
+                        })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
                 if (uiState.systemStatus.kernelPatchImplementation == KernelPatchImplementation.OFFICIAL) {
                     WarningCard(
                         message = stringResource(
-                            R.string.conflict_with_apatch,
-                        ),
+                            R.string.conflict_with_apatch),
                         icon = {
                             Icon(
                                 imageVector = Icons.TwoTone.Error,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                    )
+                                modifier = Modifier.size(18.dp))
+                        })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
@@ -313,10 +292,8 @@ fun HomePage(
                                 imageVector = Icons.TwoTone.Error,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onErrorContainer,
-                                modifier = Modifier.size(18.dp),
-                            )
-                        },
-                    )
+                                modifier = Modifier.size(18.dp))
+                        })
                     Spacer(modifier = Modifier.height(10.dp))
                 }
 
@@ -338,12 +315,10 @@ fun HomePage(
                                 Toast.makeText(
                                     context,
                                     R.string.jailbreak_timeout,
-                                    Toast.LENGTH_LONG,
-                                ).show()
+                                    Toast.LENGTH_LONG).show()
                             }
                         }
-                    },
-                )
+                    })
             }
             Spacer(modifier = Modifier.height(10.dp))
             ManagerUpdateCard(uiState.stableManagerUpdate)
@@ -355,10 +330,8 @@ fun HomePage(
                         Icon(
                             imageVector = Icons.TwoTone.Error,
                             contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
-                    },
-                )
+                            modifier = Modifier.size(18.dp))
+                    })
                 Spacer(modifier = Modifier.height(10.dp))
             }
 
@@ -367,8 +340,7 @@ fun HomePage(
                     systemStatus = uiState.systemStatus,
                     systemInfo = uiState.systemInfo,
                     isSimpleMode = uiState.isSimpleMode,
-                    showHomeCardIcons = uiState.showHomeCardIcons,
-                )
+                    showHomeCardIcons = uiState.showHomeCardIcons)
             }
 
             // 链接卡片
@@ -395,8 +367,7 @@ private fun ManagerUpdateCard(update: ManagerUpdateInfo?) {
     AnimatedVisibility(
         visibleState = visibilityState,
         enter = fadeIn() + expandVertically(),
-        exit = fadeOut() + shrinkVertically(),
-    ) {
+        exit = fadeOut() + shrinkVertically()) {
         displayedUpdate?.let { updateInfo ->
             ManagerUpdateCardContent(updateInfo)
         }
@@ -413,8 +384,7 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
             R.string.manager_update_stable
         } else {
             R.string.manager_update_beta
-        },
-    )
+        })
     val message = if (updateInfo.channel == ManagerUpdateChannel.STABLE) {
         stringResource(R.string.new_version_available, updateInfo.versionCode)
     } else {
@@ -425,8 +395,7 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
         R.string.manager_update_details,
         updateInfo.versionName,
         updateInfo.versionCode,
-        updateInfo.abi,
-    )
+        updateInfo.abi)
     val dialogContent = if (updateInfo.changelog.isBlank()) {
         details
     } else {
@@ -438,10 +407,8 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
                 context,
                 permissionRequestInterface,
                 updateInfo,
-                enqueueManagerUpdate,
-            )
-        },
-    )
+                enqueueManagerUpdate)
+        })
 
     WarningCard(
         message = message,
@@ -450,18 +417,15 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
             Icon(
                 imageVector = Icons.TwoTone.Info,
                 contentDescription = null,
-                modifier = Modifier.size(18.dp),
-            )
+                modifier = Modifier.size(18.dp))
         },
         onClick = {
             updateDialog.showConfirm(
                 title = channelTitle,
                 content = dialogContent,
                 markdown = updateInfo.changelog.isNotBlank(),
-                confirm = updateText,
-            )
-        },
-    )
+                confirm = updateText)
+        })
 
     Spacer(modifier = Modifier.height(10.dp))
 }
@@ -470,14 +434,12 @@ private fun ManagerUpdateCardContent(updateInfo: ManagerUpdateInfo) {
 @Composable
 fun RebootDropdownItems(
     items: Map<Int, String>,
-    onReboot: (String) -> Unit,
-) {
+    onReboot: (String) -> Unit) {
     items.onEachIndexed { index, (id, reason) ->
         DropdownMenuItem(
             shape = MenuDefaults.itemShape(index, items.size).shape,
             text = { Text(stringResource(id)) },
-            onClick = { onReboot(reason) },
-        )
+            onClick = { onReboot(reason) })
     }
 }
 
@@ -486,8 +448,7 @@ fun RebootDropdownItems(
 private fun TopBar(
     uiState: HomeUiState,
     onReboot: (String) -> Unit,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
+    scrollBehavior: TopAppBarScrollBehavior? = null) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
@@ -499,8 +460,7 @@ private fun TopBar(
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = if (themeConfig.isEnableBlur) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
-            scrolledContainerColor = if (themeConfig.isEnableBlur) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha),
-        ),
+            scrolledContainerColor = if (themeConfig.isEnableBlur) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)),
         actions = {
             if (uiState.isCoreDataLoaded) {
                 // SuSFS 配置按钮
@@ -520,8 +480,7 @@ private fun TopBar(
                                     val methods = mapOf(
                                         R.string.reboot to "", R.string.reboot_soft to "soft_reboot",
                                         R.string.reboot_recovery to "recovery", R.string.reboot_bootloader to "bootloader",
-                                        R.string.reboot_download to "download", R.string.reboot_edl to "edl",
-                                    )
+                                        R.string.reboot_download to "download", R.string.reboot_edl to "edl")
                                     RebootDropdownItems(methods, onReboot)
                                 }
                             }
@@ -530,17 +489,14 @@ private fun TopBar(
                 }
             }
         },
-        ,
-        scrollBehavior = scrollBehavior,
-    )
+        scrollBehavior = scrollBehavior)
 }
 
 @Composable
 private fun StatusCard(
     uiState: HomeUiState,
     onClickInstall: () -> Unit = {},
-    onClickJailbreak: () -> Unit = {},
-) {
+    onClickJailbreak: () -> Unit = {}) {
     val systemStatus = uiState.systemStatus
     val onClick = { _: Offset ->
         if (systemStatus.isRootAvailable || systemStatus.kernelVersion.isGKI()) {
@@ -567,8 +523,7 @@ private fun StatusCard(
                 description = stringResource(
                     R.string.home_short_info,
                     uiState.systemInfo.superuserCount,
-                    uiState.systemInfo.moduleCount,
-                ),
+                    uiState.systemInfo.moduleCount),
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 foreContent = {
                     Spacer(Modifier.width(8.dp))
@@ -576,15 +531,13 @@ private fun StatusCard(
                     // 工作模式标签
                     LabelText(
                         label = workingModeSurfaceText,
-                        containerColor = MaterialTheme.colorScheme.primary,
-                    )
+                        containerColor = MaterialTheme.colorScheme.primary)
 
                     if (systemStatus.isLateLoadMode) {
                         Spacer(Modifier.width(6.dp))
                         LabelText(
                             label = stringResource(id = R.string.jailbreak_mode),
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        )
+                            containerColor = MaterialTheme.colorScheme.primary)
                     }
 
                     // 架构标签
@@ -592,12 +545,10 @@ private fun StatusCard(
                         Spacer(Modifier.width(6.dp))
                         LabelText(
                             label = Os.uname().machine,
-                            containerColor = MaterialTheme.colorScheme.primary,
-                        )
+                            containerColor = MaterialTheme.colorScheme.primary)
                     }
                 },
-                onClick = onClick,
-            )
+                onClick = onClick)
         }
 
         systemStatus.kernelVersion.isGKI() -> {
@@ -615,17 +566,13 @@ private fun StatusCard(
                             onClick = onClickJailbreak,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error,
-                                contentColor = MaterialTheme.colorScheme.onError,
-                            ),
-
-                        ) {
+                                contentColor = MaterialTheme.colorScheme.onError)) {
                             Text(stringResource(R.string.home_jailbreak))
                         }
                     }
                 } else {
                     null
-                },
-            )
+                })
         }
 
         else -> {
@@ -635,24 +582,21 @@ private fun StatusCard(
                 containerColor = MaterialTheme.colorScheme.errorContainer,
                 isError = true,
                 title = stringResource(R.string.home_unsupported),
-                description = stringResource(R.string.home_unsupported_reason),
-            )
+                description = stringResource(R.string.home_unsupported_reason))
         }
     }
 }
 
 @Composable
 fun LearnMoreCard(
-    showIcon: Boolean,
-) {
+    showIcon: Boolean) {
     val uriHandler = LocalUriHandler.current
     val url = stringResource(R.string.home_learn_kernelsu_url)
 
     SegmentedColumn(
         modifier = Modifier.fillMaxWidth(),
         title = stringResource(R.string.learn_more),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-    ) {
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)) {
         item {
             SettingsBaseWidget(
                 icon = Icons.AutoMirrored.TwoTone.MenuBook.takeIf { showIcon },
@@ -661,22 +605,19 @@ fun LearnMoreCard(
                 description = stringResource(R.string.home_click_to_learn_kernelsu),
                 onClick = {
                     uriHandler.openUri(url)
-                },
-            )
+                })
         }
     }
 }
 
 @Composable
 fun DonateCard(
-    showIcon: Boolean,
-) {
+    showIcon: Boolean) {
     val uriHandler = LocalUriHandler.current
     SegmentedColumn(
         modifier = Modifier.fillMaxWidth(),
         title = stringResource(R.string.home_support_title),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-    ) {
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)) {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.VolunteerActivism.takeIf { showIcon },
@@ -685,8 +626,7 @@ fun DonateCard(
                 description = stringResource(R.string.home_support_content),
                 onClick = {
                     uriHandler.openUri("https://patreon.com/weishu")
-                },
-            )
+                })
         }
     }
 }
@@ -696,22 +636,19 @@ private fun InfoCard(
     systemStatus: KernelStatus,
     systemInfo: HomeSystemInfo,
     isSimpleMode: Boolean,
-    showHomeCardIcons: Boolean,
-) {
+    showHomeCardIcons: Boolean) {
     val managersList = systemInfo.managersList
 
     SegmentedColumn(
         title = stringResource(R.string.home_version_info),
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-    ) {
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)) {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Smartphone.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_device_model),
-                description = systemInfo.deviceModel,
-            )
+                description = systemInfo.deviceModel)
         }
 
         item {
@@ -719,30 +656,25 @@ private fun InfoCard(
                 icon = Icons.TwoTone.DeveloperBoard.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_kernel),
-                description = systemInfo.kernelRelease,
-            )
+                description = systemInfo.kernelRelease)
         }
 
         item(
-            visible = !isSimpleMode,
-        ) {
+            visible = !isSimpleMode) {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Android.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_android_version),
-                description = systemInfo.androidVersion,
-            )
+                description = systemInfo.androidVersion)
         }
 
         item(
-            visible = systemStatus.isManager,
-        ) {
+            visible = systemStatus.isManager) {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Memory.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_kernel_version),
-                description = systemStatus.ksuFullVersion.orEmpty(),
-            )
+                description = systemStatus.ksuFullVersion.orEmpty())
         }
 
         item {
@@ -750,34 +682,29 @@ private fun InfoCard(
                 icon = Icons.TwoTone.Tag.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_manager_version),
-                description = "${systemInfo.managerVersion.first} (${systemInfo.managerVersion.second}/${systemInfo.managerVersion.third})",
-            )
+                description = "${systemInfo.managerVersion.first} (${systemInfo.managerVersion.second}/${systemInfo.managerVersion.third})")
         }
 
         item(
-            visible = !isSimpleMode && systemInfo.susfsEnabled && systemInfo.susfsVersion.isNotEmpty(),
-        ) {
+            visible = !isSimpleMode && systemInfo.susfsEnabled && systemInfo.susfsVersion.isNotEmpty()) {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Settings.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_susfs_version),
-                description = systemInfo.susfsVersion,
-            )
+                description = systemInfo.susfsVersion)
         }
     }
 
     SegmentedColumn(
         title = stringResource(R.string.home_status_info),
         modifier = Modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp),
-    ) {
+        contentPadding = PaddingValues(horizontal = 0.dp, vertical = 4.dp)) {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Security.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_selinux_status),
-                description = systemInfo.selinuxStatus,
-            )
+                description = systemInfo.selinuxStatus)
         }
 
         item {
@@ -793,13 +720,11 @@ private fun InfoCard(
                 icon = Icons.TwoTone.FilterList.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_seccomp_status),
-                description = seccompDisplay,
-            )
+                description = seccompDisplay)
         }
 
         item(
-            visible = !isSimpleMode && managersList != null,
-        ) {
+            visible = !isSimpleMode && managersList != null) {
             val signatureMap =
                 managersList?.managers.orEmpty().groupBy { it.signatureIndex }
             val managersText = buildString {
@@ -816,14 +741,12 @@ private fun InfoCard(
                                 "(${
                                     stringResource(
                                         R.string.signature_index,
-                                        signatureIndex,
-                                    )
+                                        signatureIndex)
                                 })"
                             } else {
                                 "(${stringResource(R.string.unknown_signature)})"
                             }
-                        },
-                    )
+                        })
                     append(" | ")
                 }
             }.trimEnd(' ', '|')
@@ -832,41 +755,34 @@ private fun InfoCard(
                 icon = Icons.TwoTone.Group.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.multi_manager_list),
-                description = managersText.ifEmpty { stringResource(R.string.no_active_manager) },
-            )
+                description = managersText.ifEmpty { stringResource(R.string.no_active_manager) })
         }
 
         item(
-            visible = !isSimpleMode && systemStatus.isFullFeatured,
-        ) {
+            visible = !isSimpleMode && systemStatus.isFullFeatured) {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Tune.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_hook_type),
-                description = systemStatus.hookType,
-            )
+                description = systemStatus.hookType)
         }
 
         item(
-            visible = !isSimpleMode && systemInfo.zygiskImplement.isNotEmpty() && systemInfo.zygiskImplement != "None",
-        ) {
+            visible = !isSimpleMode && systemInfo.zygiskImplement.isNotEmpty() && systemInfo.zygiskImplement != "None") {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Extension.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_zygisk_implement),
-                description = systemInfo.zygiskImplement,
-            )
+                description = systemInfo.zygiskImplement)
         }
 
         item(
-            visible = !isSimpleMode && systemInfo.metaModuleImplement.isNotEmpty() && systemInfo.metaModuleImplement != "None",
-        ) {
+            visible = !isSimpleMode && systemInfo.metaModuleImplement.isNotEmpty() && systemInfo.metaModuleImplement != "None") {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Extension.takeIf { showHomeCardIcons },
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_meta_module_implement),
-                description = systemInfo.metaModuleImplement,
-            )
+                description = systemInfo.metaModuleImplement)
         }
     }
 }

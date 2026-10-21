@@ -65,8 +65,7 @@ fun SettingsChooseWidget(
     range: IntRange? = null,
     selectedIndex: Int,
     maxHeight: Dp? = 400.dp,
-    onSelectedIndexChange: (Int) -> Unit,
-) {
+    onSelectedIndexChange: (Int) -> Unit) {
     val alpha = if (enabled) 1f else 0.38f
     val displayItems = remember(items, range) {
         range?.map { value -> "$value/${range.last}" } ?: items
@@ -113,18 +112,15 @@ fun SettingsChooseWidget(
                     fontSize = MaterialTheme.typography.bodyMediumEmphasized.fontSize,
                     fontFamily = MaterialTheme.typography.bodySmallEmphasized.fontFamily,
                     lineHeight = MaterialTheme.typography.bodyMediumEmphasized.lineHeight,
-                    fontWeight = MaterialTheme.typography.bodyMediumEmphasized.fontWeight,
-                )
+                    fontWeight = MaterialTheme.typography.bodyMediumEmphasized.fontWeight)
             }
             descriptionColumnContent?.invoke(this)
-        },
-    ) {}
+        }) {}
 
     if (showDialog && (itemsNotEmpty || emptyDialogContent != null)) {
         Dialog(
             onDismissRequest = { dismiss() },
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
+            properties = DialogProperties(usePlatformDefaultWidth = false)) {
             SettingsChooseDialogFrame(
                 title = title,
                 maxHeight = maxHeight,
@@ -133,8 +129,7 @@ fun SettingsChooseWidget(
                 onConfirm = {
                     onSelectedIndexChange(currentIndex)
                     dismiss(resetSelection = false)
-                },
-            ) {
+                }) {
                 if (emptyDialogContent != null) {
                     item {
                         emptyDialogContent()
@@ -153,10 +148,8 @@ fun SettingsChooseWidget(
                             leadingContent = {
                                 RadioButton(
                                     selected = currentIndex == index,
-                                    onClick = null,
-                                )
-                            },
-                        ) {
+                                    onClick = null)
+                            }) {
                             afterContent(index)
                         }
                     }
@@ -176,16 +169,14 @@ fun SettingsChooseDialog(
     selectedIndex: Int,
     maxHeight: Dp? = 400.dp,
     onDismiss: () -> Unit,
-    onSelectedIndexChange: (Int) -> Unit,
-) {
+    onSelectedIndexChange: (Int) -> Unit) {
     if (!show || items.isEmpty()) return
 
     var currentIndex by remember(show, selectedIndex) { mutableIntStateOf(selectedIndex) }
 
     Dialog(
         onDismissRequest = onDismiss,
-        properties = DialogProperties(usePlatformDefaultWidth = false),
-    ) {
+        properties = DialogProperties(usePlatformDefaultWidth = false)) {
         SettingsChooseDialogFrame(
             title = title,
             maxHeight = maxHeight,
@@ -193,8 +184,7 @@ fun SettingsChooseDialog(
             onConfirm = {
                 onSelectedIndexChange(currentIndex)
                 onDismiss()
-            },
-        ) {
+            }) {
             lazySegmentColumn(items, noHorizontalPadding = true) { index, item ->
                 SettingsBaseWidget(
                     title = item,
@@ -208,10 +198,8 @@ fun SettingsChooseDialog(
                     leadingContent = {
                         RadioButton(
                             selected = currentIndex == index,
-                            onClick = null,
-                        )
-                    },
-                ) {
+                            onClick = null)
+                    }) {
                     afterContent(index)
                 }
             }
@@ -239,8 +227,7 @@ fun SettingsChooseWidget(
     selectedIndices: Set<Int>,
     maxSelected: Int = items.size,
     maxHeight: Dp? = 400.dp,
-    onSelectedIndicesChange: (Set<Int>) -> Unit,
-) {
+    onSelectedIndicesChange: (Set<Int>) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
     val currentSelection = remember(selectedIndices, showDialog) {
         selectedIndices.sorted().toMutableStateList()
@@ -271,14 +258,12 @@ fun SettingsChooseWidget(
         clickHaptic = hapticFeedbackType,
         leadingContent = leadingContent,
         foreContent = foreContent,
-        descriptionColumnContent = descriptionColumnContent,
-    ) {}
+        descriptionColumnContent = descriptionColumnContent) {}
 
     if (showDialog && itemsNotEmpty) {
         Dialog(
             onDismissRequest = { dismiss() },
-            properties = DialogProperties(usePlatformDefaultWidth = false),
-        ) {
+            properties = DialogProperties(usePlatformDefaultWidth = false)) {
             SettingsChooseDialogFrame(
                 title = title,
                 maxHeight = maxHeight,
@@ -289,25 +274,20 @@ fun SettingsChooseWidget(
                                 MaterialTheme.typography.headlineSmall.copy(
                                     letterSpacing = 0.5.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                ).toSpanStyle(),
-                            ) {
+                                    color = MaterialTheme.colorScheme.primary).toSpanStyle()) {
                                 append(currentSelection.size.toString())
                             }
                             append("/")
                             append(maxSelected.coerceAtLeast(0).toString())
                         },
                         style = MaterialTheme.typography.labelLarge.copy(
-                            letterSpacing = 0.5.sp,
-                        ),
-                    )
+                            letterSpacing = 0.5.sp))
                 },
                 onDismiss = { dismiss() },
                 onConfirm = {
                     onSelectedIndicesChange(currentSelection.toSet())
                     dismiss(resetSelection = false)
-                },
-            ) {
+                }) {
                 lazySegmentColumn(items, noHorizontalPadding = true) { index, item ->
                     val isSelected = index in currentSelection
 
@@ -328,10 +308,8 @@ fun SettingsChooseWidget(
                         leadingContent = {
                             Checkbox(
                                 checked = isSelected,
-                                onCheckedChange = null,
-                            )
-                        },
-                    ) {
+                                onCheckedChange = null)
+                        }) {
                         afterContent(index)
                     }
                 }
@@ -348,27 +326,22 @@ private fun SettingsChooseDialogFrame(
     footerStartContent: (@Composable () -> Unit)? = null,
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    content: LazyListScope.() -> Unit,
-) {
+    content: LazyListScope.() -> Unit) {
     Surface(
         modifier = Modifier
             .sizeIn(minWidth = 280.dp, maxWidth = 560.dp)
             .padding(horizontal = 32.dp),
         shape = MaterialTheme.shapes.extraLarge,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-    ) {
+        color = MaterialTheme.colorScheme.surfaceContainerHigh) {
         Column(
             modifier = Modifier
-                .padding(24.dp),
-        ) {
+                .padding(24.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-            ) {
+                horizontalArrangement = Arrangement.Center) {
                 Text(
                     text = title,
-                    style = MaterialTheme.typography.headlineSmall,
-                )
+                    style = MaterialTheme.typography.headlineSmall)
             }
 
             LazyColumn(
@@ -376,16 +349,14 @@ private fun SettingsChooseDialogFrame(
                     .fillMaxWidth()
                     .heightIn(max = maxHeight ?: 400.dp)
                     .padding(top = 16.dp),
-                content = content,
-            )
+                content = content)
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 12.dp),
                 horizontalArrangement = Arrangement.End,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 if (footerStartContent != null) {
                     Spacer(modifier = Modifier.padding(start = 12.dp))
                     Box(modifier = Modifier.padding(bottom = 5.dp)) {

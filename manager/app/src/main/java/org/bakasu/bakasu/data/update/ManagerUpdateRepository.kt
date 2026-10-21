@@ -12,8 +12,7 @@ import org.bakasu.bakasu.domain.model.ManagerUpdateInfo
 import org.json.JSONObject
 
 class ManagerUpdateRepository(
-    private val networkRequestRepository: NetworkRequestRepository,
-) {
+    private val networkRequestRepository: NetworkRequestRepository) {
     private companion object {
         const val UPDATE_CALL_TIMEOUT_SECONDS = 8L
         const val TAG = "ManagerUpdateRepository"
@@ -30,8 +29,7 @@ class ManagerUpdateRepository(
     }
 
     private val managerApkPattern = Regex(
-        "^HuiJuiSU_Next_(.+)_(\\d+)-(arm64-v8a|armeabi-v7a|x86_64|universal)-release\\.apk$",
-    )
+        "^HuiJuiSU_Next_(.+)_(\\d+)-(arm64-v8a|armeabi-v7a|x86_64|universal)-release\\.apk$")
     private val commitCountLinkPattern = Regex("""[?&]page=(\d+)>; rel="last"""")
 
     suspend fun checkStableUpdate(): ManagerUpdateInfo? = withContext(Dispatchers.IO) {
@@ -53,8 +51,7 @@ class ManagerUpdateRepository(
                 versionCode = parsed.versionCode,
                 abi = parsed.abi,
                 fileName = parsed.fileName,
-                source = ManagerApkSource.DirectApk(downloadUrl),
-            )
+                source = ManagerApkSource.DirectApk(downloadUrl))
         }
 
         return@withContext selectCandidate(candidates, supportedAbis)
@@ -66,8 +63,7 @@ class ManagerUpdateRepository(
         val currentVersionCode = BuildConfig.VERSION_CODE
         val workflowRuns = requestJson(
             "https://api.github.com/repos/$REPOSITORY/actions/workflows/$WORKFLOW_FILE/runs" +
-                "?branch=$BRANCH&status=success&per_page=1&event=push",
-        )?.optJSONArray("workflow_runs") ?: return@withContext null
+                "?branch=$BRANCH&status=success&per_page=1&event=push")?.optJSONArray("workflow_runs") ?: return@withContext null
         val run = workflowRuns.optJSONObject(0) ?: return@withContext null
         val runId = run.optLong("id", -1L)
         val headSha = run.optString("head_sha")
@@ -88,17 +84,14 @@ class ManagerUpdateRepository(
             source = ManagerApkSource.NightlyArtifact(
                 url = "https://nightly.link/$REPOSITORY/actions/runs/$runId/$RELEASE_ARTIFACT.zip",
                 preferredAbi = preferredAbi,
-                expectedVersionCode = versionCode,
-            ),
-            changelog = run.optJSONObject("head_commit")?.optString("message").orEmpty(),
-        )
+                expectedVersionCode = versionCode),
+            changelog = run.optJSONObject("head_commit")?.optString("message").orEmpty())
     }
 
     fun findNightlyApkEntry(
         entries: List<ZipEntryMetadata>,
         expectedVersionCode: Int,
-        preferredAbi: String,
-    ): ZipEntryMetadata? {
+        preferredAbi: String): ZipEntryMetadata? {
         val candidates = entries.mapNotNull { entry ->
             val parsed = parseApkName(entry.name.substringAfterLast('/')) ?: return@mapNotNull null
             if (parsed.versionCode == expectedVersionCode) entry to parsed else null
@@ -115,8 +108,7 @@ class ManagerUpdateRepository(
             url = url,
             headers = GITHUB_HEADERS,
             forceNetwork = true,
-            callTimeoutSeconds = UPDATE_CALL_TIMEOUT_SECONDS,
-        )
+            callTimeoutSeconds = UPDATE_CALL_TIMEOUT_SECONDS)
         .onFailure { Log.w(TAG, "GitHub update request failed", it) }
         .mapCatching { JSONObject(it) }
         .getOrNull()
@@ -127,8 +119,7 @@ class ManagerUpdateRepository(
             url = url,
             headers = GITHUB_HEADERS,
             forceNetwork = true,
-            callTimeoutSeconds = UPDATE_CALL_TIMEOUT_SECONDS,
-        ).getOrElse {
+            callTimeoutSeconds = UPDATE_CALL_TIMEOUT_SECONDS).getOrElse {
             Log.w(TAG, "GitHub commit history request failed", it)
             return null
         }
@@ -147,14 +138,12 @@ class ManagerUpdateRepository(
             versionName = match.groupValues[1],
             versionCode = versionCode,
             abi = match.groupValues[3],
-            fileName = fileName,
-        )
+            fileName = fileName)
     }
 
     private fun selectCandidate(
         candidates: List<ManagerApkCandidate>,
-        supportedAbis: List<String>,
-    ): ManagerApkCandidate? {
+        supportedAbis: List<String>): ManagerApkCandidate? {
         val latestVersionCode = candidates.maxOfOrNull { it.versionCode } ?: return null
         if (latestVersionCode <= BuildConfig.VERSION_CODE) return null
 
@@ -169,27 +158,23 @@ class ManagerUpdateRepository(
         val versionName: String,
         val versionCode: Int,
         val abi: String,
-        val fileName: String,
-    )
+        val fileName: String)
 
     private data class ManagerApkCandidate(
         val versionName: String,
         val versionCode: Int,
         val abi: String,
         val fileName: String,
-        val source: ManagerApkSource,
-    ) {
+        val source: ManagerApkSource) {
         fun toUpdateInfo(
             channel: ManagerUpdateChannel,
-            changelog: String = "",
-        ) = ManagerUpdateInfo(
+            changelog: String = "") = ManagerUpdateInfo(
             channel = channel,
             versionCode = versionCode,
             versionName = versionName,
             abi = abi,
             fileName = fileName,
             source = source,
-            changelog = changelog,
-        )
+            changelog = changelog)
     }
 }

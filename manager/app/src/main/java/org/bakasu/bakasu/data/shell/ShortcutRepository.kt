@@ -5,8 +5,7 @@ import com.topjohnwu.superuser.io.SuFileInputStream
 
 /** Keeps libsu access out of the Compose shortcut helper. */
 class ShortcutRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     fun openRootFile(path: String) = runCatching {
         val file = SuFile(path).apply { shell = ksuCliRepository.getRootShell(true) }
         SuFileInputStream.open(file)

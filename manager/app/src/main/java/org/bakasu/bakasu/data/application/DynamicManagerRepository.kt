@@ -19,8 +19,7 @@ import org.bakasu.bakasu.domain.model.DynamicManagerState
 class DynamicManagerRepository(
     private val kernelRepository: KernelRepository,
     private val installedPackageRepository: InstalledPackageRepository,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(DynamicManagerState())
     val state: StateFlow<DynamicManagerState> = mutableState.asStateFlow()
@@ -49,8 +48,7 @@ class DynamicManagerRepository(
                             isSelected = signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX,
                             managerSignatureIndex = signatureIndex,
                             isChangeable = signatureIndex == null ||
-                                signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX,
-                        )
+                                signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX)
                     }
                     .sortedWith(appComparator)
                 mutableState.value = DynamicManagerState(
@@ -59,8 +57,7 @@ class DynamicManagerRepository(
                     },
                     apps = apps,
                     isLoading = false,
-                    isRefreshing = false,
-                )
+                    isRefreshing = false)
             }.onFailure {
                 mutableState.update { current ->
                     current.copy(isLoading = false, isRefreshing = false)
@@ -96,11 +93,9 @@ class DynamicManagerRepository(
                                 isSelected = signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX,
                                 managerSignatureIndex = signatureIndex,
                                 isChangeable = signatureIndex == null ||
-                                    signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX,
-                            )
+                                    signatureIndex == DYNAMIC_MANAGER_SIGNATURE_INDEX)
                         }.sortedWith(appComparator),
-                        isSubmitting = false,
-                    )
+                        isSubmitting = false)
                 }
             }.onFailure {
                 mutableState.update { current -> current.copy(isSubmitting = false) }

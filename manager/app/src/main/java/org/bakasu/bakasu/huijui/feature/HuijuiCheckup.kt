@@ -51,8 +51,7 @@ data class CheckItem(
     val name: String,
     val status: Status,
     val value: String,
-    val suggestion: String = "",
-) {
+    val suggestion: String = "") {
     enum class Status { OK, WARN, FAIL }
 }
 
@@ -81,14 +80,12 @@ fun HuijuiCheckup(onDismiss: () -> Unit) {
             Column(
                 modifier = Modifier
                     .padding(20.dp)
-                    .verticalScroll(rememberScrollState()),
-            ) {
+                    .verticalScroll(rememberScrollState())) {
                 HuijuiDialogHeader(
                     icon = Icons.TwoTone.Favorite,
                     iconTint = MaterialTheme.colorScheme.error,
                     title = "一键体检",
-                    subtitle = "HuijuiSU · 系统健康检查",
-                )
+                    subtitle = "HuijuiSU · 系统健康检查")
                 Spacer(Modifier.height(16.dp))
 
                 if (loading) {
@@ -137,8 +134,7 @@ private fun CheckRow(item: CheckItem) {
                 Text(
                     item.suggestion,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -170,8 +166,7 @@ private fun runCheckup(context: Context): List<CheckItem> {
         "Bootloader",
         if (locked) CheckItem.Status.WARN else CheckItem.Status.OK,
         if (locked) "已锁定" else "已解锁 ($vbState)",
-        if (locked) "锁着刷不了，先解锁" else "",
-    )
+        if (locked) "锁着刷不了，先解锁" else "")
 
     val kernel = System.getProperty("os.version") ?: "unknown"
     out += CheckItem("内核", CheckItem.Status.OK, kernel.take(48))
@@ -198,8 +193,7 @@ private fun runCheckup(context: Context): List<CheckItem> {
         else -> CheckItem(
                     "SELinux",
                     CheckItem.Status.OK,
-                    context.getString(R.string.checkup_selinux_unknown),
-                )
+                    context.getString(R.string.checkup_selinux_unknown))
     }
 
     val stat = StatFs(Environment.getDataDirectory().path)

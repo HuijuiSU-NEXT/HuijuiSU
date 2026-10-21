@@ -19,8 +19,7 @@ internal typealias SuSFSRefreshRegistrar = (SuSFSRefreshCallback) -> (() -> Unit
 
 internal class SuSFSRefreshCoordinator(
     private val coroutineScope: CoroutineScope,
-    private val configHelper: SuSFSViewModel,
-) {
+    private val configHelper: SuSFSViewModel) {
     private val callbacks = mutableListOf<SuSFSRefreshCallback>()
     private val refreshMutex = Mutex()
     private var initialized = false
@@ -50,8 +49,7 @@ internal class SuSFSRefreshCoordinator(
 
     suspend fun refresh(
         forceRefresh: Boolean,
-        onConfigLoaded: (SuSFSConfig) -> Unit,
-    ) {
+        onConfigLoaded: (SuSFSConfig) -> Unit) {
         refreshMutex.withLock {
             val config = awaitSuSFSConfig(configHelper) { reply ->
                 if (forceRefresh) SuSFSUiAction.Refresh(reply) else SuSFSUiAction.Load(reply)
@@ -72,8 +70,7 @@ internal class SuSFSRefreshCoordinator(
 @Composable
 internal fun RegisterSuSFSRefresh(
     onRegisterRefresh: SuSFSRefreshRegistrar,
-    onRefresh: SuSFSRefreshCallback,
-) {
+    onRefresh: SuSFSRefreshCallback) {
     val currentOnRefresh by rememberUpdatedState(onRefresh)
 
     DisposableEffect(onRegisterRefresh) {

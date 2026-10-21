@@ -64,8 +64,7 @@ data class SegmentedItemData(
     val customTopPadding: Dp? = null,
     val forceFlatTop: Boolean = false,
     val forceFlatBottom: Boolean = false,
-    val content: @Composable (Shape) -> Unit,
-)
+    val content: @Composable (Shape) -> Unit)
 
 /**
  * A DSL scope used to define the items and their layout behaviors within a [SegmentedColumn].
@@ -85,8 +84,7 @@ class SegmentedColumnScope {
         topPadding: Dp? = null,
         forceFlatTop: Boolean = false,
         forceFlatBottom: Boolean = false,
-        content: @Composable (Shape) -> Unit,
-    ) {
+        content: @Composable (Shape) -> Unit) {
         val resolvedForceFlatTop = forceFlatTop || isInsideExpandableBody
         val resolvedForceFlatBottom = forceFlatBottom || isInsideExpandableBody
         val resolvedVisible = visible && parentVisibilityMask
@@ -98,9 +96,7 @@ class SegmentedColumnScope {
                 customTopPadding = topPadding,
                 forceFlatTop = resolvedForceFlatTop,
                 forceFlatBottom = resolvedForceFlatBottom,
-                content = content,
-            ),
-        )
+                content = content))
     }
 
     /**
@@ -112,8 +108,7 @@ class SegmentedColumnScope {
         expanded: Boolean,
         topPadding: Dp? = null,
         topContent: @Composable (Shape) -> Unit,
-        bottomContent: (SegmentedColumnScope.() -> Unit),
-    ) {
+        bottomContent: (SegmentedColumnScope.() -> Unit)) {
         val previousInsideBody = isInsideExpandableBody
         val previousVisibilityMask = parentVisibilityMask
 
@@ -121,8 +116,7 @@ class SegmentedColumnScope {
             visible = animatedVisibility,
             topPadding = topPadding,
             forceFlatBottom = expanded,
-            content = topContent,
-        )
+            content = topContent)
 
         isInsideExpandableBody = true
         parentVisibilityMask = previousVisibilityMask && animatedVisibility && expanded
@@ -151,10 +145,8 @@ fun SegmentedColumn(
     title: String = "",
     contentPadding: PaddingValues = PaddingValues(
         horizontal = PADDING_HORIZONTAL.dp,
-        vertical = PADDING_VERTICAL.dp,
-    ),
-    content: SegmentedColumnScope.() -> Unit,
-) {
+        vertical = PADDING_VERTICAL.dp),
+    content: SegmentedColumnScope.() -> Unit) {
     val themeConfig: ThemeConfig = koinInject()
     val scope = SegmentedColumnScope().apply(content)
     val allItems = scope.items
@@ -170,9 +162,7 @@ fun SegmentedColumn(
                 modifier = Modifier.padding(
                     start = PADDING_HORIZONTAL.dp,
                     top = PADDING_VERTICAL.dp,
-                    bottom = 8.dp,
-                ),
-            )
+                    bottom = 8.dp))
         }
 
         val floatSpring = spring<Float>(dampingRatio = bouncyDamping, stiffness = bouncyStiffness)
@@ -183,8 +173,7 @@ fun SegmentedColumn(
                 animateFloatAsState(
                     targetValue = if (item.visible) 1f else 0f,
                     animationSpec = floatSpring,
-                    label = "progress",
-                )
+                    label = "progress")
             }
         }
 
@@ -227,8 +216,7 @@ fun SegmentedColumn(
                             animateDpAsState(
                                 targetBottomRadius,
                                 dpSpring,
-                                label = "BottomRadius",
-                            ).value
+                                label = "BottomRadius").value
                         } else {
                             targetBottomRadius
                         }
@@ -237,8 +225,7 @@ fun SegmentedColumn(
                             topStart = max(0.dp, currentTopRadius),
                             topEnd = max(0.dp, currentTopRadius),
                             bottomStart = max(0.dp, currentBottomRadius),
-                            bottomEnd = max(0.dp, currentBottomRadius),
-                        )
+                            bottomEnd = max(0.dp, currentBottomRadius))
 
                         val targetTopPadding =
                             if (themeConfig.isEnableBlurExp) {
@@ -277,36 +264,28 @@ fun SegmentedColumn(
                                         override fun createOutline(
                                             size: Size,
                                             layoutDirection: LayoutDirection,
-                                            density: Density,
-                                        ) = Outline.Rectangle(
+                                            density: Density) = Outline.Rectangle(
                                             Rect(
                                                 0f,
                                                 0f,
                                                 size.width,
-                                                size.height * safeProgress,
-                                            ),
-                                        )
+                                                size.height * safeProgress))
                                     }
                                     alpha = (currentProgress * 1.5f).coerceIn(0f, 1f)
-                                },
-                        ) {
+                                }) {
                             CompositionLocalProvider(LocalSegmentedItemShape provides shape) {
                                 Column(
                                     modifier = Modifier.padding(
                                         top = max(
                                             currentTopPadding,
-                                            0.dp,
-                                        ),
-                                    ),
-                                ) {
+                                            0.dp))) {
                                     itemData.content(shape)
                                 }
                             }
                         }
                     }
                 }
-            },
-        ) { measurables, constraints ->
+            }) { measurables, constraints ->
             val placeables = measurables.map { it.measure(constraints) }
             var currentY = 0f
             val positions = mutableListOf<Int>()

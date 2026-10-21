@@ -18,8 +18,7 @@ import org.bakasu.bakasu.domain.usecase.GetCatalogModuleUseCase
 data class ModuleDetailUiState(
     val module: CatalogModule? = null,
     val loading: Boolean = true,
-    val error: ModuleCatalogFailure? = null,
-)
+    val error: ModuleCatalogFailure? = null)
 
 sealed interface ModuleDetailUiAction {
     data object Retry : ModuleDetailUiAction
@@ -31,8 +30,7 @@ sealed interface ModuleDetailUiEvent {
 
 class ModuleDetailViewModel(
     private val moduleId: String,
-    private val getModule: GetCatalogModuleUseCase,
-) : ViewModel() {
+    private val getModule: GetCatalogModuleUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(ModuleDetailUiState())
     private val mutableEvents = MutableSharedFlow<ModuleDetailUiEvent>(extraBufferCapacity = 1)
 
@@ -55,14 +53,12 @@ class ModuleDetailViewModel(
             when (val result = getModule(moduleId)) {
                 is ModuleCatalogResult.Success -> mutableState.value = ModuleDetailUiState(
                     module = result.value,
-                    loading = false,
-                )
+                    loading = false)
 
                 is ModuleCatalogResult.Failure -> {
                     mutableState.value = ModuleDetailUiState(
                         loading = false,
-                        error = result.reason,
-                    )
+                        error = result.reason)
                     mutableEvents.emit(ModuleDetailUiEvent.Error(result.reason))
                 }
             }

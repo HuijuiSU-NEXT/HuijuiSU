@@ -13,8 +13,7 @@ sealed interface ManagerApkSource {
     data class NightlyArtifact(
         override val url: String,
         val preferredAbi: String,
-        val expectedVersionCode: Int,
-    ) : ManagerApkSource
+        val expectedVersionCode: Int) : ManagerApkSource
 }
 
 data class ManagerUpdateInfo(
@@ -24,5 +23,4 @@ data class ManagerUpdateInfo(
     val abi: String,
     val fileName: String,
     val source: ManagerApkSource,
-    val changelog: String = "",
-)
+    val changelog: String = "")

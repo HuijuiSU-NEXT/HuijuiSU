@@ -26,8 +26,7 @@ import org.json.JSONObject
 class ProfileTemplateRepository(
     private val networkStatusRepository: NetworkStatusRepository,
     private val networkRequestRepository: NetworkRequestRepository,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private companion object {
         const val TEMPLATE_INDEX_URL = "https://kernelsu.org/templates/index.json"
         const val TEMPLATE_URL = "https://kernelsu.org/templates/%s"
@@ -58,10 +57,7 @@ class ProfileTemplateRepository(
                             compareBy(ProfileTemplate::local).reversed().then(
                                 compareBy(
                                     Collator.getInstance(Locale.getDefault()),
-                                    ProfileTemplate::id,
-                                ),
-                            ),
-                        )
+                                    ProfileTemplate::id)))
                 }
             }
         } finally {
@@ -85,12 +81,10 @@ class ProfileTemplateRepository(
         }
         if (!ksuCliRepository.setAppProfileTemplate(
                 template.id,
-                template.copy(local = true).toJson().toString(),
-            )
+                template.copy(local = true).toJson().toString())
         ) {
             return@withContext Result.failure(
-                ProfileTemplateException(ProfileTemplateFailure.Command("save failed")),
-            )
+                ProfileTemplateException(ProfileTemplateFailure.Command("save failed")))
         }
         refreshLocalCache()
         Result.success(Unit)
@@ -116,8 +110,7 @@ class ProfileTemplateRepository(
                 val parsed = value.toTemplate() ?: return@forEach
                 if (ksuCliRepository.setAppProfileTemplate(
                         parsed.id,
-                        parsed.copy(local = true).toJson().toString(),
-                    )
+                        parsed.copy(local = true).toJson().toString())
                 ) {
                     saved++
                 }
@@ -142,8 +135,7 @@ class ProfileTemplateRepository(
         mutableTemplates.value =
             ksuCliRepository.listAppProfileTemplates().mapNotNull(::readTemplate)
                 .sortedWith(
-                    compareBy(ProfileTemplate::local).reversed().thenBy(ProfileTemplate::id),
-                )
+                    compareBy(ProfileTemplate::local).reversed().thenBy(ProfileTemplate::id))
     }
 
     private suspend fun fetchRemoteTemplates(): Boolean = runCatching {
@@ -159,8 +151,7 @@ class ProfileTemplateRepository(
                 runCatching { JSONObject(body).toTemplate() }.getOrNull() ?: return@forEach
             if (ksuCliRepository.setAppProfileTemplate(
                     id,
-                    template.copy(local = false).toJson().toString(),
-                )
+                    template.copy(local = false).toJson().toString())
             ) {
                 fetchedAny = true
             }
@@ -189,8 +180,7 @@ class ProfileTemplateRepository(
             rules = optJSONArray("rules").strings(),
             flags = optJSONArray("flags")?.let {
                 enumOrdinals<RootProfileFlag>(it).map(RootProfileFlag::ordinal)
-            } ?: listOf(RootProfileFlag.NO_NEW_PRIVS.ordinal),
-        )
+            } ?: listOf(RootProfileFlag.NO_NEW_PRIVS.ordinal))
     }.getOrNull()
 
     private fun ProfileTemplate.toJson() = JSONObject().apply {
@@ -205,21 +195,18 @@ class ProfileTemplateRepository(
         if (groups.isNotEmpty()) {
             put(
                 "groups",
-                JSONArray(Groups.entries.filter { it.gid in groups }.map { it.name }),
-            )
+                JSONArray(Groups.entries.filter { it.gid in groups }.map { it.name }))
         }
         if (capabilities.isNotEmpty()) {
             put(
                 "capabilities",
-                JSONArray(Capabilities.entries.filter { it.cap in capabilities }.map { it.name }),
-            )
+                JSONArray(Capabilities.entries.filter { it.cap in capabilities }.map { it.name }))
         }
         if (context.isNotEmpty()) put("context", context)
         if (rules.isNotEmpty()) put("rules", JSONArray(rules))
         put(
             "flags",
-            JSONArray(RootProfileFlag.entries.filter { it.ordinal in flags }.map { it.name }),
-        )
+            JSONArray(RootProfileFlag.entries.filter { it.ordinal in flags }.map { it.name }))
     }
 
     private fun JSONObject.localeString(key: String): String {

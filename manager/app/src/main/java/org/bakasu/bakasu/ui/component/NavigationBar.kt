@@ -62,8 +62,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun NavigationBar(
     modifier: Modifier = Modifier,
     destinations: List<BottomBarDestination>,
-    isBottomBar: Boolean,
-) {
+    isBottomBar: Boolean) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val homeViewModel = koinViewModel<HomeViewModel>()
@@ -80,26 +79,21 @@ fun NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .windowInsetsPadding(
-                    WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal),
-                )
+                    WindowInsets.navigationBars.only(WindowInsetsSides.Horizontal))
                 .padding(
                     bottom = 12.dp + WindowInsets.navigationBars.asPaddingValues()
-                        .calculateBottomPadding(),
-                ),
-            contentAlignment = Alignment.Center,
-        ) {
+                        .calculateBottomPadding()),
+            contentAlignment = Alignment.Center) {
             FloatingBottomBar(
                 selectedIndex = pagerState.targetPage,
                 onSelected = { handlePageChange(it) },
                 tabsCount = destinations.size,
-                isBlurEnabled = LocalBlurState.current != null,
-            ) { activateTab ->
+                isBlurEnabled = LocalBlurState.current != null) { activateTab ->
                 destinations.forEachIndexed { index, destination ->
                     FloatingBottomBarItem(
                         selected = index == pagerState.targetPage,
                         onClick = { activateTab(index) },
-                        modifier = Modifier.defaultMinSize(minWidth = 76.dp),
-                    ) {
+                        modifier = Modifier.defaultMinSize(minWidth = 76.dp)) {
                         val contentColor = LocalContentColor.current
                         val count = when (destination) {
                             BottomBarDestination.SuperUser -> superuserCount
@@ -110,8 +104,7 @@ fun NavigationBar(
                             Icon(
                                 imageVector = destination.iconSelected,
                                 contentDescription = stringResource(destination.label),
-                                tint = contentColor,
-                            )
+                                tint = contentColor)
                         }
                         if (count > 0 && showNavigationBarBadge) {
                             BadgedBox(badge = { Badge { Text(count.toString()) } }) { icon() }
@@ -125,8 +118,7 @@ fun NavigationBar(
                             lineHeight = 14.sp,
                             maxLines = 1,
                             softWrap = false,
-                            overflow = TextOverflow.Visible,
-                        )
+                            overflow = TextOverflow.Visible)
                     }
                 }
             }
@@ -135,21 +127,18 @@ fun NavigationBar(
         FlexibleBottomAppBar(
             modifier = modifier
                 .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                )
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 .blurEffect(
                     compensateHorizontalOverscroll = true,
                     compensateVerticalOverscroll = true,
-                    useFixedSurfaceBoundsForOverscroll = true,
-                ),
+                    useFixedSurfaceBoundsForOverscroll = true),
             containerColor =
                 if (themeConfig.isEnableBlur) {
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
                 },
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        ) {
+            contentColor = MaterialTheme.colorScheme.onSurface) {
             destinations.forEachIndexed { index, destination ->
                 BottomBarNavigationItem(
                     isSelected = index == page,
@@ -159,21 +148,18 @@ fun NavigationBar(
                     },
                     superuserCount = superuserCount,
                     moduleCount = moduleCount,
-                    showNavigationBarBadge = showNavigationBarBadge,
-                )
+                    showNavigationBarBadge = showNavigationBarBadge)
             }
         }
     } else {
         WideNavigationRail(
             modifier = modifier
                 .windowInsetsPadding(
-                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                )
+                    WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))
                 .blurEffect(
                     compensateHorizontalOverscroll = true,
                     compensateVerticalOverscroll = false,
-                    useFixedSurfaceBoundsForOverscroll = true,
-                ),
+                    useFixedSurfaceBoundsForOverscroll = true),
             colors = WideNavigationRailColors(
                 containerColor =
                     if (themeConfig.isEnableBlur) {
@@ -184,9 +170,7 @@ fun NavigationBar(
                 contentColor = MaterialTheme.colorScheme.onSurface,
                 modalContainerColor = WideNavigationRailDefaults.colors().modalContainerColor,
                 modalScrimColor = WideNavigationRailDefaults.colors().modalScrimColor,
-                modalContentColor = WideNavigationRailDefaults.colors().modalContentColor,
-            ),
-        ) {
+                modalContentColor = WideNavigationRailDefaults.colors().modalContentColor)) {
             destinations.forEachIndexed { index, destination ->
                 NavigationRailItem(
                     isSelected = index == page,
@@ -196,8 +180,7 @@ fun NavigationBar(
                     },
                     superuserCount = superuserCount,
                     moduleCount = moduleCount,
-                    showNavigationBarBadge = showNavigationBarBadge,
-                )
+                    showNavigationBarBadge = showNavigationBarBadge)
             }
         }
     }
@@ -210,8 +193,7 @@ private fun NavigationRailItem(
     onClick: () -> Unit,
     superuserCount: Int,
     moduleCount: Int,
-    showNavigationBarBadge: Boolean,
-) {
+    showNavigationBarBadge: Boolean) {
     WideNavigationRailItem(
         railExpanded = false,
         selected = isSelected,
@@ -223,10 +205,8 @@ private fun NavigationRailItem(
                         dest = destination,
                         superUser = superuserCount,
                         module = moduleCount,
-                        show = showNavigationBarBadge,
-                    )
-                },
-            ) {
+                        show = showNavigationBarBadge)
+                }) {
                 if (isSelected) {
                     Icon(destination.iconSelected, stringResource(destination.label))
                 } else {
@@ -240,10 +220,8 @@ private fun NavigationRailItem(
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
                 softWrap = false,
-                overflow = TextOverflow.Visible,
-            )
-        },
-    )
+                overflow = TextOverflow.Visible)
+        })
 }
 
 @Composable
@@ -253,8 +231,7 @@ private fun RowScope.BottomBarNavigationItem(
     onClick: () -> Unit,
     superuserCount: Int,
     moduleCount: Int,
-    showNavigationBarBadge: Boolean,
-) {
+    showNavigationBarBadge: Boolean) {
     NavigationBarItem(
         selected = isSelected,
         onClick = onClick,
@@ -265,10 +242,8 @@ private fun RowScope.BottomBarNavigationItem(
                         dest = destination,
                         superUser = superuserCount,
                         module = moduleCount,
-                        show = showNavigationBarBadge,
-                    )
-                },
-            ) {
+                        show = showNavigationBarBadge)
+                }) {
                 if (isSelected) {
                     Icon(destination.iconSelected, stringResource(destination.label))
                 } else {
@@ -282,11 +257,9 @@ private fun RowScope.BottomBarNavigationItem(
                 style = MaterialTheme.typography.labelMedium,
                 maxLines = 1,
                 softWrap = false,
-                overflow = TextOverflow.Visible,
-            )
+                overflow = TextOverflow.Visible)
         },
-        alwaysShowLabel = false,
-    )
+        alwaysShowLabel = false)
 }
 
 @Composable
@@ -294,8 +267,7 @@ private fun DestinationBadge(
     dest: BottomBarDestination,
     superUser: Int,
     module: Int,
-    show: Boolean,
-) {
+    show: Boolean) {
     val count = when (dest) {
         BottomBarDestination.SuperUser -> superUser
         BottomBarDestination.Module -> module
@@ -305,11 +277,9 @@ private fun DestinationBadge(
     AnimatedVisibility(
         visible = count > 0 && show,
         enter = fadeIn(),
-        exit = fadeOut(),
-    ) {
+        exit = fadeOut()) {
         Badge(
-            containerColor = MaterialTheme.colorScheme.primary,
-        ) {
+            containerColor = MaterialTheme.colorScheme.primary) {
             Text(count.toString())
         }
     }

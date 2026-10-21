@@ -94,8 +94,7 @@ class DownloadService : Service() {
                 val preferredAbi = intent.getStringExtra(EXTRA_MANAGER_ABI)
                 val expectedVersionCode = intent.getIntExtra(
                     EXTRA_MANAGER_EXPECTED_VERSION_CODE,
-                    -1,
-                )
+                    -1)
                 val downloadId = intent.getIntExtra(EXTRA_DOWNLOAD_ID, -1)
                 if (downloadId == -1) return START_NOT_STICKY
                 if (source == SOURCE_NIGHTLY_ARTIFACT &&
@@ -111,8 +110,7 @@ class DownloadService : Service() {
                     fileName,
                     source,
                     preferredAbi,
-                    expectedVersionCode,
-                )
+                    expectedVersionCode)
             }
 
             ACTION_CANCEL -> {
@@ -145,8 +143,7 @@ class DownloadService : Service() {
         val job = serviceScope.launch {
             val target = resolveAvailableTarget(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                fileName,
-            )
+                fileName)
             try {
                 downloadUrlToTarget(id, url, target)
 
@@ -156,8 +153,7 @@ class DownloadService : Service() {
                 notificationManager.cancel(id)
                 notificationManager.notify(
                     COMPLETION_NOTIFICATION_ID_BASE + id,
-                    buildModuleCompletionNotification(id, target.name, uri),
-                )
+                    buildModuleCompletionNotification(id, target.name, uri))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -166,8 +162,7 @@ class DownloadService : Service() {
                 notificationManager.cancel(id)
                 notificationManager.notify(
                     COMPLETION_NOTIFICATION_ID_BASE + id,
-                    buildFailureNotification(target.name),
-                )
+                    buildFailureNotification(target.name))
             } finally {
                 activeJobs.remove(id)
                 lastNotifiedProgress.remove(id)
@@ -183,13 +178,11 @@ class DownloadService : Service() {
         fileName: String,
         source: String,
         preferredAbi: String?,
-        expectedVersionCode: Int,
-    ) {
+        expectedVersionCode: Int) {
         val job = serviceScope.launch {
             val target = resolveAvailableTarget(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                fileName,
-            )
+                fileName)
             try {
                 when (source) {
                     SOURCE_DIRECT_APK -> downloadUrlToTarget(id, url, target)
@@ -199,8 +192,7 @@ class DownloadService : Service() {
                         val entry = managerUpdateRepository.findNightlyApkEntry(
                             entries = archive.listEntries(url),
                             expectedVersionCode = expectedVersionCode,
-                            preferredAbi = preferredAbi ?: throw IOException(),
-                        ) ?: throw IOException()
+                            preferredAbi = preferredAbi ?: throw IOException()) ?: throw IOException()
                         archive.extractEntry(url, entry, target) { progress ->
                             reportProgress(id, target.name, progress)
                         }
@@ -215,8 +207,7 @@ class DownloadService : Service() {
                 notificationManager.cancel(id)
                 notificationManager.notify(
                     COMPLETION_NOTIFICATION_ID_BASE + id,
-                    buildApkCompletionNotification(id, target),
-                )
+                    buildApkCompletionNotification(id, target))
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
@@ -225,8 +216,7 @@ class DownloadService : Service() {
                 notificationManager.cancel(id)
                 notificationManager.notify(
                     COMPLETION_NOTIFICATION_ID_BASE + id,
-                    buildFailureNotification(target.name),
-                )
+                    buildFailureNotification(target.name))
             } finally {
                 activeJobs.remove(id)
                 lastNotifiedProgress.remove(id)
@@ -242,8 +232,7 @@ class DownloadService : Service() {
             startForeground(
                 downloadId,
                 notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC,
-            )
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
         } else {
             startForeground(downloadId, notification)
         }
@@ -268,8 +257,7 @@ class DownloadService : Service() {
                             reportProgress(
                                 id,
                                 target.name,
-                                ((copied * 100L) / total).toInt().coerceIn(0, 100),
-                            )
+                                ((copied * 100L) / total).toInt().coerceIn(0, 100))
                         }
                     }
                     output.flush()
@@ -289,8 +277,7 @@ class DownloadService : Service() {
 
     private fun resolveAvailableTarget(
         directory: File,
-        fileName: String,
-    ): File {
+        fileName: String): File {
         val dotIndex = fileName.lastIndexOf('.')
         val baseName = if (dotIndex > 0) fileName.substring(0, dotIndex) else fileName
         val extension = if (dotIndex > 0) fileName.substring(dotIndex) else ""
@@ -313,8 +300,7 @@ class DownloadService : Service() {
     private fun buildProgressNotification(
         id: Int,
         fileName: String,
-        progress: Int,
-    ) = NotificationCompat.Builder(this, CHANNEL_ID)
+        progress: Int) = NotificationCompat.Builder(this, CHANNEL_ID)
         .setContentTitle(getString(R.string.download_progress_title, fileName))
         .setContentText("$progress%")
         .setSmallIcon(android.R.drawable.stat_sys_download)
@@ -324,15 +310,13 @@ class DownloadService : Service() {
         .addAction(
             android.R.drawable.ic_menu_close_clear_cancel,
             getString(R.string.download_cancel),
-            createCancelPendingIntent(id),
-        )
+            createCancelPendingIntent(id))
         .build()
 
     private fun buildModuleCompletionNotification(
         id: Int,
         fileName: String,
-        uri: Uri,
-    ): android.app.Notification {
+        uri: Uri): android.app.Notification {
         val builder = NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.download_complete_title))
             .setContentText(getString(R.string.download_complete_content, fileName))
@@ -351,13 +335,11 @@ class DownloadService : Service() {
             this,
             id,
             installIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         builder.addAction(
             android.R.drawable.ic_menu_save,
             getString(R.string.download_install),
-            installPendingIntent,
-        )
+            installPendingIntent)
         builder.setContentIntent(installPendingIntent)
 
         // Add "Cancel" action button
@@ -370,26 +352,22 @@ class DownloadService : Service() {
             this,
             COMPLETION_NOTIFICATION_ID_BASE + id,
             dismissIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         builder.addAction(
             android.R.drawable.ic_menu_close_clear_cancel,
             getString(R.string.download_cancel),
-            dismissPendingIntent,
-        )
+            dismissPendingIntent)
 
         return builder.build()
     }
 
     private fun buildApkCompletionNotification(
         id: Int,
-        target: File,
-    ): android.app.Notification {
+        target: File): android.app.Notification {
         val installUri = FileProvider.getUriForFile(
             this,
             "${BuildConfig.APPLICATION_ID}.fileprovider",
-            target,
-        )
+            target)
         val installIntent = Intent(Intent.ACTION_VIEW).apply {
             setDataAndType(installUri, "application/vnd.android.package-archive")
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -398,8 +376,7 @@ class DownloadService : Service() {
             this,
             COMPLETION_NOTIFICATION_ID_BASE + id,
             installIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         val dismissIntent = Intent(this, DownloadService::class.java).apply {
             action = ACTION_DISMISS_DOWNLOAD
@@ -410,8 +387,7 @@ class DownloadService : Service() {
             this,
             (COMPLETION_NOTIFICATION_ID_BASE * 2) + id,
             dismissIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.download_complete_title))
@@ -422,13 +398,11 @@ class DownloadService : Service() {
             .addAction(
                 android.R.drawable.ic_menu_save,
                 getString(R.string.download_install),
-                installPendingIntent,
-            )
+                installPendingIntent)
             .addAction(
                 android.R.drawable.ic_menu_close_clear_cancel,
                 getString(R.string.download_cancel),
-                dismissPendingIntent,
-            )
+                dismissPendingIntent)
             .build()
     }
 
@@ -448,16 +422,14 @@ class DownloadService : Service() {
             this,
             downloadId,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
-        )
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
     }
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             CHANNEL_ID,
             getString(R.string.download_channel_name),
-            NotificationManager.IMPORTANCE_LOW,
-        )
+            NotificationManager.IMPORTANCE_LOW)
         notificationManager.createNotificationChannel(channel)
     }
 

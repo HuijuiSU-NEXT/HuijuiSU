@@ -47,8 +47,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SusMapTab(
     nestedScrollConnection: NestedScrollConnection,
     innerPadding: PaddingValues,
-    onRegisterRefresh: SuSFSRefreshRegistrar,
-) {
+    onRegisterRefresh: SuSFSRefreshRegistrar) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -85,8 +84,7 @@ fun SusMapTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection),
-    ) {
+            .nestedScroll(nestedScrollConnection)) {
         item {
             Spacer(Modifier.height(innerPadding.calculateTopPadding()))
         }
@@ -94,16 +92,13 @@ fun SusMapTab(
         item {
             SuSFSDescriptionCard(
                 title = stringResource(R.string.sus_maps_description_title),
-                description = stringResource(R.string.sus_maps_description_text),
-            ) {
+                description = stringResource(R.string.sus_maps_description_text)) {
                 Text(
                     text = stringResource(R.string.sus_maps_warning),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = stringResource(R.string.sus_maps_debug_info),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -113,13 +108,11 @@ fun SusMapTab(
             emptyTitle = noEntriesMsg,
             emptyDescription = noEntriesHint,
             entryKey = { it },
-            onAddEntry = { showManualAdd = true },
-        ) { path ->
+            onAddEntry = { showManualAdd = true }) { path ->
             SettingsJumpPageWidget(
                 iconPlaceholder = false,
                 title = path,
-                onClick = { detailItem = path },
-            )
+                onClick = { detailItem = path })
         }
 
         item {
@@ -184,13 +177,10 @@ fun SusMapTab(
                     enabled = !isLoading,
                     lineLimits = TextFieldLineLimits.MultiLine(
                         minHeightInLines = 4,
-                        maxHeightInLines = 8,
-                    ),
-                    renderBackgroundBlur = false,
-                )
+                        maxHeightInLines = 8),
+                    renderBackgroundBlur = false)
             }
-        },
-    )
+        })
 
     detailItem?.let { path ->
         EntryDetailDialog(
@@ -217,7 +207,6 @@ fun SusMapTab(
                     }
                     isLoading = false
                 }
-            },
-        )
+            })
     }
 }

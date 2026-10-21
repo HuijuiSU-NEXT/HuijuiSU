@@ -32,43 +32,36 @@ fun HuijuiDialogHeader(
     icon: ImageVector,
     iconTint: Color,
     title: String,
-    subtitle: String,
-) {
+    subtitle: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Surface(
             shape = RoundedCornerShape(14.dp),
             color = iconTint.copy(alpha = 0.18f),
-            modifier = Modifier.size(44.dp),
-        ) {
+            modifier = Modifier.size(44.dp)) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(
                     imageVector = icon,
                     contentDescription = null,
                     tint = iconTint,
-                    modifier = Modifier.size(24.dp),
-                )
+                    modifier = Modifier.size(24.dp))
             }
         }
         Spacer(Modifier.width(14.dp))
         Column(
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.weight(1f),
-        ) {
+            modifier = Modifier.weight(1f)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+                color = MaterialTheme.colorScheme.onSurface)
             Spacer(Modifier.height(2.dp))
             Text(
                 text = subtitle,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+                color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }
@@ -79,19 +72,16 @@ fun HuijuiDialogHeader(
 @Composable
 fun HuijuiDialogFooter(
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
+    content: @Composable () -> Unit) {
     Column(modifier = modifier.fillMaxWidth()) {
         Spacer(Modifier.height(8.dp))
         androidx.compose.material3.HorizontalDivider(
-            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
-        )
+            color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
         Spacer(Modifier.height(8.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             content()
         }
     }

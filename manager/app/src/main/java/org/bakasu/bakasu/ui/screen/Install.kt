@@ -94,8 +94,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun InstallScreen(
-    preselectedKernelUri: String? = null,
-) {
+    preselectedKernelUri: String? = null) {
     val viewModel = koinViewModel<InstallViewModel>()
     val installState by viewModel.state.collectAsStateWithLifecycle()
     val environment = installState.environment
@@ -140,32 +139,26 @@ fun InstallScreen(
                 onBack = { navigator.pop() },
                 scrollBehavior = scrollBehavior,
                 selectedTab = pagerState.currentPage,
-                onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } },
-            )
+                onTabSelected = { scope.launch { pagerState.animateScrollToPage(it) } })
         },
         containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) { innerPadding ->
+        contentColor = MaterialTheme.colorScheme.onSurface) { innerPadding ->
         HorizontalPagerWithInteraction(
             state = pagerState,
             modifier = Modifier
                 .fillMaxSize()
-                .blurSource(),
-        ) { page ->
+                .blurSource()) { page ->
             CompositionLocalProvider(
                 LocalBlurState provides rememberMaterial3BlurBackdrop(
                     enableBlur = themeConfig.isEnableBlur,
                     pagerState = pagerState,
-                    pagerPage = page,
-                ),
-            ) {
+                    pagerPage = page)) {
                 if (installState.loading) {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
                             .nestedScroll(scrollBehavior.nestedScrollConnection)
-                            .blurSource(),
-                    ) {
+                            .blurSource()) {
                         item {
                             Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
                         }
@@ -174,8 +167,7 @@ fun InstallScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(240.dp),
-                                contentAlignment = Alignment.Center,
-                            ) {
+                                contentAlignment = Alignment.Center) {
                                 LoadingIndicator()
                             }
                         }
@@ -200,8 +192,7 @@ fun InstallScreen(
                             activeSlotSuffix = environment.activeSlotSuffix,
                             inactiveSlotSuffix = environment.inactiveSlotSuffix,
                             availablePartitions = environment.availablePartitions,
-                            defaultPartition = environment.defaultPartition,
-                        )
+                            defaultPartition = environment.defaultPartition)
 
                         1 -> Anykernel3InstallPage(
                             modifier = Modifier
@@ -213,8 +204,7 @@ fun InstallScreen(
                             rootAvailable = environment.rootAvailable,
                             isAbDevice = environment.isAbDevice,
                             activeSlotSuffix = environment.activeSlotSuffix,
-                            preselectedKernelUri = preselectedKernelUri,
-                        )
+                            preselectedKernelUri = preselectedKernelUri)
                     }
                 }
             }
@@ -235,14 +225,12 @@ private fun LKMInstallPage(
     activeSlotSuffix: String,
     inactiveSlotSuffix: String,
     availablePartitions: List<String>,
-    defaultPartition: String,
-) {
+    defaultPartition: String) {
     val context = LocalContext.current
     val navigator = LocalNavigator.current
     val selectFileTip = stringResource(
         id = R.string.select_file_tip,
-        defaultPartition,
-    )
+        defaultPartition)
     val installOnlySupportKoFile = stringResource(R.string.install_only_support_ko_file)
     val dialogTitle = stringResource(id = android.R.string.dialog_alert_title)
     val dialogContent = stringResource(id = R.string.install_inactive_slot_warning)
@@ -271,8 +259,7 @@ private fun LKMInstallPage(
 
     val advRotation by animateFloatAsState(
         targetValue = if (advancedOptionsShown) 180f else 0f,
-        label = "AdvRotation",
-    )
+        label = "AdvRotation")
 
     val lkmMethods = remember(rootAvailable, isAbDevice, isGKI, selectFileTip) {
         buildList {
@@ -290,25 +277,21 @@ private fun LKMInstallPage(
         onConfirm = {
             lkmInstallMethod = InstallMethod.DirectInstallToInactiveSlot
         },
-        onDismiss = null,
-    )
+        onDismiss = null)
 
     val selectImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) {
+        contract = ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
                 lkmInstallMethod = InstallMethod.SelectFile(
                     uri,
-                    summary = selectFileTip,
-                )
+                    summary = selectFileTip)
             }
         }
     }
 
     val selectLkmLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) {
+        contract = ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
                 val isKo = isKoFile(context, uri)
@@ -321,8 +304,7 @@ private fun LKMInstallPage(
                     Toast.makeText(
                         context,
                         installOnlySupportKoFile,
-                        Toast.LENGTH_SHORT,
-                    ).show()
+                        Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -336,10 +318,8 @@ private fun LKMInstallPage(
                         type = "application/*"
                         putExtra(
                             Intent.EXTRA_MIME_TYPES,
-                            arrayOf("application/octet-stream", "application/zip"),
-                        )
-                    },
-                )
+                            arrayOf("application/octet-stream", "application/zip"))
+                    })
             }
 
             is InstallMethod.DirectInstall -> {
@@ -374,9 +354,7 @@ private fun LKMInstallPage(
                             partition = availablePartitions.getOrNull(partitionSelectionIndex),
                             allowShell = allowShell,
                             enableAdb = enableAdb,
-                            forceBackup = if (method is InstallMethod.SelectFile) forceBackup else false,
-                        ),
-                    )
+                            forceBackup = if (method is InstallMethod.SelectFile) forceBackup else false))
                 }
 
                 is InstallMethod.HorizonKernel -> Unit
@@ -417,8 +395,7 @@ private fun LKMInstallPage(
             lkmInstallMethod is InstallMethod.DirectInstallToInactiveSlot
 
     LazyColumn(
-        modifier = modifier,
-    ) {
+        modifier = modifier) {
         item {
             Spacer(modifier = Modifier.height(topPadding))
         }
@@ -436,10 +413,8 @@ private fun LKMInstallPage(
                             leadingContent = {
                                 RadioButton(
                                     selected = selected,
-                                    onClick = null,
-                                )
-                            },
-                        )
+                                    onClick = null)
+                            })
                     }
                 }
             }
@@ -462,10 +437,8 @@ private fun LKMInstallPage(
                                     contentDescription = null,
                                     modifier = Modifier.graphicsLayer {
                                         rotationZ = advRotation
-                                    },
-                                )
-                            },
-                        )
+                                    })
+                            })
                     },
                     bottomContent = {
                         item(visible = canSelectPartition && displayPartitions.isNotEmpty()) {
@@ -477,8 +450,7 @@ private fun LKMInstallPage(
                                 onSelectedIndexChange = {
                                     hasCustomSelected = true
                                     partitionSelectionIndex = it
-                                },
-                            )
+                                })
                         }
 
                         item {
@@ -497,21 +469,18 @@ private fun LKMInstallPage(
                                         selectLkmLauncher.launch(
                                             Intent(Intent.ACTION_GET_CONTENT).apply {
                                                 type = "application/octet-stream"
-                                            },
-                                        )
+                                            })
                                     }
                                 },
                                 descriptionColumnContent = if (hasLkmUri) {
                                     {
                                         Text(
                                             text = lkmFileName ?: "",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                        )
+                                            style = MaterialTheme.typography.bodyMedium)
                                     }
                                 } else {
                                     null
-                                },
-                            )
+                                })
                         }
 
                         item {
@@ -524,10 +493,8 @@ private fun LKMInstallPage(
                                 leadingContent = {
                                     Checkbox(
                                         checked = allowShell,
-                                        onCheckedChange = null,
-                                    )
-                                },
-                            )
+                                        onCheckedChange = null)
+                                })
                         }
 
                         item {
@@ -540,10 +507,8 @@ private fun LKMInstallPage(
                                 leadingContent = {
                                     Checkbox(
                                         checked = enableAdb,
-                                        onCheckedChange = null,
-                                    )
-                                },
-                            )
+                                        onCheckedChange = null)
+                                })
                         }
 
                         item(visible = lkmInstallMethod is InstallMethod.SelectFile) {
@@ -556,13 +521,10 @@ private fun LKMInstallPage(
                                 leadingContent = {
                                     Checkbox(
                                         checked = forceBackup,
-                                        onCheckedChange = null,
-                                    )
-                                },
-                            )
+                                        onCheckedChange = null)
+                                })
                         }
-                    },
-                )
+                    })
             }
         }
 
@@ -572,12 +534,10 @@ private fun LKMInstallPage(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 enabled = lkmInstallMethod != null,
-                onClick = onClickNext,
-            ) {
+                onClick = onClickNext) {
                 Text(
                     stringResource(id = R.string.install_next),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                    style = MaterialTheme.typography.bodyMedium)
             }
         }
 
@@ -595,8 +555,7 @@ private fun Anykernel3InstallPage(
     rootAvailable: Boolean,
     isAbDevice: Boolean,
     activeSlotSuffix: String,
-    preselectedKernelUri: String?,
-) {
+    preselectedKernelUri: String?) {
     val navigator = LocalNavigator.current
     val summary = stringResource(R.string.horizon_kernel_summary)
     var ak3InstallMethod by remember { mutableStateOf<InstallMethod?>(null) }
@@ -607,12 +566,10 @@ private fun Anykernel3InstallPage(
 
     val ak3AdvRotation by animateFloatAsState(
         targetValue = if (advancedOptionsShown) 180f else 0f,
-        label = "Ak3AdvRotation",
-    )
+        label = "Ak3AdvRotation")
 
     val selectImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-    ) {
+        contract = ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == Activity.RESULT_OK) {
             it.data?.data?.let { uri ->
                 if (isAbDevice) {
@@ -621,8 +578,7 @@ private fun Anykernel3InstallPage(
                 } else {
                     ak3InstallMethod = InstallMethod.HorizonKernel(
                         uri = uri,
-                        summary = summary,
-                    )
+                        summary = summary)
                 }
             }
         }
@@ -639,8 +595,7 @@ private fun Anykernel3InstallPage(
                 } else {
                     ak3InstallMethod = InstallMethod.HorizonKernel(
                         uri = preselectedUri,
-                        summary = summary,
-                    )
+                        summary = summary)
                 }
             } catch (_: Exception) {
             }
@@ -654,9 +609,7 @@ private fun Anykernel3InstallPage(
                     Route.KernelFlash(
                         kernelUri = uri.toString(),
                         selectedSlot = method.slot,
-                        skipKsud = skipKsud,
-                    ),
-                )
+                        skipKsud = skipKsud))
             }
         }
     }
@@ -671,14 +624,11 @@ private fun Anykernel3InstallPage(
             ak3InstallMethod = InstallMethod.HorizonKernel(
                 uri = tempKernelUri,
                 slot = slot,
-                summary = summary,
-            )
-        },
-    )
+                summary = summary)
+        })
 
     LazyColumn(
-        modifier = modifier,
-    ) {
+        modifier = modifier) {
         item {
             Spacer(modifier = Modifier.height(topPadding))
         }
@@ -700,12 +650,9 @@ private fun Anykernel3InstallPage(
                                         type = "application/*"
                                         putExtra(
                                             Intent.EXTRA_MIME_TYPES,
-                                            arrayOf("application/octet-stream", "application/zip"),
-                                        )
-                                    },
-                                )
-                            },
-                        )
+                                            arrayOf("application/octet-stream", "application/zip"))
+                                    })
+                            })
                     }
 
                     (ak3InstallMethod as? InstallMethod.HorizonKernel)?.slot?.let { slot ->
@@ -717,10 +664,8 @@ private fun Anykernel3InstallPage(
                                         stringResource(id = R.string.slot_a)
                                     } else {
                                         stringResource(id = R.string.slot_b)
-                                    },
-                                ),
-                                onClick = null,
-                            )
+                                    }),
+                                onClick = null)
                         }
                     }
                 }
@@ -743,10 +688,8 @@ private fun Anykernel3InstallPage(
                                         contentDescription = null,
                                         modifier = Modifier.graphicsLayer {
                                             rotationZ = ak3AdvRotation
-                                        },
-                                    )
-                                },
-                            )
+                                        })
+                                })
                         },
                         bottomContent = {
                             item {
@@ -759,13 +702,10 @@ private fun Anykernel3InstallPage(
                                     leadingContent = {
                                         Checkbox(
                                             checked = skipKsud,
-                                            onCheckedChange = null,
-                                        )
-                                    },
-                                )
+                                            onCheckedChange = null)
+                                    })
                             }
-                        },
-                    )
+                        })
                 }
             }
         }
@@ -778,12 +718,10 @@ private fun Anykernel3InstallPage(
                 enabled = ak3InstallMethod != null,
                 onClick = {
                     onClickNext()
-                },
-            ) {
+                }) {
                 Text(
                     stringResource(id = R.string.install_next),
-                    style = MaterialTheme.typography.bodyMedium,
-                )
+                    style = MaterialTheme.typography.bodyMedium)
             }
         }
 
@@ -797,8 +735,7 @@ private fun Anykernel3InstallPage(
 @Composable
 fun rememberSelectKmiDialog(
     supportedKmi: List<String>,
-    onSelected: (String?) -> Unit,
-): DialogHandle = rememberCustomDialog { dismiss ->
+    onSelected: (String?) -> Unit): DialogHandle = rememberCustomDialog { dismiss ->
     SettingsChooseDialog(
         show = true,
         title = stringResource(R.string.select_kmi),
@@ -807,8 +744,7 @@ fun rememberSelectKmiDialog(
         onDismiss = dismiss,
         onSelectedIndexChange = { index ->
             onSelected(supportedKmi.getOrNull(index))
-        },
-    )
+        })
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -817,8 +753,7 @@ private fun TopBar(
     onBack: () -> Unit = {},
     scrollBehavior: TopAppBarScrollBehavior,
     selectedTab: Int,
-    onTabSelected: (Int) -> Unit,
-) {
+    onTabSelected: (Int) -> Unit) {
     Column(modifier = Modifier.blurEffect()) {
         TopAppBar(
             title = {
@@ -826,34 +761,27 @@ private fun TopBar(
             },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = Color.Transparent,
-                scrolledContainerColor = Color.Transparent,
-            ),
+                scrolledContainerColor = Color.Transparent),
             navigationIcon = {
                 AppBackButton(
-                    onClick = onBack,
-                )
+                    onClick = onBack)
             },
-            ,
-            scrollBehavior = scrollBehavior,
-        )
+            scrollBehavior = scrollBehavior)
 
         PrimaryTabRow(
             selectedTabIndex = selectedTab.coerceAtMost(1),
             containerColor = Color.Transparent,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
+            modifier = Modifier.fillMaxWidth()) {
             Tab(
                 selected = selectedTab == 0,
                 onClick = { onTabSelected(0) },
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                text = { Text(stringResource(R.string.Lkm_install_methods)) },
-            )
+                text = { Text(stringResource(R.string.Lkm_install_methods)) })
             Tab(
                 selected = selectedTab == 1,
                 onClick = { onTabSelected(1) },
                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                text = { Text(stringResource(R.string.GKI_install_methods)) },
-            )
+                text = { Text(stringResource(R.string.GKI_install_methods)) })
         }
     }
 }
@@ -868,8 +796,7 @@ private fun isKoFile(context: Context, uri: Uri): Boolean {
             arrayOf(OpenableColumns.DISPLAY_NAME),
             null,
             null,
-            null,
-        )?.use { cursor ->
+            null)?.use { cursor ->
             val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
             if (idx != -1 && cursor.moveToFirst()) {
                 val name = cursor.getString(idx)
@@ -893,8 +820,7 @@ sealed class InstallMethod {
     data class SelectFile(
         val uri: Uri? = null,
         @param:StringRes override val label: Int = R.string.select_file,
-        override val summary: String?,
-    ) : InstallMethod()
+        override val summary: String?) : InstallMethod()
 
     data object DirectInstall : InstallMethod() {
         override val label: Int
@@ -910,8 +836,7 @@ sealed class InstallMethod {
         val uri: Uri? = null,
         val slot: String? = null,
         @param:StringRes override val label: Int = R.string.horizon_kernel,
-        override val summary: String? = null,
-    ) : InstallMethod()
+        override val summary: String? = null) : InstallMethod()
 
     abstract val label: Int
     open val summary: String? = null

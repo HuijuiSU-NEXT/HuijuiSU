@@ -116,8 +116,7 @@ fun HuijuiAppManager(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.Apps,
                     iconTint = MaterialTheme.colorScheme.primary,
                     title = "应用管理器",
-                    subtitle = "冻结 / 卸载 / 强停 已安装应用",
-                )
+                    subtitle = "冻结 / 卸载 / 强停 已安装应用")
                 Spacer(Modifier.height(12.dp))
 
                 OutlinedTextField(
@@ -125,23 +124,20 @@ fun HuijuiAppManager(onDismiss: () -> Unit) {
                     onValueChange = { searchQuery = it },
                     placeholder = { Text("搜索应用名或包名") },
                     singleLine = true,
-                    modifier = Modifier.fillMaxWidth(),
-                )
+                    modifier = Modifier.fillMaxWidth())
                 Spacer(Modifier.height(8.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Switch(
                         checked = showSystemApps,
-                        onCheckedChange = { showSystemApps = it },
-                    )
+                        onCheckedChange = { showSystemApps = it })
                     Spacer(Modifier.width(8.dp))
                     Text("显示系统应用", style = MaterialTheme.typography.bodyMedium)
                     Spacer(Modifier.weight(1f))
                     Text(
                         "${filtered.size} 个",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    )
+                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 Spacer(Modifier.height(8.dp))
 
@@ -153,8 +149,7 @@ fun HuijuiAppManager(onDismiss: () -> Unit) {
                             log.startsWith("✓") -> MaterialTheme.colorScheme.primary
                             log.startsWith("✗") -> MaterialTheme.colorScheme.error
                             else -> MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    )
+                        })
                     Spacer(Modifier.height(8.dp))
                 }
 
@@ -162,8 +157,7 @@ fun HuijuiAppManager(onDismiss: () -> Unit) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(min = 240.dp, max = 420.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     items(filtered, key = { it.packageName }) { pkg ->
                         AppManagerRow(
                             pkg = pkg,
@@ -180,8 +174,7 @@ fun HuijuiAppManager(onDismiss: () -> Unit) {
                                         AppManagerAction.UNINSTALL -> HuijuiAppManagerRepository.uninstallForUser(pkg.packageName)
                                     }
                                 }
-                            },
-                        )
+                            })
                     }
                 }
 
@@ -199,16 +192,14 @@ private fun AppManagerRow(
     pkg: InstalledPackageInfo,
     expanded: Boolean,
     onExpandChange: (Boolean) -> Unit,
-    onAction: (AppManagerAction) -> Unit,
-) {
+    onAction: (AppManagerAction) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(12.dp))
             .clickable { onExpandChange(!expanded) }
             .padding(horizontal = 10.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         AppIcon(pkg.packageName, 36.dp)
         Spacer(Modifier.width(12.dp))
         Column(modifier = Modifier.weight(1f)) {
@@ -217,16 +208,14 @@ private fun AppManagerRow(
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
                 maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-            )
+                overflow = TextOverflow.Ellipsis)
             Text(
                 pkg.packageName,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                fontFamily = FontFamily.Monospace,
-            )
+                fontFamily = FontFamily.Monospace)
         }
         if (pkg.isSystem) {
             Text(
@@ -236,10 +225,8 @@ private fun AppManagerRow(
                 modifier = Modifier
                     .background(
                         MaterialTheme.colorScheme.tertiaryContainer,
-                        RoundedCornerShape(6.dp),
-                    )
-                    .padding(horizontal = 6.dp, vertical = 2.dp),
-            )
+                        RoundedCornerShape(6.dp))
+                    .padding(horizontal = 6.dp, vertical = 2.dp))
             Spacer(Modifier.width(6.dp))
         }
         Box {
@@ -250,8 +237,7 @@ private fun AppManagerRow(
                 AppManagerAction.entries.forEach { action ->
                     DropdownMenuItem(
                         text = { Text(action.label) },
-                        onClick = { onAction(action) },
-                    )
+                        onClick = { onAction(action) })
                 }
             }
         }
@@ -279,13 +265,11 @@ private fun AppIcon(packageName: String, size: Dp) {
         Image(
             bitmap = bitmap,
             contentDescription = null,
-            modifier = Modifier.size(size),
-        )
+            modifier = Modifier.size(size))
     } else {
         Icon(
             imageVector = Icons.TwoTone.Android,
             contentDescription = null,
-            modifier = Modifier.size(size),
-        )
+            modifier = Modifier.size(size))
     }
 }

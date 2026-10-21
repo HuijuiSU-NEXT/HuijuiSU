@@ -2,23 +2,20 @@ package org.bakasu.bakasu.domain.model
 
 data class CatalogAuthor(
     val name: String,
-    val link: String,
-)
+    val link: String)
 
 data class ModuleReleaseAsset(
     val name: String,
     val downloadUrl: String,
     val size: Long,
-    val downloadCount: Int,
-)
+    val downloadCount: Int)
 
 data class ModuleRelease(
     val name: String,
     val tagName: String,
     val publishedAt: String,
     val descriptionHTML: String,
-    val assets: List<ModuleReleaseAsset>,
-)
+    val assets: List<ModuleReleaseAsset>)
 
 data class CatalogModule(
     val moduleId: String,
@@ -37,8 +34,7 @@ data class CatalogModule(
     val installed: Boolean,
     val readme: String,
     val sourceUrl: String,
-    val releases: List<ModuleRelease>,
-)
+    val releases: List<ModuleRelease>)
 
 sealed interface ModuleCatalogFailure {
     data object Offline : ModuleCatalogFailure

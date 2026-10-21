@@ -17,22 +17,19 @@ data class InstalledModule(
     val actionIconPath: String?,
     val webUiIconPath: String?,
     val dirId: String,
-    val moduleUpdate: ModuleUpdateMetadata?,
-)
+    val moduleUpdate: ModuleUpdateMetadata?)
 
 data class InstalledModulesState(
     val modules: List<InstalledModule> = emptyList(),
     val refreshing: Boolean = false,
     val hasModuleRequireMount: Boolean = false,
     val hasMagisk: Boolean = false,
-    val metaModuleStatus: MetaModuleStatus = MetaModuleStatus.MISSING,
-)
+    val metaModuleStatus: MetaModuleStatus = MetaModuleStatus.MISSING)
 
 data class ModulePreferences(
     val sortEnabledFirst: Boolean = false,
     val sortActionFirst: Boolean = false,
-    val showMoreModuleInfo: Boolean = false,
-)
+    val showMoreModuleInfo: Boolean = false)
 
 enum class MetaModuleStatus {
     ACTIVE,

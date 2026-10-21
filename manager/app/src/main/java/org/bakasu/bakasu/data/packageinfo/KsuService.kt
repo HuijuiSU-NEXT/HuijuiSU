@@ -58,8 +58,7 @@ class KsuService : RootService() {
         val m = pm.javaClass.getDeclaredMethod(
             "getInstalledPackagesAsUser",
             Int::class.java,
-            Int::class.java,
-        )
+            Int::class.java)
         @Suppress("UNCHECKED_CAST")
         m.invoke(pm, 0, userId) as List<PackageInfo>
     } catch (e: Throwable) {

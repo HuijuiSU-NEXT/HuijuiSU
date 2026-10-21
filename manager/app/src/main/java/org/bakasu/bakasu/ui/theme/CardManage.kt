@@ -16,8 +16,7 @@ import org.koin.compose.koinInject
 
 @Stable
 class CardConfig(
-    private val settings: AppSettingsRepository,
-) {
+    private val settings: AppSettingsRepository) {
     // 卡片透明度
     private var _cardAlpha by mutableFloatStateOf(1f)
 
@@ -105,8 +104,7 @@ class CardConfig(
                 } else {
                     1f
                 },
-                isCustom = false,
-            )
+                isCustom = false)
         }
         // 暗色模式下默认启用轻微阴影
         if (isDarkMode && !isCustomBackgroundEnabled) {
@@ -148,8 +146,7 @@ object CardStyleProvider {
     @Composable
     fun getCardColors(
         originalColor: Color,
-        transparent: Boolean,
-    ): androidx.compose.material3.CardColors {
+        transparent: Boolean): androidx.compose.material3.CardColors {
         val cardConfig = koinInject<CardConfig>()
         return CardDefaults.cardColors(
             containerColor = if (transparent) Color.Transparent else originalColor.copy(alpha = cardConfig.cardAlpha),
@@ -158,11 +155,9 @@ object CardStyleProvider {
                 Color.Transparent
             } else {
                 originalColor.copy(
-                    alpha = cardConfig.cardAlpha * 0.38f,
-                )
+                    alpha = cardConfig.cardAlpha * 0.38f)
             },
-            disabledContentColor = contentColorFor(originalColor).copy(alpha = 0.38f),
-        )
+            disabledContentColor = contentColorFor(originalColor).copy(alpha = 0.38f))
     }
 
     @Composable
@@ -190,21 +185,18 @@ object CardStyleProvider {
             } else {
                 0.dp
             },
-            disabledElevation = 0.dp,
-        )
+            disabledElevation = 0.dp)
     }
 }
 
 @Composable
 fun getCardColors(
     originalColor: Color,
-    renderBackground: Boolean = true,
-): androidx.compose.material3.CardColors {
+    renderBackground: Boolean = true): androidx.compose.material3.CardColors {
     val themeConfig = koinInject<ThemeConfig>()
     return CardStyleProvider.getCardColors(
         originalColor,
-        renderBackground && themeConfig.isEnableBlurExp,
-    )
+        renderBackground && themeConfig.isEnableBlurExp)
 }
 
 @Composable

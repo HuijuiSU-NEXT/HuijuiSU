@@ -52,8 +52,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SusKstatTab(
     nestedScrollConnection: NestedScrollConnection,
     innerPadding: PaddingValues,
-    onRegisterRefresh: SuSFSRefreshRegistrar,
-) {
+    onRegisterRefresh: SuSFSRefreshRegistrar) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -105,8 +104,7 @@ fun SusKstatTab(
                 statCtime,
                 statCtimeNsec,
                 statBlocks,
-                statBlksize,
-            ).forEach { it.clearText() }
+                statBlksize).forEach { it.clearText() }
         }
     }
 
@@ -130,32 +128,26 @@ fun SusKstatTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection),
-    ) {
+            .nestedScroll(nestedScrollConnection)) {
         item {
             Spacer(Modifier.height(innerPadding.calculateTopPadding()))
         }
 
         item {
             SuSFSDescriptionCard(
-                title = stringResource(R.string.kstat_config_description_title),
-            ) {
+                title = stringResource(R.string.kstat_config_description_title)) {
                 Text(
                     text = stringResource(R.string.kstat_config_description_add),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = stringResource(R.string.kstat_config_description_update),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = stringResource(R.string.kstat_config_description_update_full_clone),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
                 Text(
                     text = stringResource(R.string.kstat_config_description_add_statically),
-                    style = MaterialTheme.typography.bodySmall,
-                )
+                    style = MaterialTheme.typography.bodySmall)
             }
         }
 
@@ -165,14 +157,12 @@ fun SusKstatTab(
             emptyTitle = noEntriesMsg,
             emptyDescription = noEntriesHint,
             entryKey = { it.path },
-            onAddEntry = { showManualAdd = true },
-        ) { item ->
+            onAddEntry = { showManualAdd = true }) { item ->
             SettingsJumpPageWidget(
                 iconPlaceholder = false,
                 title = item.path,
                 description = item.spoof_type.localizedLabel(),
-                onClick = { detailItem = item },
-            )
+                onClick = { detailItem = item })
         }
 
         item {
@@ -210,8 +200,7 @@ fun SusKstatTab(
                         statCtime.text.toString().trim().toLongOrNull(),
                         statCtimeNsec.text.toString().trim().toLongOrNull(),
                         statBlocks.text.toString().trim().toLongOrNull(),
-                        statBlksize.text.toString().trim().toLongOrNull(),
-                    )
+                        statBlksize.text.toString().trim().toLongOrNull())
                     val ok = awaitSuSFSBoolean(configHelper) { reply ->
                         SuSFSUiAction.AddSusKstat(
                             path = path,
@@ -221,8 +210,7 @@ fun SusKstatTab(
                                 else -> SusKstatOperation.Normal
                             },
                             values = staticValues,
-                            reply = reply,
-                        )
+                            reply = reply)
                     }
                     if (ok) {
                         successCount++
@@ -263,18 +251,15 @@ fun SusKstatTab(
                     } else {
                         TextFieldLineLimits.SingleLine
                     },
-                    renderBackgroundBlur = false,
-                )
+                    renderBackgroundBlur = false)
             }
             item(
                 key = "susfs_kstat_static_fields",
-                visible = selectedSubtype == subtypeStatically,
-            ) {
+                visible = selectedSubtype == subtypeStatically) {
                 SettingsBaseWidget(
                     iconPlaceholder = false,
                     title = staticallyFieldsLabel,
-                    isOnBackground = false,
-                )
+                    isOnBackground = false)
             }
             listOf(
                 "ino" to statIno,
@@ -288,8 +273,7 @@ fun SusKstatTab(
                 "ctime" to statCtime,
                 "ctime_nsec" to statCtimeNsec,
                 "blocks" to statBlocks,
-                "blksize" to statBlksize,
-            ).forEachIndexed { index, (label, state) ->
+                "blksize" to statBlksize).forEachIndexed { index, (label, state) ->
                 item(key = "susfs_kstat_static_$index") {
                     SettingsTextFieldWidget(
                         state = state,
@@ -297,18 +281,15 @@ fun SusKstatTab(
                         useLabelAsPlaceholder = true,
                         enabled = !isLoading,
                         lineLimits = TextFieldLineLimits.SingleLine,
-                        renderBackgroundBlur = false,
-                    )
+                        renderBackgroundBlur = false)
                 }
             }
-        },
-    )
+        })
 
     detailItem?.let { item ->
         val fields = mutableListOf(
             pathLabel to item.path,
-            spoofTypeLabel to item.spoof_type.localizedLabel(),
-        )
+            spoofTypeLabel to item.spoof_type.localizedLabel())
         item.statically?.let { st ->
             fields.add("ino" to (st.ino?.toString() ?: defaultValueLabel))
             fields.add("dev" to (st.dev?.toString() ?: defaultValueLabel))
@@ -347,7 +328,6 @@ fun SusKstatTab(
                     }
                     isLoading = false
                 }
-            },
-        )
+            })
     }
 }

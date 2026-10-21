@@ -81,8 +81,7 @@ fun DynamicManagerScreen() {
     val viewModel = koinViewModel<DynamicManagerViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scrollBehavior = rememberSearchAppBarScrollBehavior(
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState()),
-    )
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState()))
     val pullToRefreshState = rememberPullToRefreshState()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -104,8 +103,7 @@ fun DynamicManagerScreen() {
         val first = confirmDialog.awaitConfirm(
             title = grantConfirmTitle,
             content = grantConfirmMessage,
-            confirm = confirmText,
-        )
+            confirm = confirmText)
         return first == ConfirmResult.Confirmed
     }
 
@@ -121,8 +119,7 @@ fun DynamicManagerScreen() {
             val confirmed = confirmDialog.awaitConfirm(
                 title = clearConfirmTitle,
                 content = clearConfirmMessage,
-                confirm = confirmText,
-            )
+                confirm = confirmText)
             if (confirmed != ConfirmResult.Confirmed) return@launch
             viewModel.dispatch(DynamicManagerUiAction.Clear)
         }
@@ -160,20 +157,17 @@ fun DynamicManagerScreen() {
                 onSearchTextChange = { viewModel.dispatch(DynamicManagerUiAction.Search(it)) },
                 onBackClick = { navigator.pop() },
                 scrollBehavior = scrollBehavior,
-                searchBarPlaceHolderText = stringResource(R.string.search_apps),
-            )
+                searchBarPlaceHolderText = stringResource(R.string.search_apps))
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackbarHost) },
         containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) { paddingValues ->
+        contentColor = MaterialTheme.colorScheme.onSurface) { paddingValues ->
         if (uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .nestedScroll(scrollBehavior.nestedScrollConnection),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
         } else {
@@ -196,13 +190,11 @@ fun DynamicManagerScreen() {
                         isRefreshing = isUserRefreshing,
                         modifier = Modifier
                             .align(Alignment.TopCenter)
-                            .padding(top = paddingValues.calculateTopPadding()),
-                    )
+                            .padding(top = paddingValues.calculateTopPadding()))
                 },
                 modifier = Modifier
                     .fillMaxSize()
-                    .blurSource(),
-            ) {
+                    .blurSource()) {
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxSize()
@@ -211,9 +203,7 @@ fun DynamicManagerScreen() {
                         top = paddingValues.calculateTopPadding() + 5.dp,
                         start = 0.dp,
                         end = 0.dp,
-                        bottom = paddingValues.calculateBottomPadding() + 16.dp,
-                    ),
-                ) {
+                        bottom = paddingValues.calculateBottomPadding() + 16.dp)) {
                     item {
                         DynamicManagerStatusSection(
                             config = uiState.config,
@@ -223,8 +213,7 @@ fun DynamicManagerScreen() {
                             },
                             onClearConfig = {
                                 runClearOperation()
-                            },
-                        )
+                            })
                     }
 
                     item {
@@ -237,8 +226,7 @@ fun DynamicManagerScreen() {
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 32.dp),
-                                contentAlignment = Alignment.Center,
-                            ) {
+                                contentAlignment = Alignment.Center) {
                                 LoadingIndicator()
                             }
                         }
@@ -247,8 +235,7 @@ fun DynamicManagerScreen() {
                             title = manageManagers,
                             items = uiState.apps,
                             key = { _, app -> "${app.uid}-${app.packageName}" },
-                            contentType = { _, _ -> "DynamicManagerAppItem" },
-                        ) { _, app ->
+                            contentType = { _, _ -> "DynamicManagerAppItem" }) { _, app ->
                             DynamicManagerAppItem(
                                 app = app,
                                 onClick = {
@@ -257,8 +244,7 @@ fun DynamicManagerScreen() {
                                     } else {
                                         runGrantOperation(DynamicManagerUiAction.SelectApp(app))
                                     }
-                                },
-                            )
+                                })
                         }
                     }
                 }
@@ -269,15 +255,13 @@ fun DynamicManagerScreen() {
 
 @Composable
 private fun rememberDynamicManagerManualDialog(
-    onConfirm: (Int, String) -> Unit,
-): DialogHandle = rememberCustomDialog { dismiss ->
+    onConfirm: (Int, String) -> Unit): DialogHandle = rememberCustomDialog { dismiss ->
     DynamicManagerManualDialog(
         onDismiss = dismiss,
         onConfirm = { size, hash ->
             dismiss()
             onConfirm(size, hash)
-        },
-    )
+        })
 }
 
 @Composable
@@ -285,8 +269,7 @@ private fun DynamicManagerStatusSection(
     config: DynamicManagerConfig?,
     enabled: Boolean,
     onManualConfig: () -> Unit,
-    onClearConfig: () -> Unit,
-) {
+    onClearConfig: () -> Unit) {
     val currentStatus = if (config?.isValid == true) {
         stringResource(R.string.dynamic_manager_enabled_summary, config.size.toString())
     } else {
@@ -294,15 +277,13 @@ private fun DynamicManagerStatusSection(
     }
 
     SegmentedColumn(
-        title = stringResource(R.string.dynamic_manager_title),
-    ) {
+        title = stringResource(R.string.dynamic_manager_title)) {
         item {
             SettingsBaseWidget(
                 icon = Icons.TwoTone.Security,
                 title = stringResource(R.string.dynamic_manager_current_status),
                 description = currentStatus,
-                onClick = {},
-            )
+                onClick = {})
         }
 
         item(visible = config?.isValid == true) {
@@ -310,8 +291,7 @@ private fun DynamicManagerStatusSection(
                 icon = Icons.TwoTone.Security,
                 title = stringResource(R.string.signature_hash),
                 description = config?.hash.orEmpty(),
-                onClick = {},
-            )
+                onClick = {})
         }
 
         item {
@@ -320,8 +300,7 @@ private fun DynamicManagerStatusSection(
                 title = stringResource(R.string.dynamic_manager_manual_config),
                 description = stringResource(R.string.dynamic_manager_manual_config_summary),
                 enabled = enabled,
-                onClick = { onManualConfig() },
-            )
+                onClick = { onManualConfig() })
         }
 
         item {
@@ -330,8 +309,7 @@ private fun DynamicManagerStatusSection(
                 title = stringResource(R.string.dynamic_manager_clear_config),
                 description = stringResource(R.string.dynamic_manager_clear_config_summary),
                 enabled = enabled,
-                onClick = { onClearConfig() },
-            )
+                onClick = { onClearConfig() })
         }
     }
 }
@@ -339,8 +317,7 @@ private fun DynamicManagerStatusSection(
 @Composable
 private fun DynamicManagerAppItem(
     app: DynamicManagerAppItem,
-    onClick: () -> Unit,
-) {
+    onClick: () -> Unit) {
     SettingsBaseWidget(
         enabled = app.isChangeable,
         onClick = {
@@ -357,8 +334,7 @@ private fun DynamicManagerAppItem(
                     "KernelSU Toolkit"
                 } else {
                     "Kernel"
-                },
-            )
+                })
         } else {
             app.packageName
         },
@@ -368,24 +344,20 @@ private fun DynamicManagerAppItem(
                 contentDescription = app.label,
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(48.dp),
-            )
+                    .size(48.dp))
         },
-        iconPlaceholder = false,
-    ) {
+        iconPlaceholder = false) {
         Checkbox(
             checked = app.isSelected || !app.isChangeable,
             enabled = app.isChangeable,
-            onCheckedChange = null,
-        )
+            onCheckedChange = null)
     }
 }
 
 @Composable
 private fun DynamicManagerManualDialog(
     onDismiss: () -> Unit,
-    onConfirm: (Int, String) -> Unit,
-) {
+    onConfirm: (Int, String) -> Unit) {
     val sizeState = rememberTextFieldState()
     val hashState = rememberTextFieldState()
     val size = sizeState.text.toString()
@@ -424,8 +396,7 @@ private fun DynamicManagerManualDialog(
                         state = sizeState,
                         title = stringResource(R.string.signature_size),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                    )
+                        lineLimits = TextFieldLineLimits.SingleLine)
                 }
 
                 item {
@@ -439,8 +410,7 @@ private fun DynamicManagerManualDialog(
                         } else {
                             ""
                         },
-                        lineLimits = TextFieldLineLimits.SingleLine,
-                    )
+                        lineLimits = TextFieldLineLimits.SingleLine)
                 }
             }
         },
@@ -449,8 +419,7 @@ private fun DynamicManagerManualDialog(
                 enabled = isValid,
                 onClick = {
                     onConfirm(sizeValue ?: return@TextButton, hash)
-                },
-            ) {
+                }) {
                 Text(stringResource(android.R.string.ok))
             }
         },
@@ -458,6 +427,5 @@ private fun DynamicManagerManualDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(android.R.string.cancel))
             }
-        },
-    )
+        })
 }

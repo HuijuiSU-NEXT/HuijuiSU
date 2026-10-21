@@ -197,8 +197,7 @@ val coreModule = module {
                     chain.request().newBuilder()
                         .header("User-Agent", "HuiJuiSU_Next/${BuildConfig.VERSION_CODE}")
                         .header("Accept-Language", Locale.getDefault().toLanguageTag())
-                        .build(),
-                )
+                        .build())
             }
             .connectTimeout(5, TimeUnit.SECONDS)
             .readTimeout(5, TimeUnit.SECONDS)
@@ -230,14 +229,12 @@ val repositoryModule = module {
             cache = get(),
             installedPackageRepository = get(),
             profileRepository = get(),
-            applicationScope = get(applicationScopeQualifier),
-        )
+            applicationScope = get(applicationScopeQualifier))
     }
     single {
         AppSettingsRepository(
             context = androidApplication(),
-            applicationScope = get(applicationScopeQualifier),
-        )
+            applicationScope = get(applicationScopeQualifier))
     }
     singleOf(::StartupRepository)
     single {
@@ -247,8 +244,7 @@ val repositoryModule = module {
             applicationScope = get(applicationScopeQualifier),
             flashRepository = get(),
             ksuCliRepository = get(),
-            monetCompatColorSource = get(),
-        )
+            monetCompatColorSource = get())
     }
     singleOf(::ManagerUpdateRepository)
     singleOf(::ApplicationControlRepository)
@@ -403,8 +399,7 @@ val viewModelModule = module {
             getSepolicy = get(),
             setSepolicy = get(),
             controlApp = get(),
-            validateSepolicy = get(),
-        )
+            validateSepolicy = get())
     }
     viewModelOf(::HomeViewModel)
     viewModelOf(::InstallViewModel)
@@ -424,8 +419,7 @@ val viewModelModule = module {
             isCreation = parameters[2],
             getTemplate = get(),
             saveTemplate = get(),
-            deleteTemplate = get(),
-        )
+            deleteTemplate = get())
     }
     viewModelOf(::SulogViewModel)
     viewModelOf(::DynamicManagerViewModel)
@@ -435,8 +429,7 @@ val viewModelModule = module {
         ExecuteModuleActionViewModel(
             moduleId = parameters[0],
             executeModuleAction = get(),
-            saveModuleActionLog = get(),
-        )
+            saveModuleActionLog = get())
     }
 }
 

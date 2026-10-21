@@ -12,8 +12,7 @@ import org.bakasu.bakasu.domain.model.WebUiModuleInfo
 import org.bakasu.bakasu.domain.model.WebUiProcess
 
 class WebUiRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     fun execute(command: String, globalMnt: Boolean = true): WebUiCommandResult {
         val result = ksuCliRepository.withNewRootShell(globalMnt) {
             newJob().add(command).to(ArrayList(), ArrayList()).exec()
@@ -21,8 +20,7 @@ class WebUiRepository(
         return WebUiCommandResult(
             code = result.code,
             stdout = result.out.joinToString("\n"),
-            stderr = result.err.joinToString("\n"),
-        )
+            stderr = result.err.joinToString("\n"))
     }
 
     fun spawn(command: String, globalMnt: Boolean = true): WebUiProcess = ShellWebUiProcess(ksuCliRepository.createRootShell(globalMnt), command)
@@ -34,8 +32,7 @@ class WebUiRepository(
         readWebUiModuleInfo(
             moduleId = moduleId,
             resolveFile = { path -> SuFile(path).apply { shell = rootShell } },
-            openFile = { file -> SuFileInputStream.open(file) },
-        )
+            openFile = { file -> SuFileInputStream.open(file) })
     }
 
     fun openFile(path: String) = runCatching {
@@ -45,13 +42,11 @@ class WebUiRepository(
 
     private class ShellWebUiProcess(
         private val shell: Shell,
-        private val command: String,
-    ) : WebUiProcess {
+        private val command: String) : WebUiProcess {
         override fun start(
             onStdout: (String) -> Unit,
             onStderr: (String) -> Unit,
-            onComplete: (WebUiCommandResult) -> Unit,
-        ) {
+            onComplete: (WebUiCommandResult) -> Unit) {
             try {
                 val stdout = object : CallbackList<String>(UiThreadHandler::runAndWait) {
                     override fun onAddElement(s: String) = onStdout(s)
@@ -66,9 +61,7 @@ class WebUiRepository(
                             WebUiCommandResult(
                                 code = result.code,
                                 stdout = result.out.joinToString("\n"),
-                                stderr = result.err.joinToString("\n"),
-                            ),
-                        )
+                                stderr = result.err.joinToString("\n")))
                     }
                     .whenComplete { _, _ -> close() }
             } catch (error: Throwable) {

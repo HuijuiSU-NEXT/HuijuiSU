@@ -16,8 +16,7 @@ import org.bakasu.bakasu.ui.util.LocalSnackbarHost
 fun SwipeableSnackbarHost(
     modifier: Modifier = Modifier,
     hostState: SnackbarHostState = LocalSnackbarHost.current,
-    snackbar: @Composable (SnackbarData) -> Unit = { Snackbar(it) },
-) {
+    snackbar: @Composable (SnackbarData) -> Unit = { Snackbar(it) }) {
     val state = rememberSwipeToDismissBoxState()
 
     SwipeToDismissBox(
@@ -25,13 +24,11 @@ fun SwipeableSnackbarHost(
         backgroundContent = {},
         onDismiss = {
             hostState.currentSnackbarData?.dismiss()
-        },
-    ) {
+        }) {
         SnackbarHost(
             modifier = modifier,
             hostState = hostState,
-            snackbar = snackbar,
-        )
+            snackbar = snackbar)
     }
 
     LaunchedEffect(hostState.currentSnackbarData) {

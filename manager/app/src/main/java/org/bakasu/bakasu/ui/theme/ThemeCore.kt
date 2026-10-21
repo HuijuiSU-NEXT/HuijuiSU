@@ -116,8 +116,7 @@ import top.yukonga.miuix.kmp.blur.textureBlurEffect
 @Stable
 
 class ThemeConfig(
-    private val defaultSeedColor: () -> Int,
-) {
+    private val defaultSeedColor: () -> Int) {
     // 主题状态
     var customBackgroundUri by mutableStateOf<Uri?>(null)
     var backgroundDim by mutableFloatStateOf(0f)
@@ -157,8 +156,7 @@ class ThemeConfig(
 }
 
 private val BuiltinspaceFontFamily = FontFamily(
-    Font(org.bakasu.bakasu.R.font.jetbrains_mono),
-)
+    Font(org.bakasu.bakasu.R.font.jetbrains_mono))
 
 @Composable
 fun monospaceFontFamily(): FontFamily {

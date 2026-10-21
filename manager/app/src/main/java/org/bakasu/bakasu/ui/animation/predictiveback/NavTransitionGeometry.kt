@@ -10,8 +10,7 @@ internal fun snapTranslationToPixelEdge(
     translation: Float,
     scale: Float,
     extent: Float,
-    pivotFraction: Float = 0.5f,
-): Float {
+    pivotFraction: Float = 0.5f): Float {
     if (extent <= 0f) return translation
     val scaledEdgeOffset = extent * pivotFraction * (1f - scale)
     return (translation + scaledEdgeOffset).roundToInt() - scaledEdgeOffset

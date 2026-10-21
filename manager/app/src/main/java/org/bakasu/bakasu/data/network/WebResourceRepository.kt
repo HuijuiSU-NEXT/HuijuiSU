@@ -6,20 +6,17 @@ import okhttp3.Request
 import org.bakasu.bakasu.domain.model.WebResource
 
 class WebResourceRepository(
-    private val httpClient: OkHttpClient,
-) {
+    private val httpClient: OkHttpClient) {
     fun load(
         url: String,
         method: String,
-        requestHeaders: Map<String, String>,
-    ): WebResource? = runCatching {
+        requestHeaders: Map<String, String>): WebResource? = runCatching {
         val response = httpClient.newCall(
             Request.Builder()
                 .url(url)
                 .method(method, null)
                 .headers(requestHeaders.toHeaders())
-                .build(),
-        ).execute()
+                .build()).execute()
         val contentTypes = response.header("content-type", "text/plain; charset=utf-8")
             ?.split(";\\s*".toRegex())
             .orEmpty()

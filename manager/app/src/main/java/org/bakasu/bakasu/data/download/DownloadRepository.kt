@@ -14,8 +14,7 @@ import org.bakasu.bakasu.domain.model.ManagerApkSource
 import org.bakasu.bakasu.domain.model.ManagerUpdateInfo
 
 class DownloadRepository(
-    private val application: Application,
-) {
+    private val application: Application) {
 
     private val idCounter = AtomicInteger(0)
     private val enqueueLock = Any()
@@ -35,8 +34,7 @@ class DownloadRepository(
                     id to DownloadState(
                         id = id,
                         fileName = fileName,
-                        url = url,
-                    )
+                        url = url)
                     )
             }
             val intent = Intent(application, DownloadService::class.java).apply {
@@ -71,20 +69,17 @@ class DownloadRepository(
                     is ManagerApkSource.DirectApk -> {
                         putExtra(
                             DownloadService.EXTRA_MANAGER_SOURCE,
-                            DownloadService.SOURCE_DIRECT_APK,
-                        )
+                            DownloadService.SOURCE_DIRECT_APK)
                     }
 
                     is ManagerApkSource.NightlyArtifact -> {
                         putExtra(
                             DownloadService.EXTRA_MANAGER_SOURCE,
-                            DownloadService.SOURCE_NIGHTLY_ARTIFACT,
-                        )
+                            DownloadService.SOURCE_NIGHTLY_ARTIFACT)
                         putExtra(DownloadService.EXTRA_MANAGER_ABI, source.preferredAbi)
                         putExtra(
                             DownloadService.EXTRA_MANAGER_EXPECTED_VERSION_CODE,
-                            source.expectedVersionCode,
-                        )
+                            source.expectedVersionCode)
                     }
                 }
             }
@@ -107,8 +102,7 @@ class DownloadRepository(
                 id to state.copy(
                     status = DownloadStatus.COMPLETED,
                     progress = 100,
-                    resultUri = uri,
-                )
+                    resultUri = uri)
                 )
         }
     }

@@ -16,8 +16,7 @@ import org.bakasu.bakasu.domain.model.UnameConfig as DomainUnameConfig
 
 class SuSFSRepository(
     private val application: Application,
-    private val helper: SuSFSConfigHelper,
-) {
+    private val helper: SuSFSConfigHelper) {
     suspend fun getStatus(): SuSFSStatus {
         val version = runCatching { helper.showVersion() }.getOrDefault("")
         return SuSFSStatus(
@@ -27,8 +26,7 @@ class SuSFSRepository(
                 ""
             } else {
                 runCatching { helper.showEnabledFeatures() }.getOrDefault("")
-            },
-        )
+            })
     }
 
     suspend fun loadConfig(): DomainSuSFSConfig = helper.loadConfig().toDomain()
@@ -55,8 +53,7 @@ class SuSFSRepository(
         values.ctime,
         values.ctime_nsec,
         values.blocks,
-        values.blksize,
-    )
+        values.blksize)
 
     suspend fun removeSusKstat(path: String) = helper.removeSusKstat(path)
     suspend fun setUname(release: String, version: String) = helper.setUname(release, version)
@@ -70,8 +67,7 @@ class SuSFSRepository(
     suspend fun addOpenRedirect(
         targetPath: String,
         redirectedPath: String,
-        uidScheme: DomainUidScheme,
-    ) = helper.addOpenRedirect(targetPath, redirectedPath, uidScheme.toData())
+        uidScheme: DomainUidScheme) = helper.addOpenRedirect(targetPath, redirectedPath, uidScheme.toData())
 
     suspend fun removeOpenRedirect(targetPath: String) = helper.removeOpenRedirect(targetPath)
     suspend fun addSusMap(path: String) = helper.addSusMap(path)
@@ -94,14 +90,12 @@ class SuSFSRepository(
             DomainSusKstatItem(
                 path = it.path,
                 spoof_type = it.spoof_type.toDomain(),
-                statically = it.statically?.toDomain(),
-            )
+                statically = it.statically?.toDomain())
         },
         open_redirect = open_redirect.mapTo(linkedSetOf()) {
             DomainOpenRedirectItem(it.target_path, it.redirected_path, it.uid_scheme.toDomain())
         },
-        sus_map = sus_map,
-    )
+        sus_map = sus_map)
 
     private fun SuSFSStatusInfo.toDomain(): DomainSuSFSStatusInfo = DomainSuSFSStatusInfo(version, enabledFeatures, variant)
 
@@ -115,8 +109,7 @@ class SuSFSRepository(
 
     private fun SusKstatStatically.toDomain(): DomainSusKstatStatically = DomainSusKstatStatically(
         ino, dev, nlink, size, atime, atime_nsec, mtime, mtime_nsec,
-        ctime, ctime_nsec, blocks, blksize,
-    )
+        ctime, ctime_nsec, blocks, blksize)
 
     private fun DomainUidScheme.toData(): UidScheme = UidScheme.entries.first { it.value == value }
 

@@ -10,12 +10,10 @@ import org.bakasu.bakasu.BuildConfig
 import org.bakasu.bakasu.domain.model.HomeBasicInfo
 
 class HomeRuntimeRepository(
-    private val application: Application,
-) {
+    private val application: Application) {
     suspend fun getBasicInfo(
         managerUapiVersion: Int,
-        includeSelinuxStatus: Boolean = true,
-    ): HomeBasicInfo = withContext(Dispatchers.IO) {
+        includeSelinuxStatus: Boolean = true): HomeBasicInfo = withContext(Dispatchers.IO) {
         val uname = runCatching { Os.uname() }.getOrNull()
         HomeBasicInfo(
             kernelRelease = uname?.release ?: "Unknown",
@@ -24,15 +22,13 @@ class HomeRuntimeRepository(
             managerVersion = Triple(
                 BuildConfig.VERSION_NAME,
                 BuildConfig.VERSION_CODE,
-                managerUapiVersion,
-            ),
+                managerUapiVersion),
             selinuxStatus = if (includeSelinuxStatus) {
                 runCatching { getSELinuxStatus(application) }.getOrDefault("Unknown")
             } else {
                 ""
             },
-            seccompStatus = runCatching { Os.prctl(21, 0, 0, 0, 0) }.getOrDefault(-1),
-        )
+            seccompStatus = runCatching { Os.prctl(21, 0, 0, 0, 0) }.getOrDefault(-1))
     }
 
     @SuppressLint("PrivateApi")
@@ -43,8 +39,7 @@ class HomeRuntimeRepository(
             "ro.product.marketname",
             "ro.vendor.oplus.market.name",
             "ro.vivo.market.name",
-            "ro.config.marketing_name",
-        )
+            "ro.config.marketing_name")
         marketNameKeys.firstNotNullOfOrNull { key ->
             (getMethod.invoke(null, key, "") as? String)?.takeIf(String::isNotEmpty)
         } ?: getDeviceInfo()

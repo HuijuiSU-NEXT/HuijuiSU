@@ -16,14 +16,11 @@ import top.yukonga.miuix.kmp.nav.transition.navDirectionalTransition
 private val ClassicScaleMotion = NavMotion(
     commit = NavSettleSpec.Tween(
         durationMillis = 200,
-        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f),
-    ),
+        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)),
     cancel = NavSettleSpec.Spring(stiffness = 1500f),
     programmatic = NavSettleSpec.Tween(
         durationMillis = 200,
-        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f),
-    ),
-)
+        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)))
 
 private val ClassicScalePop: NavTransition = object : NavTransition {
     override val opaqueDepth: Float = 1f
@@ -49,8 +46,7 @@ private val ClassicScalePop: NavTransition = object : NavTransition {
                 translationX = snapTranslationToPixelEdge(
                     translation = -coverProgress(depth) * widthPx,
                     scale = 1f,
-                    extent = widthPx,
-                )
+                    extent = widthPx)
             }
         }.zIndex(zIndex)
     }
@@ -59,5 +55,4 @@ private val ClassicScalePop: NavTransition = object : NavTransition {
 internal val ClassicNavTransition: NavTransition = navDirectionalTransition(
     push = NavTransitions.MiuixDefault,
     pop = ClassicScalePop,
-    predictivePop = ClassicScalePop,
-)
+    predictivePop = ClassicScalePop)

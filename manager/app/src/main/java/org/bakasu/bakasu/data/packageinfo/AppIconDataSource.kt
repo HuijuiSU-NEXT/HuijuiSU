@@ -21,8 +21,7 @@ const val PER_USER_RANGE = 100000
 /** Loads package icons for platform surfaces such as the WebView bridge. */
 class AppIconDataSource(
     private val application: Application,
-    private val packageCache: InstalledPackageCache,
-) {
+    private val packageCache: InstalledPackageCache) {
     private val maxMemoryKb = Runtime.getRuntime().maxMemory() / 1024
     private val iconLoaders = ConcurrentHashMap<Int, AppIconLoader>()
     private val iconCache = object : LruCache<String, Bitmap>((maxMemoryKb / 8).toInt()) {
@@ -41,8 +40,7 @@ class AppIconDataSource(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             application.packageManager.getPackageInfo(
                 packageName,
-                PackageManager.PackageInfoFlags.of(0),
-            )
+                PackageManager.PackageInfoFlags.of(0))
         } else {
             @Suppress("DEPRECATION")
             application.packageManager.getPackageInfo(packageName, 0)
@@ -76,8 +74,7 @@ class AppIconDataSource(
             } catch (_: SecurityException) {
                 Log.d(
                     TAG,
-                    "Cannot load icon for user ${userId(applicationInfo.uid)}; retrying as the main user",
-                )
+                    "Cannot load icon for user ${userId(applicationInfo.uid)}; retrying as the main user")
                 markOtherProfileGroupUser(applicationInfo.uid)
                 loader.loadIcon(applicationInfo.withMainUserUid())
             }
@@ -107,8 +104,7 @@ class AppIconDataSource(
                 }
                 val hasBadge = UserManager::class.java.getMethod(
                     "hasBadge",
-                    Int::class.javaPrimitiveType,
-                )
+                    Int::class.javaPrimitiveType)
                 for (profile in userManager.userProfiles) {
                     val profileId = profile.hashCode()
                     if (hasBadge.invoke(userManager, profileId) == false) {

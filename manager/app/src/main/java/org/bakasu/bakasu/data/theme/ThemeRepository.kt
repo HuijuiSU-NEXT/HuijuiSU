@@ -7,8 +7,7 @@ import org.bakasu.bakasu.domain.model.coerceCompatibleWith
 
 class ThemeRepository(
     private val settings: AppSettingsRepository,
-    private val monetCompatColorSource: MonetCompatColorSource,
-) {
+    private val monetCompatColorSource: MonetCompatColorSource) {
     fun saveThemeMode(forceDark: Boolean?) {
         settings.putString(
             "theme_mode",
@@ -16,8 +15,7 @@ class ThemeRepository(
                 true -> "dark"
                 false -> "light"
                 null -> "system"
-            },
-        )
+            })
     }
 
     fun loadThemeMode(): Boolean? = when (settings.getString("theme_mode", "system")) {
@@ -54,8 +52,7 @@ class ThemeRepository(
 
     fun saveDynamicColorSpec(
         spec: ColorSpec.SpecVersion,
-        currentPaletteStyle: PaletteStyle,
-    ): PaletteStyle {
+        currentPaletteStyle: PaletteStyle): PaletteStyle {
         settings.putString("dynamic_color_spec", spec.name)
         val compatibleStyle = currentPaletteStyle.coerceCompatibleWith(spec)
         if (compatibleStyle != currentPaletteStyle) {
@@ -67,8 +64,7 @@ class ThemeRepository(
     fun loadDynamicColorSpec(): ColorSpec.SpecVersion {
         val specName = settings.getString(
             "dynamic_color_spec",
-            ColorSpec.SpecVersion.SPEC_2021.name,
-        )
+            ColorSpec.SpecVersion.SPEC_2021.name)
         return ColorSpec.SpecVersion.entries
             .find { it.name == specName }
             ?: ColorSpec.SpecVersion.SPEC_2021
@@ -76,8 +72,7 @@ class ThemeRepository(
 
     fun saveDynamicPaletteStyle(
         style: PaletteStyle,
-        spec: ColorSpec.SpecVersion,
-    ): PaletteStyle {
+        spec: ColorSpec.SpecVersion): PaletteStyle {
         val compatibleStyle = style.coerceCompatibleWith(spec)
         settings.putString("dynamic_palette_style", compatibleStyle.name)
         return compatibleStyle
@@ -86,8 +81,7 @@ class ThemeRepository(
     fun loadDynamicPaletteStyle(spec: ColorSpec.SpecVersion): PaletteStyle {
         val styleName = settings.getString(
             "dynamic_palette_style",
-            PaletteStyle.TonalSpot.name,
-        )
+            PaletteStyle.TonalSpot.name)
         val storedStyle = PaletteStyle.entries
             .find { it.name == styleName }
             ?: PaletteStyle.TonalSpot

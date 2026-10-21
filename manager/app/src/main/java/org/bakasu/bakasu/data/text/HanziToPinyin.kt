@@ -29,8 +29,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
     class Token(
         var type: Int = 0,
         var source: String = "",
-        var target: String = "",
-    ) {
+        var target: String = "") {
         companion object {
             const val LATIN = 1
             const val PINYIN = 2
@@ -248,8 +247,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
             '庢', '中', '州', '朱', '抓', '拽',
             '专', '妆', '隹', '宒', '卓', '乲',
             '宗', '邹', '租', '钻', '厜', '尊',
-            '昨', '兙', '鿃', '鿄',
-        )
+            '昨', '兙', '鿃', '鿄')
 
         val PINYINS = arrayOf(
             byteArrayOf(65, 0, 0, 0, 0, 0), byteArrayOf(65, 73, 0, 0, 0, 0),
@@ -463,8 +461,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
             byteArrayOf(90, 85, 0, 0, 0, 0), byteArrayOf(90, 85, 65, 78, 0, 0),
             byteArrayOf(90, 85, 73, 0, 0, 0), byteArrayOf(90, 85, 78, 0, 0, 0),
             byteArrayOf(90, 85, 79, 0, 0, 0), byteArrayOf(0, 0, 0, 0, 0, 0),
-            byteArrayOf(83, 72, 65, 78, 0, 0), byteArrayOf(0, 0, 0, 0, 0, 0),
-        )
+            byteArrayOf(83, 72, 65, 78, 0, 0), byteArrayOf(0, 0, 0, 0, 0, 0))
 
         private const val FIRST_PINYIN_UNIHAN = "阿"
         private const val LAST_PINYIN_UNIHAN = "鿿"
@@ -497,8 +494,7 @@ class HanziToPinyin private constructor(val hasChinaCollator: Boolean) : TextTra
                     Log.e(
                         TAG,
                         "Internal error in Unihan table. The last string \"$lastString\" " +
-                            "is greater than current string \"$curString\".",
-                    )
+                            "is greater than current string \"$curString\".")
                     return false
                 }
                 lastString = curString

@@ -107,8 +107,7 @@ import top.yukonga.miuix.kmp.shader.isRenderEffectSupported
 @Composable
 fun NavContainer(
     settingsViewModel: SettingsViewModel,
-    intentChannel: Channel<Intent>,
-) {
+    intentChannel: Channel<Intent>) {
     val themeConfig: ThemeConfig = koinInject()
     val backgroundRenderState = LocalBackgroundRenderState.current
     val activity = LocalActivity.current as MainActivity
@@ -120,8 +119,7 @@ fun NavContainer(
         StretchOverscrollCompensationState()
     }
     val overscrollFactory = rememberCustomOverscrollFactory(
-        compensationState = stretchOverscrollCompensationState,
-    )
+        compensationState = stretchOverscrollCompensationState)
 
     val density = remember(systemDensity, settings.dpi) {
         if (settings.dpi <= 0f) {
@@ -162,8 +160,7 @@ fun NavContainer(
             override fun requestPermission(
                 permission: String,
                 callback: (Boolean) -> Unit,
-                requestDescription: String,
-            ) {
+                requestDescription: String) {
                 if (activity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED) {
                     callback(true)
                     return
@@ -179,14 +176,12 @@ fun NavContainer(
 
                             if (requestDescription.isNotBlank() && ActivityCompat.shouldShowRequestPermissionRationale(
                                     activity,
-                                    permission,
-                                )
+                                    permission)
                             ) {
                                 Toast.makeText(
                                     context,
                                     requestDescription,
-                                    Toast.LENGTH_SHORT,
-                                ).show()
+                                    Toast.LENGTH_SHORT).show()
                             }
 
                             permissionRequestHandler.launch(arrayOf(permission))
@@ -198,8 +193,7 @@ fun NavContainer(
             override fun requestPermissions(
                 permissions: Array<String>,
                 callback: (Map<String, @JvmSuppressWildcards Boolean>) -> Unit,
-                requestDescription: Map<String, String>,
-            ) {
+                requestDescription: Map<String, String>) {
                 val permissionsToRequest = permissions.filter {
                     activity.checkSelfPermission(it) != PackageManager.PERMISSION_GRANTED
                 }.toTypedArray()
@@ -223,16 +217,14 @@ fun NavContainer(
                             permissionsToRequest.forEach { perm ->
                                 if (ActivityCompat.shouldShowRequestPermissionRationale(
                                         activity,
-                                        perm,
-                                    )
+                                        perm)
                                 ) {
                                     val msg = requestDescription[perm]
                                     if (!msg.isNullOrBlank()) {
                                         Toast.makeText(
                                             activity,
                                             msg,
-                                            Toast.LENGTH_SHORT,
-                                        ).show()
+                                            Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }
@@ -249,16 +241,14 @@ fun NavContainer(
 
     permissionRequestHandler = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions(),
-        onResult = permissionRequestInterface::onPermissionRequestCallback,
-    )
+        onResult = permissionRequestInterface::onPermissionRequestCallback)
 
     CompositionLocalProvider(
         LocalOverscrollFactory provides overscrollFactory,
         LocalStretchOverscrollCompensationState provides stretchOverscrollCompensationState,
         LocalPermissionRequestInterface provides permissionRequestInterface,
         LocalNavigator provides navigator,
-        LocalDensity provides density,
-    ) {
+        LocalDensity provides density) {
         IntentDispatcher(intentChannel)
         val navCornerRadius = rememberDeviceCornerRadius(defaultRadius = 0.dp)
         val roundAllCorners =
@@ -273,17 +263,14 @@ fun NavContainer(
                 cornerClipMode = if (roundAllCorners) NavCornerClipMode.All else NavCornerClipMode.Leading,
                 dimAmount = 0.5f,
                 backdropColor = backdropColor,
-                blockInputDuringTransition = false,
-            )
+                blockInputDuringTransition = false)
         }
         val transition = remember(
             settings.predictiveBackAnimation,
-            settings.predictiveBackExitDirection,
-        ) {
+            settings.predictiveBackExitDirection) {
             installerNavTransition(
                 animation = settings.predictiveBackAnimation,
-                exitDirection = settings.predictiveBackExitDirection,
-            )
+                exitDirection = settings.predictiveBackExitDirection)
         }
         val swipeBackDirection = if (settings.enableSwipeDismiss) {
             when (LocalLayoutDirection.current) {
@@ -300,16 +287,14 @@ fun NavContainer(
             backStack = backStack,
             onBack = onBack,
             transition = transition,
-            effects = effects,
-        ) {
+            effects = effects) {
             entry<Route.About>(swipeDismiss = swipeBackDirection) {
                 ManagerNavEntry(
                     interceptPredictiveBack = interceptPredictiveBack,
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     AboutScreen()
                 }
             }
@@ -319,8 +304,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     OpenSourceLicenseScreen()
                 }
             }
@@ -330,8 +314,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     SulogScreen()
                 }
             }
@@ -341,8 +324,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     MainScreen(pagerInterceptionMode = settings.pagerInterceptionMode)
                 }
             }
@@ -352,8 +334,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     AppProfileTemplateScreen()
                 }
             }
@@ -363,13 +344,11 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     TemplateEditorScreen(
                         templateId = key.templateId,
                         readOnly = key.readOnly,
-                        isCreation = key.isCreation,
-                    )
+                        isCreation = key.isCreation)
                 }
             }
             entry<Route.AppProfile>(swipeDismiss = swipeBackDirection) { key ->
@@ -378,8 +357,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     AppProfileScreen(key.uid, key.packageName)
                 }
             }
@@ -389,8 +367,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     ModuleRepoScreen()
                 }
             }
@@ -400,8 +377,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     OnlineModuleDetailScreen(key.moduleId)
                 }
             }
@@ -411,8 +387,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     InstallScreen(key.preselectedKernelUri)
                 }
             }
@@ -422,8 +397,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     FlashScreen(key.toFlashIt())
                 }
             }
@@ -433,8 +407,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     ExecuteModuleActionScreen(key.moduleId, key.fromShortcut)
                 }
             }
@@ -444,8 +417,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     MainScreen(pagerInterceptionMode = settings.pagerInterceptionMode)
                 }
             }
@@ -455,8 +427,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     MainScreen(pagerInterceptionMode = settings.pagerInterceptionMode)
                 }
             }
@@ -466,8 +437,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     MainScreen(pagerInterceptionMode = settings.pagerInterceptionMode)
                 }
             }
@@ -477,8 +447,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     MainScreen(pagerInterceptionMode = settings.pagerInterceptionMode)
                 }
             }
@@ -488,8 +457,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     ThemeSettingsScreen(settingsViewModel = settingsViewModel)
                 }
             }
@@ -499,8 +467,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     SuSFSConfigScreen()
                 }
             }
@@ -510,8 +477,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     UmountManagerScreen()
                 }
             }
@@ -521,8 +487,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     DynamicManagerScreen()
                 }
             }
@@ -532,8 +497,7 @@ fun NavContainer(
                     onBack = onBack,
                     themeConfig = themeConfig,
                     backgroundRenderState = backgroundRenderState,
-                    useBlur = useBlur,
-                ) {
+                    useBlur = useBlur) {
                     KernelFlashScreen(key.kernelUri, key.selectedSlot, key.skipKsud)
                 }
             }
@@ -548,14 +512,12 @@ private fun ManagerNavEntry(
     themeConfig: ThemeConfig,
     backgroundRenderState: BackgroundRenderState,
     useBlur: Boolean,
-    content: @Composable () -> Unit,
-) {
+    content: @Composable () -> Unit) {
     val navigationEventState = rememberNavigationEventState(NavigationEventInfo.None)
     NavigationBackHandler(
         state = navigationEventState,
         isBackEnabled = interceptPredictiveBack,
-        onBackCompleted = onBack,
-    )
+        onBackCompleted = onBack)
     val snackBarHostState = remember { androidx.compose.material3.SnackbarHostState() }
     var backgroundBlurAnchorCoordinates by remember {
         mutableStateOf<LayoutCoordinates?>(null)
@@ -571,20 +533,16 @@ private fun ManagerNavEntry(
         modifier = Modifier
             .fillMaxSize()
             .then(
-                if (backgroundRenderState.imagePainter == null) Modifier.background(MaterialTheme.colorScheme.surfaceContainer) else Modifier,
-            ),
-    ) {
+                if (backgroundRenderState.imagePainter == null) Modifier.background(MaterialTheme.colorScheme.surfaceContainer) else Modifier)) {
         val isPortrait = maxWidth < maxHeight || (maxHeight / maxWidth > 1.4f)
         val surfaceContainer = MaterialTheme.colorScheme.surfaceContainer
 
         CompositionLocalProvider(
             LocalPortraitState provides isPortrait,
             LocalBlurState provides rememberMaterial3BlurBackdrop(
-                enableBlur = useBlur,
-            ),
+                enableBlur = useBlur),
             LocalSnackbarHost provides snackBarHostState,
-            LocalBackgroundBlurAnchor provides backgroundBlurAnchorCoordinates,
-        ) {
+            LocalBackgroundBlurAnchor provides backgroundBlurAnchorCoordinates) {
             backgroundRenderState.imagePainter?.let { painter ->
                 val backgroundBitmap = backgroundRenderState.imageBitmap
                 // Draw the decoded bitmap once available so the background does
@@ -602,25 +560,19 @@ private fun ManagerNavEntry(
                         }
                         .paint(
                             painter = backgroundPainter,
-                            contentScale = ContentScale.Crop,
-                        )
+                            contentScale = ContentScale.Crop)
                         .drawWithContent {
                             drawContent()
                             drawRect(
                                 color = surfaceContainer.copy(
-                                    alpha = themeConfig.backgroundDim,
-                                ),
-                            )
-                        },
-                )
+                                    alpha = themeConfig.backgroundDim))
+                        })
             }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(
-                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal),
-                    ),
-            ) {
+                        WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal))) {
                 content()
             }
         }
@@ -636,8 +588,7 @@ private fun Route.Flash.toFlashIt(): FlashIt = when (flashType) {
         partition = partition,
         allowShell = allowShell,
         enableAdb = enableAdb,
-        forceBackup = forceBackup,
-    )
+        forceBackup = forceBackup)
 
     Route.Flash.TYPE_MODULE -> FlashIt.FlashModule(uris.firstOrNull().orEmpty())
 
@@ -663,8 +614,7 @@ private fun Route.Flash.toFlashIt(): FlashIt = when (flashType) {
 fun rememberMaterial3BlurBackdrop(
     enableBlur: Boolean,
     pagerState: PagerState? = null,
-    pagerPage: Int? = null,
-): LayerBackdrop? {
+    pagerPage: Int? = null): LayerBackdrop? {
     val themeConfig: ThemeConfig = koinInject()
     val backgroundRenderState = LocalBackgroundRenderState.current
     if (!enableBlur || !isRenderEffectSupported()) return null
@@ -724,8 +674,7 @@ fun rememberMaterial3BlurBackdrop(
                 ) {
                     val backgroundScale = maxOf(
                         backgroundWidth / backgroundBitmap.width,
-                        backgroundHeight / backgroundBitmap.height,
-                    )
+                        backgroundHeight / backgroundBitmap.height)
                     val renderedLeft =
                         (backgroundWidth - backgroundBitmap.width * backgroundScale) / 2f
                     val renderedTop =
@@ -733,17 +682,14 @@ fun rememberMaterial3BlurBackdrop(
 
                     translate(
                         left = -backgroundOffset + renderedLeft,
-                        top = renderedTop,
-                    ) {
+                        top = renderedTop) {
                         scale(
                             scaleX = backgroundScale,
                             scaleY = backgroundScale,
-                            pivot = Offset.Zero,
-                        ) {
+                            pivot = Offset.Zero) {
                             drawImage(
                                 image = backgroundBitmap,
-                                filterQuality = FilterQuality.Low,
-                            )
+                                filterQuality = FilterQuality.Low)
                         }
                     }
                 } else {
@@ -759,8 +705,7 @@ fun rememberMaterial3BlurBackdrop(
         }
 
         drawRect(
-            color = backgroundColor.copy(alpha = themeConfig.backgroundDim),
-        )
+            color = backgroundColor.copy(alpha = themeConfig.backgroundDim))
 
         drawContent()
     }

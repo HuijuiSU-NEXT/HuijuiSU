@@ -52,8 +52,7 @@ fun KeyPointSlider(
     showKeyPoints: Boolean = keyPoints != null || steps > 0,
     magnetThreshold: Float = 0.02f,
     colors: KeyPointSliderColors = keyPointSliderColors(),
-    onValueChangeFinished: (() -> Unit)? = null,
-) {
+    onValueChangeFinished: (() -> Unit)? = null) {
     require(steps >= 0) { "steps should be >= 0" }
     require(valueRange.start < valueRange.endInclusive) {
         "valueRange start should be less than endInclusive"
@@ -70,8 +69,7 @@ fun KeyPointSlider(
         computeTickValues(
             keyPoints = keyPoints,
             steps = steps,
-            valueRange = valueRange,
-        )
+            valueRange = valueRange)
     }
     val shouldAlwaysSnapToTick = keyPoints == null && steps > 0
 
@@ -81,15 +79,13 @@ fun KeyPointSlider(
             width = width,
             valueRange = valueRange,
             isRtl = layoutDirection == LayoutDirection.Rtl,
-            thumbWidthPx = with(density) { 4.dp.toPx() },
-        )
+            thumbWidthPx = with(density) { 4.dp.toPx() })
 
         val snappedValue = rawValue.snapToNearestTick(
             valueRange = valueRange,
             ticks = tickValues,
             magnetThreshold = magnetThreshold,
-            alwaysSnap = shouldAlwaysSnapToTick,
-        )
+            alwaysSnap = shouldAlwaysSnapToTick)
         currentOnValueChange(snappedValue)
         return snappedValue
     }
@@ -119,8 +115,7 @@ fun KeyPointSlider(
                         valueRange = valueRange,
                         ticks = tickValues,
                         magnetThreshold = magnetThreshold,
-                        alwaysSnap = shouldAlwaysSnapToTick,
-                    )
+                        alwaysSnap = shouldAlwaysSnapToTick)
                     if (snappedValue != value) {
                         currentOnValueChange(snappedValue)
                     }
@@ -132,15 +127,13 @@ fun KeyPointSlider(
                 progressBarRangeInfo = ProgressBarRangeInfo(
                     current = value.coerceIn(valueRange.start, valueRange.endInclusive),
                     range = valueRange,
-                    steps = steps,
-                )
+                    steps = steps)
                 setProgress { target ->
                     val snappedValue = target.snapToNearestTick(
                         valueRange = valueRange,
                         ticks = tickValues,
                         magnetThreshold = magnetThreshold,
-                        alwaysSnap = shouldAlwaysSnapToTick,
-                    )
+                        alwaysSnap = shouldAlwaysSnapToTick)
                     if (snappedValue == value) {
                         false
                     } else {
@@ -149,8 +142,7 @@ fun KeyPointSlider(
                         true
                     }
                 }
-            },
-    ) {
+            }) {
         drawKeyPointSlider(
             value = value,
             valueRange = valueRange,
@@ -163,8 +155,7 @@ fun KeyPointSlider(
             } else {
                 emptyList()
             },
-            colors = colors,
-        )
+            colors = colors)
     }
 }
 
@@ -179,8 +170,7 @@ fun keyPointSliderColors(): KeyPointSliderColors = KeyPointSliderColors(
     disabledActiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
     disabledActiveTickColor = MaterialTheme.colorScheme.surface,
     disabledInactiveTrackColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f),
-    disabledInactiveTickColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
-)
+    disabledInactiveTickColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f))
 
 @Immutable
 data class KeyPointSliderColors(
@@ -193,8 +183,7 @@ data class KeyPointSliderColors(
     val disabledActiveTrackColor: Color,
     val disabledActiveTickColor: Color,
     val disabledInactiveTrackColor: Color,
-    val disabledInactiveTickColor: Color,
-)
+    val disabledInactiveTickColor: Color)
 
 private fun DrawScope.drawKeyPointSlider(
     value: Float,
@@ -204,8 +193,7 @@ private fun DrawScope.drawKeyPointSlider(
     isDragging: Boolean,
     drawStopIndicator: Boolean,
     tickFractions: List<Float>,
-    colors: KeyPointSliderColors,
-) {
+    colors: KeyPointSliderColors) {
     val coercedValue = value.coerceIn(valueRange.start, valueRange.endInclusive)
     val fraction = coercedValue.calcFraction(valueRange.start, valueRange.endInclusive)
     val visualFraction = if (isRtl) 1f - fraction else fraction
@@ -235,8 +223,7 @@ private fun DrawScope.drawKeyPointSlider(
             top = trackTop,
             height = trackHeight,
             startCorner = trackInsideCorner,
-            endCorner = trackCorner,
-        )
+            endCorner = trackCorner)
         drawTrackSegment(
             color = inactiveTrackColor,
             startX = minX,
@@ -244,8 +231,7 @@ private fun DrawScope.drawKeyPointSlider(
             top = trackTop,
             height = trackHeight,
             startCorner = trackCorner,
-            endCorner = trackInsideCorner,
-        )
+            endCorner = trackInsideCorner)
     } else {
         drawTrackSegment(
             color = activeTrackColor,
@@ -254,8 +240,7 @@ private fun DrawScope.drawKeyPointSlider(
             top = trackTop,
             height = trackHeight,
             startCorner = trackCorner,
-            endCorner = trackInsideCorner,
-        )
+            endCorner = trackInsideCorner)
         drawTrackSegment(
             color = inactiveTrackColor,
             startX = gapEnd,
@@ -263,8 +248,7 @@ private fun DrawScope.drawKeyPointSlider(
             top = trackTop,
             height = trackHeight,
             startCorner = trackInsideCorner,
-            endCorner = trackCorner,
-        )
+            endCorner = trackCorner)
     }
 
     val stopIndicatorX = if (isRtl) minX + trackCorner else maxX - trackCorner
@@ -272,8 +256,7 @@ private fun DrawScope.drawKeyPointSlider(
         drawCircle(
             color = activeTrackColor,
             radius = stopIndicatorSize / 2f,
-            center = Offset(stopIndicatorX, centerY),
-        )
+            center = Offset(stopIndicatorX, centerY))
     }
 
     val tickGapStart = min(gapStart, gapEnd) - tickSize / 2f
@@ -289,16 +272,14 @@ private fun DrawScope.drawKeyPointSlider(
         drawCircle(
             color = colors.tickColorCompat(enabled, active),
             radius = tickSize / 2f,
-            center = Offset(x, centerY),
-        )
+            center = Offset(x, centerY))
     }
 
     drawRoundRect(
         color = colors.thumbColorCompat(enabled),
         topLeft = Offset(thumbX - thumbWidth / 2f, centerY - thumbHeight / 2f),
         size = Size(thumbWidth, thumbHeight),
-        cornerRadius = CornerRadius(thumbWidth / 2f, thumbWidth / 2f),
-    )
+        cornerRadius = CornerRadius(thumbWidth / 2f, thumbWidth / 2f))
 }
 
 private val trackPath = Path()
@@ -310,8 +291,7 @@ private fun DrawScope.drawTrackSegment(
     top: Float,
     height: Float,
     startCorner: Float,
-    endCorner: Float,
-) {
+    endCorner: Float) {
     if (endX <= startX) return
 
     val segmentWidth = endX - startX
@@ -322,14 +302,11 @@ private fun DrawScope.drawTrackSegment(
         RoundRect(
             rect = Rect(
                 offset = Offset(startX, top),
-                size = Size(segmentWidth, height),
-            ),
+                size = Size(segmentWidth, height)),
             topLeft = CornerRadius(leftCorner, leftCorner),
             bottomLeft = CornerRadius(leftCorner, leftCorner),
             topRight = CornerRadius(rightCorner, rightCorner),
-            bottomRight = CornerRadius(rightCorner, rightCorner),
-        ),
-    )
+            bottomRight = CornerRadius(rightCorner, rightCorner)))
     drawPath(trackPath, color)
     trackPath.rewind()
 }
@@ -337,8 +314,7 @@ private fun DrawScope.drawTrackSegment(
 private fun computeTickValues(
     keyPoints: List<Float>?,
     steps: Int,
-    valueRange: ClosedFloatingPointRange<Float>,
-): List<Float> {
+    valueRange: ClosedFloatingPointRange<Float>): List<Float> {
     val rawTicks = keyPoints ?: if (steps > 0) {
         List(steps + 2) { index ->
             lerp(valueRange.start, valueRange.endInclusive, index.toFloat() / (steps + 1))
@@ -358,8 +334,7 @@ private fun positionToValue(
     width: Float,
     valueRange: ClosedFloatingPointRange<Float>,
     isRtl: Boolean,
-    thumbWidthPx: Float,
-): Float {
+    thumbWidthPx: Float): Float {
     val minX = thumbWidthPx / 2f
     val maxX = max(width - thumbWidthPx / 2f, minX)
     val visualFraction = ((x - minX) / (maxX - minX).coerceAtLeast(1f)).coerceIn(0f, 1f)
@@ -372,8 +347,7 @@ private fun Float.snapToNearestTick(
     valueRange: ClosedFloatingPointRange<Float>,
     ticks: List<Float>,
     magnetThreshold: Float,
-    alwaysSnap: Boolean,
-): Float {
+    alwaysSnap: Boolean): Float {
     val coerced = coerceIn(valueRange.start, valueRange.endInclusive)
     if (ticks.isEmpty()) return coerced
 

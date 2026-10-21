@@ -80,8 +80,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
     }
 
     val pickFile = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent(),
-    ) { uri ->
+        ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             selectedUri = uri
             scope.launch(Dispatchers.IO) {
@@ -100,8 +99,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
     }
 
     val pickInitBoot = rememberLauncherForActivityResult(
-        ActivityResultContracts.GetContent(),
-    ) { uri ->
+        ActivityResultContracts.GetContent()) { uri ->
         if (uri != null) {
             initBootUri = uri
             initBootName = uri.lastPathSegment?.substringAfterLast('/') ?: "init_boot.img"
@@ -167,8 +165,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
             },
             dismissButton = {
                 TextButton(onClick = { showConfirm = false }) { Text("取消") }
-            },
-        )
+            })
     }
 
     Dialog(onDismissRequest = { if (!running) onDismiss() }) {
@@ -178,16 +175,13 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.Build,
                     iconTint = MaterialTheme.colorScheme.secondary,
                     title = "刷入定制内核",
-                    subtitle = "built-in 模式专用",
-                )
+                    subtitle = "built-in 模式专用")
                 Spacer(Modifier.height(16.dp))
 
                 Card(
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest),
+                    modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.padding(12.dp)) {
                         Text("当前设备信息", style = MaterialTheme.typography.labelMedium)
                         Spacer(Modifier.height(6.dp))
@@ -208,8 +202,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
                 OutlinedButton(
                     onClick = { pickFile.launch("*/*") },
                     enabled = !running,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                    modifier = Modifier.fillMaxWidth()) {
                     Text(if (selectedUri == null) "选择 boot.img" else "重新选择")
                 }
 
@@ -235,8 +228,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
                 OutlinedButton(
                     onClick = { pickInitBoot.launch("*/*") },
                     enabled = !running,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                    modifier = Modifier.fillMaxWidth()) {
                     Text(
                         if (initBootUri == null)
                             "选择原厂 init_boot.img（推荐）"
@@ -277,8 +269,7 @@ fun HuijuiFlashCustom(onDismiss: () -> Unit) {
                     Spacer(Modifier.width(8.dp))
                     Button(
                         enabled = selectedUri != null && !running && (fileType == "kernel" || fileType == "lkm"),
-                        onClick = { showConfirm = true },
-                    ) { Text(if (running) "刷入中..." else "开始刷入") }
+                        onClick = { showConfirm = true }) { Text(if (running) "刷入中..." else "开始刷入") }
                 }
             }
         }
@@ -306,8 +297,7 @@ private suspend fun doFlash(
     uri: Uri,
     initBootUri: Uri?,
     slot: String,
-    onLog: suspend (String) -> Unit,
-): Result<Unit> = withContext(Dispatchers.IO) {
+    onLog: suspend (String) -> Unit): Result<Unit> = withContext(Dispatchers.IO) {
     try {
         val tmp = File(context.cacheDir, "flash_custom_tmp.img")
         if (!tmp.exists()) {
@@ -317,8 +307,7 @@ private suspend fun doFlash(
 
         val backupDir = File(
             Environment.getExternalStorageDirectory(),
-            "HuiJuiSU_Backup_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}",
-        )
+            "HuiJuiSU_Backup_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}")
         backupDir.mkdirs()
         onLog("备份目录：${backupDir.absolutePath}")
         val bootImg = File(backupDir, "boot_${slot}.img")
@@ -411,8 +400,7 @@ private fun runShell(cmd: String): String =
 private suspend fun doLkmInstall(
     context: Context,
     uri: Uri,
-    onLog: suspend (String) -> Unit,
-): Result<Unit> = withContext(Dispatchers.IO) {
+    onLog: suspend (String) -> Unit): Result<Unit> = withContext(Dispatchers.IO) {
     try {
         val tmp = File(context.cacheDir, "lkm_install_tmp.ko")
         onLog("复制 .ko 到临时目录 ...")

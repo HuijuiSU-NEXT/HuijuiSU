@@ -23,8 +23,7 @@ data class KernelFlashUiState(
     val selectedSlot: String? = null,
     val flash: FlashProgress = FlashProgress(),
     val fullLog: String = "",
-    val autoExit: Boolean = false,
-)
+    val autoExit: Boolean = false)
 
 sealed interface KernelFlashUiAction {
     data class Start(val uri: String, val selectedSlot: String?, val skipKsud: Boolean = false) : KernelFlashUiAction
@@ -41,20 +40,17 @@ class KernelFlashViewModel(
     private val startKernelFlash: StartKernelFlashUseCase,
     getBooleanPreference: GetBooleanPreferenceUseCase,
     private val removePreference: RemovePreferenceUseCase,
-    private val reboot: RebootUseCase,
-) : ViewModel() {
+    private val reboot: RebootUseCase) : ViewModel() {
     private val autoExit = MutableStateFlow(getBooleanPreference(AUTO_EXIT_KEY, false))
     val state: StateFlow<KernelFlashUiState> = combine(
         observeKernelFlash(),
-        autoExit,
-    ) { session, shouldAutoExit ->
+        autoExit) { session, shouldAutoExit ->
         KernelFlashUiState(
             requestUri = session.requestUri,
             selectedSlot = session.selectedSlot,
             flash = session.progress,
             fullLog = session.fullLog,
-            autoExit = shouldAutoExit,
-        )
+            autoExit = shouldAutoExit)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, KernelFlashUiState(autoExit = autoExit.value))
 
     private val mutableEvents = MutableSharedFlow<KernelFlashUiEvent>(extraBufferCapacity = 1)

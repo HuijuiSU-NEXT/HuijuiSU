@@ -32,8 +32,7 @@ class SettingsPlatformRepository(
     private val backgroundManager: BackgroundManager,
     private val cardConfig: CardConfig,
     private val localeHelper: LocaleHelper,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private companion object {
         private val secureRandom = SecureRandom()
     }
@@ -44,8 +43,7 @@ class SettingsPlatformRepository(
         themeConfig.useDynamicColor = themeRepository.loadDynamicColorState()
         themeConfig.dynamicColorSpec = themeRepository.loadDynamicColorSpec()
         themeConfig.dynamicPaletteStyle = themeRepository.loadDynamicPaletteStyle(
-            themeConfig.dynamicColorSpec,
-        )
+            themeConfig.dynamicColorSpec)
         themeConfig.useBuiltinMonoFont = settings.getBoolean("use_builtin_monospace_font", false)
         backgroundManager.loadCustomBackground()
         val systemDpi = application.resources.displayMetrics.densityDpi
@@ -88,13 +86,11 @@ class SettingsPlatformRepository(
             useBuiltinMonoFont = themeConfig.useBuiltinMonoFont,
             useSoftReboot = settings.getBoolean("use_soft_reboot", false),
             enableSwipeDismiss = settings.getBoolean("enable_swipe_dismiss", true),
-            pagerInterceptionMode = settings.getInt("pager_interception_mode", 1).coerceIn(0, 2),
-        )
+            pagerInterceptionMode = settings.getInt("pager_interception_mode", 1).coerceIn(0, 2))
     }
 
     suspend fun updateAppearance(
-        setting: AppearanceSetting,
-    ): Result<SettingsPlatformSnapshot> = try {
+        setting: AppearanceSetting): Result<SettingsPlatformSnapshot> = try {
         when (setting) {
             is AppearanceSetting.ThemeMode -> setThemeMode(setting.index)
 
@@ -111,25 +107,21 @@ class SettingsPlatformRepository(
             is AppearanceSetting.DynamicColorSpec -> {
                 themeConfig.dynamicPaletteStyle = themeRepository.saveDynamicColorSpec(
                     setting.spec,
-                    themeConfig.dynamicPaletteStyle,
-                )
+                    themeConfig.dynamicPaletteStyle)
                 themeConfig.dynamicColorSpec = setting.spec
             }
 
             is AppearanceSetting.DynamicPaletteStyle -> {
                 themeConfig.dynamicPaletteStyle = themeRepository.saveDynamicPaletteStyle(
                     setting.style,
-                    themeConfig.dynamicColorSpec,
-                )
+                    themeConfig.dynamicColorSpec)
             }
 
             is AppearanceSetting.CustomBackground -> {
                 check(
                     backgroundManager.saveAndApplyCustomBackground(
                         application,
-                        setting.uri.toUri(),
-                    ),
-                )
+                        setting.uri.toUri()))
                 backgroundManager.saveBackgroundDim(0.3f)
                 backgroundManager.saveEnableBlur(true)
                 backgroundManager.saveEnableBlurExp(false)
@@ -162,8 +154,7 @@ class SettingsPlatformRepository(
     }
 
     fun updatePlatform(
-        setting: PlatformSetting,
-    ): Result<SettingsPlatformSnapshot> = try {
+        setting: PlatformSetting): Result<SettingsPlatformSnapshot> = try {
         when (setting) {
             PlatformSetting.InitializeFirstRun -> initializeFirstRun()
 
@@ -245,8 +236,7 @@ class SettingsPlatformRepository(
             }.getOrDefault(""),
             selinuxHideStatus = runCatching {
                 ksuCliRepository.getFeatureStatus("selinux_hide")
-            }.getOrDefault(""),
-        )
+            }.getOrDefault(""))
     }
 
     private fun setThemeMode(index: Int) {
@@ -302,8 +292,7 @@ class SettingsPlatformRepository(
             } else {
                 PackageManager.COMPONENT_ENABLED_STATE_DISABLED
             },
-            PackageManager.DONT_KILL_APP,
-        )
+            PackageManager.DONT_KILL_APP)
         settings.putBoolean("auto_jailbreak", enabled)
     }
 
@@ -321,20 +310,17 @@ class SettingsPlatformRepository(
         application.packageManager.setComponentEnabledSetting(
             if (useAlt) alias else main,
             PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-            PackageManager.DONT_KILL_APP,
-        )
+            PackageManager.DONT_KILL_APP)
         application.packageManager.setComponentEnabledSetting(
             if (useAlt) main else alias,
             PackageManager.COMPONENT_ENABLED_STATE_DISABLED,
-            PackageManager.DONT_KILL_APP,
-        )
+            PackageManager.DONT_KILL_APP)
     }
 
     private fun loadModuleUpdatePreference(): Boolean {
         val enabled = settings.getBoolean(
             "check_module_update",
-            settings.getBoolean("check_update", true),
-        )
+            settings.getBoolean("check_update", true))
         if (!settings.contains("check_module_update")) {
             settings.putBoolean("check_module_update", enabled)
         }

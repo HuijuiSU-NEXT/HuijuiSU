@@ -25,8 +25,7 @@ data class SettingsPlatformSnapshot(
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
     val enableSwipeDismiss: Boolean = true,
-    val pagerInterceptionMode: Int = 1,
-)
+    val pagerInterceptionMode: Int = 1)
 
 data class PlatformFeatureStatus(
     val suCompatPersistValue: Long? = null,
@@ -35,8 +34,7 @@ data class PlatformFeatureStatus(
     val adbRootStatus: String = "",
     val adbRootEnabled: Boolean = false,
     val sulogStatus: String = "",
-    val selinuxHideStatus: String = "",
-)
+    val selinuxHideStatus: String = "")
 
 sealed interface AppearanceSetting {
     data class ThemeMode(val index: Int) : AppearanceSetting
@@ -56,8 +54,7 @@ private val spec2025IncompatiblePaletteStyles = setOf(
     PaletteStyle.FruitSalad,
     PaletteStyle.Monochrome,
     PaletteStyle.Fidelity,
-    PaletteStyle.Content,
-)
+    PaletteStyle.Content)
 
 fun PaletteStyle.isCompatibleWith(spec: ColorSpec.SpecVersion): Boolean = spec != ColorSpec.SpecVersion.SPEC_2025 || this !in spec2025IncompatiblePaletteStyles
 

@@ -46,8 +46,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun SusPathTab(
     nestedScrollConnection: NestedScrollConnection,
     innerPadding: PaddingValues,
-    onRegisterRefresh: SuSFSRefreshRegistrar,
-) {
+    onRegisterRefresh: SuSFSRefreshRegistrar) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -90,8 +89,7 @@ fun SusPathTab(
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .nestedScroll(nestedScrollConnection),
-    ) {
+            .nestedScroll(nestedScrollConnection)) {
         item {
             Spacer(Modifier.height(innerPadding.calculateTopPadding()))
         }
@@ -99,8 +97,7 @@ fun SusPathTab(
         item {
             SuSFSDescriptionCard(
                 title = stringResource(R.string.sus_loop_paths_description_title),
-                description = stringResource(R.string.sus_loop_paths_description_text),
-            )
+                description = stringResource(R.string.sus_loop_paths_description_text))
         }
 
         susfsEntryList(
@@ -109,14 +106,12 @@ fun SusPathTab(
             emptyTitle = noEntriesMsg,
             emptyDescription = noEntriesHint,
             entryKey = { it.path },
-            onAddEntry = { showManualAdd = true },
-        ) { item ->
+            onAddEntry = { showManualAdd = true }) { item ->
             SettingsJumpPageWidget(
                 iconPlaceholder = false,
                 title = item.path,
                 description = if (item.is_loop) isLoopLabel else null,
-                onClick = { detailItem = item },
-            )
+                onClick = { detailItem = item })
         }
 
         item {
@@ -146,8 +141,7 @@ fun SusPathTab(
                         SuSFSUiAction.AddSusPath(
                             path = path,
                             loop = selectedSubtype == subtypeLoop,
-                            reply = reply,
-                        )
+                            reply = reply)
                     }
                     if (ok) {
                         successCount++
@@ -185,13 +179,10 @@ fun SusPathTab(
                     enabled = !isLoading,
                     lineLimits = TextFieldLineLimits.MultiLine(
                         minHeightInLines = 4,
-                        maxHeightInLines = 8,
-                    ),
-                    renderBackgroundBlur = false,
-                )
+                        maxHeightInLines = 8),
+                    renderBackgroundBlur = false)
             }
-        },
-    )
+        })
 
     detailItem?.let { item ->
         EntryDetailDialog(
@@ -199,8 +190,7 @@ fun SusPathTab(
             title = detailTitle,
             fields = listOf(
                 pathLabel to item.path,
-                isLoopLabel to if (item.is_loop) isLoopLabel else isNotLoopLabel,
-            ),
+                isLoopLabel to if (item.is_loop) isLoopLabel else isNotLoopLabel),
             onDismiss = { detailItem = null },
             onDelete = {
                 scope.launch {
@@ -221,7 +211,6 @@ fun SusPathTab(
                     }
                     isLoading = false
                 }
-            },
-        )
+            })
     }
 }

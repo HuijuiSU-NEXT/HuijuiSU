@@ -35,8 +35,7 @@ data class InnerShadow(
     val offset: DpOffset = DpOffset(0.dp, radius),
     val color: Color = Color.Black.copy(alpha = 0.15f),
     val alpha: Float = 1f,
-    val blendMode: BlendMode = DrawScope.DefaultBlendMode,
-) {
+    val blendMode: BlendMode = DrawScope.DefaultBlendMode) {
     companion object {
         @Stable
         val Default: InnerShadow = InnerShadow()
@@ -45,13 +44,11 @@ data class InnerShadow(
 
 fun Modifier.innerShadow(
     shape: Shape,
-    shadow: () -> InnerShadow?,
-): Modifier = this then InnerShadowElement(shape, shadow)
+    shadow: () -> InnerShadow?): Modifier = this then InnerShadowElement(shape, shadow)
 
 private class InnerShadowElement(
     val shape: Shape,
-    val shadow: () -> InnerShadow?,
-) : ModifierNodeElement<InnerShadowNode>() {
+    val shadow: () -> InnerShadow?) : ModifierNodeElement<InnerShadowNode>() {
 
     override fun create(): InnerShadowNode = InnerShadowNode(shape, shadow)
 
@@ -84,8 +81,7 @@ private class InnerShadowElement(
 
 private class InnerShadowNode(
     var shape: Shape,
-    var shadow: () -> InnerShadow?,
-) : Modifier.Node(),
+    var shadow: () -> InnerShadow?) : Modifier.Node(),
     DrawModifierNode {
 
     override val shouldAutoInvalidate: Boolean = false

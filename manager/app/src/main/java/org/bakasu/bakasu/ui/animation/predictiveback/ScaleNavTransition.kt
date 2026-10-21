@@ -19,14 +19,11 @@ import top.yukonga.miuix.kmp.nav.transition.navGraphicsTransition
 private val ScaleExitMotion = NavMotion(
     commit = NavSettleSpec.Tween(
         durationMillis = 200,
-        easing = FastOutSlowInEasing,
-    ),
+        easing = FastOutSlowInEasing),
     cancel = NavSettleSpec.Spring(stiffness = 1500f),
     programmatic = NavSettleSpec.Tween(
         durationMillis = 200,
-        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f),
-    ),
-)
+        easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)))
 
 internal fun scaleNavTransition(exitDirection: PredictiveBackExitDirection): NavTransition {
     val pop = navGraphicsTransition(
@@ -42,8 +39,7 @@ internal fun scaleNavTransition(exitDirection: PredictiveBackExitDirection): Nav
 
                 else -> coverProgress(scope.relativeDepth)
             }
-        },
-    ) { scope ->
+        }) { scope ->
         val depth = scope.relativeDepth
         val widthPx = scope.layoutSize.width.toFloat()
         val heightPx = scope.layoutSize.height.toFloat()
@@ -69,8 +65,7 @@ internal fun scaleNavTransition(exitDirection: PredictiveBackExitDirection): Nav
             scaleY = scaleX
             transformOrigin = TransformOrigin(
                 pivotFractionX = pivotX,
-                pivotFractionY = pivotY,
-            )
+                pivotFractionY = pivotY)
             val rawTranslationX = if (gesture != null && scope.settle == null) {
                 0f
             } else if (outgoingCommit) {
@@ -84,29 +79,25 @@ internal fun scaleNavTransition(exitDirection: PredictiveBackExitDirection): Nav
                 translation = rawTranslationX,
                 scale = scaleX,
                 extent = widthPx,
-                pivotFraction = pivotX,
-            )
+                pivotFraction = pivotX)
             translationY = snapTranslationToPixelEdge(
                 translation = 0f,
                 scale = scaleY,
                 extent = heightPx,
-                pivotFraction = pivotY,
-            )
+                pivotFraction = pivotY)
         }
     }
     return navDirectionalTransition(
         push = NavTransitions.MiuixDefault,
         pop = pop,
-        predictivePop = pop,
-    )
+        predictivePop = pop)
 }
 
 private fun shapedTopProgress(progress: Float, gesture: NavGesture?): Float = if (gesture == null) progress else 1f - BackGestureEasing.transform((1f - progress).coerceIn(0f, 1f))
 
 private fun exitDirectionSign(
     direction: PredictiveBackExitDirection,
-    scope: NavTransitionScope,
-): Float = when (direction) {
+    scope: NavTransitionScope): Float = when (direction) {
     PredictiveBackExitDirection.FOLLOW_GESTURE ->
         if (scope.gesture?.swipeEdge == NavSwipeEdge.Left) 1f else -1f
 

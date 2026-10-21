@@ -47,8 +47,7 @@ data class SuperUserUiState(
     val currentSortType: SortType = SortType.NAME,
     val reverseOrder: Boolean = false,
     val managerUids: Set<Int> = emptySet(),
-    val isRefreshing: Boolean = false,
-)
+    val isRefreshing: Boolean = false)
 
 sealed interface SuperUserUiAction {
     data object LoadInitialData : SuperUserUiAction
@@ -66,16 +65,14 @@ sealed interface SuperUserUiEvent {
     data class Error(val message: String) : SuperUserUiEvent
     data class AllowlistOperationFinished(
         val result: AllowlistOperationResult,
-        val restore: Boolean,
-    ) : SuperUserUiEvent
+        val restore: Boolean) : SuperUserUiEvent
 }
 
 private data class SuperUserControls(
     val search: String = "",
     val showSystemApps: Boolean = false,
     val sortType: SortType = SortType.NAME,
-    val reverseOrder: Boolean = false,
-)
+    val reverseOrder: Boolean = false)
 
 class SuperUserViewModel(
     observeSuperUserState: ObserveSuperUserStateUseCase,
@@ -87,19 +84,15 @@ class SuperUserViewModel(
     private val setBooleanPreference: SetBooleanPreferenceUseCase,
     private val setStringPreference: SetStringPreferenceUseCase,
     private val transliterateText: TransliterateTextUseCase,
-    private val getManagerRuntimeInfo: GetManagerRuntimeInfoUseCase,
-) : ViewModel() {
+    private val getManagerRuntimeInfo: GetManagerRuntimeInfoUseCase) : ViewModel() {
     private val sourceState = observeSuperUserState()
     private val controls = MutableStateFlow(
         SuperUserControls(
             showSystemApps = getBooleanPreference(KEY_SHOW_SYSTEM_APPS, false),
             sortType = SortType.fromPersistKey(
                 getStringPreference(KEY_CURRENT_SORT_TYPE, SortType.NAME.persistKey)
-                    ?: SortType.NAME.persistKey,
-            ),
-            reverseOrder = getBooleanPreference(KEY_REVERSE_ORDER, false),
-        ),
-    )
+                    ?: SortType.NAME.persistKey),
+            reverseOrder = getBooleanPreference(KEY_REVERSE_ORDER, false)))
     private val mutableEvents = MutableSharedFlow<SuperUserUiEvent>(extraBufferCapacity = 1)
     private var refreshJob: Job? = null
     val events: SharedFlow<SuperUserUiEvent> = mutableEvents.asSharedFlow()
@@ -116,8 +109,7 @@ class SuperUserViewModel(
     val state: StateFlow<SuperUserUiState> = combine(
         sourceState,
         controls,
-        managerUids,
-    ) { source, local, uids ->
+        managerUids) { source, local, uids ->
         SuperUserUiState(
             appGroupList = buildAppGroupList(
                 groups = source.groups,
@@ -125,15 +117,13 @@ class SuperUserViewModel(
                 showSystemApps = local.showSystemApps,
                 currentSortType = local.sortType,
                 reverseOrder = local.reverseOrder,
-                managerUids = uids,
-            ),
+                managerUids = uids),
             search = local.search,
             showSystemApps = local.showSystemApps,
             currentSortType = local.sortType,
             reverseOrder = local.reverseOrder,
             managerUids = uids,
-            isRefreshing = source.refreshing,
-        )
+            isRefreshing = source.refreshing)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, SuperUserUiState())
     val uiState: StateFlow<SuperUserUiState> = state
 
@@ -147,9 +137,7 @@ class SuperUserViewModel(
                 mutableEvents.emit(
                     SuperUserUiEvent.AllowlistOperationFinished(
                         result = backupAllowlistUseCase(action.uri),
-                        restore = false,
-                    ),
-                )
+                        restore = false))
             }
 
             is SuperUserUiAction.RestoreAllowlist -> viewModelScope.launch {
@@ -160,9 +148,7 @@ class SuperUserViewModel(
                 mutableEvents.emit(
                     SuperUserUiEvent.AllowlistOperationFinished(
                         result = result,
-                        restore = true,
-                    ),
-                )
+                        restore = true))
             }
 
             is SuperUserUiAction.Search ->
@@ -211,8 +197,7 @@ class SuperUserViewModel(
         showSystemApps: Boolean,
         currentSortType: SortType,
         reverseOrder: Boolean,
-        managerUids: Set<Int>,
-    ): List<InstalledAppGroup> = groups
+        managerUids: Set<Int>): List<InstalledAppGroup> = groups
         .filter { group ->
             group.apps.any { app ->
                 app.label.contains(search, true) ||

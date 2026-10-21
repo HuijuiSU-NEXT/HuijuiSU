@@ -79,8 +79,7 @@ private fun MainContent(activity: ComponentActivity, onFinish: () -> Unit) {
             packageRepository,
             appIconDataSource,
             webUiRepository,
-            { currentColorsCss.value },
-        )
+            { currentColorsCss.value })
     }
 
     DisposableEffect(Unit) {

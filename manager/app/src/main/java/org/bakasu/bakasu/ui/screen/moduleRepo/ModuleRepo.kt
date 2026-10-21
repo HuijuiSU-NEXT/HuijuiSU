@@ -138,16 +138,14 @@ fun ModuleRepoScreen() {
     val snackBarHost = LocalSnackbarHost.current
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = rememberSearchAppBarScrollBehavior(
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState),
-    )
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState))
     val currentModuleForChooseDialog = remember { mutableStateOf<CatalogModule?>(null) }
     val chooseDialog = rememberCustomDialog({ dismiss ->
         ChooseDialogContent(
             currentModuleForChooseDialog,
             enqueueDownload,
             observeDownload,
-            dismiss,
-        )
+            dismiss)
     })
     val confirmDialog = rememberConfirmDialog()
     var showDropdown by remember { mutableStateOf(false) }
@@ -174,82 +172,70 @@ fun ModuleRepoScreen() {
                 },
                 dropdownContent = {
                     IconButton(
-                        onClick = { showDropdown = true },
-                    ) {
+                        onClick = { showDropdown = true }) {
                         Icon(
                             imageVector = Icons.TwoTone.MoreVert,
-                            contentDescription = stringResource(id = R.string.settings),
-                        )
+                            contentDescription = stringResource(id = R.string.settings))
 
                         ModuleRepoDropdown(
                             expanded = showDropdown,
                             onDismissRequest = { showDropdown = false },
                             viewModel = viewModel,
-                            uiState = uiState,
-                        )
+                            uiState = uiState)
                     }
                 },
                 onBackClick = {
                     navigator.pop()
                 },
                 scrollBehavior = scrollBehavior,
-                searchBarPlaceHolderText = stringResource(R.string.search_modules),
-            )
+                searchBarPlaceHolderText = stringResource(R.string.search_modules))
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
-    ) { innerPadding ->
+        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) }) { innerPadding ->
         if (uiEvent is ModuleRepoUiEvent.Error && !uiState.offline) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .blurSource()
                     .padding(innerPadding),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier
                         .clip(RoundedCornerShape(16.dp))
                         .renderBackgroundBlur(MaterialTheme.colorScheme.surfaceContainer)
                         .padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+                    horizontalAlignment = Alignment.CenterHorizontally) {
                     Box(
                         modifier = Modifier
                             .size(64.dp)
                             .clip(CircleShape)
                             .background(MaterialTheme.colorScheme.surfaceVariant),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                        contentAlignment = Alignment.Center) {
                         Icon(
                             imageVector = Icons.TwoTone.Warning,
                             contentDescription = null,
                             modifier = Modifier.size(32.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                        )
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Spacer(Modifier.height(12.dp))
 
                     Text(
                         text = stringResource(R.string.internal_server_error),
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.titleMediumEmphasized,
-                    )
+                        style = MaterialTheme.typography.titleMediumEmphasized)
                     Spacer(modifier = Modifier.height(1.dp))
 
                     Text(
                         text = (uiEvent as ModuleRepoUiEvent.Error).message,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        style = MaterialTheme.typography.bodyMediumEmphasized,
-                    )
+                        style = MaterialTheme.typography.bodyMediumEmphasized)
                     Spacer(modifier = Modifier.height(10.dp))
 
                     Button(
                         contentPadding = PaddingValues(horizontal = 50.dp),
-                        onClick = refreshModules,
-                    ) {
+                        onClick = refreshModules) {
                         Text(text = stringResource(R.string.network_retry))
                     }
                 }
@@ -261,32 +247,27 @@ fun ModuleRepoScreen() {
                 modifier = Modifier
                     .fillMaxSize()
                     .blurSource()
-                    .padding(innerPadding),
-            )
+                    .padding(innerPadding))
         } else if (uiState.modules.isEmpty() && uiState.search.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .blurSource()
                     .padding(24.dp),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
+                    verticalArrangement = Arrangement.Center) {
                     Icon(
                         imageVector = Icons.TwoTone.Extension,
                         contentDescription = null,
                         modifier = Modifier
                             .size(96.dp)
-                            .padding(bottom = 16.dp),
-                    )
+                            .padding(bottom = 16.dp))
                     Text(
                         text = stringResource(R.string.search_no_any_match),
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                        style = MaterialTheme.typography.bodyLarge)
                 }
             }
         } else {
@@ -303,10 +284,8 @@ fun ModuleRepoScreen() {
                         isRefreshing = uiState.isRefreshing,
                         modifier = Modifier
                             .padding(top = innerPadding.calculateTopPadding())
-                            .align(Alignment.TopCenter),
-                    )
-                },
-            ) {
+                            .align(Alignment.TopCenter))
+                }) {
                 LazyColumn(
                     state = rememberLazyListState(),
                     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -315,10 +294,8 @@ fun ModuleRepoScreen() {
                             start = 16.dp,
                             top = 0.dp,
                             end = 16.dp,
-                            bottom = 0.dp,
-                        )
-                    },
-                ) {
+                            bottom = 0.dp)
+                    }) {
                     item {
                         Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
                     }
@@ -328,8 +305,7 @@ fun ModuleRepoScreen() {
                             module,
                             confirmDialog,
                             chooseDialog,
-                            currentModuleForChooseDialog,
-                        )
+                            currentModuleForChooseDialog)
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     item {
@@ -347,15 +323,12 @@ private fun ModuleRepoDropdown(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
     viewModel: ModuleRepoViewModel,
-    uiState: ModuleRepoUiState,
-) {
+    uiState: ModuleRepoUiState) {
     DropdownMenuPopup(
         expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
+        onDismissRequest = onDismissRequest) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShapes(),
-        ) {
+            shapes = MenuDefaults.groupShapes()) {
             CheckableDropdownMenuItem(
                 checked = uiState.sortStargazerCountFirst,
                 onCheckedChange = {
@@ -364,9 +337,7 @@ private fun ModuleRepoDropdown(
                 text = { Text(stringResource(R.string.module_sort_star_first)) },
                 shapes = MenuDefaults.itemShape(
                     index = 0,
-                    count = 1,
-                ),
-            )
+                    count = 1))
         }
     }
 }
@@ -376,8 +347,7 @@ fun OnlineModuleItem(
     module: CatalogModule,
     confirmDialog: ConfirmDialogHandle,
     chooseDialog: DialogHandle,
-    currentModuleForChooseDialog: MutableState<CatalogModule?>,
-) {
+    currentModuleForChooseDialog: MutableState<CatalogModule?>) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val context = LocalContext.current
@@ -399,29 +369,24 @@ fun OnlineModuleItem(
             .clickable {
                 navigator.push(Route.ModuleRepoDetail(module.moduleId))
             }
-            .renderBackgroundBlur(),
-    ) {
+            .renderBackgroundBlur()) {
         Column(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
-                .padding(top = 12.dp),
-        ) {
+                .padding(top = 12.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
+                verticalAlignment = Alignment.CenterVertically) {
                 val moduleVersion = stringResource(id = R.string.module_version)
                 val moduleAuthor = stringResource(id = R.string.module_author)
 
                 Column(
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
+                    modifier = Modifier.fillMaxWidth()) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                    ) {
+                        horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = module.moduleName,
                             style = MaterialTheme.typography.titleMedium,
@@ -430,27 +395,23 @@ fun OnlineModuleItem(
                                 .weight(1f)
                                 .horizontalScroll(rememberScrollState()),
                             softWrap = true,
-                            maxLines = 1,
-                        )
+                            maxLines = 1)
                         if (module.stargazerCount > 0) {
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.End,
-                            ) {
+                                horizontalArrangement = Arrangement.End) {
                                 Icon(
                                     imageVector = Icons.TwoTone.Star,
                                     contentDescription = "stars",
                                     tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.size(16.dp),
-                                )
+                                    modifier = Modifier.size(16.dp))
                                 Text(
                                     text = module.stargazerCount.toString(),
                                     fontSize = 12.sp,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    modifier = Modifier.padding(start = 4.dp),
-                                )
+                                    modifier = Modifier.padding(start = 4.dp))
                             }
                         }
                     }
@@ -459,15 +420,13 @@ fun OnlineModuleItem(
                         text = "$moduleVersion: ${module.latestRelease} (${module.latestVersionCode})",
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
-                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                    )
+                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily)
 
                     Text(
                         text = "$moduleAuthor: ${module.authors}",
                         fontSize = MaterialTheme.typography.bodySmall.fontSize,
                         lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
-                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                    )
+                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily)
                 }
             }
             Spacer(modifier = Modifier.height(12.dp))
@@ -478,31 +437,26 @@ fun OnlineModuleItem(
                 lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
                 fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 4,
-            )
+                maxLines = 4)
             Spacer(modifier = Modifier.height(12.dp))
 
             // 文件夹名称和metamodule标签
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+                modifier = Modifier.fillMaxWidth()) {
                 LabelText(
                     label = module.moduleId,
-                    containerColor = MaterialTheme.colorScheme.primary,
-                )
+                    containerColor = MaterialTheme.colorScheme.primary)
                 if (module.metamodule) {
                     LabelText(
                         label = "META",
-                        containerColor = MaterialTheme.colorScheme.tertiary,
-                    )
+                        containerColor = MaterialTheme.colorScheme.tertiary)
                 }
                 if (module.installed) {
                     LabelText(
                         label = stringResource(R.string.installed),
-                        containerColor = MaterialTheme.colorScheme.secondary,
-                    )
+                        containerColor = MaterialTheme.colorScheme.secondary)
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
@@ -521,14 +475,11 @@ fun OnlineModuleItem(
                             start = 12.dp,
                             top = 7.dp,
                             end = 12.dp,
-                            bottom = 7.dp,
-                        ),
-                    ) {
+                            bottom = 7.dp)) {
                         Icon(
                             modifier = Modifier.size(20.dp),
                             imageVector = Icons.TwoTone.WebAsset,
-                            contentDescription = null,
-                        )
+                            contentDescription = null)
                     }
                     Spacer(Modifier.width(10.dp))
 
@@ -542,8 +493,7 @@ fun OnlineModuleItem(
                                     val result = confirmDialog.awaitConfirm(
                                         title = confirmInstallTitle,
                                         html = true,
-                                        content = module.latestAsset.descriptionHTML,
-                                    )
+                                        content = module.latestAsset.descriptionHTML)
 
                                     if (result == ConfirmResult.Canceled) return@launch
 
@@ -558,8 +508,7 @@ fun OnlineModuleItem(
                                                 navigator,
                                                 coroutineScope,
                                                 enqueueDownload,
-                                                observeDownload,
-                                            )
+                                                observeDownload)
                                         }
                                     } else {
                                         currentModuleForChooseDialog.value = module
@@ -571,14 +520,11 @@ fun OnlineModuleItem(
                                 start = 12.dp,
                                 top = 7.dp,
                                 end = 12.dp,
-                                bottom = 7.dp,
-                            ),
-                        ) {
+                                bottom = 7.dp)) {
                             Icon(
                                 modifier = Modifier.size(20.dp),
                                 imageVector = Icons.TwoTone.Download,
-                                contentDescription = null,
-                            )
+                                contentDescription = null)
                         }
                     }
                 }
@@ -595,8 +541,7 @@ fun downloadAssetAndInstall(
     navigator: Navigator,
     coroutineScope: CoroutineScope,
     enqueueDownload: EnqueueDownloadUseCase,
-    observeDownload: ObserveDownloadUseCase,
-) {
+    observeDownload: ObserveDownloadUseCase) {
     val downloadingText = context.getText(R.string.module_downloading).toString()
     coroutineScope.launch {
         withContext(Dispatchers.IO) {
@@ -609,15 +554,13 @@ fun downloadAssetAndInstall(
                 observeDownload = observeDownload,
                 onDownloaded = { uri ->
                     navigator.push(
-                        Route.Flash.module(uri.toString()),
-                    )
+                        Route.Flash.module(uri.toString()))
                 },
                 onDownloading = {
                     launch(Dispatchers.Main) {
                         Toast.makeText(context, downloadingText.format(module.moduleName), Toast.LENGTH_SHORT).show()
                     }
-                },
-            )
+                })
         }
     }
 }
@@ -627,8 +570,7 @@ fun ChooseDialogContent(
     currentModuleForChooseDialog: MutableState<CatalogModule?>,
     enqueueDownload: EnqueueDownloadUseCase,
     observeDownload: ObserveDownloadUseCase,
-    dismiss: () -> Unit,
-) {
+    dismiss: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
     val context = LocalContext.current
@@ -641,32 +583,27 @@ fun ChooseDialogContent(
     var selectedAsset by remember { mutableStateOf<ModuleReleaseAsset?>(null) }
 
     Dialog(
-        onDismissRequest = { dismiss() },
-    ) {
+        onDismissRequest = { dismiss() }) {
         ElevatedCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp),
-            shape = RoundedCornerShape(16.dp),
-        ) {
+            shape = RoundedCornerShape(16.dp)) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
-            ) {
+                verticalArrangement = Arrangement.Center) {
                 Text(
                     text = stringResource(R.string.assets_multiple_select_dialog_title),
                     style = MaterialTheme.typography.titleMedium,
-                    textAlign = TextAlign.Center,
-                )
+                    textAlign = TextAlign.Center)
                 Spacer(modifier = Modifier.height(10.dp))
 
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
+                    verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     items(module.latestAsset.assets) { asset ->
                         Row(
                             modifier = Modifier
@@ -674,24 +611,20 @@ fun ChooseDialogContent(
                                 .clip(shape = RoundedCornerShape(24.dp))
                                 .clickable { selectedAsset = asset }
                                 .padding(vertical = 12.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                        ) {
+                            verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(
                                 selected = selectedAsset == asset,
-                                onClick = null,
-                            )
+                                onClick = null)
                             Spacer(modifier = Modifier.width(8.dp))
 
                             Column {
                                 Text(
                                     text = asset.name,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                )
+                                    style = MaterialTheme.typography.bodyMedium)
                                 Text(
                                     text = stringResource(R.string.assets_multiple_select_dialog_content_description, formatFileSize(asset.size), asset.downloadCount),
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                )
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
                     }
@@ -701,8 +634,7 @@ fun ChooseDialogContent(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End,
-                ) {
+                    horizontalArrangement = Arrangement.End) {
                     TextButton(onClick = { dismiss() }) {
                         Text(stringResource(android.R.string.cancel))
                     }
@@ -723,11 +655,9 @@ fun ChooseDialogContent(
                                     navigator = navigator,
                                     coroutineScope = coroutineScope,
                                     enqueueDownload = enqueueDownload,
-                                    observeDownload = observeDownload,
-                                )
+                                    observeDownload = observeDownload)
                             }
-                        },
-                    ) {
+                        }) {
                         Text(stringResource(android.R.string.ok))
                     }
                 }
@@ -746,9 +676,7 @@ fun initFakeRepoModuleForPreview(): CatalogModule = CatalogModule(
         add(
             CatalogAuthor(
                 name = "name",
-                link = "link",
-            ),
-        )
+                link = "link"))
     },
     summary = "I am a test module and i do nothing but show a very long description",
     metamodule = true,
@@ -769,24 +697,18 @@ fun initFakeRepoModuleForPreview(): CatalogModule = CatalogModule(
                     name = "name",
                     downloadUrl = "downloadUrl",
                     size = 0,
-                    downloadCount = 0,
-                ),
-            )
+                    downloadCount = 0))
             add(
                 ModuleReleaseAsset(
                     name = "name2",
                     downloadUrl = "downloadUrl2",
                     size = 0,
-                    downloadCount = 0,
-                ),
-            )
-        },
-    ),
+                    downloadCount = 0))
+        }),
     installed = true,
     readme = "README",
     sourceUrl = "Source URL",
-    releases = emptyList(),
-)
+    releases = emptyList())
 
 @Preview(locale = "en")
 @Composable
@@ -799,24 +721,20 @@ private fun OnlineModuleItemPreview() {
             override fun requestPermission(
                 permission: String,
                 callback: (Boolean) -> Unit,
-                requestDescription: String,
-            ) {
+                requestDescription: String) {
             }
 
             override fun requestPermissions(
                 permissions: Array<String>,
                 callback: (Map<String, @JvmSuppressWildcards Boolean>) -> Unit,
-                requestDescription: Map<String, String>,
-            ) {
+                requestDescription: Map<String, String>) {
             }
-        },
-    ) {
+        }) {
         OnlineModuleItem(
             initFakeRepoModuleForPreview(),
             rememberConfirmDialog(),
             rememberCustomDialog { },
-            currentModuleForChooseDialog,
-        )
+            currentModuleForChooseDialog)
     }
 }
 
@@ -832,22 +750,18 @@ private fun ChooseDialogPreview() {
             override fun requestPermission(
                 permission: String,
                 callback: (Boolean) -> Unit,
-                requestDescription: String,
-            ) {
+                requestDescription: String) {
             }
 
             override fun requestPermissions(
                 permissions: Array<String>,
                 callback: (Map<String, @JvmSuppressWildcards Boolean>) -> Unit,
-                requestDescription: Map<String, String>,
-            ) {
+                requestDescription: Map<String, String>) {
             }
-        },
-    ) {
+        }) {
         ChooseDialogContent(
             currentModuleForChooseDialog,
             koinInject<EnqueueDownloadUseCase>(),
-            koinInject<ObserveDownloadUseCase>(),
-        ) {}
+            koinInject<ObserveDownloadUseCase>()) {}
     }
 }

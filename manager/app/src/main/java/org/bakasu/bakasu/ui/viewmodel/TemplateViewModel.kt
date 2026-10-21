@@ -23,8 +23,7 @@ data class TemplateUiState(
     val profileTemplates: List<String> = emptyList(),
     val profileTemplateNames: List<String> = emptyList(),
     val isRefreshing: Boolean = false,
-    val isOffline: Boolean = false,
-)
+    val isOffline: Boolean = false)
 
 sealed interface TemplateUiAction {
     data class Refresh(val synchronize: Boolean = false) : TemplateUiAction
@@ -45,16 +44,14 @@ class TemplateViewModel(
     observeOffline: ObserveProfileTemplateOfflineUseCase,
     private val refreshTemplates: RefreshProfileTemplatesUseCase,
     private val importTemplatesUseCase: ImportProfileTemplatesUseCase,
-    private val exportTemplatesUseCase: ExportProfileTemplatesUseCase,
-) : ViewModel() {
+    private val exportTemplatesUseCase: ExportProfileTemplatesUseCase) : ViewModel() {
     private val mutableEvents = MutableSharedFlow<TemplateUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<TemplateUiEvent> = mutableEvents.asSharedFlow()
 
     val state: StateFlow<TemplateUiState> = combine(
         observeTemplates(),
         observeRefreshing(),
-        observeOffline(),
-    ) { templates, refreshing, offline ->
+        observeOffline()) { templates, refreshing, offline ->
         TemplateUiState(
             templateList = templates,
             profileTemplates = templates.map(ProfileTemplate::id),
@@ -62,8 +59,7 @@ class TemplateViewModel(
                 template.name.ifBlank { template.id }
             },
             isRefreshing = refreshing,
-            isOffline = offline,
-        )
+            isOffline = offline)
     }.stateIn(viewModelScope, SharingStarted.Eagerly, TemplateUiState())
     val uiState: StateFlow<TemplateUiState> = state
 
@@ -84,15 +80,13 @@ class TemplateViewModel(
                 val result = importTemplatesUseCase(action.json)
                 result.fold(
                     onSuccess = { mutableEvents.emit(TemplateUiEvent.ImportCompleted) },
-                    onFailure = { mutableEvents.emit(TemplateUiEvent.Error(it.message.orEmpty())) },
-                )
+                    onFailure = { mutableEvents.emit(TemplateUiEvent.Error(it.message.orEmpty())) })
             }
 
             TemplateUiAction.Export -> viewModelScope.launch {
                 exportTemplatesUseCase().fold(
                     onSuccess = { mutableEvents.emit(TemplateUiEvent.Exported(it)) },
-                    onFailure = { mutableEvents.emit(TemplateUiEvent.ExportEmpty) },
-                )
+                    onFailure = { mutableEvents.emit(TemplateUiEvent.ExportEmpty) })
             }
         }
     }

@@ -8,8 +8,7 @@ sealed interface FlashOperation {
         val partition: String?,
         val allowShell: Boolean = false,
         val enableAdb: Boolean = false,
-        val forceBackup: Boolean = false,
-    ) : FlashOperation
+        val forceBackup: Boolean = false) : FlashOperation
 
     data class Module(val uri: String) : FlashOperation
     data object Restore : FlashOperation

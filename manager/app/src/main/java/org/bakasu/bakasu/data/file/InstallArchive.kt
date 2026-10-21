@@ -12,8 +12,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile
 internal fun <T> withInstallArchive(
     context: Context,
     uri: Uri,
-    read: (ZipFile) -> T,
-): T {
+    read: (ZipFile) -> T): T {
     val archive = File.createTempFile("install-archive-", ".zip", context.cacheDir)
     try {
         // 修复点1：增加严密的异常捕获，防止高版本权限过期导致崩溃

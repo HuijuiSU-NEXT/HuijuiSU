@@ -38,8 +38,7 @@ class SuFilePathHandler(
     private val webUiRepository: WebUiRepository,
     private val insetsSupplier: InsetsSupplier,
     private val onInsetsRequestedListener: ((Boolean) -> Unit)?,
-    private val colorsCssProvider: () -> String,
-) : WebViewAssetLoader.PathHandler {
+    private val colorsCssProvider: () -> String) : WebViewAssetLoader.PathHandler {
 
     private val directory: File
 
@@ -48,14 +47,12 @@ class SuFilePathHandler(
             this.directory = File(getCanonicalDirPath(directory))
             if (!isAllowedInternalStorageDir()) {
                 throw IllegalArgumentException(
-                    "The given directory \"$directory\" doesn't exist under an allowed app internal storage directory",
-                )
+                    "The given directory \"$directory\" doesn't exist under an allowed app internal storage directory")
             }
         } catch (e: IOException) {
             throw IllegalArgumentException(
                 "Failed to resolve the canonical path for the given directory: ${directory.path}",
-                e,
-            )
+                e)
         }
     }
 
@@ -97,8 +94,7 @@ class SuFilePathHandler(
             return WebResourceResponse(
                 "text/css",
                 "utf-8",
-                ByteArrayInputStream(css.toByteArray(StandardCharsets.UTF_8)),
-            )
+                ByteArrayInputStream(css.toByteArray(StandardCharsets.UTF_8)))
         }
 
         if (path == "internal/colors.css") {
@@ -106,8 +102,7 @@ class SuFilePathHandler(
             return WebResourceResponse(
                 "text/css",
                 "utf-8",
-                ByteArrayInputStream(css.toByteArray(StandardCharsets.UTF_8)),
-            )
+                ByteArrayInputStream(css.toByteArray(StandardCharsets.UTF_8)))
         }
 
         try {
@@ -120,8 +115,7 @@ class SuFilePathHandler(
             } else {
                 Log.e(
                     TAG,
-                    "The requested file: $path is outside the mounted directory: $directory",
-                )
+                    "The requested file: $path is outside the mounted directory: $directory")
             }
         } catch (e: IOException) {
             Log.e(TAG, "Error opening the requested path: $path", e)

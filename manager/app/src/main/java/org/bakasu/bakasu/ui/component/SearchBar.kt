@@ -107,8 +107,7 @@ private val SearchBarExpandedHeight = 77.dp
 @Stable
 class SearchAppBarScrollBehavior internal constructor(
     private val topAppBarScrollBehavior: TopAppBarScrollBehavior,
-    private val searchBarHeight: Float,
-) : TopAppBarScrollBehavior {
+    private val searchBarHeight: Float) : TopAppBarScrollBehavior {
     private var searchBarHeightOffset by mutableFloatStateOf(0f)
     private var lastSearchBarScrollDelta = 0f
     private var isUserScrollInProgress = false
@@ -157,11 +156,9 @@ class SearchAppBarScrollBehavior internal constructor(
 
         AnimationState(
             initialValue = searchBarHeightOffset,
-            initialVelocity = initialVelocity,
-        ).animateTo(
+            initialVelocity = initialVelocity).animateTo(
             targetValue = targetOffset,
-            animationSpec = snapAnimationSpec ?: spring(),
-        ) {
+            animationSpec = snapAnimationSpec ?: spring()) {
             searchBarHeightOffset = value.coerceIn(-searchBarHeight, 0f)
         }
         lastSearchBarScrollDelta = 0f
@@ -176,8 +173,7 @@ class SearchAppBarScrollBehavior internal constructor(
                 if (ignoreCurrentScroll || available.y >= 0f) {
                     return topAppBarScrollBehavior.nestedScrollConnection.onPreScroll(
                         available,
-                        source,
-                    )
+                        source)
                 }
 
                 val previousOffset = searchBarHeightOffset
@@ -188,21 +184,18 @@ class SearchAppBarScrollBehavior internal constructor(
 
                 return topAppBarScrollBehavior.nestedScrollConnection.onPreScroll(
                     available,
-                    source,
-                )
+                    source)
             }
 
             override fun onPostScroll(
                 consumed: Offset,
                 available: Offset,
-                source: NestedScrollSource,
-            ): Offset {
+                source: NestedScrollSource): Offset {
                 val topAppBarConsumed =
                     topAppBarScrollBehavior.nestedScrollConnection.onPostScroll(
                         consumed,
                         available,
-                        source,
-                    )
+                        source)
 
                 if (ignoreCurrentScroll || available.y <= 0f) return topAppBarConsumed
 
@@ -218,8 +211,7 @@ class SearchAppBarScrollBehavior internal constructor(
                 if (available.y < 0f && searchBarHeightOffset > -searchBarHeight) {
                     animateSearchBarTo(
                         targetOffset = -searchBarHeight,
-                        initialVelocity = available.y,
-                    )
+                        initialVelocity = available.y)
                     return available.copy(x = 0f)
                 }
 
@@ -228,15 +220,13 @@ class SearchAppBarScrollBehavior internal constructor(
 
             override suspend fun onPostFling(
                 consumed: Velocity,
-                available: Velocity,
-            ): Velocity {
+                available: Velocity): Velocity {
                 isUserScrollInProgress = false
                 if (ignoreCurrentScroll) {
                     ignoreCurrentScroll = false
                     return topAppBarScrollBehavior.nestedScrollConnection.onPostFling(
                         consumed,
-                        available,
-                    )
+                        available)
                 }
 
                 if (searchBarHeightOffset > -searchBarHeight && searchBarHeightOffset < 0f) {
@@ -245,16 +235,14 @@ class SearchAppBarScrollBehavior internal constructor(
                             (available.y == 0f && lastSearchBarScrollDelta > 0f)
                     animateSearchBarTo(
                         targetOffset = if (shouldExpand) 0f else -searchBarHeight,
-                        initialVelocity = available.y,
-                    )
+                        initialVelocity = available.y)
                     return available.copy(x = 0f)
                 }
 
                 val topAppBarConsumed =
                     topAppBarScrollBehavior.nestedScrollConnection.onPostFling(
                         consumed,
-                        available,
-                    )
+                        available)
                 val remainingY = available.y - topAppBarConsumed.y
                 if (
                     remainingY > 0f &&
@@ -263,8 +251,7 @@ class SearchAppBarScrollBehavior internal constructor(
                 ) {
                     animateSearchBarTo(
                         targetOffset = 0f,
-                        initialVelocity = remainingY,
-                    )
+                        initialVelocity = remainingY)
                     return Velocity(topAppBarConsumed.x, available.y)
                 }
                 return topAppBarConsumed
@@ -275,14 +262,12 @@ class SearchAppBarScrollBehavior internal constructor(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun rememberSearchAppBarScrollBehavior(
-    topAppBarScrollBehavior: TopAppBarScrollBehavior,
-): SearchAppBarScrollBehavior {
+    topAppBarScrollBehavior: TopAppBarScrollBehavior): SearchAppBarScrollBehavior {
     val density = LocalDensity.current
     return remember(topAppBarScrollBehavior, density) {
         SearchAppBarScrollBehavior(
             topAppBarScrollBehavior = topAppBarScrollBehavior,
-            searchBarHeight = with(density) { SearchBarExpandedHeight.toPx() },
-        )
+            searchBarHeight = with(density) { SearchBarExpandedHeight.toPx() })
     }
 }
 
@@ -299,8 +284,7 @@ private fun Modifier.collapseWithTopAppBar(expandedFraction: Float): Modifier = 
     layout(placeable.width, visibleHeight) {
         placeable.placeRelative(
             x = 0,
-            y = visibleHeight - placeable.height,
-        )
+            y = visibleHeight - placeable.height)
     }
 }
 
@@ -316,8 +300,7 @@ private fun CompactSearchBar(
     interactionSource: MutableInteractionSource? = null,
     shape: Shape = inputFieldShape,
     requestFocus: Boolean = false,
-    onFocusRequestHandled: () -> Unit = {},
-) {
+    onFocusRequestHandled: () -> Unit = {}) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val focusManager = LocalFocusManager.current
@@ -390,16 +373,14 @@ private fun CompactSearchBar(
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = cardConfig.cardAlpha)
-                },
-            )
+                })
             .heightIn(0.dp, 45.dp)
             .focusRequester(focusRequester)
             .focusProperties {
                 canFocus = allowFocus
             },
         textStyle = MaterialTheme.typography.bodyMedium.copy(
-            color = MaterialTheme.colorScheme.onSurface,
-        ),
+            color = MaterialTheme.colorScheme.onSurface),
         interactionSource = interactionSource,
         onKeyboardAction = {
             onSearch(textFieldState.text.toString())
@@ -435,18 +416,14 @@ private fun CompactSearchBar(
                             colors.containerColor(
                                 enabled = true,
                                 isError = false,
-                                focused = focused,
-                            ),
-                        animationSpec = MaterialTheme.motionScheme.fastEffectsSpec(),
-                    )
+                                focused = focused),
+                        animationSpec = MaterialTheme.motionScheme.fastEffectsSpec())
                 Box(Modifier.textFieldBackground(containerColor::value, shape))
             },
             enabled = true,
             lineLimits = TextFieldLineLimits.SingleLine,
             interactionSource = interactionSource,
-            outputTransformation = null,
-        ),
-    )
+            outputTransformation = null))
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -459,8 +436,7 @@ fun SearchAppBar(
     dropdownContent: @Composable (() -> Unit)? = null,
     navigationContent: @Composable (() -> Unit)? = null,
     scrollBehavior: TopAppBarScrollBehavior? = null,
-    searchBarPlaceHolderText: String,
-) {
+    searchBarPlaceHolderText: String) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val textFieldState = rememberTextFieldState(initialText = searchText)
@@ -536,16 +512,14 @@ fun SearchAppBar(
             scrollBehavior = scrollBehavior,
             title = {
                 Text(
-                    text = title,
-                )
+                    text = title)
             },
             navigationIcon = {
                 if (onBackClick != null) {
                     AppBackButton(
                         onClick = {
                             onBackClick.invoke()
-                        },
-                    )
+                        })
                 } else {
                     navigationContent?.invoke()
                 }
@@ -554,23 +528,19 @@ fun SearchAppBar(
                 AnimatedVisibility(
                     visible = isSearchBarCollapsed,
                     enter = fadeIn(),
-                    exit = fadeOut(),
-                ) {
+                    exit = fadeOut()) {
                     IconButton(
                         onClick = {
                             searchAppBarScrollBehavior?.expandSearchBar()
                             requestSearchFocus = true
-                        },
-                    ) {
+                        }) {
                         Icon(
                             imageVector = Icons.TwoTone.Search,
-                            contentDescription = searchBarPlaceHolderText,
-                        )
+                            contentDescription = searchBarPlaceHolderText)
                     }
                 }
                 dropdownContent?.invoke()
             },
-            ,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor =
                     if (themeConfig.isEnableBlur) {
@@ -583,9 +553,7 @@ fun SearchAppBar(
                         Color.Transparent
                     } else {
                         MaterialTheme.colorScheme.surfaceContainer.copy(alpha = cardConfig.cardAlpha)
-                    },
-            ),
-        )
+                    }))
 
         AnimatedVisibility(
             visible = !isSearchBarCollapsed,
@@ -594,8 +562,7 @@ fun SearchAppBar(
             modifier = Modifier
                 .fillMaxWidth()
                 .alpha(searchBarExpansionFraction)
-                .collapseWithTopAppBar(searchBarExpansionFraction),
-        ) {
+                .collapseWithTopAppBar(searchBarExpansionFraction)) {
             Column {
                 CompactSearchBar(
                     modifier = Modifier
@@ -611,21 +578,18 @@ fun SearchAppBar(
                     placeholder = {
                         Text(
                             text = searchBarPlaceHolderText,
-                            style = MaterialTheme.typography.bodyLarge,
-                        )
+                            style = MaterialTheme.typography.bodyLarge)
                     },
                     leadingIcon = {
                         Icon(
                             Icons.TwoTone.Search,
                             contentDescription = null,
-                            modifier = Modifier.padding(start = 8.dp),
-                        )
+                            modifier = Modifier.padding(start = 8.dp))
                     },
                     requestFocus = requestSearchFocus,
                     onFocusRequestHandled = {
                         requestSearchFocus = false
-                    },
-                )
+                    })
 
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -641,6 +605,5 @@ private fun SearchAppBarPreview() {
         title = "",
         searchText = "",
         onSearchTextChange = {},
-        searchBarPlaceHolderText = "",
-    )
+        searchBarPlaceHolderText = "")
 }

@@ -188,8 +188,7 @@ fun FlashScreen(flashIt: FlashIt) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center,
-                ) {
+                    horizontalArrangement = Arrangement.Center) {
                     Text(text = stringResource(R.string.warning_of_meta_module_title))
                 }
             },
@@ -207,8 +206,7 @@ fun FlashScreen(flashIt: FlashIt) {
                 }) {
                     Text(text = stringResource(id = R.string.learn_more))
                 }
-            },
-        )
+            })
     }
 
     // 当前模块安装状态
@@ -313,8 +311,7 @@ fun FlashScreen(flashIt: FlashIt) {
     if (needJailbreakWarning && !flashEnabled) {
         JailbreakFlashWarningDialog(
             onConfirm = { flashEnabled = true },
-            onDismiss = { navigator.pop() },
-        )
+            onDismiss = { navigator.pop() })
     }
 
     // 安装但排除更新模块
@@ -339,12 +336,10 @@ fun FlashScreen(flashIt: FlashIt) {
                         context,
                         currentUri,
                         extractModuleName,
-                        isModuleUriAccessible,
-                    )
+                        isModuleUriAccessible)
                     currentModuleName = moduleName
                     flashViewModel.dispatch(
-                        FlashUiAction.UpdateModule(currentModuleName = moduleName),
-                    )
+                        FlashUiAction.UpdateModule(currentModuleName = moduleName))
                     text = installingModuleString.format(flashIt.currentIndex + 1, flashIt.uris.size, moduleName)
                     logContent.append(text).append("\n")
                 } catch (_: Exception) {
@@ -361,9 +356,7 @@ fun FlashScreen(flashIt: FlashIt) {
                     if (flashIt is FlashIt.FlashModules) {
                         flashViewModel.dispatch(
                             FlashUiAction.UpdateModule(
-                                failedModule = currentModuleName,
-                            ),
-                        )
+                                failedModule = currentModuleName))
                     }
                 } else {
                     flashViewModel.dispatch(FlashUiAction.SetStatus(FlashingStatus.SUCCESS))
@@ -397,13 +390,11 @@ fun FlashScreen(flashIt: FlashIt) {
 
                 if (flashIt is FlashIt.FlashModules && flashIt.currentIndex < flashIt.uris.size - 1) {
                     val nextFlashIt = flashIt.copy(
-                        currentIndex = flashIt.currentIndex + 1,
-                    )
+                        currentIndex = flashIt.currentIndex + 1)
                     scope.launch {
                         delay(500.milliseconds)
                         navigator.replace(
-                            Route.Flash.modules(nextFlashIt.uris, nextFlashIt.currentIndex),
-                        )
+                            Route.Flash.modules(nextFlashIt.uris, nextFlashIt.currentIndex))
                     }
                 }
             }, onStdout = {
@@ -460,14 +451,12 @@ fun FlashScreen(flashIt: FlashIt) {
                         val date = format.format(Date())
                         val file = File(
                             Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
-                            "KernelSU_install_log_$date.log",
-                        )
+                            "KernelSU_install_log_$date.log")
                         file.writeText(logContent.toString())
                         snackBarHost.showReplacingSnackbar(logSavedString.format(file.absolutePath))
                     }
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
             if (showFloatAction) {
@@ -475,29 +464,24 @@ fun FlashScreen(flashIt: FlashIt) {
                     onClick = {
                         flashViewModel.dispatch(
                             FlashUiAction.Reboot(
-                                allowSoftReboot = flashIt is FlashIt.FlashModule || flashIt is FlashIt.FlashModules || flashIt is FlashIt.FlashModuleUpdate,
-                            ),
-                        )
+                                allowSoftReboot = flashIt is FlashIt.FlashModule || flashIt is FlashIt.FlashModules || flashIt is FlashIt.FlashModuleUpdate))
                     },
                     icon = {
                         Icon(
                             Icons.TwoTone.Refresh,
-                            contentDescription = stringResource(id = R.string.reboot),
-                        )
+                            contentDescription = stringResource(id = R.string.reboot))
                     },
                     text = {
                         Text(text = stringResource(id = R.string.reboot))
                     },
                     containerColor = MaterialTheme.colorScheme.secondaryContainer,
                     contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                    expanded = true,
-                )
+                    expanded = true)
             }
         },
         snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
         containerColor = Color.Transparent,
-        contentColor = MaterialTheme.colorScheme.onSurface,
-    ) { innerPadding ->
+        contentColor = MaterialTheme.colorScheme.onSurface) { innerPadding ->
         KeyEventBlocker {
             it.key == Key.VolumeDown || it.key == Key.VolumeUp
         }
@@ -506,8 +490,7 @@ fun FlashScreen(flashIt: FlashIt) {
             modifier = Modifier
                 .fillMaxSize(1f)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .blurSource(),
-        ) {
+                .blurSource()) {
             Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
 
             if (flashIt is FlashIt.FlashModules) {
@@ -516,8 +499,7 @@ fun FlashScreen(flashIt: FlashIt) {
                     totalCount = flashIt.uris.size,
                     currentModuleName = currentStatus.currentModuleName,
                     status = flashUiState.flashingStatus,
-                    failedModules = currentStatus.failedModules,
-                )
+                    failedModules = currentStatus.failedModules)
 
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -526,8 +508,7 @@ fun FlashScreen(flashIt: FlashIt) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .verticalScroll(scrollState),
-            ) {
+                    .verticalScroll(scrollState)) {
                 LaunchedEffect(text) {
                     scrollState.animateScrollTo(scrollState.maxValue)
                 }
@@ -536,8 +517,7 @@ fun FlashScreen(flashIt: FlashIt) {
                     text = text,
                     style = MaterialTheme.typography.bodyMedium,
                     fontFamily = monospaceFontFamily(),
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
+                    color = MaterialTheme.colorScheme.onSurface)
             }
             Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
         }
@@ -549,8 +529,7 @@ private const val JAILBREAK_WARNING_COUNTDOWN = 10
 @Composable
 fun JailbreakFlashWarningDialog(
     onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-) {
+    onDismiss: () -> Unit) {
     var countdown by remember { mutableIntStateOf(JAILBREAK_WARNING_COUNTDOWN) }
 
     LaunchedEffect(Unit) {
@@ -566,29 +545,25 @@ fun JailbreakFlashWarningDialog(
         text = {
             Text(
                 stringResource(R.string.jailbreak_flash_warning),
-                style = MaterialTheme.typography.bodyMedium,
-            )
+                style = MaterialTheme.typography.bodyMedium)
         },
         confirmButton = {
             TextButton(
                 onClick = onConfirm,
-                enabled = countdown == 0,
-            ) {
+                enabled = countdown == 0) {
                 Text(
                     if (countdown > 0) {
                         stringResource(R.string.jailbreak_flash_warning_countdown, countdown)
                     } else {
                         stringResource(R.string.install_next)
-                    },
-                )
+                    })
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
                 Text(stringResource(android.R.string.cancel))
             }
-        },
-    )
+        })
 }
 
 // 显示模块安装进度条和状态
@@ -599,8 +574,7 @@ fun ModuleInstallProgressBar(
     totalCount: Int,
     currentModuleName: String,
     status: FlashingStatus,
-    failedModules: List<String>,
-) {
+    failedModules: List<String>) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val progressColor = when (status) {
@@ -611,8 +585,7 @@ fun ModuleInstallProgressBar(
 
     val progress = animateFloatAsState(
         targetValue = currentIndex.toFloat() / totalCount.toFloat(),
-        label = "InstallProgress",
-    )
+        label = "InstallProgress")
 
     Card(
         modifier = Modifier
@@ -624,32 +597,25 @@ fun ModuleInstallProgressBar(
                 Color.Transparent
             } else {
                 MaterialTheme.colorScheme.surfaceBright.copy(
-                    alpha = cardConfig.cardAlpha,
-                )
-            },
-        ),
-    ) {
+                    alpha = cardConfig.cardAlpha)
+            })) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
-        ) {
+                .padding(16.dp)) {
             // 模块名称和进度
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-            ) {
+                horizontalArrangement = Arrangement.SpaceBetween) {
                 Text(
                     text = currentModuleName.ifEmpty { stringResource(R.string.module) },
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                )
+                    fontWeight = FontWeight.Bold)
 
                 Text(
                     text = "$currentIndex/$totalCount",
-                    style = MaterialTheme.typography.titleMedium,
-                )
+                    style = MaterialTheme.typography.titleMedium)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -661,8 +627,7 @@ fun ModuleInstallProgressBar(
                     .fillMaxWidth()
                     .height(8.dp),
                 color = progressColor,
-                trackColor = MaterialTheme.colorScheme.surfaceVariant,
-            )
+                trackColor = MaterialTheme.colorScheme.surfaceVariant)
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -670,26 +635,22 @@ fun ModuleInstallProgressBar(
             AnimatedVisibility(
                 visible = failedModules.isNotEmpty(),
                 enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically(),
-            ) {
+                exit = fadeOut() + shrinkVertically()) {
                 Column {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
+                        verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.TwoTone.Error,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.size(16.dp),
-                        )
+                            modifier = Modifier.size(16.dp))
 
                         Spacer(modifier = Modifier.width(4.dp))
 
                         Text(
                             text = stringResource(R.string.module_failed_count, failedModules.size),
                             style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.error,
-                        )
+                            color = MaterialTheme.colorScheme.error)
                     }
 
                     Spacer(modifier = Modifier.height(4.dp))
@@ -700,16 +661,13 @@ fun ModuleInstallProgressBar(
                             .fillMaxWidth()
                             .background(
                                 MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f),
-                                shape = MaterialTheme.shapes.small,
-                            )
-                            .padding(8.dp),
-                    ) {
+                                shape = MaterialTheme.shapes.small)
+                            .padding(8.dp)) {
                         failedModules.forEach { moduleName ->
                             Text(
                                 text = "• $moduleName",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                            )
+                                color = MaterialTheme.colorScheme.onErrorContainer)
                         }
                     }
                 }
@@ -725,8 +683,7 @@ private fun TopBar(
     moduleStatus: ModuleInstallStatus = ModuleInstallStatus(),
     onBack: () -> Unit,
     onSave: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior,
-) {
+    scrollBehavior: TopAppBarScrollBehavior) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val statusColor = when (status) {
@@ -744,26 +701,21 @@ private fun TopBar(
                         FlashingStatus.FLASHING -> R.string.flashing
                         FlashingStatus.SUCCESS -> R.string.flash_success
                         FlashingStatus.FAILED -> R.string.flash_failed
-                    },
-                ),
-                color = statusColor,
-            )
+                    }),
+                color = statusColor)
         },
         subtitle = {
             if (moduleStatus.failedModules.isNotEmpty()) {
                 Text(
                     text = stringResource(
                         R.string.module_failed_count,
-                        moduleStatus.failedModules.size,
-                    ),
-                    color = MaterialTheme.colorScheme.error,
-                )
+                        moduleStatus.failedModules.size),
+                    color = MaterialTheme.colorScheme.error)
             }
         },
         navigationIcon = {
             AppBackButton(
-                onClick = onBack,
-            )
+                onClick = onBack)
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor =
@@ -777,27 +729,22 @@ private fun TopBar(
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
-        ),
+                }),
         actions = {
             IconButton(onClick = onSave) {
                 Icon(
                     imageVector = Icons.TwoTone.Save,
-                    contentDescription = stringResource(id = R.string.save_log),
-                )
+                    contentDescription = stringResource(id = R.string.save_log))
             }
         },
-        ,
-        scrollBehavior = scrollBehavior,
-    )
+        scrollBehavior = scrollBehavior)
 }
 
 suspend fun getModuleNameFromUri(
     context: android.content.Context,
     uri: String,
     extractModuleName: ExtractModuleNameUseCase,
-    isModuleUriAccessible: IsModuleUriAccessibleUseCase,
-): String {
+    isModuleUriAccessible: IsModuleUriAccessibleUseCase): String {
     return withContext(Dispatchers.IO) {
         try {
             if (uri.isBlank()) {
@@ -823,8 +770,7 @@ sealed class FlashIt : Parcelable {
         val partition: String? = null,
         val allowShell: Boolean = false,
         val enableAdb: Boolean = false,
-        val forceBackup: Boolean = false,
-    ) : FlashIt()
+        val forceBackup: Boolean = false) : FlashIt()
 
     data class FlashModule(val uri: String) : FlashIt()
     data class FlashModules(val uris: List<String>, val currentIndex: Int = 0) : FlashIt()
@@ -839,8 +785,7 @@ private suspend fun flashModuleUpdate(
     uri: String,
     onFinish: (Boolean, Int) -> Unit,
     onStdout: (String) -> Unit,
-    onStderr: (String) -> Unit,
-) {
+    onStderr: (String) -> Unit) {
     execute(FlashOperation.Module(uri)).collect { update ->
         when (update) {
             is FlashOperationUpdate.Output -> onStdout(update.line)
@@ -855,8 +800,7 @@ private suspend fun flashIt(
     flashIt: FlashIt,
     onFinish: (Boolean, Int) -> Unit,
     onStdout: (String) -> Unit,
-    onStderr: (String) -> Unit,
-) {
+    onStderr: (String) -> Unit) {
     val operation = when (flashIt) {
         is FlashIt.FlashBoot -> FlashOperation.Boot(
             bootUri = flashIt.boot,
@@ -869,8 +813,7 @@ private suspend fun flashIt(
             partition = flashIt.partition,
             allowShell = flashIt.allowShell,
             enableAdb = flashIt.enableAdb,
-            forceBackup = flashIt.forceBackup,
-        )
+            forceBackup = flashIt.forceBackup)
 
         is FlashIt.FlashModule -> FlashOperation.Module(flashIt.uri)
 

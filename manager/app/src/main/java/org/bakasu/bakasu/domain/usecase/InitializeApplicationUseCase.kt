@@ -7,8 +7,7 @@ import org.bakasu.bakasu.data.startup.StartupRepository
 class InitializeApplicationUseCase(
     private val settingsRepository: AppSettingsRepository,
     private val startupRepository: StartupRepository,
-    private val initializationRepository: ApplicationInitializationRepository,
-) {
+    private val initializationRepository: ApplicationInitializationRepository) {
     suspend operator fun invoke() {
         runCatching {
             settingsRepository.preload()

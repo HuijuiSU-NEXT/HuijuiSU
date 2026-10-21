@@ -1,8 +1,7 @@
 package org.bakasu.bakasu.domain.model
 
 data class AppPreferences(
-    val values: Map<String, PreferenceValue> = emptyMap(),
-)
+    val values: Map<String, PreferenceValue> = emptyMap())
 
 sealed interface PreferenceValue {
     data class BooleanValue(val value: Boolean) : PreferenceValue

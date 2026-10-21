@@ -19,15 +19,13 @@ import org.koin.compose.koinInject
 fun PackageIcon(
     packageName: String,
     contentDescription: String?,
-    modifier: Modifier = Modifier,
-) {
+    modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val iconDataSource = koinInject<AppIconDataSource>()
     val packageInfo by produceState<PackageInfo?>(
         initialValue = iconDataSource.findCachedPackageInfo(packageName),
         packageName,
-        iconDataSource,
-    ) {
+        iconDataSource) {
         if (value == null) {
             value = withContext(Dispatchers.IO) {
                 iconDataSource.loadPackageInfo(packageName)
@@ -42,6 +40,5 @@ fun PackageIcon(
             .memoryCachePolicy(CachePolicy.ENABLED)
             .build(),
         contentDescription = contentDescription,
-        modifier = modifier,
-    )
+        modifier = modifier)
 }

@@ -117,8 +117,7 @@ import top.yukonga.miuix.kmp.blur.textureBlurEffect
 class BackgroundManager(
     private val settings: AppSettingsRepository,
     private val config: ThemeConfig,
-    private val cardConfig: CardConfig,
-) {
+    private val cardConfig: CardConfig) {
     private val tag = "BackgroundManager"
 
     
@@ -177,8 +176,7 @@ class BackgroundManager(
 
     suspend fun saveAndApplyCustomBackground(
         context: Context,
-        uri: Uri,
-    ): Boolean {
+        uri: Uri): Boolean {
         val appContext = context.applicationContext
         return try {
             val finalUri = withContext(Dispatchers.IO) {
@@ -272,8 +270,7 @@ fun KernelSUTheme(
     dpi: Int = 0,
     darkTheme: Boolean? = null,
     dynamicColor: Boolean? = null,
-    content: @Composable () -> Unit,
-) {
+    content: @Composable () -> Unit) {
     val themeConfig = koinInject<ThemeConfig>()
     val themeRepository = koinInject<ThemeRepository>()
     val backgroundManager = koinInject<BackgroundManager>()
@@ -293,16 +290,14 @@ fun KernelSUTheme(
         themeRepository = themeRepository,
         backgroundManager = backgroundManager,
         cardConfig = cardConfig,
-        settings = settings,
-    )
+        settings = settings)
 
     // 创建颜色方案
     val colorScheme = createColorScheme(
         resolvedDarkTheme,
         resolvedDynamicColor,
         themeConfig,
-        backgroundRenderState,
-    )
+        backgroundRenderState)
 
     // 系统栏样式
     SystemBarController(resolvedDarkTheme)
@@ -320,13 +315,11 @@ fun KernelSUTheme(
 
     CompositionLocalProvider(
         LocalDensity provides density,
-        LocalBackgroundRenderState provides backgroundRenderState,
-    ) {
+        LocalBackgroundRenderState provides backgroundRenderState) {
         MaterialExpressiveTheme(
             colorScheme = colorScheme,
             motionScheme = MotionScheme.expressive(),
-            typography = generateTypography(themeConfig),
-        ) {
+            typography = generateTypography(themeConfig)) {
             Box(modifier = Modifier.fillMaxSize()) {
                 BackgroundLayer(themeConfig, settings, backgroundRenderState)
                 content()
@@ -343,8 +336,7 @@ private fun ThemeInitializer(
     themeRepository: ThemeRepository,
     backgroundManager: BackgroundManager,
     cardConfig: CardConfig,
-    settings: AppSettingsRepository,
-) {
+    settings: AppSettingsRepository) {
     // 处理系统主题变化
     LaunchedEffect(systemIsDark) {
         if (themeConfig.forceDarkMode == null) {
@@ -367,8 +359,7 @@ private fun ThemeInitializer(
         themeConfig.useDynamicColor = themeRepository.loadDynamicColorState()
         themeConfig.dynamicColorSpec = themeRepository.loadDynamicColorSpec()
         themeConfig.dynamicPaletteStyle = themeRepository.loadDynamicPaletteStyle(
-            themeConfig.dynamicColorSpec,
-        )
+            themeConfig.dynamicColorSpec)
         themeConfig.isEnableBlur = settings.getBoolean("enable_blur", false)
         themeConfig.bottomBarStyle = BottomBarStyle.fromOrdinal(settings.getInt("bottom_bar_style", 0))
         cardConfig.load()
@@ -403,8 +394,7 @@ private fun MonetCompatInitializer(themeConfig: ThemeConfig, themeRepository: Th
 private fun BackgroundLayer(
     themeConfig: ThemeConfig,
     settings: AppSettingsRepository,
-    renderState: BackgroundRenderState,
-) {
+    renderState: BackgroundRenderState) {
     val backgroundUri = remember(themeConfig.customBackgroundUri) {
         themeConfig.customBackgroundUri
     }
@@ -456,9 +446,7 @@ private fun BackgroundLayer(
                 }
             }
             .background(
-                MaterialTheme.colorScheme.surfaceContainer,
-            ),
-    )
+                MaterialTheme.colorScheme.surfaceContainer))
 
     // 自定义背景
     backgroundUri?.let { uri ->
@@ -466,8 +454,7 @@ private fun BackgroundLayer(
             uri = uri,
             themeConfig = themeConfig,
             settings = settings,
-            renderState = renderState,
-        )
+            renderState = renderState)
     }
 }
 
@@ -487,11 +474,9 @@ private fun generateTypography(themeConfig: ThemeConfig): androidx.compose.mater
         if (!themeConfig.isHighContrastMode) return originalShadow
         val shadow = originalShadow ?: Shadow(
             offset = Offset(1.5f, 1.5f),
-            blurRadius = 0f,
-        )
+            blurRadius = 0f)
         return shadow.copy(
-            color = if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f),
-        )
+            color = if (darkMode) Color.Black.copy(alpha = 0.7f) else Color.White.copy(alpha = 0.7f))
     }
 
     fun TextStyle.applyShadow() = this.copy(shadow = generateShadow(shadow))
@@ -527,8 +512,7 @@ private fun generateTypography(themeConfig: ThemeConfig): androidx.compose.mater
         bodySmallEmphasized = typography.bodySmallEmphasized.applyShadow(),
         labelLargeEmphasized = typography.labelLargeEmphasized.applyShadow(),
         labelMediumEmphasized = typography.labelMediumEmphasized.applyShadow(),
-        labelSmallEmphasized = typography.labelSmallEmphasized.applyShadow(),
-    )
+        labelSmallEmphasized = typography.labelSmallEmphasized.applyShadow())
 }
 
 @Composable
@@ -536,8 +520,7 @@ private fun createColorScheme(
     darkTheme: Boolean,
     dynamicColor: Boolean,
     themeConfig: ThemeConfig,
-    renderState: BackgroundRenderState,
-): ColorScheme {
+    renderState: BackgroundRenderState): ColorScheme {
     val seedColor =
         when {
             dynamicColor && themeConfig.isUseBackgroundSeedColor && renderState.seedColor != 0 -> {
@@ -557,8 +540,7 @@ private fun createColorScheme(
         seedColor = Color(seedColor),
         isDark = darkTheme,
         style = themeConfig.dynamicPaletteStyle,
-        specVersion = themeConfig.dynamicColorSpec,
-    )
+        specVersion = themeConfig.dynamicColorSpec)
 }
 
 @Composable
@@ -570,17 +552,14 @@ private fun SystemBarController(darkMode: Boolean) {
         activity.enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.auto(
                 Color.Transparent.toArgb(),
-                Color.Transparent.toArgb(),
-            ) { darkMode },
+                Color.Transparent.toArgb()) { darkMode },
             navigationBarStyle = if (darkMode) {
                 SystemBarStyle.dark(Color.Transparent.toArgb())
             } else {
                 SystemBarStyle.light(
                     Color.Transparent.toArgb(),
-                    Color.Transparent.toArgb(),
-                )
-            },
-        )
+                    Color.Transparent.toArgb())
+            })
     }
 }
 

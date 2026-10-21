@@ -79,8 +79,7 @@ private enum class UnameDialogTab {
 fun StandardFeaturesTab(
     nestedScrollConnection: NestedScrollConnection,
     innerPadding: PaddingValues,
-    onRegisterRefresh: SuSFSRefreshRegistrar,
-) {
+    onRegisterRefresh: SuSFSRefreshRegistrar) {
     val configHelper = koinViewModel<SuSFSViewModel>()
     val snackbarHost = LocalSnackbarHost.current
     val scope = rememberCoroutineScope()
@@ -260,8 +259,7 @@ fun StandardFeaturesTab(
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(nestedScrollConnection),
-        ) {
+                .nestedScroll(nestedScrollConnection)) {
             item {
                 Spacer(Modifier.height(innerPadding.calculateTopPadding()))
             }
@@ -275,8 +273,7 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_logging),
                                 description = stringResource(R.string.susfs_standard_logging_desc),
                                 checked = loggingEnabled,
-                                onCheckedChange = handleLoggingChange,
-                            )
+                                onCheckedChange = handleLoggingChange)
                         }
 
                         item {
@@ -285,8 +282,7 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_avc_log_spoofing),
                                 description = stringResource(R.string.susfs_standard_avc_log_spoofing_desc),
                                 checked = avcLogSpoofingEnabled,
-                                onCheckedChange = handleAvcLogSpoofingChange,
-                            )
+                                onCheckedChange = handleAvcLogSpoofingChange)
                         }
 
                         item {
@@ -295,8 +291,7 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_hide_sus_mnts),
                                 description = stringResource(R.string.susfs_standard_hide_sus_mnts_desc),
                                 checked = hideSusMntsEnabled,
-                                onCheckedChange = handleHideSusMntsChange,
-                            )
+                                onCheckedChange = handleHideSusMntsChange)
                         }
 
                         item {
@@ -305,8 +300,7 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_uname),
                                 description = stringResource(
                                     R.string.susfs_standard_current_value,
-                                    "$unameRelease / $unameVersion",
-                                ),
+                                    "$unameRelease / $unameVersion"),
                                 onClick = {
                                     unameReleaseInput.setTextAndPlaceCursorAtEnd(unameRelease)
                                     unameVersionInput.setTextAndPlaceCursorAtEnd(unameVersion)
@@ -316,8 +310,7 @@ fun StandardFeaturesTab(
                                     isSlotInfoLoading = false
                                     slotInfoLoadFailed = false
                                     showUnameDialog = true
-                                },
-                            )
+                                })
                         }
 
                         item {
@@ -326,13 +319,11 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_cmdline_or_bootconfig),
                                 description = stringResource(
                                     R.string.susfs_standard_current_value,
-                                    cmdlineOrBootconfig.ifBlank { stringResource(R.string.susfs_standard_not_set) },
-                                ),
+                                    cmdlineOrBootconfig.ifBlank { stringResource(R.string.susfs_standard_not_set) }),
                                 onClick = {
                                     cmdlineInput.setTextAndPlaceCursorAtEnd(cmdlineOrBootconfig)
                                     showCmdlineDialog = true
-                                },
-                            )
+                                })
                         }
                     }
                 }
@@ -346,8 +337,7 @@ fun StandardFeaturesTab(
         if (isLoading && !hasLoadedConfig) {
             Box(
                 modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center,
-            ) {
+                contentAlignment = Alignment.Center) {
                 LoadingIndicator()
             }
         }
@@ -361,24 +351,21 @@ fun StandardFeaturesTab(
                         PrimaryTabRow(
                             selectedTabIndex = unameDialogTab.ordinal,
                             containerColor = Color.Transparent,
-                            divider = {},
-                        ) {
+                            divider = {}) {
                             Tab(
                                 selected = unameDialogTab == UnameDialogTab.Manual,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 onClick = { unameDialogTab = UnameDialogTab.Manual },
                                 text = {
                                     Text(stringResource(R.string.susfs_standard_uname_tab_manual))
-                                },
-                            )
+                                })
                             Tab(
                                 selected = unameDialogTab == UnameDialogTab.SlotInfo,
                                 unselectedContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 onClick = { unameDialogTab = UnameDialogTab.SlotInfo },
                                 text = {
                                     Text(stringResource(R.string.susfs_standard_uname_tab_slot_info))
-                                },
-                            )
+                                })
                         }
 
                         AnimatedContent(
@@ -394,8 +381,7 @@ fun StandardFeaturesTab(
                                 } + fadeOut()
                                 enter togetherWith exit
                             },
-                            label = "UnameDialogTabContent",
-                        ) { currentTab ->
+                            label = "UnameDialogTabContent") { currentTab ->
                             when (currentTab) {
                                 UnameDialogTab.Manual -> {
                                     SegmentedColumn(contentPadding = PaddingValues(top = 8.dp)) {
@@ -405,8 +391,7 @@ fun StandardFeaturesTab(
                                                 title = stringResource(R.string.susfs_standard_uname_release),
                                                 useLabelAsPlaceholder = true,
                                                 lineLimits = TextFieldLineLimits.SingleLine,
-                                                renderBackgroundBlur = false,
-                                            )
+                                                renderBackgroundBlur = false)
                                         }
                                         item {
                                             SettingsTextFieldWidget(
@@ -414,8 +399,7 @@ fun StandardFeaturesTab(
                                                 title = stringResource(R.string.susfs_standard_uname_version),
                                                 useLabelAsPlaceholder = true,
                                                 lineLimits = TextFieldLineLimits.SingleLine,
-                                                renderBackgroundBlur = false,
-                                            )
+                                                renderBackgroundBlur = false)
                                         }
                                     }
                                 }
@@ -428,8 +412,7 @@ fun StandardFeaturesTab(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .heightIn(min = 160.dp),
-                                                contentAlignment = Alignment.Center,
-                                            ) {
+                                                contentAlignment = Alignment.Center) {
                                                 LoadingIndicator()
                                             }
                                         }
@@ -440,24 +423,20 @@ fun StandardFeaturesTab(
                                                     .fillMaxWidth()
                                                     .heightIn(min = 160.dp),
                                                 horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center,
-                                            ) {
+                                                verticalArrangement = Arrangement.Center) {
                                                 Text(
                                                     text = stringResource(
                                                         if (slotInfoLoadFailed) {
                                                             R.string.susfs_standard_uname_slot_info_load_failed
                                                         } else {
                                                             R.string.susfs_standard_uname_slot_info_empty
-                                                        },
-                                                    ),
-                                                )
+                                                        }))
                                                 TextButton(
                                                     onClick = {
                                                         slotInfos = null
                                                         slotInfoLoadFailed = false
                                                         slotInfoReloadKey++
-                                                    },
-                                                ) {
+                                                    }) {
                                                     Text(stringResource(R.string.network_retry))
                                                 }
                                             }
@@ -468,15 +447,13 @@ fun StandardFeaturesTab(
                                                 modifier = Modifier
                                                     .fillMaxWidth()
                                                     .heightIn(max = 320.dp),
-                                                contentPadding = PaddingValues(vertical = 8.dp),
-                                            ) {
+                                                contentPadding = PaddingValues(vertical = 8.dp)) {
                                                 lazySegmentColumn(
                                                     items = checkNotNull(slotInfos),
                                                     noHorizontalPadding = true,
                                                     key = { index, slot ->
                                                         "$index:${slot.slotName}"
-                                                    },
-                                                ) { _, slot ->
+                                                    }) { _, slot ->
                                                     val selected =
                                                         selectedSlotName == slot.slotName
                                                     SettingsBaseWidget(
@@ -491,10 +468,8 @@ fun StandardFeaturesTab(
                                                         leadingContent = {
                                                             RadioButton(
                                                                 selected = selected,
-                                                                onClick = null,
-                                                            )
-                                                        },
-                                                    )
+                                                                onClick = null)
+                                                        })
                                                 }
                                             }
                                         }
@@ -506,8 +481,7 @@ fun StandardFeaturesTab(
                 },
                 confirmButton = {
                     TextButton(
-                        onClick = handleUnameSave,
-                    ) {
+                        onClick = handleUnameSave) {
                         Text(stringResource(R.string.susfs_save))
                     }
                 },
@@ -515,8 +489,7 @@ fun StandardFeaturesTab(
                     TextButton(onClick = { showUnameDialog = false }) {
                         Text(stringResource(R.string.susfs_entry_cancel))
                     }
-                },
-            )
+                })
         }
 
         if (showCmdlineDialog) {
@@ -533,15 +506,13 @@ fun StandardFeaturesTab(
                                 title = stringResource(R.string.susfs_standard_cmdline_path),
                                 useLabelAsPlaceholder = true,
                                 lineLimits = TextFieldLineLimits.SingleLine,
-                                renderBackgroundBlur = false,
-                            )
+                                renderBackgroundBlur = false)
                         }
                     }
                 },
                 confirmButton = {
                     TextButton(
-                        onClick = handleCmdlineSave,
-                    ) {
+                        onClick = handleCmdlineSave) {
                         Text(stringResource(R.string.susfs_save))
                     }
                 },
@@ -549,8 +520,7 @@ fun StandardFeaturesTab(
                     TextButton(onClick = { showCmdlineDialog = false }) {
                         Text(stringResource(R.string.susfs_entry_cancel))
                     }
-                },
-            )
+                })
         }
     }
 }

@@ -14,8 +14,7 @@ import org.bakasu.bakasu.domain.usecase.GetInstallEnvironmentUseCase
 
 data class MainIntentUiState(
     val rootAvailable: Boolean = false,
-    val loaded: Boolean = false,
-)
+    val loaded: Boolean = false)
 
 sealed interface MainIntentUiAction {
     data object Refresh : MainIntentUiAction
@@ -26,8 +25,7 @@ sealed interface MainIntentUiEvent {
 }
 
 class MainIntentViewModel(
-    private val getInstallEnvironment: GetInstallEnvironmentUseCase,
-) : ViewModel() {
+    private val getInstallEnvironment: GetInstallEnvironmentUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(MainIntentUiState())
     private val mutableEvents = MutableSharedFlow<MainIntentUiEvent>(extraBufferCapacity = 1)
     val state: StateFlow<MainIntentUiState> = mutableState.asStateFlow()
@@ -49,8 +47,7 @@ class MainIntentViewModel(
                 .onSuccess { environment ->
                     mutableState.value = MainIntentUiState(
                         rootAvailable = environment.rootAvailable,
-                        loaded = true,
-                    )
+                        loaded = true)
                 }
                 .onFailure { error ->
                     mutableState.update { it.copy(loaded = true, rootAvailable = false) }

@@ -95,8 +95,7 @@ private data class SuperUserMenuItem(
     val checked: Boolean = false,
     val titleRes: Int,
     val onClick: () -> Unit,
-    val closeOnClick: Boolean = true,
-)
+    val closeOnClick: Boolean = true)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -109,8 +108,7 @@ fun SuperUserPage(bottomPadding: Dp) {
     val scope = rememberCoroutineScope()
     val topAppBarState = rememberTopAppBarState()
     val scrollBehavior = rememberSearchAppBarScrollBehavior(
-        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState),
-    )
+        TopAppBarDefaults.exitUntilCollapsedScrollBehavior(topAppBarState))
     val listState = rememberLazyListState()
     val snackBarHostState = LocalSnackbarHost.current
 
@@ -143,33 +141,28 @@ fun SuperUserPage(bottomPadding: Dp) {
                         message = context.allowlistOperationMessage(
                             result = event.result,
                             successMessage = successMessage,
-                            failureMessage = failureMessage,
-                        ),
-                        duration = SnackbarDuration.Long,
-                    )
+                            failureMessage = failureMessage),
+                        duration = SnackbarDuration.Long)
                 }
             }
         }
     }
 
     val backupLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.CreateDocument("application/octet-stream"),
-    ) { uri ->
+        contract = ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         if (uri != null) {
             viewModel.dispatch(SuperUserUiAction.BackupAllowlist(uri.toString()))
         }
     }
     val restoreLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.OpenDocument(),
-    ) { uri ->
+        contract = ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) {
             scope.launch {
                 val confirmed = restoreConfirmDialog.awaitConfirm(
                     title = restoreConfirmTitle,
                     content = restoreConfirmMessage,
                     confirm = confirmText,
-                    dismiss = cancelText,
-                )
+                    dismiss = cancelText)
                 if (confirmed != ConfirmResult.Confirmed) return@launch
 
                 viewModel.dispatch(SuperUserUiAction.RestoreAllowlist(uri.toString()))
@@ -197,8 +190,7 @@ fun SuperUserPage(bottomPadding: Dp) {
                     IconButton(onClick = { showDropdown = true }) {
                         Icon(
                             imageVector = Icons.TwoTone.MoreVert,
-                            contentDescription = stringResource(id = R.string.settings),
-                        )
+                            contentDescription = stringResource(id = R.string.settings))
 
                         SuperUserDropdown(
                             expanded = showDropdown,
@@ -210,8 +202,7 @@ fun SuperUserPage(bottomPadding: Dp) {
                             },
                             onRestoreAllowlist = {
                                 restoreLauncher.launch(arrayOf("application/octet-stream"))
-                            },
-                        )
+                            })
                     }
                 },
                 navigationContent = {
@@ -220,40 +211,34 @@ fun SuperUserPage(bottomPadding: Dp) {
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.TwoTone.Article,
-                            contentDescription = stringResource(R.string.sulog),
-                        )
+                            contentDescription = stringResource(R.string.sulog))
                     }
                 },
                 scrollBehavior = scrollBehavior,
-                searchBarPlaceHolderText = stringResource(R.string.search_apps),
-            )
+                searchBarPlaceHolderText = stringResource(R.string.search_apps))
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         snackbarHost = {
             SwipeableSnackbarHost(
                 modifier = Modifier.padding(bottom = bottomPadding),
-                hostState = snackBarHostState,
-            )
+                hostState = snackBarHostState)
         },
-        contentWindowInsets = adaptiveScaffoldWindowInsets(includeBottom = false),
-    ) { innerPadding ->
+        contentWindowInsets = adaptiveScaffoldWindowInsets(includeBottom = false)) { innerPadding ->
         SuperUserContent(
             innerPadding = innerPadding,
             viewModel = viewModel,
             uiState = uiState,
             listState = listState,
             scrollBehavior = scrollBehavior,
-            bottomPadding = bottomPadding,
-        )
+            bottomPadding = bottomPadding)
     }
 }
 
 private fun Context.allowlistOperationMessage(
     result: AllowlistOperationResult,
     successMessage: Int,
-    failureMessage: Int,
-): String = when (result) {
+    failureMessage: Int): String = when (result) {
     AllowlistOperationResult.Success ->
         getString(successMessage)
 
@@ -266,14 +251,12 @@ private fun Context.allowlistOperationMessage(
     is AllowlistOperationResult.ProfileUpdateFailed ->
         getString(
             failureMessage,
-            getString(R.string.failed_to_update_app_profile, result.uid.toString()),
-        )
+            getString(R.string.failed_to_update_app_profile, result.uid.toString()))
 
     is AllowlistOperationResult.Failed ->
         getString(
             failureMessage,
-            result.cause?.localizedMessage ?: getString(R.string.unknown),
-        )
+            result.cause?.localizedMessage ?: getString(R.string.unknown))
 }
 
 private fun createAllowlistBackupFileName(): String {
@@ -289,8 +272,7 @@ private fun SuperUserContent(
     uiState: SuperUserUiState,
     listState: androidx.compose.foundation.lazy.LazyListState,
     scrollBehavior: TopAppBarScrollBehavior,
-    bottomPadding: Dp,
-) {
+    bottomPadding: Dp) {
     val navigator = LocalNavigator.current
     val pullRefreshState = rememberPullToRefreshState()
 
@@ -299,24 +281,21 @@ private fun SuperUserContent(
             modifier = Modifier
                 .fillMaxSize()
                 .blurSource(),
-            contentAlignment = Alignment.Center,
-        ) {
+            contentAlignment = Alignment.Center) {
             if (uiState.isRefreshing && uiState.search.isEmpty()) {
                 LoadingIndicator()
             } else {
                 val isSearchEmpty = uiState.search.isNotEmpty()
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center,
-                ) {
+                    verticalArrangement = Arrangement.Center) {
                     Icon(
                         imageVector = if (isSearchEmpty) Icons.TwoTone.SearchOff else Icons.TwoTone.Archive,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier
                             .size(96.dp)
-                            .padding(bottom = 16.dp),
-                    )
+                            .padding(bottom = 16.dp))
                     Text(
                         text = if (isSearchEmpty) {
                             stringResource(R.string.no_apps_found)
@@ -324,8 +303,7 @@ private fun SuperUserContent(
                             stringResource(R.string.no_apps_in_category)
                         },
                         textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.bodyLarge,
-                    )
+                        style = MaterialTheme.typography.bodyLarge)
                 }
             }
         }
@@ -345,28 +323,23 @@ private fun SuperUserContent(
                     .padding(top = innerPadding.calculateTopPadding())
                     .align(Alignment.TopCenter),
                 state = pullRefreshState,
-                isRefreshing = uiState.isRefreshing,
-            )
-        },
-    ) {
+                isRefreshing = uiState.isRefreshing)
+        }) {
         LazyColumn(
             state = listState,
             modifier = Modifier
                 .fillMaxSize()
-                .nestedScroll(scrollBehavior.nestedScrollConnection),
-        ) {
+                .nestedScroll(scrollBehavior.nestedScrollConnection)) {
             item {
                 Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
             }
             lazySegmentColumn(
                 items = uiState.appGroupList,
                 key = { _, appGroup -> "${appGroup.uid}-${appGroup.profileKey}" },
-                contentType = { _, appGroup -> "${appGroup.uid}-${appGroup.profileKey}" },
-            ) { _, appGroup ->
+                contentType = { _, appGroup -> "${appGroup.uid}-${appGroup.profileKey}" }) { _, appGroup ->
                 AppGroupItem(
                     appGroup = appGroup,
-                    isManager = appGroup.uid in uiState.managerUids,
-                ) {
+                    isManager = appGroup.uid in uiState.managerUids) {
                     navigator.push(Route.AppProfile(appGroup.uid, appGroup.profileKey))
                 }
             }
@@ -386,14 +359,12 @@ private fun SuperUserDropdown(
     viewModel: SuperUserViewModel,
     uiState: SuperUserUiState,
     onBackupAllowlist: () -> Unit,
-    onRestoreAllowlist: () -> Unit,
-) {
+    onRestoreAllowlist: () -> Unit) {
     val menuItems = remember(
         uiState.showSystemApps,
         uiState.reverseOrder,
         onBackupAllowlist,
-        onRestoreAllowlist,
-    ) {
+        onRestoreAllowlist) {
         listOf(
             SuperUserMenuItem(
                 checked = uiState.reverseOrder,
@@ -401,34 +372,27 @@ private fun SuperUserDropdown(
                 closeOnClick = false,
                 onClick = {
                     viewModel.dispatch(SuperUserUiAction.SetReverseOrder(!uiState.reverseOrder))
-                },
-            ),
+                }),
             SuperUserMenuItem(
                 checked = uiState.showSystemApps,
                 titleRes = R.string.show_system_apps,
                 closeOnClick = false,
                 onClick = {
                     viewModel.dispatch(SuperUserUiAction.SetShowSystemApps(!uiState.showSystemApps))
-                },
-            ),
+                }),
             SuperUserMenuItem(
                 titleRes = R.string.backup_allowlist,
-                onClick = onBackupAllowlist,
-            ),
+                onClick = onBackupAllowlist),
             SuperUserMenuItem(
                 titleRes = R.string.restore_allowlist,
-                onClick = onRestoreAllowlist,
-            ),
-        )
+                onClick = onRestoreAllowlist))
     }
 
     DropdownMenuPopup(
         expanded = expanded,
-        onDismissRequest = onDismissRequest,
-    ) {
+        onDismissRequest = onDismissRequest) {
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShapes(),
-        ) {
+            shapes = MenuDefaults.groupShapes()) {
             SortType.entries.forEachIndexed { index, sortType ->
                 SelectableDropdownMenuItem(
                     selected = uiState.currentSortType == sortType,
@@ -438,17 +402,14 @@ private fun SuperUserDropdown(
                     text = { Text(stringResource(sortType.displayNameRes)) },
                     shapes = MenuDefaults.itemShape(
                         index = index,
-                        count = SortType.entries.size,
-                    ),
-                )
+                        count = SortType.entries.size))
             }
         }
 
         Spacer(modifier = Modifier.height(4.dp))
 
         DropdownMenuGroup(
-            shapes = MenuDefaults.groupShapes(),
-        ) {
+            shapes = MenuDefaults.groupShapes()) {
             menuItems.forEachIndexed { index, menuItem ->
                 SelectableDropdownMenuItem(
                     selected = menuItem.checked,
@@ -459,9 +420,7 @@ private fun SuperUserDropdown(
                     text = { Text(stringResource(menuItem.titleRes)) },
                     shapes = MenuDefaults.itemShape(
                         index = index,
-                        count = menuItems.size,
-                    ),
-                )
+                        count = menuItems.size))
             }
         }
     }
@@ -472,8 +431,7 @@ private fun SuperUserDropdown(
 private fun AppGroupItem(
     appGroup: InstalledAppGroup,
     isManager: Boolean,
-    onClick: () -> Unit,
-) {
+    onClick: () -> Unit) {
     val mainApp = appGroup.mainApp
     SettingsBaseWidget(
         onClick = {
@@ -490,48 +448,41 @@ private fun AppGroupItem(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
+                modifier = Modifier.fillMaxWidth()) {
                 if (appGroup.allowSu) {
                     LabelText(label = "ROOT")
                 } else {
                     if (appGroup.shouldUmount) {
                         LabelText(
                             label = "UMOUNT",
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        )
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer)
                     }
                 }
                 if (appGroup.hasCustomProfile) {
                     LabelText(
                         label = "CUSTOM",
-                        containerColor = MaterialTheme.colorScheme.tertiaryContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer)
                 } else if (!appGroup.allowSu) {
                     LabelText(
                         label = "DEFAULT",
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.primaryContainer)
                 }
                 if (isManager) {
                     LabelText(
                         label = "MANAGER",
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                    )
+                        containerColor = MaterialTheme.colorScheme.errorContainer)
                 }
                 if (appGroup.apps.size > 1) {
                     appGroup.userName?.let {
                         LabelText(
                             label = it,
-                            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-                        )
+                            containerColor = MaterialTheme.colorScheme.secondaryContainer)
                     }
                 }
                 if (appGroup.isRecentlyInstalled) {
                     LabelText(
                         label = stringResource(R.string.recently_installed),
-                        containerColor = MaterialTheme.colorScheme.surfaceBright,
-                    )
+                        containerColor = MaterialTheme.colorScheme.surfaceBright)
                 }
             }
         },
@@ -541,16 +492,13 @@ private fun AppGroupItem(
                 contentDescription = mainApp.label,
                 modifier = Modifier
                     .padding(4.dp)
-                    .size(48.dp),
-            )
+                    .size(48.dp))
         },
-        iconPlaceholder = false,
-    ) {
+        iconPlaceholder = false) {
         Icon(
             imageVector = Icons.TwoTone.ChevronRight,
             contentDescription = null,
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.size(24.dp),
-        )
+            modifier = Modifier.size(24.dp))
     }
 }

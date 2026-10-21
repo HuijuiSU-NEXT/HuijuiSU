@@ -138,21 +138,18 @@ fun SettingsPage(bottomPadding: Dp) {
         snackbarHost = {
             SwipeableSnackbarHost(
                 modifier = Modifier.padding(bottom = bottomPadding),
-                hostState = snackBarHost,
-            )
+                hostState = snackBarHost)
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
-        contentWindowInsets = adaptiveScaffoldWindowInsets(includeBottom = false),
-    ) { innerPadding ->
+        contentWindowInsets = adaptiveScaffoldWindowInsets(includeBottom = false)) { innerPadding ->
         val loadingDialog = rememberLoadingDialog()
         var showBottomsheet by remember { mutableStateOf(false) }
         val logSaved = stringResource(R.string.log_saved)
         val context = LocalContext.current
         val scope = rememberCoroutineScope()
         val exportBugreportLauncher = rememberLauncherForActivityResult(
-            ActivityResultContracts.CreateDocument("application/gzip"),
-        ) { uri: Uri? ->
+            ActivityResultContracts.CreateDocument("application/gzip")) { uri: Uri? ->
             if (uri == null) return@rememberLauncherForActivityResult
             scope.launch(Dispatchers.IO) {
                 loadingDialog.show()
@@ -175,17 +172,14 @@ fun SettingsPage(bottomPadding: Dp) {
                 top = innerPadding.calculateTopPadding() + 5.dp,
                 start = 0.dp,
                 end = 0.dp,
-                bottom = innerPadding.calculateBottomPadding() + bottomPadding + 15.dp,
-            ),
-        ) {
+                bottom = innerPadding.calculateBottomPadding() + bottomPadding + 15.dp)) {
             // 配置卡片
             if (homeState.systemStatus.isFullFeatured) {
                 item {
                     val modeItems = listOf(
                         stringResource(id = R.string.settings_mode_default),
                         stringResource(id = R.string.settings_mode_disable_until_reboot),
-                        stringResource(id = R.string.settings_mode_disable_always),
-                    )
+                        stringResource(id = R.string.settings_mode_disable_always))
 
                     SegmentedColumn(
                         title = stringResource(R.string.configuration),
@@ -208,11 +202,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onSelectedIndexChange = { index ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetSuCompatMode(
-                                                index,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                index))
+                                    })
                             }
 
                             item {
@@ -230,16 +221,12 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetKernelUmount(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                enabled))
+                                    })
                             }
 
                             item(
-                                visible = homeState.systemStatus.isLateLoadMode,
-                            ) {
+                                visible = homeState.systemStatus.isLateLoadMode) {
                                 SettingsSwitchWidget(
                                     icon = Icons.TwoTone.ElectricalServices,
                                     title = stringResource(id = R.string.settings_auto_jailbreak),
@@ -248,16 +235,12 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { value ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetAutoJailbreak(
-                                                value,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                value))
+                                    })
                             }
 
                             item(
-                                visible = Build.VERSION.SDK_INT > Build.VERSION_CODES.Q,
-                            ) {
+                                visible = Build.VERSION.SDK_INT > Build.VERSION_CODES.Q) {
                                 val adbRootSummary = when (uiState.adbRootStatus) {
                                     "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                     "managed" -> stringResource(id = R.string.feature_status_managed_summary)
@@ -273,11 +256,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetAdbRoot(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                enabled))
+                                    })
                             }
 
                             item {
@@ -291,11 +271,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetUseSoftReboot(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                enabled))
+                                    })
                             }
 
                             item {
@@ -312,8 +289,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                     checked = uiState.isSuLogEnabled,
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(SettingsUiAction.SetSuLog(enabled))
-                                    },
-                                )
+                                    })
                             }
 
                             item {
@@ -331,11 +307,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { checked ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetSelinuxHide(
-                                                checked,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                checked))
+                                    })
                             }
 
                             item {
@@ -348,14 +321,10 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetDefaultUmountModules(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                enabled))
+                                    })
                             }
-                        },
-                    )
+                        })
                 }
             }
 
@@ -375,16 +344,11 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetManagerUpdateCheck(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
-                            },
-                        ) {
+                                                enabled))
+                                    })
+                            }) {
                             item(
-                                topPadding = 1.dp,
-                            ) {
+                                topPadding = 1.dp) {
                                 SettingsSwitchWidget(
                                     icon = Icons.TwoTone.Science,
                                     title = stringResource(R.string.settings_check_beta_update),
@@ -393,11 +357,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                     onCheckedChange = { enabled ->
                                         settingsViewModel.dispatch(
                                             SettingsUiAction.SetBetaUpdateCheck(
-                                                enabled,
-                                            ),
-                                        )
-                                    },
-                                )
+                                                enabled))
+                                    })
                             }
                         }
 
@@ -410,11 +371,8 @@ fun SettingsPage(bottomPadding: Dp) {
                                 onCheckedChange = { enabled ->
                                     settingsViewModel.dispatch(
                                         SettingsUiAction.SetModuleUpdateCheck(
-                                            enabled,
-                                        ),
-                                    )
-                                },
-                            )
+                                            enabled))
+                                })
                         }
 
                                                 item {
@@ -425,11 +383,9 @@ fun SettingsPage(bottomPadding: Dp) {
                                 description = stringResource(R.string.theme_settings),
                                 onClick = {
                                     navigator.push(Route.ThemeSettings)
-                                },
-                            )
+                                })
                         }
-                    },
-                )
+                    })
             }
 
             item {
@@ -443,8 +399,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                 title = stringResource(R.string.send_log),
                                 onClick = {
                                     showBottomsheet = true
-                                },
-                            )
+                                })
                         }
 
                         // [已砍] 动态管理 和 卸载管理 已移除，降低底层崩溃率
@@ -453,8 +408,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                 loadingDialog.withLoading(it)
                             }
                         }
-                    },
-                )
+                    })
             }
 
             if (showBottomsheet) {
@@ -479,8 +433,7 @@ fun SettingsPage(bottomPadding: Dp) {
                                 val uri = FileProvider.getUriForFile(
                                     context,
                                     "${BuildConfig.APPLICATION_ID}.fileprovider",
-                                    bugreport,
-                                )
+                                    bugreport)
 
                                 val shareIntent = Intent(Intent.ACTION_SEND).apply {
                                     putExtra(Intent.EXTRA_STREAM, uri)
@@ -491,14 +444,11 @@ fun SettingsPage(bottomPadding: Dp) {
                                 context.startActivity(
                                     Intent.createChooser(
                                         shareIntent,
-                                        sendLog,
-                                    ),
-                                )
+                                        sendLog))
 
                                 showBottomsheet = false
                             }
-                        },
-                    )
+                        })
                 }
             }
 
@@ -513,11 +463,9 @@ fun SettingsPage(bottomPadding: Dp) {
                                 title = stringResource(R.string.about),
                                 onClick = {
                                     navigator.push(Route.About)
-                                },
-                            )
+                                })
                         }
-                    },
-                )
+                    })
             }
         }
     }
@@ -528,29 +476,24 @@ fun SettingsPage(bottomPadding: Dp) {
 private fun LogBottomSheet(
     onDismiss: () -> Unit,
     onSaveLog: () -> Unit,
-    onShareLog: () -> Unit,
-) {
+    onShareLog: () -> Unit) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
-        containerColor = MaterialTheme.colorScheme.surfaceBright,
-    ) {
+        containerColor = MaterialTheme.colorScheme.surfaceBright) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(SPACING_LARGE),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-        ) {
+            horizontalArrangement = Arrangement.SpaceEvenly) {
             LogActionButton(
                 icon = Icons.TwoTone.Save,
                 text = stringResource(R.string.save_log),
-                onClick = onSaveLog,
-            )
+                onClick = onSaveLog)
 
             LogActionButton(
                 icon = Icons.TwoTone.Share,
                 text = stringResource(R.string.send_log),
-                onClick = onShareLog,
-            )
+                onClick = onShareLog)
         }
         Spacer(modifier = Modifier.height(SPACING_LARGE))
     }
@@ -560,41 +503,35 @@ private fun LogBottomSheet(
 fun LogActionButton(
     icon: ImageVector,
     text: String,
-    onClick: () -> Unit,
-) {
+    onClick: () -> Unit) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .clickable(onClick = onClick)
-            .padding(SPACING_MEDIUM),
-    ) {
+            .padding(SPACING_MEDIUM)) {
         Box(
             contentAlignment = Alignment.Center,
             modifier = Modifier
                 .size(56.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primaryContainer),
-        ) {
+                .background(MaterialTheme.colorScheme.primaryContainer)) {
             Icon(
                 imageVector = icon,
                 contentDescription = text,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                modifier = Modifier.size(24.dp),
-            )
+                modifier = Modifier.size(24.dp))
         }
         Spacer(modifier = Modifier.height(SPACING_MEDIUM))
         Text(
             text = text,
-            style = MaterialTheme.typography.bodyMedium,
-        )
+            style = MaterialTheme.typography.bodyMedium)
     }
 }
 
 @SuppressLint("LocalContextGetResourceValueCall")
 @Composable
 fun UninstallItem(
-    withLoading: suspend (suspend () -> Unit) -> Unit,
-) {
+    withLoading: suspend (suspend () -> Unit) -> Unit) {
     val navigator = LocalNavigator.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -602,8 +539,7 @@ fun UninstallItem(
     val options = remember {
         listOf(
             UninstallType.PERMANENT,
-            UninstallType.RESTORE_STOCK_IMAGE,
-        )
+            UninstallType.RESTORE_STOCK_IMAGE)
     }
 
     SettingsChooseWidget(
@@ -619,8 +555,7 @@ fun UninstallItem(
                 scope.launch {
                     val result = uninstallConfirmDialog.awaitConfirm(
                         title = context.getString(uninstallType.title),
-                        content = context.getString(uninstallType.message),
-                    )
+                        content = context.getString(uninstallType.message))
                     if (result == ConfirmResult.Confirmed) {
                         withLoading {
                             when (uninstallType) {
@@ -632,29 +567,25 @@ fun UninstallItem(
                     }
                 }
             }
-        },
-    )
+        })
 }
 
 enum class UninstallType(val title: Int, val message: Int, val icon: ImageVector) {
     PERMANENT(
         R.string.settings_uninstall_permanent,
         R.string.settings_uninstall_permanent_message,
-        Icons.TwoTone.DeleteForever,
-    ),
+        Icons.TwoTone.DeleteForever),
     RESTORE_STOCK_IMAGE(
         R.string.settings_restore_stock_image,
         R.string.settings_restore_stock_image_message,
-        Icons.AutoMirrored.TwoTone.Undo,
-    ),
+        Icons.AutoMirrored.TwoTone.Undo),
     NONE(0, 0, Icons.TwoTone.Delete),
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun TopBar(
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-) {
+    scrollBehavior: TopAppBarScrollBehavior? = null) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     TopAppBar(
@@ -674,9 +605,6 @@ private fun TopBar(
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
-        ),
-        ,
-        scrollBehavior = scrollBehavior,
-    )
+                }),
+        scrollBehavior = scrollBehavior)
 }

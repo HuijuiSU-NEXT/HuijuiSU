@@ -20,16 +20,14 @@ fun HuijuiToolCard(
     iconTint: Color,
     title: String,
     description: String,
-    onClick: () -> Unit,
-) {
+    onClick: () -> Unit) {
     // 彻底干掉独立 Card，用普通 Row + clickable 实现纯粹的一体化
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(horizontal = 16.dp, vertical = 14.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
+        verticalAlignment = Alignment.CenterVertically) {
         Surface(
             shape = RoundedCornerShape(12.dp), 
             color = iconTint.copy(alpha = 0.15f), 

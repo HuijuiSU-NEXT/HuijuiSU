@@ -25,12 +25,10 @@ fun HorizontalPagerWithInteraction(
     pageNestedScrollConnection: NestedScrollConnection? = null,
     flingBehavior: TargetedFlingBehavior? = null,
     enableGestureOverride: Boolean = true,
-    pageContent: @Composable PagerScope.(page: Int) -> Unit,
-) {
+    pageContent: @Composable PagerScope.(page: Int) -> Unit) {
     val nestedConnection = pageNestedScrollConnection ?: PagerDefaults.pageNestedScrollConnection(
         state = state,
-        orientation = Orientation.Horizontal,
-    )
+        orientation = Orientation.Horizontal)
     HorizontalPager(
         state = state,
         modifier = if (enableGestureOverride) {
@@ -46,6 +44,5 @@ fun HorizontalPagerWithInteraction(
             nestedConnection
         },
         flingBehavior = flingBehavior ?: PagerDefaults.flingBehavior(state),
-        pageContent = pageContent,
-    )
+        pageContent = pageContent)
 }

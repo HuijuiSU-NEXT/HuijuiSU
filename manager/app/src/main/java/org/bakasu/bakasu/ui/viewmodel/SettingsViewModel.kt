@@ -101,8 +101,7 @@ data class SettingsUiState(
     val useBuiltinMonoFont: Boolean = false,
     val useSoftReboot: Boolean = false,
     val enableSwipeDismiss: Boolean = true,
-    val pagerInterceptionMode: Int = 1,
-)
+    val pagerInterceptionMode: Int = 1)
 
 sealed interface SettingsUiAction {
     data object Initialize : SettingsUiAction
@@ -113,8 +112,7 @@ sealed interface SettingsUiAction {
     data class SetThemeColorDialogVisible(val visible: Boolean) : SettingsUiAction
     data class SetPredictiveBackAnimation(val animation: PredictiveBackAnimation) : SettingsUiAction
     data class SetPredictiveBackExitDirection(
-        val direction: PredictiveBackExitDirection,
-    ) : SettingsUiAction
+        val direction: PredictiveBackExitDirection) : SettingsUiAction
 
     data class SetDynamicColor(val enabled: Boolean) : SettingsUiAction
     data class SetDynamicColorSpec(val spec: ColorSpec.SpecVersion) : SettingsUiAction
@@ -161,8 +159,7 @@ class SettingsViewModel(
     private val setKernelUmountEnabled: SetKernelUmountEnabledUseCase,
     private val setSuLogEnabled: ConfigureSuLogUseCase,
     private val setSelinuxHideEnabled: SetSelinuxHideEnabledUseCase,
-    private val setDefaultUmountModules: SetDefaultUmountModulesUseCase,
-) : ViewModel() {
+    private val setDefaultUmountModules: SetDefaultUmountModulesUseCase) : ViewModel() {
     private val mutableState = MutableStateFlow(SettingsUiState())
     val state: StateFlow<SettingsUiState> = mutableState.asStateFlow()
     val uiState: StateFlow<SettingsUiState> = state
@@ -207,8 +204,7 @@ class SettingsViewModel(
                     isSuLogEnabled = features.suLogEnabled,
                     selinuxHideStatus = platform.selinuxHideStatus,
                     isSelinuxHideEnabled = features.selinuxHideEnabled,
-                    defaultUmountModules = features.defaultUmountModules,
-                )
+                    defaultUmountModules = features.defaultUmountModules)
             }
         }
     }
@@ -250,8 +246,7 @@ class SettingsViewModel(
         mutableState.update {
             it.copy(
                 dynamicColorSpec = spec,
-                dynamicPaletteStyle = it.dynamicPaletteStyle.coerceCompatibleWith(spec),
-            )
+                dynamicPaletteStyle = it.dynamicPaletteStyle.coerceCompatibleWith(spec))
         }
         updateAppearanceAsync(AppearanceSetting.DynamicColorSpec(spec))
     }
@@ -272,8 +267,7 @@ class SettingsViewModel(
                 .onSuccess {
                     applySnapshot(it, resetTempDpi = true)
                     mutableEvents.tryEmit(
-                        SettingsUiEvent.Message(R.string.dpi_applied_success, current.tempDpi),
-                    )
+                        SettingsUiEvent.Message(R.string.dpi_applied_success, current.tempDpi))
                 }
                 .onFailure(::emitError)
         }
@@ -331,8 +325,7 @@ class SettingsViewModel(
         mutableState.update {
             it.copy(
                 checkManagerUpdate = enabled,
-                checkBetaUpdate = if (enabled) it.checkBetaUpdate else false,
-            )
+                checkBetaUpdate = if (enabled) it.checkBetaUpdate else false)
         }
         updatePlatformAsync(PlatformSetting.ManagerUpdateCheck(enabled))
     }
@@ -394,12 +387,10 @@ class SettingsViewModel(
                 0 -> Unit
 
                 -11 -> mutableEvents.emit(
-                    SettingsUiEvent.Message(R.string.settings_selinux_hide_reboot_required),
-                )
+                    SettingsUiEvent.Message(R.string.settings_selinux_hide_reboot_required))
 
                 else -> mutableEvents.emit(
-                    SettingsUiEvent.Message(R.string.settings_selinux_hide_failed, status),
-                )
+                    SettingsUiEvent.Message(R.string.settings_selinux_hide_failed, status))
             }
         }
     }
@@ -558,8 +549,7 @@ class SettingsViewModel(
                 useBuiltinMonoFont = snapshot.useBuiltinMonoFont,
                 useSoftReboot = snapshot.useSoftReboot,
                 enableSwipeDismiss = snapshot.enableSwipeDismiss,
-                pagerInterceptionMode = snapshot.pagerInterceptionMode,
-            )
+                pagerInterceptionMode = snapshot.pagerInterceptionMode)
         }
     }
 
@@ -571,14 +561,12 @@ class SettingsViewModel(
         val THEME_OPTIONS = listOf(
             R.string.theme_follow_system,
             R.string.theme_light,
-            R.string.theme_dark,
-        )
+            R.string.theme_dark)
         val DPI_PRESET_RESOURCES = mapOf(
             R.string.dpi_size_small to 240,
             R.string.dpi_size_medium to 320,
             R.string.dpi_size_large to 420,
-            R.string.dpi_size_extra_large to 560,
-        )
+            R.string.dpi_size_extra_large to 560)
         val DPI_PRESETS = DPI_PRESET_RESOURCES.values.toSet()
     }
 }

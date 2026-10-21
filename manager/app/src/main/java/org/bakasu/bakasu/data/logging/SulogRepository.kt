@@ -22,15 +22,13 @@ import org.bakasu.bakasu.domain.model.SulogState
 import org.bakasu.bakasu.domain.model.parseSulogLines
 
 class SulogRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(SulogState())
     val state: StateFlow<SulogState> = mutableState.asStateFlow()
 
     suspend fun refresh(
-        preferredFilePath: String? = state.value.selectedFilePath,
-    ): Result<Unit> = mutex.withLock {
+        preferredFilePath: String? = state.value.selectedFilePath): Result<Unit> = mutex.withLock {
         withContext(Dispatchers.IO) {
             mutableState.update {
                 it.copy(isRefreshing = !it.isLoading, errorMessage = null)
@@ -56,17 +54,14 @@ class SulogRepository(
                     entries = parseSulogLines(
                         lines = lines,
                         currentTimeMillis = System.currentTimeMillis(),
-                        uptimeMillis = SystemClock.uptimeMillis(),
-                    ),
-                    isLoading = false,
-                )
+                        uptimeMillis = SystemClock.uptimeMillis()),
+                    isLoading = false)
             }.onFailure { error ->
                 mutableState.update {
                     it.copy(
                         isLoading = false,
                         isRefreshing = false,
-                        errorMessage = error.message,
-                    )
+                        errorMessage = error.message)
                 }
             }
         }
@@ -99,8 +94,7 @@ class SulogRepository(
             Triple(name, date, rotation)
         }.sortedWith(
             compareByDescending<Triple<String, LocalDate, Int>> { it.second }
-                .thenByDescending { it.third },
-        ).map { it.first }
+                .thenByDescending { it.third }).map { it.first }
         return names.map { SulogFile(name = it, path = "$SULOG_DIR/$it") }
     }
 

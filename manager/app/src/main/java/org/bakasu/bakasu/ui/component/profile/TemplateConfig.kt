@@ -41,8 +41,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun TemplateConfig(
     profile: AppProfile,
     onViewTemplate: (id: String) -> Unit = {},
-    onProfileChange: (AppProfile) -> Unit,
-) {
+    onProfileChange: (AppProfile) -> Unit) {
     val viewModel = koinViewModel<TemplateViewModel>()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val scope = rememberCoroutineScope()
@@ -74,8 +73,7 @@ fun TemplateConfig(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(240.dp),
-                )
+                        .height(240.dp))
             }
         } else {
             null
@@ -91,10 +89,8 @@ fun TemplateConfig(
                     .clickable {
                         onViewTemplate(profileTemplates[index])
                     }
-                    .padding(5.dp),
-            )
-        },
-    ) { index ->
+                    .padding(5.dp))
+        }) { index ->
         if (index == 0) {
             template = ""
             return@SettingsChooseWidget
@@ -115,8 +111,6 @@ fun TemplateConfig(
                 capabilities = templateInfo.capabilities,
                 context = templateInfo.context,
                 rules = templateInfo.rules.joinToString("\n"),
-                namespace = templateInfo.namespace,
-            ),
-        )
+                namespace = templateInfo.namespace))
     }
 }

@@ -57,8 +57,7 @@ class HorizonKernelState {
                 progress = 0f,
                 currentStep = "",
                 logs = emptyList(),
-                error = "",
-            )
+                error = "")
         }
     }
 
@@ -67,8 +66,7 @@ class HorizonKernelState {
             it.copy(
                 isFlashing = false,
                 isCompleted = true,
-                progress = 1f,
-            )
+                progress = 1f)
         }
     }
 
@@ -83,8 +81,7 @@ class HorizonKernelWorker(
     private val state: HorizonKernelState,
     private val ksuCliRepository: KsuCliRepository,
     private val slot: String? = null,
-    private val skipKsud: Boolean = false,
-) : Thread() {
+    private val skipKsud: Boolean = false) : Thread() {
     var uri: Uri? = null
 
     override fun run() {
@@ -108,8 +105,7 @@ class HorizonKernelWorker(
                 zipFile = zipFile,
                 slot = slot,
                 onStdout = ::handleOutput,
-                onStderr = ::handleConsoleOutput,
-            )
+                onStderr = ::handleConsoleOutput)
             if (!succeeded) {
                 state.setError(context.getString(R.string.flash_failed_message))
                 return
@@ -124,8 +120,7 @@ class HorizonKernelWorker(
             state.completeFlashing()
         } catch (error: Exception) {
             state.setError(
-                error.message ?: context.getString(R.string.horizon_unknown_error),
-            )
+                error.message ?: context.getString(R.string.horizon_unknown_error))
         } finally {
             if (zipFile.exists()) {
                 zipFile.delete()

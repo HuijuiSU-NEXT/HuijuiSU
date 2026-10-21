@@ -49,8 +49,7 @@ import org.koin.compose.koinInject
 @Composable
 fun ThemeSettingsDialogs(
     state: SettingsUiState,
-    viewModel: SettingsViewModel,
-) {
+    viewModel: SettingsViewModel) {
     val themeConfig: ThemeConfig = koinInject()
     if (state.showThemeColorDialog) {
         ThemeColorDialog(
@@ -61,8 +60,7 @@ fun ThemeSettingsDialogs(
             },
             onDismiss = {
                 viewModel.dispatch(SettingsUiAction.SetThemeColorDialogVisible(false))
-            },
-        )
+            })
     }
 }
 
@@ -71,8 +69,7 @@ fun ThemeSettingsDialogs(
 fun LanguageSelectionDialog(
     currentLocale: String,
     onLanguageSelected: (String) -> Unit,
-    onDismiss: () -> Unit,
-) {
+    onDismiss: () -> Unit) {
     val isSystemLanguageSettingsUseCase =
         koinInject<IsSystemLanguageSettingsUseCase>()
     val launchSystemLanguageSettingsUseCase =
@@ -92,8 +89,7 @@ fun LanguageSelectionDialog(
             val resourceDirs = listOf(
                 "ar", "bg", "de", "fa", "fr", "hu", "in", "it",
                 "ja", "ko", "pl", "pt-rBR", "ru", "th", "tr",
-                "uk", "vi", "zh-rCN", "zh-rTW",
-            )
+                "uk", "vi", "zh-rCN", "zh-rTW")
 
             resourceDirs.forEach { dir ->
                 try {
@@ -164,8 +160,7 @@ fun LanguageSelectionDialog(
                     val newLocale = allOptions[selectedIndex].first
                     onLanguageSelected(newLocale)
                 }
-            },
-        )
+            })
     }
 }
 
@@ -173,8 +168,7 @@ fun LanguageSelectionDialog(
 fun ThemeColorDialog(
     currentSeedColor: Int,
     onColorSelected: (Int) -> Unit,
-    onDismiss: () -> Unit,
-) {
+    onDismiss: () -> Unit) {
     val initialHsv = remember(currentSeedColor) {
         FloatArray(3).also { AndroidColor.colorToHSV(currentSeedColor, it) }
     }
@@ -194,16 +188,14 @@ fun ThemeColorDialog(
                 value = value,
                 onHueChange = { hue = it },
                 onSaturationChange = { saturation = it },
-                onValueChange = { value = it },
-            )
+                onValueChange = { value = it })
         },
         confirmButton = {
             Button(onClick = { onColorSelected(selectedColor) }) {
                 Icon(
                     Icons.TwoTone.Check,
                     contentDescription = null,
-                    modifier = Modifier.size(18.dp),
-                )
+                    modifier = Modifier.size(18.dp))
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(stringResource(R.string.confirm))
             }
@@ -212,8 +204,7 @@ fun ThemeColorDialog(
             TextButton(onClick = onDismiss) {
                 Text(stringResource(R.string.cancel))
             }
-        },
-    )
+        })
 }
 
 @Composable
@@ -224,47 +215,40 @@ private fun ColorPicker(
     value: Float,
     onHueChange: (Float) -> Unit,
     onSaturationChange: (Float) -> Unit,
-    onValueChange: (Float) -> Unit,
-) {
+    onValueChange: (Float) -> Unit) {
     Column {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             Box(
                 modifier = Modifier
                     .size(48.dp)
                     .clip(CircleShape)
-                    .background(color),
-            )
+                    .background(color))
             Spacer(modifier = Modifier.size(16.dp))
             Text(
                 text = color.toHexString(),
                 style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
+                color = MaterialTheme.colorScheme.onSurface)
         }
 
         ColorSlider(
             label = "H",
             value = hue,
             valueRange = 0f..360f,
-            onValueChange = onHueChange,
-        )
+            onValueChange = onHueChange)
         ColorSlider(
             label = "S",
             value = saturation,
             valueRange = 0f..1f,
-            onValueChange = onSaturationChange,
-        )
+            onValueChange = onSaturationChange)
         ColorSlider(
             label = "V",
             value = value,
             valueRange = 0f..1f,
-            onValueChange = onValueChange,
-        )
+            onValueChange = onValueChange)
     }
 }
 
@@ -273,13 +257,11 @@ private fun ColorSlider(
     label: String,
     value: Float,
     valueRange: ClosedFloatingPointRange<Float>,
-    onValueChange: (Float) -> Unit,
-) {
+    onValueChange: (Float) -> Unit) {
     val sliderState = rememberSliderState(
         value = value,
         steps = 0,
-        trackRange = valueRange,
-    )
+        trackRange = valueRange)
     LaunchedEffect(value) {
         if (sliderState.value != value) {
             sliderState.value = value
@@ -290,30 +272,23 @@ private fun ColorSlider(
         Text(
             text = label,
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.padding(end = 12.dp),
-        )
+            modifier = Modifier.padding(end = 12.dp))
         Slider(
             state = sliderState,
             onValueChange = onValueChange,
-            modifier = Modifier.weight(1f),
-        )
+            modifier = Modifier.weight(1f))
         Box(
             modifier = Modifier.padding(start = 12.dp),
-            contentAlignment = Alignment.Center,
-        ) {
+            contentAlignment = Alignment.Center) {
             Text( // Some stupid way to solve measure problem
                 text = "360.00",
                 style = MaterialTheme.typography.labelMediumEmphasized.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-                modifier = Modifier.alpha(0f),
-            )
+                    fontFeatureSettings = "tnum"),
+                modifier = Modifier.alpha(0f))
             Text(
                 text = "%.2f".format(value),
                 style = MaterialTheme.typography.labelMediumEmphasized.copy(
-                    fontFeatureSettings = "tnum",
-                ),
-            )
+                    fontFeatureSettings = "tnum"))
         }
     }
 }
@@ -322,7 +297,6 @@ private fun Color.toHexString(): String {
     val argb = AndroidColor.rgb(
         (red * 255).toInt().coerceIn(0, 255),
         (green * 255).toInt().coerceIn(0, 255),
-        (blue * 255).toInt().coerceIn(0, 255),
-    )
+        (blue * 255).toInt().coerceIn(0, 255))
     return "#%06X".format(argb and 0x00FFFFFF)
 }

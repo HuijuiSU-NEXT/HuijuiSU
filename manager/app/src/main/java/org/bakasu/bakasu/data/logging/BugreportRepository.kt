@@ -6,7 +6,6 @@ import org.bakasu.bakasu.data.shell.KsuCliRepository
 
 class BugreportRepository(
     private val application: Application,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     fun create(): File = getBugreportFile(application, ksuCliRepository)
 }

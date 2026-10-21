@@ -25,8 +25,7 @@ import org.json.JSONObject
 class ModuleRepository(
     private val networkStatusRepository: NetworkStatusRepository,
     private val networkRequestRepository: NetworkRequestRepository,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val refreshMutex = Mutex()
     private val mutableInstalledModules = MutableStateFlow(InstalledModulesState())
     val installedModules: StateFlow<InstalledModulesState> =
@@ -34,8 +33,7 @@ class ModuleRepository(
 
     suspend fun refreshInstalledModules(
         manual: Boolean,
-        checkUpdates: Boolean,
-    ): Result<Unit> = refreshMutex.withLock {
+        checkUpdates: Boolean): Result<Unit> = refreshMutex.withLock {
         withContext(Dispatchers.IO) {
             mutableInstalledModules.update { it.copy(refreshing = true) }
             runCatching {
@@ -62,8 +60,7 @@ class ModuleRepository(
                     refreshing = false,
                     hasModuleRequireMount = requiresMount,
                     hasMagisk = ksuCliRepository.hasMagisk(),
-                    metaModuleStatus = getMetaModuleStatus(),
-                )
+                    metaModuleStatus = getMetaModuleStatus())
 
                 if (checkUpdates && networkStatusRepository.isAvailable()) {
                     val withUpdates = coroutineScope {
@@ -77,12 +74,10 @@ class ModuleRepository(
                                     moduleUpdate = if (shouldCheck) {
                                         checkUpdate(
                                             module.updateJson,
-                                            module.versionCode,
-                                        ).getOrNull()
+                                            module.versionCode).getOrNull()
                                     } else {
                                         null
-                                    },
-                                )
+                                    })
                             }
                         }.awaitAll()
                     }
@@ -113,8 +108,7 @@ class ModuleRepository(
             current.copy(
                 modules = current.modules.map { module ->
                     if (module.dirId == moduleId) module.copy(enabled = enabled) else module
-                },
-            )
+                })
         }
     }
 
@@ -130,15 +124,13 @@ class ModuleRepository(
                     ksuCliRepository.uninstallModule(moduleId)
                 } else {
                     ksuCliRepository.undoUninstallModule(moduleId)
-                },
-            )
+                })
         }
     }
 
     suspend fun checkUpdate(
         url: String,
-        currentVersionCode: Int,
-    ): Result<ModuleUpdateMetadata?> {
+        currentVersionCode: Int): Result<ModuleUpdateMetadata?> {
         if (url.isBlank()) return Result.success(null)
         return networkRequestRepository.fetch(url).mapCatching { body ->
             val json = JSONObject(body)
@@ -151,10 +143,8 @@ class ModuleRepository(
                     zipUrl = zipUrl,
                     version = json.optString("version").replace(
                         Regex("[^a-zA-Z0-9.\\-_]"),
-                        "_",
-                    ),
-                    changelog = json.optString("changelog"),
-                )
+                        "_"),
+                    changelog = json.optString("changelog"))
             }
         }
     }
@@ -181,8 +171,7 @@ class ModuleRepository(
                 actionIconPath = value.optString("actionIcon").takeIf(String::isNotBlank),
                 webUiIconPath = value.optString("webuiIcon").takeIf(String::isNotBlank),
                 dirId = value.optString("dir_id", id),
-                moduleUpdate = null,
-            )
+                moduleUpdate = null)
         }
     }
 

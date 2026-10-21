@@ -5,13 +5,11 @@ import org.bakasu.bakasu.Natives.KernelPatchImplementation
 
 data class ManagerRecord(
     val uid: Int,
-    val signatureIndex: Int,
-)
+    val signatureIndex: Int)
 
 data class ManagerRuntimeInfo(
     val managers: List<ManagerRecord> = emptyList(),
-    val dynamicSignatureEnabled: Boolean = false,
-)
+    val dynamicSignatureEnabled: Boolean = false)
 
 data class KernelStatus(
     val isManager: Boolean = false,
@@ -29,13 +27,11 @@ data class KernelStatus(
     val hookType: String = "",
     val isSafeMode: Boolean = false,
     val isLateLoadMode: Boolean = false,
-    val isPrBuild: Boolean = false,
-)
+    val isPrBuild: Boolean = false)
 
 data class KernelFeatureSettings(
     val suEnabled: Boolean,
     val kernelUmountEnabled: Boolean,
     val suLogEnabled: Boolean,
     val selinuxHideEnabled: Boolean,
-    val defaultUmountModules: Boolean,
-)
+    val defaultUmountModules: Boolean)

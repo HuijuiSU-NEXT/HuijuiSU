@@ -75,12 +75,10 @@ import org.koin.core.parameter.parametersOf
 fun TemplateEditorScreen(
     templateId: String,
     readOnly: Boolean = true,
-    isCreation: Boolean = false,
-) {
+    isCreation: Boolean = false) {
     val navigator = LocalNavigator.current
     val viewModel = koinViewModel<TemplateEditorViewModel>(
-        parameters = { parametersOf(templateId, readOnly, isCreation) },
-    )
+        parameters = { parametersOf(templateId, readOnly, isCreation) })
     val state by viewModel.state.collectAsStateWithLifecycle()
     val template = state.template
     val autoSave = !isCreation && !readOnly
@@ -103,8 +101,7 @@ fun TemplateEditorScreen(
                 is TemplateEditorUiEvent.Error -> Toast.makeText(
                     context,
                     saveTemplateFailed,
-                    Toast.LENGTH_SHORT,
-                ).show()
+                    Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -139,12 +136,10 @@ fun TemplateEditorScreen(
                 onSave = {
                     viewModel.dispatch(TemplateEditorUiAction.Save)
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        containerColor = Color.Transparent,
-    ) { innerPadding ->
+        containerColor = Color.Transparent) { innerPadding ->
         LazyColumn(
             modifier = Modifier
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
@@ -152,8 +147,7 @@ fun TemplateEditorScreen(
                     // disable click and ripple if readOnly
                     readOnly
                 }
-                .blurSource(),
-        ) {
+                .blurSource()) {
             item {
                 Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
             }
@@ -164,8 +158,7 @@ fun TemplateEditorScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(240.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
+                        contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
@@ -176,8 +169,7 @@ fun TemplateEditorScreen(
                         onRetry = { viewModel.dispatch(TemplateEditorUiAction.Load) },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(240.dp),
-                    )
+                            .height(240.dp))
                 }
 
                 else -> item {
@@ -192,16 +184,14 @@ fun TemplateEditorScreen(
                                 TextEdit(
                                     label = stringResource(id = R.string.app_profile_template_id),
                                     text = template.id,
-                                    errorHint = errorHint,
-                                ) { value ->
+                                    errorHint = errorHint) { value ->
                                     errorHint = if (!isValidTemplateId(value)) {
                                         idInvalidError
                                     } else {
                                         ""
                                     }
                                     viewModel.dispatch(
-                                        TemplateEditorUiAction.Update(template.copy(id = value)),
-                                    )
+                                        TemplateEditorUiAction.Update(template.copy(id = value)))
                                 }
                             }
                         }
@@ -209,36 +199,29 @@ fun TemplateEditorScreen(
                         item {
                             TextEdit(
                                 label = stringResource(id = R.string.app_profile_template_name),
-                                text = template.name,
-                            ) { value ->
+                                text = template.name) { value ->
                                 viewModel.dispatch(
                                     TemplateEditorUiAction.Update(
                                         template.copy(name = value),
-                                        autoSave = autoSave,
-                                    ),
-                                )
+                                        autoSave = autoSave))
                             }
                         }
 
                         item {
                             TextEdit(
                                 label = stringResource(id = R.string.app_profile_template_description),
-                                text = template.description,
-                            ) { value ->
+                                text = template.description) { value ->
                                 viewModel.dispatch(
                                     TemplateEditorUiAction.Update(
                                         template.copy(description = value),
-                                        autoSave = autoSave,
-                                    ),
-                                )
+                                        autoSave = autoSave))
                             }
                         }
 
                         rootProfileConfig(
                             profile = toAppProfile(template),
                             sepolicyValid = true,
-                            onValidateSepolicy = {},
-                        ) {
+                            onValidateSepolicy = {}) {
                             template.copy(
                                 uid = it.uid,
                                 gid = it.gid,
@@ -247,11 +230,9 @@ fun TemplateEditorScreen(
                                 context = it.context,
                                 namespace = it.namespace,
                                 rules = it.rules.split("\n"),
-                                flags = it.flags.toRootProfileFlags().map { flag -> flag.ordinal },
-                            ).let { updated ->
+                                flags = it.flags.toRootProfileFlags().map { flag -> flag.ordinal }).let { updated ->
                                 viewModel.dispatch(
-                                    TemplateEditorUiAction.Update(updated, autoSave = autoSave),
-                                )
+                                    TemplateEditorUiAction.Update(updated, autoSave = autoSave))
                             }
                         }
                     }
@@ -282,8 +263,7 @@ fun toAppProfile(templateInfo: ProfileTemplate): AppProfile {
         context = templateInfo.context,
         namespace = templateInfo.namespace,
         rules = templateInfo.rules.joinToString("\n").ifBlank { "" },
-        flags = mappedFlags.toRawFlags(),
-    )
+        flags = mappedFlags.toRawFlags())
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -295,19 +275,16 @@ private fun TopBar(
     onBack: () -> Unit,
     onDelete: () -> Unit = {},
     onSave: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior,
-) {
+    scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
         modifier = Modifier.blurEffect(),
         title = {
             Text(
-                text = title,
-            )
+                text = title)
         },
         navigationIcon = {
             AppBackButton(
-                onClick = onBack,
-            )
+                onClick = onBack)
         },
         actions = actionsLabel@ {
             if (readOnly) {
@@ -316,23 +293,18 @@ private fun TopBar(
             IconButton(onClick = onDelete) {
                 Icon(
                     Icons.TwoTone.DeleteForever,
-                    contentDescription = stringResource(id = R.string.app_profile_template_delete),
-                )
+                    contentDescription = stringResource(id = R.string.app_profile_template_delete))
             }
             IconButton(onClick = onSave) {
                 Icon(
                     imageVector = Icons.TwoTone.Save,
-                    contentDescription = stringResource(id = R.string.app_profile_template_save),
-                )
+                    contentDescription = stringResource(id = R.string.app_profile_template_save))
             }
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(
             containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
-        ),
-        ,
-        scrollBehavior = scrollBehavior,
-    )
+            scrolledContainerColor = Color.Transparent),
+        scrollBehavior = scrollBehavior)
 }
 
 @Composable
@@ -340,8 +312,7 @@ private fun TextEdit(
     label: String,
     text: String,
     errorHint: String = "",
-    onValueChange: (String) -> Unit = {},
-) {
+    onValueChange: (String) -> Unit = {}) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val state = rememberTextFieldState(initialText = text)
     var lastEmittedText by remember { mutableStateOf(text) }
@@ -352,13 +323,11 @@ private fun TextEdit(
         title = label,
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Ascii,
-            imeAction = ImeAction.Next,
-        ),
+            imeAction = ImeAction.Next),
         onKeyboardAction = {
             keyboardController?.hide()
         },
-        error = errorHint,
-    )
+        error = errorHint)
 
     LaunchedEffect(text) {
         if (state.text.toString() != text) {

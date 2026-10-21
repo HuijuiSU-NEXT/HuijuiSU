@@ -36,12 +36,10 @@ private const val PARAM_TOKEN = "token"
 private sealed interface PendingAction {
     data class InstallModules(
         val zipFileInfos: List<ZipFileInfo>,
-        val requiresConfirmation: Boolean,
-    ) : PendingAction
+        val requiresConfirmation: Boolean) : PendingAction
 
     data class InstallKernel(
-        val zipFileInfo: ZipFileInfo,
-    ) : PendingAction
+        val zipFileInfo: ZipFileInfo) : PendingAction
 
     data class ExecuteAction(val moduleId: String) : PendingAction
 
@@ -71,8 +69,7 @@ private fun resolveIntent(context: Context, intent: Intent, intentToken: String,
 
         return PendingAction.InstallModules(
             zipFileInfos = listOf(zipFileInfo),
-            requiresConfirmation = false,
-        )
+            requiresConfirmation = false)
     }
 
     val result = when (val deepLink = parseValidatedDeepLink(intent.data, intentToken)) {
@@ -130,8 +127,7 @@ private fun resolveIntent(context: Context, intent: Intent, intentToken: String,
         Toast.makeText(
             context,
             context.getString(R.string.both_kernel_and_module_files),
-            Toast.LENGTH_SHORT,
-        ).show()
+            Toast.LENGTH_SHORT).show()
         return null
     }
 
@@ -141,19 +137,16 @@ private fun resolveIntent(context: Context, intent: Intent, intentToken: String,
             Toast.makeText(
                 context,
                 context.getString(R.string.more_than_one_kernel_file),
-                Toast.LENGTH_SHORT,
-            ).show()
+                Toast.LENGTH_SHORT).show()
             return null
         }
 
         return PendingAction.InstallKernel(
-            zipFileInfo = zipFileInfos.first(),
-        )
+            zipFileInfo = zipFileInfos.first())
     } else {
         return PendingAction.InstallModules(
             zipFileInfos = zipFileInfos,
-            requiresConfirmation = true,
-        )
+            requiresConfirmation = true)
     }
 }
 
@@ -197,8 +190,7 @@ fun IntentDispatcher(intentChannel: ReceiveChannel<Intent>) {
         },
         onDismiss = {
             activity?.finish()
-        },
-    )
+        })
 
     CollectIntentChannel(intentChannel) { intent ->
         if (!isManager) return@CollectIntentChannel

@@ -29,8 +29,7 @@ data class DynamicManagerUiState(
     val search: String = "",
     val isLoading: Boolean = true,
     val isRefreshing: Boolean = false,
-    val isSubmitting: Boolean = false,
-)
+    val isSubmitting: Boolean = false)
 
 sealed interface DynamicManagerUiAction {
     data object Refresh : DynamicManagerUiAction
@@ -45,8 +44,7 @@ enum class DynamicManagerOperation { Set, Clear }
 sealed interface DynamicManagerUiEvent {
     data class OperationCompleted(
         val operation: DynamicManagerOperation,
-        val success: Boolean,
-    ) : DynamicManagerUiEvent
+        val success: Boolean) : DynamicManagerUiEvent
 }
 
 class DynamicManagerViewModel(
@@ -54,8 +52,7 @@ class DynamicManagerViewModel(
     private val refreshDynamicManager: RefreshDynamicManagerUseCase,
     private val selectDynamicManager: SelectDynamicManagerUseCase,
     private val setManualDynamicManager: SetManualDynamicManagerUseCase,
-    private val clearDynamicManager: ClearDynamicManagerUseCase,
-) : ViewModel() {
+    private val clearDynamicManager: ClearDynamicManagerUseCase) : ViewModel() {
     private val search = MutableStateFlow("")
     private val mutableEvents = MutableSharedFlow<DynamicManagerUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<DynamicManagerUiEvent> = mutableEvents.asSharedFlow()
@@ -75,13 +72,11 @@ class DynamicManagerViewModel(
             search = query,
             isLoading = source.isLoading,
             isRefreshing = source.isRefreshing,
-            isSubmitting = source.isSubmitting,
-        )
+            isSubmitting = source.isSubmitting)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = DynamicManagerUiState(),
-    )
+        initialValue = DynamicManagerUiState())
     val uiState: StateFlow<DynamicManagerUiState> = state
 
     fun dispatch(action: DynamicManagerUiAction) {
@@ -108,8 +103,7 @@ class DynamicManagerViewModel(
 
     private fun submit(
         operation: DynamicManagerOperation,
-        command: suspend () -> Result<Unit>,
-    ) {
+        command: suspend () -> Result<Unit>) {
         viewModelScope.launch {
             val success = command().isSuccess
             mutableEvents.emit(DynamicManagerUiEvent.OperationCompleted(operation, success))

@@ -9,5 +9,4 @@ data class InstallEnvironment(
     val availablePartitions: List<String> = emptyList(),
     val activeSlotSuffix: String = "",
     val inactiveSlotSuffix: String = "",
-    val supportedKmis: List<String> = emptyList(),
-)
+    val supportedKmis: List<String> = emptyList())

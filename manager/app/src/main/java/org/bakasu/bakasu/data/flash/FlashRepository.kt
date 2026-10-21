@@ -33,8 +33,7 @@ class FlashRepository(
     private val application: Application,
     private val applicationScope: CoroutineScope,
     private val moduleFileRepository: ModuleFileRepository,
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val workerState = HorizonKernelState()
     private val mutableSession = MutableStateFlow(KernelFlashSession())
     val kernelFlashSession: StateFlow<KernelFlashSession> = mutableSession.asStateFlow()
@@ -52,8 +51,7 @@ class FlashRepository(
         mutableSession.value = KernelFlashSession(
             requestUri = uri,
             selectedSlot = selectedSlot,
-            progress = FlashProgress(),
-        )
+            progress = FlashProgress())
         observationJob?.cancel()
         observationJob = applicationScope.launch {
             workerState.state.collectLatest { progress ->
@@ -67,8 +65,7 @@ class FlashRepository(
             state = workerState,
             ksuCliRepository = ksuCliRepository,
             slot = selectedSlot,
-            skipKsud = skipKsud,
-        ).also {
+            skipKsud = skipKsud).also {
             it.uri = uri.toUri()
             it.start()
         }
@@ -82,31 +79,25 @@ class FlashRepository(
                 val abDevice = runCatching { ksuCliRepository.isAbDevice() }.getOrDefault(false)
                 InstallEnvironment(
                     rootAvailable = runCatching { ksuCliRepository.rootAvailable() }.getOrDefault(
-                        false,
-                    ),
+                        false),
                     isGki = runCatching { getKernelVersion().isGKI() }.getOrDefault(false),
                     isAbDevice = abDevice,
                     currentKmi = runCatching { ksuCliRepository.getCurrentKmi() }
                         .getOrDefault("")
                         .ifBlank { parseKmi(android.system.Os.uname().release) },
                     defaultPartition = runCatching { ksuCliRepository.getDefaultPartition() }.getOrDefault(
-                        "boot",
-                    ),
+                        "boot"),
                     availablePartitions = runCatching { ksuCliRepository.getAvailablePartitions() }.getOrDefault(
-                        emptyList(),
-                    ),
+                        emptyList()),
                     activeSlotSuffix = runCatching { ksuCliRepository.getSlotSuffix(false) }.getOrDefault(
-                        "",
-                    ),
+                        ""),
                     inactiveSlotSuffix = if (abDevice) {
                         runCatching { ksuCliRepository.getSlotSuffix(true) }.getOrDefault("")
                     } else {
                         ""
                     },
                     supportedKmis = runCatching { ksuCliRepository.getSupportedKmis() }.getOrDefault(
-                        emptyList(),
-                    ),
-                )
+                        emptyList()))
             }.also { mutableInstallEnvironment.value = it }
         }
     }
@@ -132,28 +123,24 @@ class FlashRepository(
                         operation.forceBackup,
                         onFinish,
                         onStdout,
-                        onStderr,
-                    )
+                        onStderr)
 
                     is FlashOperation.Module -> ksuCliRepository.flashModule(
                         application,
                         operation.uri.toUri(),
                         onFinish,
                         onStdout,
-                        onStderr,
-                    )
+                        onStderr)
 
                     FlashOperation.Restore -> ksuCliRepository.restoreBoot(
                         onFinish,
                         onStdout,
-                        onStderr,
-                    )
+                        onStderr)
 
                     FlashOperation.Uninstall -> ksuCliRepository.uninstallPermanently(
                         onFinish,
                         onStdout,
-                        onStderr,
-                    )
+                        onStderr)
                 }
             }
         } catch (error: Throwable) {

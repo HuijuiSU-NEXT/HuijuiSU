@@ -16,8 +16,7 @@ import org.bakasu.bakasu.data.AppSettingsRepository
 
 class MonetCompatColorSource(
     private val application: Application,
-    private val settings: AppSettingsRepository,
-) {
+    private val settings: AppSettingsRepository) {
     private val fallbackColor = TypedValue().let {
         application.theme.resolveAttribute(android.R.attr.colorPrimary, it, true)
         it.data
@@ -47,12 +46,10 @@ class MonetCompatColorSource(
                                 override fun onMonetColorsChanged(
                                     monet: MonetCompat,
                                     monetColors: ColorScheme,
-                                    isInitialChange: Boolean,
-                                ) {
+                                    isInitialChange: Boolean) {
                                     publish(monet.wallpaperPrimaryColor ?: fallbackColor)
                                 }
-                            },
-                        )
+                            })
                         monet = instance
                     }
                 }

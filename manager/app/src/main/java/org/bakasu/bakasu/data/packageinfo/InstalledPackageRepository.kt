@@ -15,8 +15,7 @@ import org.bakasu.bakasu.domain.model.InstalledPackageInfo
 class InstalledPackageRepository(
     application: Application,
     private val packageCache: InstalledPackageCache,
-    private val rootServiceRepository: RootServiceRepository,
-) {
+    private val rootServiceRepository: RootServiceRepository) {
     private val packageManager = application.packageManager
     private val refreshMutex = Mutex()
     private val mutablePackages = MutableStateFlow<List<InstalledPackageInfo>>(emptyList())
@@ -40,8 +39,7 @@ class InstalledPackageRepository(
                         } ?: false,
                         uid = appInfo?.uid ?: -1,
                         apkPath = appInfo?.sourceDir.orEmpty(),
-                        nativeLibraryDir = appInfo?.nativeLibraryDir,
-                    )
+                        nativeLibraryDir = appInfo?.nativeLibraryDir)
                 }
             }
             Result.success(Unit)

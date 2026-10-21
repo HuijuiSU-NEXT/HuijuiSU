@@ -35,8 +35,7 @@ data class SulogScreenState(
     val selectedFilePath: String? = null,
     val entries: List<SulogEntry> = emptyList(),
     val visibleEntries: List<SulogEntry> = emptyList(),
-    val errorMessage: String? = null,
-)
+    val errorMessage: String? = null)
 
 data class SulogActions(
     val onBack: () -> Unit,
@@ -45,13 +44,11 @@ data class SulogActions(
     val onCleanFile: () -> Unit,
     val onSearchTextChange: (String) -> Unit,
     val onToggleFilter: (SulogEventFilter) -> Unit,
-    val onSelectFile: (String) -> Unit,
-)
+    val onSelectFile: (String) -> Unit)
 
 data class SulogFileSelector(
     val items: List<String>,
-    val selectedIndex: Int,
-)
+    val selectedIndex: Int)
 
 typealias SulogUiState = SulogScreenState
 
@@ -75,15 +72,13 @@ class SulogViewModel(
     private val setSulogEnabled: EnableSulogUseCase,
     private val cleanSulog: CleanSulogUseCase,
     getStringSetPreference: GetStringSetPreferenceUseCase,
-    private val setStringSetPreference: SetStringSetPreferenceUseCase,
-) : ViewModel() {
+    private val setStringSetPreference: SetStringSetPreferenceUseCase) : ViewModel() {
     private val search = MutableStateFlow("")
     private val filters = MutableStateFlow(
         getStringSetPreference(PREF_SULOG_FILTERS)
             .mapNotNull { raw -> SulogEventFilter.entries.firstOrNull { it.name == raw } }
             .toSet()
-            .ifEmpty(::defaultSulogEventFilters),
-    )
+            .ifEmpty(::defaultSulogEventFilters))
     private var refreshJob: Job? = null
     private val mutableEvents = MutableSharedFlow<SulogUiEvent>(extraBufferCapacity = 1)
     val events: SharedFlow<SulogUiEvent> = mutableEvents.asSharedFlow()
@@ -91,8 +86,7 @@ class SulogViewModel(
     val state: StateFlow<SulogUiState> = combine(
         observeState(),
         search,
-        filters,
-    ) { source, query, selectedFilters ->
+        filters) { source, query, selectedFilters ->
         SulogUiState(
             isLoading = source.isLoading,
             isRefreshing = source.isRefreshing,
@@ -104,13 +98,11 @@ class SulogViewModel(
             selectedFilePath = source.selectedFilePath,
             entries = source.entries,
             visibleEntries = filterSulogEntries(source.entries, query, selectedFilters),
-            errorMessage = source.errorMessage,
-        )
+            errorMessage = source.errorMessage)
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
-        initialValue = SulogUiState(selectedFilters = filters.value),
-    )
+        initialValue = SulogUiState(selectedFilters = filters.value))
     val uiState: StateFlow<SulogUiState> = state
 
     fun dispatch(action: SulogUiAction) {

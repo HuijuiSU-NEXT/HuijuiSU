@@ -18,8 +18,7 @@ internal fun Natives.Profile.toDomain(): AppProfile = AppProfile(
     nonRootUseDefault = nonRootUseDefault,
     umountModules = umountModules,
     rules = rules,
-    flags = flags,
-)
+    flags = flags)
 
 internal fun AppProfile.toNative(): Natives.Profile = Natives.Profile(
     name = name,
@@ -36,5 +35,4 @@ internal fun AppProfile.toNative(): Natives.Profile = Natives.Profile(
     nonRootUseDefault = nonRootUseDefault,
     umountModules = umountModules,
     rules = rules,
-    flags = flags,
-)
+    flags = flags)

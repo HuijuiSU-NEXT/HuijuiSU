@@ -16,8 +16,7 @@ import org.bakasu.bakasu.domain.model.UmountState
 import org.json.JSONArray
 
 class UmountRepository(
-    private val ksuCliRepository: KsuCliRepository,
-) {
+    private val ksuCliRepository: KsuCliRepository) {
     private val mutex = Mutex()
     private val mutableState = MutableStateFlow(UmountState())
     val state: StateFlow<UmountState> = mutableState.asStateFlow()
@@ -39,8 +38,7 @@ class UmountRepository(
                             UmountPath(
                                 path = path,
                                 flags = entries.first().flags,
-                                persistent = entries.any(UmountPath::persistent),
-                            )
+                                persistent = entries.any(UmountPath::persistent))
                         }
                 }
                 mutableState.value = UmountState(paths = paths, isLoading = false)
@@ -57,13 +55,11 @@ class UmountRepository(
             runCatching {
                 check(
                     ksuCliRepository.addUmountConfigUmountPath(path, flags) &&
-                        ksuCliRepository.addKernelUmountPath(path, flags),
-                )
+                        ksuCliRepository.addKernelUmountPath(path, flags))
                 mutableState.update { current ->
                     current.copy(
                         paths = current.paths.filterNot { it.path == path } +
-                            UmountPath(path = path, flags = flags, persistent = true),
-                    )
+                            UmountPath(path = path, flags = flags, persistent = true))
                 }
             }
         }
@@ -77,8 +73,7 @@ class UmountRepository(
                         !entry.persistent ||
                             ksuCliRepository.removeUmountConfigUmountPath(entry.path)
                         ) &&
-                        ksuCliRepository.removeKernelUmountPath(entry.path),
-                )
+                        ksuCliRepository.removeKernelUmountPath(entry.path))
                 mutableState.update { current ->
                     current.copy(paths = current.paths.filterNot { it.path == entry.path })
                 }
@@ -94,8 +89,7 @@ class UmountRepository(
                 UmountPath(
                     path = value.getString("path"),
                     flags = value.getInt("flags"),
-                    persistent = persistent,
-                )
+                    persistent = persistent)
             }
         }
     }

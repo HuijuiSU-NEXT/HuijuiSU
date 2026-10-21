@@ -64,8 +64,7 @@ import org.koin.core.parameter.parametersOf
 @Composable
 fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
     val viewModel = koinViewModel<ExecuteModuleActionViewModel>(
-        parameters = { parametersOf(moduleId) },
-    )
+        parameters = { parametersOf(moduleId) })
     val moduleActionState by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHost = LocalSnackbarHost.current
     val state = rememberLazyListState()
@@ -90,8 +89,7 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
                         Toast.makeText(
                             context,
                             context.getString(R.string.module_action_success),
-                            Toast.LENGTH_SHORT,
-                        ).show()
+                            Toast.LENGTH_SHORT).show()
                         activity?.finishAndRemoveTask()
                     }
                 }
@@ -117,8 +115,7 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
                 onSave = {
                     viewModel.dispatch(ExecuteModuleActionUiAction.SaveLog)
                 },
-                scrollBehavior = scrollBehavior,
-            )
+                scrollBehavior = scrollBehavior)
         },
         floatingActionButton = {
             if (!moduleActionState.running) {
@@ -128,15 +125,13 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
                     icon = { Icon(Icons.TwoTone.Close, contentDescription = null) },
                     onClick = {
                         navigator.pop()
-                    },
-                )
+                    })
             }
         },
         containerColor = Color.Transparent,
         contentColor = MaterialTheme.colorScheme.onSurface,
         contentWindowInsets = adaptiveScaffoldWindowInsets(),
-        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) },
-    ) { innerPadding ->
+        snackbarHost = { SwipeableSnackbarHost(hostState = snackBarHost) }) { innerPadding ->
         KeyEventBlocker {
             it.key == Key.VolumeDown || it.key == Key.VolumeUp
         }
@@ -147,8 +142,7 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
             modifier = Modifier
                 .fillMaxSize(1f)
                 .nestedScroll(scrollBehavior.nestedScrollConnection)
-                .blurSource(),
-        ) {
+                .blurSource()) {
             item {
                 Spacer(modifier = Modifier.height(innerPadding.calculateTopPadding()))
             }
@@ -158,8 +152,7 @@ fun ExecuteModuleActionScreen(moduleId: String, fromShortcut: Boolean) {
                     text = moduleActionState.output,
                     fontSize = MaterialTheme.typography.bodySmall.fontSize,
                     fontFamily = monospaceFontFamily(),
-                    lineHeight = MaterialTheme.typography.bodySmall.lineHeight,
-                )
+                    lineHeight = MaterialTheme.typography.bodySmall.lineHeight)
             }
             item {
                 Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
@@ -174,8 +167,7 @@ private fun TopBar(
     isActionRunning: Boolean,
     onBack: () -> Unit = {},
     onSave: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior,
-) {
+    scrollBehavior: TopAppBarScrollBehavior) {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     TopAppBar(
@@ -184,18 +176,15 @@ private fun TopBar(
         scrollBehavior = scrollBehavior,
         navigationIcon = {
             AppBackButton(
-                onClick = onBack,
-            )
+                onClick = onBack)
         },
         actions = {
             IconButton(
                 onClick = onSave,
-                enabled = !isActionRunning,
-            ) {
+                enabled = !isActionRunning) {
                 Icon(
                     imageVector = Icons.TwoTone.Save,
-                    contentDescription = stringResource(id = R.string.save_log),
-                )
+                    contentDescription = stringResource(id = R.string.save_log))
             }
         },
         colors = TopAppBarDefaults.topAppBarColors(
@@ -210,8 +199,5 @@ private fun TopBar(
                     Color.Transparent
                 } else {
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                },
-        ),
-        ,
-    )
+                }))
 }

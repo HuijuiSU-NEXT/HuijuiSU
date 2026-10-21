@@ -35,29 +35,24 @@ class SuperUserRepository(
     private val cache: InstalledPackageCache,
     private val installedPackageRepository: InstalledPackageRepository,
     private val profileRepository: ProfileRepository,
-    applicationScope: CoroutineScope,
-) {
+    applicationScope: CoroutineScope) {
     private val refreshMutex = Mutex()
     private val mutableState = MutableStateFlow(SuperUserState())
     val state: StateFlow<SuperUserState> = combine(
         mutableState,
-        profileRepository.profiles,
-    ) { source, profiles ->
+        profileRepository.profiles) { source, profiles ->
         source.copy(
             groups = source.groups.map { group ->
                 val snapshot = profiles[AppProfileKey(group.profileKey, group.uid)]
                     ?: return@map group
                 group.copy(
                     profile = snapshot.profile,
-                    shouldUmount = snapshot.shouldUmount,
-                )
-            },
-        )
+                    shouldUmount = snapshot.shouldUmount)
+            })
     }.stateIn(
         scope = applicationScope,
         started = SharingStarted.Eagerly,
-        initialValue = SuperUserState(),
-    )
+        initialValue = SuperUserState())
 
     suspend fun refresh(): Result<Unit> = refreshMutex.withLock {
         mutableState.update { it.copy(refreshing = true, loadingProgress = 0f) }
@@ -76,8 +71,7 @@ class SuperUserRepository(
                         uid = applicationInfo.uid,
                         isSystem = applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0,
                         firstInstallTime = info.firstInstallTime,
-                        lastUpdateTime = info.lastUpdateTime,
-                    )
+                        lastUpdateTime = info.lastUpdateTime)
                 }
                 val normalGroups = apps.groupBy(InstalledApp::uid).map { (uid, uidApps) ->
                     val sorted = uidApps.sortedBy(InstalledApp::label)
@@ -89,14 +83,12 @@ class SuperUserRepository(
                         apps = sorted,
                         profile = profile.profile,
                         userName = profileRepository.getUserName(uid),
-                        shouldUmount = profile.shouldUmount,
-                    )
+                        shouldUmount = profile.shouldUmount)
                 }
                 // WebView Zygote is a single system UID, not a per-user package.
                 val webviewProfile = profileRepository.getProfileSnapshot(
                     WEBVIEW_ZYGOTE_PROFILE_KEY,
-                    WEBVIEW_ZYGOTE_UID,
-                )
+                    WEBVIEW_ZYGOTE_UID)
                 val webviewGroup = InstalledAppGroup(
                     uid = WEBVIEW_ZYGOTE_UID,
                     primaryPackageName = WEBVIEW_ZYGOTE_PROFILE_KEY,
@@ -107,20 +99,16 @@ class SuperUserRepository(
                             uid = WEBVIEW_ZYGOTE_UID,
                             isSystem = true,
                             profileKey = WEBVIEW_ZYGOTE_PROFILE_KEY,
-                            special = true,
-                        ),
-                    ),
+                            special = true)),
                     profile = webviewProfile.profile,
                     userName = profileRepository.getUserName(WEBVIEW_ZYGOTE_UID),
-                    shouldUmount = webviewProfile.shouldUmount,
-                )
+                    shouldUmount = webviewProfile.shouldUmount)
                 normalGroups + webviewGroup
             }
             mutableState.value = SuperUserState(
                 groups = groups,
                 refreshing = false,
-                loadingProgress = 1f,
-            )
+                loadingProgress = 1f)
             Result.success(Unit)
         } catch (error: CancellationException) {
             throw error
@@ -182,10 +170,7 @@ class SuperUserRepository(
                         uid = WEBVIEW_ZYGOTE_UID,
                         isSystem = true,
                         profileKey = WEBVIEW_ZYGOTE_PROFILE_KEY,
-                        special = true,
-                    ),
-                ),
-            )
+                        special = true)))
         }
         val packageManager = application.packageManager
         val cached = cache.packages.value
@@ -197,20 +182,17 @@ class SuperUserRepository(
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                             packageManager.getPackageInfo(
                                 primaryPackageName,
-                                PackageManager.PackageInfoFlags.of(0),
-                            )
+                                PackageManager.PackageInfoFlags.of(0))
                         } else {
                             @Suppress("DEPRECATION")
                             packageManager.getPackageInfo(primaryPackageName, 0)
                         }
-                    }.getOrNull(),
-                )
+                    }.getOrNull())
             }
         val apps = packages.map { it.toDomain(packageManager, uid) }
             .sortedWith(
                 compareBy<InstalledApp> { it.packageName != primaryPackageName }
-                    .thenBy(InstalledApp::label),
-            )
+                    .thenBy(InstalledApp::label))
         require(apps.any { it.packageName == primaryPackageName })
         InstalledAppGroup(uid, primaryPackageName, apps)
     }
@@ -224,8 +206,7 @@ class SuperUserRepository(
 
     private fun PackageInfo.toDomain(
         packageManager: PackageManager,
-        fallbackUid: Int,
-    ): InstalledApp {
+        fallbackUid: Int): InstalledApp {
         val info = applicationInfo
         return InstalledApp(
             packageName = packageName,
@@ -233,7 +214,6 @@ class SuperUserRepository(
             uid = info?.uid ?: fallbackUid,
             isSystem = info?.flags?.and(ApplicationInfo.FLAG_SYSTEM) != 0,
             firstInstallTime = firstInstallTime,
-            lastUpdateTime = lastUpdateTime,
-        )
+            lastUpdateTime = lastUpdateTime)
     }
 }

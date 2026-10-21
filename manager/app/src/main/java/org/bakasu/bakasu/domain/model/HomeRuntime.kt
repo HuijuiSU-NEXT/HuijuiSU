@@ -8,14 +8,12 @@ data class HomeBasicInfo(
     val deviceModel: String = "",
     val managerVersion: Triple<String, Int, Int> = Triple("", 0, 0),
     val selinuxStatus: String = "",
-    val seccompStatus: Int = -1,
-)
+    val seccompStatus: Int = -1)
 
 data class HomeModuleOverview(
     val count: Int = 0,
     val zygiskImplementation: String = "",
-    val metaModuleImplementation: String = "",
-)
+    val metaModuleImplementation: String = "")
 
 data class HomeSystemInfo(
     val kernelRelease: String = "",
@@ -33,8 +31,7 @@ data class HomeSystemInfo(
     val isDynamicSignEnabled: Boolean = false,
     val zygiskImplement: String = "",
     val metaModuleImplement: String = "",
-    val seccompStatus: Int = -1,
-)
+    val seccompStatus: Int = -1)
 
 data class HomeDashboardState(
     val systemStatus: KernelStatus = KernelStatus(kernelVersion = KernelVersion(0, 0, 0)),
@@ -48,5 +45,4 @@ data class HomeDashboardState(
     val isInitialDataLoaded: Boolean = false,
     val isCoreDataLoaded: Boolean = false,
     val isExtendedDataLoaded: Boolean = false,
-    val isRefreshing: Boolean = false,
-)
+    val isRefreshing: Boolean = false)

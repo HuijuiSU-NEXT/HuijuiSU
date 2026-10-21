@@ -8,8 +8,7 @@ import org.bakasu.bakasu.domain.model.WebUiModuleInfo
 internal fun readWebUiModuleInfo(
     moduleId: String,
     resolveFile: (String) -> File,
-    openFile: (File) -> InputStream,
-): WebUiModuleInfo? {
+    openFile: (File) -> InputStream): WebUiModuleInfo? {
     if (moduleId.isBlank() || moduleId == "." || moduleId == ".." ||
         moduleId.any { it == '/' || it == '\\' || it == '\u0000' }
     ) {
@@ -28,6 +27,5 @@ internal fun readWebUiModuleInfo(
         name = properties.getProperty("name").orEmpty().ifBlank { moduleId },
         enabled = !resolveFile("$directory/disable").exists(),
         remove = resolveFile("$directory/remove").exists(),
-        hasWebUi = resolveFile("$directory/webroot").exists(),
-    )
+        hasWebUi = resolveFile("$directory/webroot").exists())
 }

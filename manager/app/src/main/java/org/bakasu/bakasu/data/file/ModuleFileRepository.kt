@@ -4,8 +4,7 @@ import android.app.Application
 import androidx.core.net.toUri
 
 class ModuleFileRepository(
-    private val application: Application,
-) {
+    private val application: Application) {
     private val moduleUtils = ModuleUtils()
 
     fun isUriAccessible(uri: String): Boolean = moduleUtils.isUriAccessible(application, uri.toUri())

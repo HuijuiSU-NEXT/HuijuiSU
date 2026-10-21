@@ -77,8 +77,7 @@ fun OpenSourceLicenseScreen() {
         rememberTopAppBarState(
             initialHeightOffset = -154f,
             initialHeightOffsetLimit = -154f, // from debugger
-        ),
-    )
+        ))
 
     LaunchedEffect(Unit) {
         scrollBehavior.state.heightOffset = scrollBehavior.state.heightOffsetLimit
@@ -104,7 +103,6 @@ fun OpenSourceLicenseScreen() {
         topBar = {
             TopAppBar(
                 modifier = Modifier.blurEffect(),
-                ,
                 title = { Text(text = stringResource(id = R.string.open_source_license)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {
@@ -113,9 +111,7 @@ fun OpenSourceLicenseScreen() {
                         icon = Icons.AutoMirrored.TwoTone.ArrowBack,
                         modifier = Modifier.size(36.dp),
                         containerColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(
-                            alpha = 0.1f,
-                        ),
-                    )
+                            alpha = 0.1f))
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor =
@@ -129,17 +125,13 @@ fun OpenSourceLicenseScreen() {
                             Color.Transparent
                         } else {
                             MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
-                        },
-                ),
-            )
-        },
-    ) { paddingValues ->
+                        }))
+        }) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .blurSource(),
-            contentPadding = paddingValues,
-        ) {
+            contentPadding = paddingValues) {
             lazySegmentColumn(libraries.libraries) { _, lib ->
                 SettingsBaseWidget(
                     iconPlaceholder = false,
@@ -154,8 +146,7 @@ fun OpenSourceLicenseScreen() {
                     },
                     onClick = {
                         selectedLibrary = lib
-                    },
-                ) {
+                    }) {
                     lib.artifactVersion?.let {
                         Text(it)
                     }
@@ -185,19 +176,16 @@ fun OpenSourceLicenseScreen() {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Center,
-                    ) {
+                        horizontalArrangement = Arrangement.Center) {
                         Text(
                             text = library.name,
-                            style = MaterialTheme.typography.headlineSmall,
-                        )
+                            style = MaterialTheme.typography.headlineSmall)
                     }
                 },
                 text = {
                     LazyColumn(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp),
-                    ) {
+                        verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         item {
                             WarningCard(
                                 color = MaterialTheme.colorScheme.tertiary,
@@ -205,15 +193,12 @@ fun OpenSourceLicenseScreen() {
                                 icon = {
                                     Icon(
                                         imageVector = Icons.TwoTone.LocalPolice,
-                                        contentDescription = null,
-                                    )
+                                        contentDescription = null)
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 message = stringResource(
                                     R.string.license,
-                                    library.licenses.joinToString(separator = ", ") { it.name },
-                                ),
-                            )
+                                    library.licenses.joinToString(separator = ", ") { it.name }))
                         }
 
                         items(library.licenses.toList()) { license ->
@@ -221,12 +206,9 @@ fun OpenSourceLicenseScreen() {
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(16.dp),
                                 colors = CardDefaults.outlinedCardColors(
-                                    containerColor = MaterialTheme.colorScheme.surfaceBright,
-                                ),
-                            ) {
+                                    containerColor = MaterialTheme.colorScheme.surfaceBright)) {
                                 Column(
-                                    modifier = Modifier.padding(16.dp),
-                                ) {
+                                    modifier = Modifier.padding(16.dp)) {
                                     Row {
                                         Text(
                                             text = license.name,
@@ -238,8 +220,7 @@ fun OpenSourceLicenseScreen() {
                                                     license.url?.let { url ->
                                                         uriHandler.openUri(url)
                                                     }
-                                                },
-                                        )
+                                                })
                                     }
 
                                     Spacer(modifier = Modifier.size(8.dp))
@@ -248,16 +229,14 @@ fun OpenSourceLicenseScreen() {
                                         text = license.licenseContent
                                             ?: stringResource(R.string.no_license_text),
                                         style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    )
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant)
                                 }
                             }
                         }
                     }
                 },
                 properties = DialogProperties(usePlatformDefaultWidth = false),
-                modifier = Modifier.padding(24.dp),
-            )
+                modifier = Modifier.padding(24.dp))
         }
     }
 }

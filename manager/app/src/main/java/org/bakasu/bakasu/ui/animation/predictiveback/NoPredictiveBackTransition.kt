@@ -29,23 +29,18 @@ private val NoPredictivePop: NavTransition = navGraphicsTransition(
     motion = NavMotion(
         commit = NavSettleSpec.Tween(
             durationMillis = NO_PREDICTIVE_POP_DURATION_MILLIS,
-            easing = NavProgrammaticEasing,
-        ),
+            easing = NavProgrammaticEasing),
         cancel = NavSettleSpec.Tween(
             durationMillis = NO_PREDICTIVE_POP_DURATION_MILLIS,
-            easing = NavProgrammaticEasing,
-        ),
-    ),
-    scrim = { scope -> 1f - noPredictiveVisualProgress(scope) },
-) { scope ->
+            easing = NavProgrammaticEasing)),
+    scrim = { scope -> 1f - noPredictiveVisualProgress(scope) }) { scope ->
     applyNoPredictiveTransform(scope, noPredictiveVisualProgress(scope))
 }
 
 internal val NoPredictiveBackTransition: NavTransition = navDirectionalTransition(
     push = NavTransitions.MiuixDefault,
     pop = NavTransitions.MiuixDefault,
-    predictivePop = NoPredictivePop,
-)
+    predictivePop = NoPredictivePop)
 
 /**
  * Reconstructs the grab anchor hidden by the shared depth driver. While the finger is active the
@@ -103,8 +98,7 @@ private fun noPredictiveSettleProgress(settle: NavSettle): Float {
 
 private fun GraphicsLayerScope.applyNoPredictiveTransform(
     scope: NavTransitionScope,
-    progress: Float,
-) {
+    progress: Float) {
     val widthPx = scope.layoutSize.width.toFloat()
     val direction = if (scope.layoutDirection == LayoutDirection.Rtl) -1f else 1f
     val isLowerEntry = scope.role == NavRole.Covered ||

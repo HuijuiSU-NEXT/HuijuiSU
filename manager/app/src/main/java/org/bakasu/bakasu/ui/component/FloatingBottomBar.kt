@@ -106,16 +106,12 @@ private val iosIndicatorSpecular: Highlight = Highlight(
         primaryLight = LightSource(
             position = LightPosition(0.5f, -0.3f, -0.05f),
             color = Color.White,
-            intensity = 1f,
-        ),
+            intensity = 1f),
         secondaryLight = LightSource(
             position = LightPosition(0.5f, 0.8f, -0.5f),
             color = Color.White,
-            intensity = 0.4f,
-        ),
-        dualPeak = true,
-    ),
-)
+            intensity = 0.4f),
+        dualPeak = true))
 
 // Mirrors miuix-blur HighlightStyle's LIGHT_REF — keep in sync.
 private const val LIGHT_REF_X = 0.5f
@@ -143,8 +139,7 @@ private fun rememberQuantizedGravityAngle(): State<Float> {
 @Composable
 private fun rememberGravityRotatedHighlight(
     base: Highlight,
-    extraDegrees: Float = 0f,
-): State<Highlight> {
+    extraDegrees: Float = 0f): State<Highlight> {
     val baseStyle = base.style as BloomStroke
     val angle = rememberQuantizedGravityAngle()
     return remember(angle, base, extraDegrees) {
@@ -157,11 +152,7 @@ private fun rememberGravityRotatedHighlight(
                         position = LightPosition(
                             x = LIGHT_REF_X + cos(rad),
                             y = LIGHT_REF_Y + sin(rad),
-                            z = basePrimary.position.z,
-                        ),
-                    ),
-                ),
-            )
+                            z = basePrimary.position.z))))
         }
     }
 }
@@ -171,8 +162,7 @@ fun RowScope.FloatingBottomBarItem(
     selected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable ColumnScope.() -> Unit,
-) {
+    content: @Composable ColumnScope.() -> Unit) {
     val scale = LocalFloatingBottomBarTabScale.current
     Column(
         modifier
@@ -204,8 +194,7 @@ fun RowScope.FloatingBottomBarItem(
             },
         verticalArrangement = Arrangement.spacedBy(1.dp, Alignment.CenterVertically),
         horizontalAlignment = Alignment.CenterHorizontally,
-        content = content,
-    )
+        content = content)
 }
 
 @Composable
@@ -215,8 +204,7 @@ fun FloatingBottomBar(
     onSelected: (index: Int) -> Unit,
     tabsCount: Int,
     isBlurEnabled: Boolean = true,
-    content: @Composable RowScope.((Int) -> Unit) -> Unit,
-) {
+    content: @Composable RowScope.((Int) -> Unit) -> Unit) {
     val themeConfig: ThemeConfig = koinInject()
     val isInDark = isInDarkTheme(themeConfig.forceDarkMode)
     val pillShape = remember { CircleShape }
@@ -294,14 +282,12 @@ fun FloatingBottomBar(
                 if (tabWidthPx > 0f && dragAmount.x != 0f) {
                     updateValue(
                         (targetValue + dragAmount.x / tabWidthPx * if (isLtr) 1f else -1f)
-                            .coerceIn(0f, (tabsCount - 1).toFloat()),
-                    )
+                            .coerceIn(0f, (tabsCount - 1).toFloat()))
                     animationScope.launch {
                         offsetAnimation.snapTo(offsetAnimation.value + dragAmount.x)
                     }
                 }
-            },
-        )
+            })
     }
 
     LaunchedEffect(selectedIndex) {
@@ -330,10 +316,8 @@ fun FloatingBottomBar(
                     } else {
                         size.width - (dampedDragAnimation.value + 0.5f) * tabWidthPx + panelOffset
                     },
-                    size.height / 2f,
-                )
-            },
-        )
+                    size.height / 2f)
+            })
     }
 
     val baseHighlight = rememberGravityRotatedHighlight(iosIndicatorSpecular, extraDegrees = -45f)
@@ -350,8 +334,7 @@ fun FloatingBottomBar(
 
     Box(
         modifier = modifier.width(IntrinsicSize.Min),
-        contentAlignment = Alignment.CenterStart,
-    ) {
+        contentAlignment = Alignment.CenterStart) {
         Row(
             Modifier
                 .onGloballyPositioned { coords ->
@@ -366,9 +349,7 @@ fun FloatingBottomBar(
                     shadow = Shadow(
                         radius = 10.dp,
                         color = Color.Black,
-                        alpha = if (isInDark) 0.2f else 0.1f,
-                    ),
-                )
+                        alpha = if (isInDark) 0.2f else 0.1f))
                 .then(
                     if (isBlurEnabled) {
                         Modifier.drawBackdrop(
@@ -380,8 +361,7 @@ fun FloatingBottomBar(
                                 blur(4.dp.toPx(), 4.dp.toPx())
                                 lens(
                                     refractionHeight = 24.dp.toPx(),
-                                    refractionAmount = 24.dp.toPx(),
-                                )
+                                    refractionAmount = 24.dp.toPx())
                             },
                             highlight = { baseHighlight.value.copy(alpha = 0.75f) },
                             layerBlock = {
@@ -389,29 +369,24 @@ fun FloatingBottomBar(
                                 val s = lerp(
                                     1f,
                                     1f + 16.dp.toPx() / width,
-                                    dampedDragAnimation.pressProgress,
-                                )
+                                    dampedDragAnimation.pressProgress)
                                 scaleX = s
                                 scaleY = s
                             },
-                            onDrawSurface = { drawRect(containerColor) },
-                        )
+                            onDrawSurface = { drawRect(containerColor) })
                     } else {
                         Modifier.background(containerColor, pillShape)
-                    },
-                )
+                    })
                 .then(
                     if (isBlurEnabled) {
                         interactiveHighlight.modifier.then(interactiveHighlight.gestureModifier)
                     } else {
                         Modifier
-                    },
-                )
+                    })
                 .then(dampedDragAnimation.modifier)
                 .height(64.dp)
                 .padding(4.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
+            verticalAlignment = Alignment.CenterVertically) {
             CompositionLocalProvider(LocalContentColor provides tabContentColor) {
                 content(::activateTab)
             }
@@ -422,8 +397,7 @@ fun FloatingBottomBar(
                 LocalFloatingBottomBarTabScale provides {
                     lerp(1f, 1.2f, dampedDragAnimation.pressProgress)
                 },
-                LocalContentColor provides accentColor,
-            ) {
+                LocalContentColor provides accentColor) {
                 Row(
                     Modifier
                         .clearAndSetSemantics {}
@@ -438,17 +412,14 @@ fun FloatingBottomBar(
                                 blur(4.dp.toPx(), 4.dp.toPx())
                                 lens(
                                     refractionHeight = 24.dp.toPx(),
-                                    refractionAmount = 24.dp.toPx(),
-                                )
+                                    refractionAmount = 24.dp.toPx())
                             },
-                            onDrawSurface = { drawRect(containerColor) },
-                        )
+                            onDrawSurface = { drawRect(containerColor) })
                         .then(interactiveHighlight.modifier)
                         .height(56.dp)
                         .padding(horizontal = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
-                    content = { highlightedContent(this, ::activateTab) },
-                )
+                    content = { highlightedContent(this, ::activateTab) })
             }
         }
 
@@ -472,8 +443,7 @@ fun FloatingBottomBar(
                                     refractionHeight = 10.dp.toPx() * progress,
                                     refractionAmount = 14.dp.toPx() * progress,
                                     depthEffect = true,
-                                    chromaticAberration = 0.5f,
-                                )
+                                    chromaticAberration = 0.5f)
                             },
                             highlight = { pillHighlight.value.copy(alpha = dampedDragAnimation.pressProgress) },
                             layerBlock = {
@@ -490,24 +460,19 @@ fun FloatingBottomBar(
                                         Color.Black.copy(alpha = 0.1f)
                                     } else {
                                         Color.White.copy(
-                                            alpha = 0.1f,
-                                        )
+                                            alpha = 0.1f)
                                     },
-                                    alpha = 1f - progress,
-                                )
+                                    alpha = 1f - progress)
                                 drawRect(Color.Black.copy(alpha = 0.03f * progress))
-                            },
-                        )
+                            })
                         .innerShadow(shape = pillShape) {
                             InnerShadow(
                                 radius = 8.dp * dampedDragAnimation.pressProgress,
                                 color = Color.Black.copy(alpha = 0.15f),
-                                alpha = dampedDragAnimation.pressProgress,
-                            )
+                                alpha = dampedDragAnimation.pressProgress)
                         }
                         .height(56.dp)
-                        .width(tabWidthDp),
-                )
+                        .width(tabWidthDp))
             } else {
                 Box(
                     Modifier
@@ -521,8 +486,7 @@ fun FloatingBottomBar(
                         .background(accentColor.copy(alpha = 0.15f), pillShape)
                         .height(56.dp)
                         .width(tabWidthDp),
-                    contentAlignment = Alignment.CenterStart,
-                ) {
+                    contentAlignment = Alignment.CenterStart) {
                     CompositionLocalProvider(LocalContentColor provides accentColor) {
                         Row(
                             Modifier
@@ -535,8 +499,7 @@ fun FloatingBottomBar(
                                     translationX = if (isLtr) -progressOffset else progressOffset
                                 },
                             verticalAlignment = Alignment.CenterVertically,
-                            content = { highlightedContent(this, ::activateTab) },
-                        )
+                            content = { highlightedContent(this, ::activateTab) })
                     }
                 }
             }

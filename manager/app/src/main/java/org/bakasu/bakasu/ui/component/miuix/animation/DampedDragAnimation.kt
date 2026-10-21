@@ -30,8 +30,7 @@ class DampedDragAnimation(
     val onDragStarted: DampedDragAnimation.(position: Offset) -> Unit,
     val onDragStopped: DampedDragAnimation.() -> Unit,
     val onDragCancelled: DampedDragAnimation.() -> Unit = onDragStopped,
-    val onDrag: DampedDragAnimation.(size: IntSize, dragAmount: Offset) -> Unit,
-) {
+    val onDrag: DampedDragAnimation.(size: IntSize, dragAmount: Offset) -> Unit) {
 
     private val valueAnimationSpec =
         spring(1f, 1000f, visibilityThreshold)
@@ -83,8 +82,7 @@ class DampedDragAnimation(
             onDragCancel = {
                 onDragCancelled()
                 release()
-            },
-        ) { change, dragAmount ->
+            }) { change, dragAmount ->
             val position = change.position
             val previousPosition = change.previousPosition
 
@@ -146,8 +144,7 @@ class DampedDragAnimation(
     private fun updateVelocity() {
         velocityTracker.addPosition(
             startMark.elapsedNow().inWholeMilliseconds,
-            Offset(value, 0f),
-        )
+            Offset(value, 0f))
         val span = (valueRange.endInclusive - valueRange.start).coerceAtLeast(1e-6f)
         val targetVelocity = velocityTracker.calculateVelocity().x / span
         animationScope.launch(start = CoroutineStart.UNDISPATCHED) {
