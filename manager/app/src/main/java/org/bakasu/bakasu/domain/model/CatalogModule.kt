@@ -18,6 +18,7 @@ data class ModuleRelease(
     val assets: List<ModuleReleaseAsset>)
 
 data class CatalogModule(
+    val tags: List<String> = emptyList(),
     val moduleId: String,
     val moduleName: String,
     val authors: String,

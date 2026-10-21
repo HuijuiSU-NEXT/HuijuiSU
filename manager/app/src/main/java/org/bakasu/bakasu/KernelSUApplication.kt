@@ -41,8 +41,9 @@ class KernelSUApplication : Application() {
             runBlocking(Dispatchers.IO) {
                 koin.get<InitializeApplicationUseCase>()()
             }
-        } catch (e: Exception) {
+        } catch (e: Throwable) {
             // 捕获异常，防止初始化失败导致崩溃
+            android.util.Log.e("HuiJuiSU", "Application 初始化失败: ${e.message}", e)
         }
 
         // 隐藏规则放在后台慢慢跑
