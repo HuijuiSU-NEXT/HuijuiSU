@@ -791,9 +791,6 @@ private fun InfoCard(
     }
 }
 
-
-
-
 @Composable
 fun FingerprintCard() {
     val fingerprint = remember { android.os.Build.FINGERPRINT }
