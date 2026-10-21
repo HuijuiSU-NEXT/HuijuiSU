@@ -47,7 +47,7 @@ fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.u
 fun SelinuxDialog(onDismiss: () -> Unit) {
     var status by remember { mutableStateOf("正在获取...") }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (Shell.cmd("getenforce").exec().out.firstOrNull() ?: "Unknown").trim() } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (scope.launch(Dispatchers.IO) { Shell.cmd("getenforce").exec() }.out.firstOrNull() ?: "Unknown").trim() } }
     UltraDialogWrapper("SELinux 控制器", "当前状态: $status", Icons.TwoTone.Security, onDismiss) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
@@ -62,30 +62,30 @@ fun DpiDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("屏幕 DPI 修改", "输入自定义 DPI (如 420)", Icons.TwoTone.Tune, onDismiss) {
         OutlinedTextField(value = dpi, onValueChange = { dpi = it.filter { c -> c.isDigit() } }, label = { Text("DPI 数值") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.height(8.dp))
-        Button(onClick = { if (dpi.isNotBlank()) { Shell.cmd("wm density $dpi").exec(); onDismiss() } }, modifier = Modifier.fillMaxWidth()) { Text("应用") }
+        Button(onClick = { if (dpi.isNotBlank()) { scope.launch(Dispatchers.IO) { Shell.cmd("wm density $dpi").exec() }; onDismiss() } }, modifier = Modifier.fillMaxWidth()) { Text("应用") }
     }
 }
 
 @Composable
 fun TcpDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("TCP 拥塞控制", "切换网络算法，优化延迟", Icons.TwoTone.NetworkCheck, onDismiss) {
-        Button(onClick = { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=bbr").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 BBR (提速)") }
+        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=bbr").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 BBR (提速)") }
         Spacer(Modifier.height(8.dp))
-        Button(onClick = { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=cubic").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 CUBIC (稳定)") }
+        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=cubic").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 CUBIC (稳定)") }
     }
 }
 
 @Composable
 fun DropCachesDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("内存与缓存清理", "释放 RAM，缓解卡顿", Icons.TwoTone.CleaningServices, onDismiss) {
-        Button(onClick = { Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec(); onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("立即执行 drop_caches") }
+        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("立即执行 drop_caches") }
     }
 }
 
 @Composable
 fun BatteryHealthDialog(onDismiss: () -> Unit) {
     var health by remember { mutableStateOf("读取中...") }
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { health = Shell.cmd("dumpsys battery").exec().out.joinToString("\n").ifBlank { "无法读取电池信息" } } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { health = scope.launch(Dispatchers.IO) { Shell.cmd("dumpsys battery").exec() }.out.joinToString("\n").ifBlank { "无法读取电池信息" } } }
     UltraDialogWrapper("电池健康", "底层状态信息", Icons.TwoTone.BatteryChargingFull, onDismiss) {
         Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth()) {
             Text(health, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(12.dp).verticalScroll(rememberScrollState()))
@@ -124,7 +124,7 @@ fun WebAdminDialog(onDismiss: () -> Unit) {
 fun CpuGovernorDialog(onDismiss: () -> Unit) {
     var currentGov by remember { mutableStateOf("读取中...") }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec().out.firstOrNull() ?: "未知" } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = scope.launch(Dispatchers.IO) { Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }.out.firstOrNull() ?: "未知" } }
     UltraDialogWrapper("CPU 性能调度", "当前策略: $currentGov", Icons.TwoTone.Memory, onDismiss) {
         Column {
             listOf("performance" to "性能 (满血)", "schedutil" to "均衡 (日常)", "powersave" to "省电").forEach { (gov, name) ->
@@ -167,10 +167,10 @@ fun HardwareMonitorDialog(onDismiss: () -> Unit) {
     LaunchedEffect(Unit) {
         while (true) {
             withContext(Dispatchers.IO) {
-                cpuFreq = Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | awk '{print $1/1000 \" MHz\"}'").exec().out.firstOrNull() ?: "未知"
-                gpuFreq = Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk | awk '{print $1/1000000 \" MHz\"}'").exec().out.firstOrNull() ?: "不支持"
-                batteryTemp = Shell.cmd("dumpsys battery | grep temperature | awk '{print $2/10 \" °C\"}'").exec().out.firstOrNull() ?: "未知"
-                ramUsage = Shell.cmd("free -m | grep Mem | awk '{print $3 \" MB / \" $2 \" MB\"}'").exec().out.firstOrNull() ?: "未知"
+                cpuFreq = scope.launch(Dispatchers.IO) { Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq | awk '{print $1/1000 \" MHz\"}'").exec() }.out.firstOrNull() ?: "未知"
+                gpuFreq = scope.launch(Dispatchers.IO) { Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk | awk '{print $1/1000000 \" MHz\"}'").exec() }.out.firstOrNull() ?: "不支持"
+                batteryTemp = scope.launch(Dispatchers.IO) { Shell.cmd("dumpsys battery | grep temperature | awk '{print $2/10 \" °C\"}'").exec() }.out.firstOrNull() ?: "未知"
+                ramUsage = scope.launch(Dispatchers.IO) { Shell.cmd("free -m | grep Mem | awk '{print $3 \" MB / \" $2 \" MB\"}'").exec() }.out.firstOrNull() ?: "未知"
             }
             delay(1000)
         }
@@ -214,7 +214,7 @@ fun AutoSchedulerDialog(onDismiss: () -> Unit) {
 fun GpuControlDialog(onDismiss: () -> Unit) {
     var currentFreq by remember { mutableStateOf("读取中...") }
     val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec().out.firstOrNull()?.trim() ?: "不支持" } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = scope.launch(Dispatchers.IO) { Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec() }.out.firstOrNull()?.trim() ?: "不支持" } }
     UltraDialogWrapper("GPU 极限锁频", "当前频率: $currentFreq", Icons.TwoTone.Memory, onDismiss) {
         Column {
             Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已锁定最高频" } }, modifier = Modifier.fillMaxWidth()) { Text("🔥 锁定最高频") }
@@ -246,7 +246,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
                         val dir = "/storage/emulated/0/HuiJuiSU_Backup"
                         // 强制提权创建目录
-                        Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec()
+                        scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec() }
                         backupLog = "开始备份...\n"
                         
                         // 动态获取当前槽位 (A/B分区)
@@ -274,12 +274,12 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
 @Composable
 fun SusfsDialog(onDismiss: () -> Unit) {
     var status by remember { mutableStateOf("检查中...") }
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec().isSuccess) "SUSFS 状态 (需内核支持)" else "SUSFS 未启用" } }
+    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (scope.launch(Dispatchers.IO) { Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec() }.isSuccess) "SUSFS 状态 (需内核支持)" else "SUSFS 未启用" } }
     UltraDialogWrapper("SUSFS 深度隐藏", status, Icons.TwoTone.Security, onDismiss) {
         Column {
-            Button(onClick = { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { Shell.cmd("su -c 'echo 0 > /sys/kernel/susfs/enable'").exec() }, modifier = Modifier.fillMaxWidth()) { Text("关闭隐藏") }
+            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'echo 0 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("关闭隐藏") }
         }
     }
 }
@@ -299,7 +299,7 @@ object AutoSchedulerManager {
         isRunning = false
         job?.cancel()
         currentScene = "已关闭"
-        Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec()
-        Shell.cmd("start thermal-engine; start thermald").exec()
+        scope.launch(Dispatchers.IO) { Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }
+        scope.launch(Dispatchers.IO) { Shell.cmd("start thermal-engine; start thermald").exec() }
     }
 }

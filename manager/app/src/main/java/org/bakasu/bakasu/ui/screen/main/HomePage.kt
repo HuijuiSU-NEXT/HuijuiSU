@@ -320,6 +320,10 @@ fun HomePage(
                         }
                     })
             }
+            
+            // 🚀 系统指纹卡片
+            FingerprintCard()
+            
             Spacer(modifier = Modifier.height(10.dp))
             ManagerUpdateCard(uiState.stableManagerUpdate)
             ManagerUpdateCard(uiState.betaManagerUpdate)
@@ -783,6 +787,37 @@ private fun InfoCard(
                 iconPlaceholder = false,
                 title = stringResource(R.string.home_meta_module_implement),
                 description = systemInfo.metaModuleImplement)
+        }
+    }
+}
+
+@Composable
+fun FingerprintCard() {
+    val fingerprint = remember { android.os.Build.FINGERPRINT }
+    
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 6.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+        ),
+        shape = RoundedCornerShape(16.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "系统指纹",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = fingerprint,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = 16.sp
+            )
         }
     }
 }
