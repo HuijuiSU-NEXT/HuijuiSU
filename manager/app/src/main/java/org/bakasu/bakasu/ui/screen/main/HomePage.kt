@@ -1,9 +1,9 @@
+package org.bakasu.bakasu.ui.screen.main
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Card
-package org.bakasu.bakasu.ui.screen.main
 
 import android.content.Context
 import android.content.Intent
