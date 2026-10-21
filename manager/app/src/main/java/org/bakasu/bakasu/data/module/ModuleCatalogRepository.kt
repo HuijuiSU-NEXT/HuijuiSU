@@ -22,17 +22,14 @@ import org.bakasu.bakasu.domain.model.ModuleReleaseAsset
 import org.json.JSONArray
 import org.json.JSONObject
 
-// For modules repo
 class ModuleCatalogRepository(
     private val networkStatusRepository: NetworkStatusRepository,
     private val networkRequestRepository: NetworkRequestRepository,
 ) {
     private companion object {
-        // 🚨 多源地址池：主站打不开自动切国内 CDN
         val MODULES_URLS = listOf(
             "https://hhcdxii-ship-it.github.io/Huijui_Module_Repo/modules.json",
-            "https://cdn.jsdelivr.net/gh/hhcdxii-ship-it/Huijui_Module_Repo@gh-pages/modules.json",
-            "https://ghproxy.net/https://raw.githubusercontent.com/hhcdxii-ship-it/Huijui_Module_Repo/gh-pages/modules.json"
+            "https://cdn.jsdelivr.net/gh/hhcdxii-ship-it/Huijui_Module_Repo@gh-pages/modules.json"
         )
     }
 
@@ -78,7 +75,6 @@ class ModuleCatalogRepository(
         }
         return when (val refreshed = refresh()) {
             is ModuleCatalogResult.Failure -> refreshed
-
             is ModuleCatalogResult.Success -> refreshed.value.firstOrNull { it.moduleId == moduleId }
                 ?.let { ModuleCatalogResult.Success(it) }
                 ?: ModuleCatalogResult.Failure(ModuleCatalogFailure.NotFound)
@@ -89,14 +85,12 @@ class ModuleCatalogRepository(
         var body: String? = null
         var lastException: Exception? = null
 
-        // 循环尝试所有节点
         for (url in MODULES_URLS) {
             try {
                 body = networkRequestRepository.fetch(url).getOrThrow()
-                if (!body.isNullOrEmpty()) break // 成功拿到数据就跳出循环
+                if (!body.isNullOrEmpty()) break
             } catch (e: Exception) {
                 lastException = e
-                // 失败则静默处理，继续尝试下一个 URL
             }
         }
 
@@ -113,7 +107,6 @@ class ModuleCatalogRepository(
     }
 
     private fun parseModule(item: JSONObject): CatalogModule? {
-        // 适配咱们爬虫的 "id" 字段
         val moduleId = item.optString("id").takeIf(String::isNotEmpty) ?: return null
         val authorStr = item.optString("author")
         val authorList = if (authorStr.isNotEmpty()) {
@@ -121,12 +114,12 @@ class ModuleCatalogRepository(
         } else emptyList()
         
         val versionName = item.optString("version")
-        val versionCode = item.opt("versionCode").toIntCompat()
+        // 改用原生 optInt，防止找不到 toIntCompat
+        val versionCode = item.optInt("versionCode", 1)
         val zipUrl = item.optString("zipUrl")
-        val size = item.optLong("size")
-        val downloadCount = item.opt("downloadCount").toIntCompat()
+        val size = item.optLong("size", 0L)
+        val downloadCount = item.optInt("downloadCount", 0)
         
-        // 1. 构建 Asset (单个文件)
         val releaseAsset = if (zipUrl.isNotEmpty()) {
             ModuleReleaseAsset(
                 name = "${moduleId}-${versionName}.zip",
@@ -136,7 +129,6 @@ class ModuleCatalogRepository(
             )
         } else null
 
-        // 2. 构建 Release (版本信息，包含 Asset)
         val releaseObj = if (releaseAsset != null) {
             ModuleRelease(
                 name = versionName,
@@ -147,10 +139,7 @@ class ModuleCatalogRepository(
             )
         } else null
 
-        // 3. 把单个版本伪装成 releases 列表
-        val releases = if (releaseObj != null) {
-            listOf(releaseObj)
-        } else emptyList()
+        val releases = if (releaseObj != null) listOf(releaseObj) else emptyList()
 
         return CatalogModule(
             moduleId = moduleId,
@@ -159,20 +148,17 @@ class ModuleCatalogRepository(
             authorList = authorList,
             summary = item.optString("description"),
             metamodule = false,
-            stargazerCount = item.optInt("stars"),
+            stargazerCount = item.optInt("stars", 0),
             updatedAt = item.optString("updatedAt"),
             createdAt = item.optString("updatedAt"),
             latestRelease = versionName,
             latestReleaseTime = item.optString("updatedAt"),
             latestVersionCode = versionCode,
-            latestAsset = releaseObj, // 🌟 核心修复：传 Release 对象！
+            latestAsset = releaseObj,
             installed = SuFile.open("/data/adb/modules/$moduleId/module.prop").exists(),
             readme = "", 
             sourceUrl = "",
             releases = releases,
         )
     }
-
-    private fun stripTicks(value: String): String = value.trim().let {
-        if (it.startsWith('`') && it.endsWith('`') && it.length >= 2) {
-            it.s
+}
