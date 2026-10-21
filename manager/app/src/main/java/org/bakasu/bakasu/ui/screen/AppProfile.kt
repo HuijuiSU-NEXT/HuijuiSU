@@ -181,7 +181,7 @@ fun AppProfileScreen(
                         onClick = dropUnlessResumed { navigator.pop() },
                     )
                 },
-                windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+                ,
                 scrollBehavior = scrollBehavior,
             )
         },

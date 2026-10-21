@@ -119,7 +119,7 @@ import org.bakasu.bakasu.ui.viewmodel.HomeUiState
 import org.bakasu.bakasu.ui.viewmodel.HomeViewModel
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.compose.material3.LargeFlexibleTopAppBar
+// import androidx.compose.material3.LargeFlexibleTopAppBar
 
 /**
  * @author ShirkNeko
@@ -492,7 +492,7 @@ private fun TopBar(
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
 
-    LargeFlexibleTopAppBar(
+    TopAppBar(
         modifier = Modifier.blurEffect(), // 恢复原版玻璃特效
         title = {
             Text(text = stringResource(R.string.app_name))
@@ -530,7 +530,7 @@ private fun TopBar(
                 }
             }
         },
-        windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+        ,
         scrollBehavior = scrollBehavior,
     )
 }

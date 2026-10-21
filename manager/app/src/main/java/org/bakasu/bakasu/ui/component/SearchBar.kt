@@ -570,7 +570,7 @@ fun SearchAppBar(
                 }
                 dropdownContent?.invoke()
             },
-            windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+            ,
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor =
                     if (themeConfig.isEnableBlur) {

@@ -94,7 +94,7 @@ fun AboutScreen() {
         topBar = {
             TopAppBar(
                 modifier = Modifier.blurEffect(),
-                windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+                ,
                 title = { Text(text = stringResource(id = R.string.about)) },
                 scrollBehavior = scrollBehavior,
                 navigationIcon = {

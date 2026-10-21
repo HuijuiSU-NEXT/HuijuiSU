@@ -787,7 +787,7 @@ private fun TopBar(
                 )
             }
         },
-        windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+        ,
         scrollBehavior = scrollBehavior,
     )
 }

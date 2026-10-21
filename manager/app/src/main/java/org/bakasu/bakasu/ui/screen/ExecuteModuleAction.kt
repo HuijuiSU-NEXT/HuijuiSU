@@ -212,6 +212,6 @@ private fun TopBar(
                     MaterialTheme.colorScheme.surfaceContainer.copy(cardConfig.cardAlpha)
                 },
         ),
-        windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+        ,
     )
 }

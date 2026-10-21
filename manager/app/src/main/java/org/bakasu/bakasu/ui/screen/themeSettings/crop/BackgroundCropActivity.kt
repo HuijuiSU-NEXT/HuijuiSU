@@ -291,7 +291,7 @@ private fun BackgroundCropScreen(
                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                     scrolledContainerColor = MaterialTheme.colorScheme.surfaceContainer,
                 ),
-                windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+                ,
                 scrollBehavior = scrollBehavior,
             )
         },

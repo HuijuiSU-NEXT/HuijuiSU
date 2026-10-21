@@ -330,7 +330,7 @@ private fun TopBar(
             containerColor = Color.Transparent,
             scrolledContainerColor = Color.Transparent,
         ),
-        windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+        ,
         scrollBehavior = scrollBehavior,
     )
 }

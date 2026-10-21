@@ -36,7 +36,7 @@ import io.github.nadeemiqbal.liquidglass.rememberLiquidGlassState
 @Composable
 fun HuijuiToolCard(
     icon: ImageVector,
-    iconTint: Color,
+    iconTint: Color = MaterialTheme.colorScheme.primary,
     title: String,
     description: String,
     onClick: () -> Unit,

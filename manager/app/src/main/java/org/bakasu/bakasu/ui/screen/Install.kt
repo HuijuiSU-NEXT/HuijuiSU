@@ -833,7 +833,7 @@ private fun TopBar(
                     onClick = onBack,
                 )
             },
-            windowInsets = TopAppBarDefaults.windowInsets.add(WindowInsets(left = 12.dp)),
+            ,
             scrollBehavior = scrollBehavior,
         )
 

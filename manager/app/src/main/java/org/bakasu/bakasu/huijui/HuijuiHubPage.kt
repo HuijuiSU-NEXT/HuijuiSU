@@ -1,5 +1,22 @@
 package org.bakasu.bakasu.huijui
 
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.Button
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.ui.platform.LocalContext
+import org.bakasu.bakasu.data.module.ModuleBackupManager
+import java.io.File
+import kotlinx.coroutines.launch
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +41,10 @@ import org.bakasu.bakasu.ui.theme.blurEffect // 导入项目自带的模糊特�
 
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp) {
+    var showBackupSheet by remember { mutableStateOf(false) }
+    var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
+    val context = LocalContext.current
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     var showRescue by remember { mutableStateOf(false) }
@@ -58,7 +79,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
 
         // 1. 核心救援
         item {
-            GlassToolCard(
+            HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
                 title = "分区备份救援",
                 description = "一键备份 boot/dtbo 等核心分区防变砖",
@@ -68,7 +89,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
 
         // 2. 重启 SystemUI
         item {
-            GlassToolCard(
+            HuijuiToolCard(
                 icon = Icons.TwoTone.Refresh,
                 title = "重启 SystemUI",
                 description = "专治状态栏卡死、界面掉帧，一键刷新界面",
@@ -85,7 +106,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
 
         // 3. 极速清理内存
         item {
-            GlassToolCard(
+            HuijuiToolCard(
                 icon = Icons.TwoTone.CleaningServices,
                 title = "极速清理内存",
                 description = "底层 drop_caches，强制回收系统缓存，释放 RAM",
@@ -99,12 +120,25 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 }
             )
         }
+        // 🚀 4. 新增：模块备份与还原
+        item {
+            HuijuiToolCard(
+                icon = androidx.compose.material.icons.Icons.Default.Archive,
+                title = "模块备份与还原",
+                description = "防止模块变砖，随时打包或恢复已安装的模块",
+                onClick = {
+                    backupList = ModuleBackupManager.getBackupList(context)
+                    showBackupSheet = true
+                }
+            )
+        }
+
     }
 }
 
 // 全新定制的“液态玻璃”卡片，保留高级质感
 @Composable
-fun GlassToolCard(
+fun HuijuiToolCard(
     icon: ImageVector,
     title: String,
     description: String,
@@ -139,6 +173,51 @@ fun GlassToolCard(
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
+            }
+        }
+    }
+
+    if (showBackupSheet) {
+        ModalBottomSheet(onDismissRequest = { showBackupSheet = false }) {
+            androidx.compose.foundation.layout.Column(
+                modifier = androidx.compose.ui.Modifier.padding(16.dp).fillMaxHeight(0.8f)
+            ) {
+                Text("本地模块备份", style = MaterialTheme.typography.titleLarge, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+                
+                if (backupList.isEmpty()) {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth().weight(1f), 
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+                        Text("暂无备份文件，快去模块页备份吧~", color = androidx.compose.ui.graphics.Color.Gray)
+                    }
+                } else {
+                    LazyColumn(modifier = androidx.compose.ui.Modifier.weight(1f)) {
+                        items(backupList) { file ->
+                            androidx.compose.foundation.layout.Row(
+                                modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+                                androidx.compose.foundation.layout.Column {
+                                    Text(file.name, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
+                                    Text("${String.format("%.2f MB", file.length() / (1024.0 * 1024.0))}", style = MaterialTheme.typography.bodySmall, color = androidx.compose.ui.graphics.Color.Gray)
+                                }
+                                androidx.compose.foundation.layout.Row {
+                                    Button(onClick = {
+                                        // 还原操作
+                                    }) { Text("还原") }
+                                    IconButton(onClick = {
+                                        ModuleBackupManager.deleteBackup(file)
+                                        backupList = ModuleBackupManager.getBackupList(context)
+                                    }) { Icon(androidx.compose.material.icons.Icons.Default.Delete, contentDescription = "删除") }
+                                }
+                            }
+                            HorizontalDivider()
+                        }
+                    }
+                }
             }
         }
     }
