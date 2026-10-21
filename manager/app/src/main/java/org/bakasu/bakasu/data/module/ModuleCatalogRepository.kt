@@ -53,15 +53,8 @@ class ModuleCatalogRepository(
             withContext(Dispatchers.IO) {
                 runCatching { fetchModules() }
                     .fold(
-                        onSuccess = {
-                            mutableModules.value = it
-                            ModuleCatalogResult.Success(it)
-                        },
-                        onFailure = {
-                            ModuleCatalogResult.Failure(
-                                ModuleCatalogFailure.Network(it.message.orEmpty()),
-                            )
-                        },
+                        onSuccess = { mutableModules.value = it; ModuleCatalogResult.Success(it) },
+                        onFailure = { ModuleCatalogResult.Failure(ModuleCatalogFailure.Network(it.message.orEmpty())) }
                     )
             }
         } finally {
@@ -76,27 +69,20 @@ class ModuleCatalogRepository(
         return when (val refreshed = refresh()) {
             is ModuleCatalogResult.Failure -> refreshed
             is ModuleCatalogResult.Success -> refreshed.value.firstOrNull { it.moduleId == moduleId }
-                ?.let { ModuleCatalogResult.Success(it) }
-                ?: ModuleCatalogResult.Failure(ModuleCatalogFailure.NotFound)
+                ?.let { ModuleCatalogResult.Success(it) } ?: ModuleCatalogResult.Failure(ModuleCatalogFailure.NotFound)
         }
     }
 
     private suspend fun fetchModules(): List<CatalogModule> {
         var body: String? = null
         var lastException: Exception? = null
-
         for (url in MODULES_URLS) {
             try {
                 body = networkRequestRepository.fetch(url).getOrThrow()
                 if (!body.isNullOrEmpty()) break
-            } catch (e: Exception) {
-                lastException = e
-            }
+            } catch (e: Exception) { lastException = e }
         }
-
-        if (body.isNullOrEmpty()) {
-            throw lastException ?: Exception("All module repo URLs failed")
-        }
+        if (body.isNullOrEmpty()) throw lastException ?: Exception("All URLs failed")
 
         val json = JSONArray(body)
         return coroutineScope {
@@ -109,56 +95,54 @@ class ModuleCatalogRepository(
     private fun parseModule(item: JSONObject): CatalogModule? {
         val moduleId = item.optString("id").takeIf(String::isNotEmpty) ?: return null
         val authorStr = item.optString("author")
-        val authorList = if (authorStr.isNotEmpty()) {
-            listOf(CatalogAuthor(authorStr, ""))
-        } else emptyList()
         
-        val versionName = item.optString("version")
-        // 改用原生 optInt，防止找不到 toIntCompat
-        val versionCode = item.optInt("versionCode", 1)
-        val zipUrl = item.optString("zipUrl")
-        val size = item.optLong("size", 0L)
-        val downloadCount = item.optInt("downloadCount", 0)
+        val releasesArray = item.optJSONArray("releases")
+        val releasesList = mutableListOf<ModuleRelease>()
         
-        val releaseAsset = if (zipUrl.isNotEmpty()) {
-            ModuleReleaseAsset(
-                name = "${moduleId}-${versionName}.zip",
-                downloadUrl = zipUrl,
-                size = size,
-                downloadCount = downloadCount
-            )
-        } else null
-
-        val releaseObj = if (releaseAsset != null) {
-            ModuleRelease(
-                name = versionName,
-                tagName = versionName,
-                publishedAt = item.optString("updatedAt"),
-                descriptionHTML = "",
-                assets = listOf(releaseAsset)
-            )
-        } else null
-
-        val releases = if (releaseObj != null) listOf(releaseObj) else emptyList()
+        if (releasesArray != null) {
+            for (i in 0 until releasesArray.length()) {
+                val relObj = releasesArray.optJSONObject(i) ?: continue
+                val zipUrl = relObj.optString("zipUrl")
+                if (zipUrl.isNotEmpty()) {
+                    val asset = ModuleReleaseAsset(
+                        name = "${moduleId}-${relObj.optString("name")}.zip",
+                        downloadUrl = zipUrl,
+                        size = relObj.optLong("size", 0L),
+                        downloadCount = relObj.optInt("downloadCount", 0)
+                    )
+                    releasesList.add(
+                        ModuleRelease(
+                            name = relObj.optString("name"),
+                            tagName = relObj.optString("name"),
+                            publishedAt = relObj.optString("publishedAt"),
+                            descriptionHTML = "",
+                            assets = listOf(asset)
+                        )
+                    )
+                }
+            }
+        }
+        
+        val latestRelease = releasesList.firstOrNull()
 
         return CatalogModule(
             moduleId = moduleId,
             moduleName = item.optString("name"),
             authors = authorStr,
-            authorList = authorList,
+            authorList = if (authorStr.isNotEmpty()) listOf(CatalogAuthor(authorStr, "")) else emptyList(),
             summary = item.optString("description"),
             metamodule = false,
             stargazerCount = item.optInt("stars", 0),
             updatedAt = item.optString("updatedAt"),
             createdAt = item.optString("updatedAt"),
-            latestRelease = versionName,
-            latestReleaseTime = item.optString("updatedAt"),
-            latestVersionCode = versionCode,
-            latestAsset = releaseObj,
+            latestRelease = latestRelease?.name ?: "",
+            latestReleaseTime = latestRelease?.publishedAt ?: "",
+            latestVersionCode = 1,
+            latestAsset = latestRelease,
             installed = SuFile.open("/data/adb/modules/$moduleId/module.prop").exists(),
             readme = "", 
             sourceUrl = "",
-            releases = releases,
+            releases = releasesList,
         )
     }
 }
