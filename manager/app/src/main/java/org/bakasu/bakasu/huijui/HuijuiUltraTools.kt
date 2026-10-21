@@ -48,8 +48,7 @@ fun UltraDialogWrapper(title: String, subtitle: String, icon: androidx.compose.u
 @Composable
 fun SelinuxDialog(onDismiss: () -> Unit) {
     var status by remember { mutableStateOf("正在获取...") }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (runBlocking(Dispatchers.IO) { Shell.cmd("getenforce").exec() }.out.firstOrNull() ?: "Unknown").trim() } }
+LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (runBlocking(Dispatchers.IO) { Shell.cmd("getenforce").exec() }.out.firstOrNull() ?: "Unknown").trim() } }
     UltraDialogWrapper("SELinux 控制器", "当前状态: $status", Icons.TwoTone.Security, onDismiss) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
             Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
@@ -125,8 +124,7 @@ fun WebAdminDialog(onDismiss: () -> Unit) {
 @Composable
 fun CpuGovernorDialog(onDismiss: () -> Unit) {
     var currentGov by remember { mutableStateOf("读取中...") }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = runBlocking(Dispatchers.IO) { Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }.out.firstOrNull() ?: "未知" } }
+LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = runBlocking(Dispatchers.IO) { Shell.cmd("cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }.out.firstOrNull() ?: "未知" } }
     UltraDialogWrapper("CPU 性能调度", "当前策略: $currentGov", Icons.TwoTone.Memory, onDismiss) {
         Column {
             listOf("performance" to "性能 (满血)", "schedutil" to "均衡 (日常)", "powersave" to "省电").forEach { (gov, name) ->
@@ -139,8 +137,7 @@ fun CpuGovernorDialog(onDismiss: () -> Unit) {
 @Composable
 fun ThermalDialog(onDismiss: () -> Unit) {
     var isThermalDisabled by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    UltraDialogWrapper("温控控制", "风险操作：关闭温控可能导致过热", Icons.TwoTone.Whatshot, onDismiss) {
+UltraDialogWrapper("温控控制", "风险操作：关闭温控可能导致过热", Icons.TwoTone.Whatshot, onDismiss) {
         Button(onClick = { scope.launch(Dispatchers.IO) { if (!isThermalDisabled) Shell.cmd("stop thermald; stop thermal-engine").exec() else Shell.cmd("start thermald; start thermal-engine").exec(); isThermalDisabled = !isThermalDisabled } }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = if (isThermalDisabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)) { Text(if (isThermalDisabled) "恢复系统温控" else "强制关闭系统温控") }
     }
 }
@@ -148,8 +145,7 @@ fun ThermalDialog(onDismiss: () -> Unit) {
 @Composable
 fun LogcatDialog(onDismiss: () -> Unit) {
     var logcatText by remember { mutableStateOf("点击下方按钮抓取日志...") }
-    val scope = rememberCoroutineScope()
-    UltraDialogWrapper("Logcat 日志抓取", "抓取最近 500 行系统日志", Icons.TwoTone.Terminal, onDismiss) {
+UltraDialogWrapper("Logcat 日志抓取", "抓取最近 500 行系统日志", Icons.TwoTone.Terminal, onDismiss) {
         Column {
             Surface(color = MaterialTheme.colorScheme.surfaceVariant, shape = MaterialTheme.shapes.medium, modifier = Modifier.fillMaxWidth().height(200.dp)) {
                 Text(logcatText, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
@@ -215,8 +211,7 @@ fun AutoSchedulerDialog(onDismiss: () -> Unit) {
 @Composable
 fun GpuControlDialog(onDismiss: () -> Unit) {
     var currentFreq by remember { mutableStateOf("读取中...") }
-    val scope = rememberCoroutineScope()
-    LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = runBlocking(Dispatchers.IO) { Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec() }.out.firstOrNull()?.trim() ?: "不支持" } }
+LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = runBlocking(Dispatchers.IO) { Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec() }.out.firstOrNull()?.trim() ?: "不支持" } }
     UltraDialogWrapper("GPU 极限锁频", "当前频率: $currentFreq", Icons.TwoTone.Memory, onDismiss) {
         Column {
             Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已锁定最高频" } }, modifier = Modifier.fillMaxWidth()) { Text("🔥 锁定最高频") }
@@ -232,8 +227,7 @@ fun RescueBackupDialog(onDismiss: () -> Unit) {
 
     var backupLog by remember { mutableStateOf("等待备份...") }
     var isBackingUp by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
+UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
         Column {
             Surface(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth().height(150.dp)) {
                 androidx.compose.foundation.text.selection.SelectionContainer {
@@ -298,6 +292,8 @@ object AutoSchedulerManager {
     }
 
     fun stop() {
+    val scope = rememberCoroutineScope()
+
         isRunning = false
         job?.cancel()
         currentScene = "已关闭"
