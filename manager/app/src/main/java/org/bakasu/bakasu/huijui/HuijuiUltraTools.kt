@@ -51,8 +51,8 @@ fun SelinuxDialog(onDismiss: () -> Unit) {
 LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = (runBlocking(Dispatchers.IO) { Shell.cmd("getenforce").exec() }.out.firstOrNull() ?: "Unknown").trim() } }
     UltraDialogWrapper("SELinux 控制器", "当前状态: $status", Icons.TwoTone.Security, onDismiss) {
         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("setenforce 0").exec(); status = "Permissive" } }) { Text("Permissive") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("setenforce 1").exec(); status = "Enforcing" } }) { Text("Enforcing") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("setenforce 0").exec(); status = "Permissive" } }) { Text("Permissive") }
         }
     }
 }
@@ -63,23 +63,23 @@ fun DpiDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("屏幕 DPI 修改", "输入自定义 DPI (如 420)", Icons.TwoTone.Tune, onDismiss) {
         OutlinedTextField(value = dpi, onValueChange = { dpi = it.filter { c -> c.isDigit() } }, label = { Text("DPI 数值") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
         Spacer(Modifier.height(8.dp))
-        Button(onClick = { if (dpi.isNotBlank()) { scope.launch(Dispatchers.IO) { Shell.cmd("wm density $dpi").exec() }; onDismiss() } }, modifier = Modifier.fillMaxWidth()) { Text("应用") }
+        Button(onClick = { if (dpi.isNotBlank()) { runBlocking(Dispatchers.IO) { Shell.cmd("wm density $dpi").exec() }; onDismiss() } }, modifier = Modifier.fillMaxWidth()) { Text("应用") }
     }
 }
 
 @Composable
 fun TcpDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("TCP 拥塞控制", "切换网络算法，优化延迟", Icons.TwoTone.NetworkCheck, onDismiss) {
-        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=bbr").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 BBR (提速)") }
+        Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=bbr").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 BBR (提速)") }
         Spacer(Modifier.height(8.dp))
-        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=cubic").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 CUBIC (稳定)") }
+        Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("sysctl -w net.ipv4.tcp_congestion_control=cubic").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("启用 CUBIC (稳定)") }
     }
 }
 
 @Composable
 fun DropCachesDialog(onDismiss: () -> Unit) {
     UltraDialogWrapper("内存与缓存清理", "释放 RAM，缓解卡顿", Icons.TwoTone.CleaningServices, onDismiss) {
-        Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("立即执行 drop_caches") }
+        Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec() }; onDismiss() }, modifier = Modifier.fillMaxWidth()) { Text("立即执行 drop_caches") }
     }
 }
 
@@ -128,7 +128,7 @@ LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = runBlocking(Di
     UltraDialogWrapper("CPU 性能调度", "当前策略: $currentGov", Icons.TwoTone.Memory, onDismiss) {
         Column {
             listOf("performance" to "性能 (满血)", "schedutil" to "均衡 (日常)", "powersave" to "省电").forEach { (gov, name) ->
-                Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo $gov > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec(); currentGov = gov } }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) { Text(name) }
+                Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("echo $gov > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec(); currentGov = gov } }, modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) { Text(name) }
             }
         }
     }
@@ -138,7 +138,7 @@ LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentGov = runBlocking(Di
 fun ThermalDialog(onDismiss: () -> Unit) {
     var isThermalDisabled by remember { mutableStateOf(false) }
 UltraDialogWrapper("温控控制", "风险操作：关闭温控可能导致过热", Icons.TwoTone.Whatshot, onDismiss) {
-        Button(onClick = { scope.launch(Dispatchers.IO) { if (!isThermalDisabled) Shell.cmd("stop thermald; stop thermal-engine").exec() else Shell.cmd("start thermald; start thermal-engine").exec(); isThermalDisabled = !isThermalDisabled } }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = if (isThermalDisabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)) { Text(if (isThermalDisabled) "恢复系统温控" else "强制关闭系统温控") }
+        Button(onClick = { runBlocking(Dispatchers.IO) { if (!isThermalDisabled) Shell.cmd("stop thermald; stop thermal-engine").exec() else Shell.cmd("start thermald; start thermal-engine").exec(); isThermalDisabled = !isThermalDisabled } }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(containerColor = if (isThermalDisabled) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary)) { Text(if (isThermalDisabled) "恢复系统温控" else "强制关闭系统温控") }
     }
 }
 
@@ -151,7 +151,7 @@ UltraDialogWrapper("Logcat 日志抓取", "抓取最近 500 行系统日志", Ic
                 Text(logcatText, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
             }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { scope.launch(Dispatchers.IO) { logcatText = Shell.cmd("logcat -d -t 500").exec().out.joinToString("\n") } }, modifier = Modifier.fillMaxWidth()) { Text("一键抓取 Logcat") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { logcatText = Shell.cmd("logcat -d -t 500").exec().out.joinToString("\n") } }, modifier = Modifier.fillMaxWidth()) { Text("一键抓取 Logcat") }
         }
     }
 }
@@ -214,9 +214,9 @@ fun GpuControlDialog(onDismiss: () -> Unit) {
 LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = runBlocking(Dispatchers.IO) { Shell.cmd("cat /sys/class/kgsl/kgsl-3d0/gpuclk").exec() }.out.firstOrNull()?.trim() ?: "不支持" } }
     UltraDialogWrapper("GPU 极限锁频", "当前频率: $currentFreq", Icons.TwoTone.Memory, onDismiss) {
         Column {
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已锁定最高频" } }, modifier = Modifier.fillMaxWidth()) { Text("🔥 锁定最高频") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 1 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已锁定最高频" } }, modifier = Modifier.fillMaxWidth()) { Text("🔥 锁定最高频") }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已恢复系统动态调频" } }, modifier = Modifier.fillMaxWidth()) { Text("⚖️ 恢复动态调频") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_clk_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_bus_on").exec(); Shell.cmd("echo 0 > /sys/class/kgsl/kgsl-3d0/force_rail_on").exec(); currentFreq = "已恢复系统动态调频" } }, modifier = Modifier.fillMaxWidth()) { Text("⚖️ 恢复动态调频") }
         }
     }
 }
@@ -238,11 +238,11 @@ UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Ic
             Button(
                 onClick = {
                     isBackingUp = true
-                    scope.launch(Dispatchers.IO) {
+                    runBlocking(Dispatchers.IO) {
                         // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
                         val dir = "/storage/emulated/0/HuiJuiSU_Backup"
                         // 强制提权创建目录
-                        scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec() }
+                        runBlocking(Dispatchers.IO) { Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec() }
                         backupLog = "开始备份...\n"
                         
                         // 动态获取当前槽位 (A/B分区)
@@ -273,9 +273,9 @@ fun SusfsDialog(onDismiss: () -> Unit) {
     LaunchedEffect(Unit) { withContext(Dispatchers.IO) { status = if (runBlocking(Dispatchers.IO) { Shell.cmd("cat /proc/sys/kernel/susfs | head -n 1").exec() }.isSuccess) "SUSFS 状态 (需内核支持)" else "SUSFS 未启用" } }
     UltraDialogWrapper("SUSFS 深度隐藏", status, Icons.TwoTone.Security, onDismiss) {
         Column {
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("su -c 'echo 1 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("开启自动隐藏") }
             Spacer(Modifier.height(8.dp))
-            Button(onClick = { scope.launch(Dispatchers.IO) { Shell.cmd("su -c 'echo 0 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("关闭隐藏") }
+            Button(onClick = { runBlocking(Dispatchers.IO) { Shell.cmd("su -c 'echo 0 > /sys/kernel/susfs/enable'").exec() } }, modifier = Modifier.fillMaxWidth()) { Text("关闭隐藏") }
         }
     }
 }
@@ -292,12 +292,10 @@ object AutoSchedulerManager {
     }
 
     fun stop() {
-    val scope = rememberCoroutineScope()
-
-        isRunning = false
+isRunning = false
         job?.cancel()
         currentScene = "已关闭"
-        scope.launch(Dispatchers.IO) { Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }
-        scope.launch(Dispatchers.IO) { Shell.cmd("start thermal-engine; start thermald").exec() }
+        runBlocking(Dispatchers.IO) { Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }
+        runBlocking(Dispatchers.IO) { Shell.cmd("start thermal-engine; start thermald").exec() }
     }
 }
