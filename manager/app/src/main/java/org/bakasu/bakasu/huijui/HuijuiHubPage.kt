@@ -39,11 +39,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bakasu.bakasu.ui.theme.blurEffect // 导入项目自带的模糊特效
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp) {
     var showBackupSheet by remember { mutableStateOf(false) }
-    var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
-    val context = LocalContext.current
+    var backupList by remember { mutableStateOf<List<java.io.File>>(emptyList()) }
 
     val scope = rememberCoroutineScope()
     var showRescue by remember { mutableStateOf(false) }
@@ -208,7 +208,7 @@ fun HuijuiToolCard(
                                         // 还原操作
                                     }) { Text("还原") }
                                     IconButton(onClick = {
-                                        ModuleBackupManager.deleteBackup(file)
+                                        ModuleBackupManager.ModuleBackupManager.deleteBackup(file)
                                         backupList = ModuleBackupManager.getBackupList(context)
                                     }) { Icon(androidx.compose.material.icons.Icons.Default.Delete, contentDescription = "删除") }
                                 }
