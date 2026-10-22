@@ -143,13 +143,12 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                         onClick = {
                             scope.launch(Dispatchers.IO) {
                                 try {
-                                    val installedModules = java.io.File("/data/adb/modules").listFiles()
+                                    val lsResult = com.topjohnwu.superuser.Shell.cmd("su -c 'ls /data/adb/modules'").exec()
+                                    val installedModules = lsResult.out.filter { it.isNotBlank() && !it.startsWith(".") }
                                     var count = 0
-                                    installedModules?.forEach { dir ->
-                                        if (dir.isDirectory && !dir.name.startsWith(".")) {
-                                            val res = org.bakasu.bakasu.data.module.ModuleBackupManager.backupModule(dir.name, context)
-                                            if (res.isSuccess) count++
-                                        }
+                                    installedModules.forEach { moduleId ->
+                                        val res = org.bakasu.bakasu.data.module.ModuleBackupManager.backupModule(moduleId, context)
+                                        if (res.isSuccess) count++
                                     }
                                     withContext(Dispatchers.Main) {
                                         backupList = org.bakasu.bakasu.data.module.ModuleBackupManager.getBackupList(context)
