@@ -117,54 +117,117 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // RescueBackupDialog(onDismiss = { showRescue = false })
     }
 
+
     if (showBackupSheet) {
-        ModalBottomSheet(onDismissRequest = { showBackupSheet = false }) {
-            Column(modifier = Modifier.padding(16.dp).fillMaxHeight(0.8f)) {
-                Text("本地模块备份", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                if (backupList.isEmpty()) {
-                    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
-                        Text("暂无备份文件", color = Color.Gray)
-                    }
-                } else {
-                    LazyColumn(modifier = Modifier.weight(1f)) {
-                        items(backupList) { file ->
-                            Row(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column {
-                                    Text(file.name, fontWeight = FontWeight.Medium)
-                                    Text(String.format("%.2f MB", file.length() / (1024.0 * 1024.0)), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
-                                }
-                                Row {
-                                    Button(onClick = {
-                                        scope.launch {
-                                            val result = ModuleBackupManager.restoreBackup(file)
-                                            if (result.isSuccess) {
-                                                showBackupSheet = false
-                                            }
+        androidx.compose.material3.ModalBottomSheet(
+            onDismissRequest = { showBackupSheet = false }
+        ) {
+            androidx.compose.foundation.layout.Column(
+                modifier = androidx.compose.ui.Modifier
+                    .padding(16.dp)
+                    .fillMaxHeight(0.8f)
+            ) {
+                androidx.compose.foundation.layout.Row(
+                    modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                    verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                ) {
+                    androidx.compose.material3.Text(
+                        text = "本地模块备份",
+                        style = androidx.compose.material3.MaterialTheme.typography.titleLarge,
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                    )
+                    
+                    // 🚀 新增：一键备份所有模块按钮
+                    androidx.compose.material3.Button(
+                        onClick = {
+                            scope.launch(Dispatchers.IO) {
+                                try {
+                                    val installedModules = java.io.File("/data/adb/modules").listFiles()
+                                    var count = 0
+                                    installedModules?.forEach { dir ->
+                                        if (dir.isDirectory && !dir.name.startsWith(".")) {
+                                            val res = org.bakasu.bakasu.data.module.ModuleBackupManager.backupModule(dir.name, context)
+                                            if (res.isSuccess) count++
                                         }
-                                    }) { Text("还原") }
-                                    
-                                    IconButton(onClick = {
-                                        ModuleBackupManager.deleteBackup(file)
-                                        backupList = ModuleBackupManager.getBackupList(context)
-                                    }) {
-                                        Icon(imageVector = Icons.Default.Delete, contentDescription = "删除")
+                                    }
+                                    withContext(Dispatchers.Main) {
+                                        backupList = org.bakasu.bakasu.data.module.ModuleBackupManager.getBackupList(context)
+                                        android.widget.Toast.makeText(context, "成功备份 $count 个模块！", android.widget.Toast.LENGTH_SHORT).show()
+                                    }
+                                } catch (e: Exception) {
+                                    withContext(Dispatchers.Main) {
+                                        android.widget.Toast.makeText(context, "备份失败: ${e.message}", android.widget.Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }
-                            HorizontalDivider()
+                        }
+                    ) {
+                        androidx.compose.material3.Text("一键备份所有")
+                    }
+                }
+                
+                androidx.compose.foundation.layout.Spacer(modifier = androidx.compose.ui.Modifier.height(16.dp))
+
+                if (backupList.isEmpty()) {
+                    androidx.compose.foundation.layout.Box(
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth().weight(1f),
+                        contentAlignment = androidx.compose.ui.Alignment.Center
+                    ) {
+                        androidx.compose.material3.Text("还没有任何备份，点击右上角一键备份吧~", color = androidx.compose.ui.graphics.Color.Gray)
+                    }
+                } else {
+                    androidx.compose.foundation.lazy.LazyColumn(modifier = androidx.compose.ui.Modifier.weight(1f)) {
+                        items(backupList) { file ->
+                            androidx.compose.foundation.layout.Row(
+                                modifier = androidx.compose.ui.Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
+                                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                                verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                            ) {
+                                androidx.compose.foundation.layout.Column {
+                                    androidx.compose.material3.Text(file.name, fontWeight = androidx.compose.ui.text.font.FontWeight.Medium)
+                                    androidx.compose.material3.Text(
+                                        String.format("%.2f MB", file.length() / (1024.0 * 1024.0)),
+                                        style = androidx.compose.material3.MaterialTheme.typography.bodySmall,
+                                        color = androidx.compose.ui.graphics.Color.Gray
+                                    )
+                                }
+                                androidx.compose.foundation.layout.Row {
+                                    androidx.compose.material3.Button(onClick = {
+                                        scope.launch {
+                                            val result = org.bakasu.bakasu.data.module.ModuleBackupManager.restoreBackup(file)
+                                            if (result.isSuccess) {
+                                                withContext(Dispatchers.Main) {
+                                                    android.widget.Toast.makeText(context, "还原指令已发送", android.widget.Toast.LENGTH_SHORT).show()
+                                                    showBackupSheet = false
+                                                }
+                                            }
+                                        }
+                                    }) { androidx.compose.material3.Text("还原") }
+                                    
+                                    androidx.compose.material3.IconButton(onClick = {
+                                        org.bakasu.bakasu.data.module.ModuleBackupManager.deleteBackup(file)
+                                        backupList = org.bakasu.bakasu.data.module.ModuleBackupManager.getBackupList(context)
+                                    }) {
+                                        androidx.compose.material3.Icon(
+                                            imageVector = androidx.compose.material.icons.Icons.Default.Delete,
+                                            contentDescription = "删除"
+                                        )
+                                    }
+                                }
+                            }
+                            androidx.compose.material3.HorizontalDivider()
                         }
                     }
                 }
             }
         }
     }
+
 }
+
 
 @Composable
 fun HuijuiToolCard(
