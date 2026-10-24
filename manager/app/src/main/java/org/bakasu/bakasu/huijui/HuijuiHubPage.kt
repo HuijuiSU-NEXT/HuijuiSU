@@ -39,12 +39,13 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     var toastMessage by remember { mutableStateOf<String?>(null) }
     
     var showBackupSheet by remember { mutableStateOf(false) }
+    var showFlashImage by remember { mutableStateOf(false) }
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = bottomPadding + 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         item {
             Text(
@@ -61,6 +62,29 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 title = "分区备份救援",
                 description = "一键备份 boot/dtbo 等核心分区防变砖",
                 onClick = { showRescue = true }
+            )
+        }
+
+        // 2. 重启 SystemUI
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Refresh,
+                title = "重启 SystemUI",
+                description = "专治状态栏卡死、界面掉帧，一键刷新界面",
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        val res = Shell.cmd("pkill -f com.android.systemui").exec()
+                        withContext(Dispatchers.Main) {
+                            toastMessage = if (res.isSuccess) "SystemUI 重启指令已发送！" else "重启失败，请检查 Root 权限。"
+                        }
+                    }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.SaveAlt,
+                title = "刷入分区镜像",
+                description = "⚠️ 危险：将 .img 直接写入底层分区",
+                onClick = { showFlashImage = true }
             )
         }
 
@@ -117,6 +141,10 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // RescueBackupDialog(onDismiss = { showRescue = false })
     }
 
+
+    if (showFlashImage) {
+        FlashImageDialog(onDismiss = { showFlashImage = false })
+    }
 
     if (showBackupSheet) {
         androidx.compose.material3.ModalBottomSheet(

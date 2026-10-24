@@ -1,5 +1,11 @@
 package org.bakasu.bakasu.huijui
 
+import android.net.Uri
+
+data class FlashTask(val uri: Uri, val fileName: String, var partition: String)
+
+
+
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -224,44 +230,90 @@ LaunchedEffect(Unit) { withContext(Dispatchers.IO) { currentFreq = runBlocking(D
 @Composable
 fun RescueBackupDialog(onDismiss: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
 
     var backupLog by remember { mutableStateOf("等待备份...") }
     var isBackingUp by remember { mutableStateOf(false) }
-UltraDialogWrapper("分区备份救援", "一键备份核心分区防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
-        Column {
-            Surface(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth().height(150.dp)) {
+    
+    UltraDialogWrapper("分区备份救援", "一键备份核心分区与基带防变砖", Icons.TwoTone.SaveAlt, onDismiss) {
+        androidx.compose.foundation.layout.Column {
+            androidx.compose.material3.Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(150.dp)
+            ) {
                 androidx.compose.foundation.text.selection.SelectionContainer {
-                    Text(backupLog, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState()))
+                    androidx.compose.material3.Text(
+                        text = backupLog,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = androidx.compose.ui.Modifier.padding(8.dp).verticalScroll(androidx.compose.foundation.rememberScrollState())
+                    )
                 }
             }
-            Spacer(Modifier.height(8.dp))
-            Button(
+            androidx.compose.foundation.layout.Spacer(androidx.compose.ui.Modifier.height(8.dp))
+            
+            androidx.compose.material3.Button(
                 onClick = {
                     isBackingUp = true
-                    runBlocking(Dispatchers.IO) {
-                        // 修复：改用免权限的安全专属目录，绝不被 Android 13+ 拦截
-                        val dir = "/storage/emulated/0/HuiJuiSU_Backup"
-                        // 强制提权创建目录
-                        runBlocking(Dispatchers.IO) { Shell.cmd("su -c 'mkdir -p \"$dir\" && chmod 777 \"$dir\"'").exec() }
-                        backupLog = "开始备份...\n"
-                        
-                        // 动态获取当前槽位 (A/B分区)
-                        val slot = Shell.cmd("su -c 'getprop ro.boot.slot_suffix'").exec().out.firstOrNull()?.trim() ?: ""
-                        
-                        listOf("boot", "init_boot", "dtbo", "vbmeta").forEach { p ->
-                            // 动态尝试 带后缀 和 不带后缀 的分区名
-                            val targetPart = if (Shell.cmd("su -c 'ls /dev/block/by-name/${p}$slot'").exec().isSuccess) "${p}$slot" else p
-                            val res = Shell.cmd("su -c 'dd if=/dev/block/by-name/$targetPart of=\"$dir/$targetPart.img\"'").exec()
-                            backupLog += if (res.isSuccess) "✅ $targetPart 成功\n" else "❌ $targetPart 失败\n"
+                    backupLog = "开始备份...
+"
+                    scope.launch(Dispatchers.IO) {
+                        try {
+                            val dir = "/storage/emulated/0/HuiJuiSU_Backup"
+                            // 直接用 Shell 创建目录，KernelSU 默认拥有 Root 权限
+                            Shell.cmd("mkdir -p $dir").exec()
+                            
+                            withContext(Dispatchers.Main) { backupLog += "📁 目录已创建: $dir
+" }
+
+                            // 动态获取当前槽位 (A/B分区)
+                            val slot = Shell.cmd("getprop ro.boot.slot_suffix").exec().out.firstOrNull()?.trim() ?: ""
+                            
+                            // 优先尝试带槽位和纯名
+                            listOf(
+                                // 核心防砖分区
+                                "boot", "init_boot", "dtbo", "vbmeta",
+                                // 联发科 (MTK) 基带分区
+                                "nvram", "nvdata", "protect1", "protect2", "md1img", "md1dsp",
+                                // 高通 (Qualcomm) 基带分区
+                                "modem", "modemst1", "modemst2", "fsg"
+                            ).forEach { p ->
+                                val targetPart = if (Shell.cmd("ls /dev/block/by-name/${p}${slot}").exec().isSuccess) "${p}${slot}" else p
+                                
+                                withContext(Dispatchers.Main) { backupLog += "正在提取 $targetPart ...
+" }
+                                
+                                // 执行 dd 命令
+                                val res = Shell.cmd("dd if=/dev/block/by-name/$targetPart of=$dir/$targetPart.img").exec()
+                                
+                                withContext(Dispatchers.Main) {
+                                    if (res.isSuccess) {
+                                        backupLog += "✅ $targetPart 备份成功
+"
+                                    } else {
+                                        backupLog += "❌ $targetPart 备份失败 (可能设备无此分区)
+"
+                                    }
+                                }
+                            }
+                            withContext(Dispatchers.Main) {
+                                backupLog += "🎉 备份完成！
+📁 文件保存路径：
+$dir"
+                                isBackingUp = false
+                            }
+                        } catch (e: Exception) {
+                            withContext(Dispatchers.Main) {
+                                backupLog += "❌ 备份异常: ${e.message}"
+                                isBackingUp = false
+                            }
                         }
-                        isBackingUp = false
-                        backupLog += "🎉 备份完成！\n\n📁 文件保存路径：\n$dir"
                     }
                 },
                 enabled = !isBackingUp,
-                modifier = Modifier.fillMaxWidth()
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth()
             ) {
-                Text(if (isBackingUp) "正在备份..." else "🚑 一键备份")
+                androidx.compose.material3.Text(if (isBackingUp) "正在提取分区..." else "🚑 一键备份")
             }
         }
     }
@@ -297,5 +349,192 @@ isRunning = false
         currentScene = "已关闭"
         runBlocking(Dispatchers.IO) { Shell.cmd("echo schedutil > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor").exec() }
         runBlocking(Dispatchers.IO) { Shell.cmd("start thermal-engine; start thermald").exec() }
+    }
+}
+
+
+@Composable
+fun FlashImageDialog(onDismiss: () -> Unit) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    
+    var flashLog by remember { mutableStateOf("等待添加镜像...") }
+    var isFlashing by remember { mutableStateOf(false) }
+    var pendingTasks by remember { mutableStateOf(listOf<FlashTask>()) }
+    var showRebootDialog by remember { mutableStateOf(false) }
+    var allDone by remember { mutableStateOf(false) }
+
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        contract = androidx.activity.result.contract.ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val fileName = uri.lastPathSegment?.substringAfterLast("/") ?: "unknown.img"
+            // 自动猜测分区名 (比如 boot.img -> boot)
+            val guessPart = fileName.substringBefore(".img").lowercase()
+            pendingTasks = pendingTasks + FlashTask(uri, fileName, if (guessPart in listOf("boot", "init_boot", "dtbo", "vbmeta", "recovery")) guessPart else "boot")
+            flashLog = "已添加: $fileName"
+        }
+    }
+
+    UltraDialogWrapper("危险操作：批量刷入", "将多个 .img 镜像写入底层分区", Icons.TwoTone.Warning, onDismiss) {
+        androidx.compose.foundation.layout.Column {
+            
+            // 任务列表区域
+            androidx.compose.foundation.lazy.LazyColumn(
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(180.dp)
+            ) {
+                items(pendingTasks.size) { index ->
+                    val task = pendingTasks[index]
+                    androidx.compose.foundation.layout.Row(
+                        modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        androidx.compose.material3.Text(task.fileName, modifier = androidx.compose.ui.Modifier.weight(1f), maxLines = 1)
+                        androidx.compose.material3.OutlinedTextField(
+                            value = task.partition,
+                            onValueChange = { newPart ->
+                                val newList = pendingTasks.toMutableList()
+                                newList[index] = task.copy(partition = newPart.trim())
+                                pendingTasks = newList
+                            },
+                            modifier = androidx.compose.ui.Modifier.width(100.dp),
+                            singleLine = true,
+                            textStyle = androidx.compose.ui.text.TextStyle(fontSize = 12.sp)
+                        )
+                        androidx.compose.material3.IconButton(onClick = {
+                            pendingTasks = pendingTasks.toMutableList().also { it.removeAt(index) }
+                        }) {
+                            androidx.compose.material3.Icon(androidx.compose.material.icons.Icons.Default.Delete, contentDescription = "移除")
+                        }
+                    }
+                }
+            }
+
+            androidx.compose.foundation.layout.Spacer(androidx.compose.ui.Modifier.height(8.dp))
+
+            // 操作按钮区
+            androidx.compose.foundation.layout.Row(
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth(),
+                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(8.dp)
+            ) {
+                androidx.compose.material3.Button(
+                    onClick = { launcher.launch("application/octet-stream") },
+                    enabled = !isFlashing,
+                    modifier = androidx.compose.ui.Modifier.weight(1f)
+                ) {
+                    androidx.compose.material3.Text("➕ 添加 .img")
+                }
+
+                androidx.compose.material3.Button(
+                    onClick = {
+                        if (pendingTasks.isEmpty()) { flashLog = "❌ 列表为空，请先添加文件！"; return@Button }
+                        isFlashing = true
+                        allDone = false
+                        flashLog = "开始批量刷入...
+"
+                        
+                        scope.launch(Dispatchers.IO) {
+                            var successCount = 0
+                            try {
+                                val slot = com.topjohnwu.superuser.Shell.cmd("getprop ro.boot.slot_suffix").exec().out.firstOrNull()?.trim() ?: ""
+                                
+                                for (task in pendingTasks) {
+                                    withContext(Dispatchers.Main) { flashLog += "⏳ 准备刷入 ${task.fileName} -> ${task.partition} ...
+" }
+                                    
+                                    val tempFile = java.io.File(context.cacheDir, "temp_${task.fileName}")
+                                    context.contentResolver.openInputStream(task.uri)?.use { input ->
+                                        tempFile.outputStream().use { output -> input.copyTo(output) }
+                                    }
+                                    
+                                    val partPathAB = "/dev/block/by-name/${task.partition}${slot}"
+                                    val partPathDefault = "/dev/block/by-name/${task.partition}"
+                                    val finalPath = if (com.topjohnwu.superuser.Shell.cmd("ls $partPathAB").exec().isSuccess) partPathAB else partPathDefault
+                                    
+                                    val res = com.topjohnwu.superuser.Shell.cmd("su -c 'dd if=\"${tempFile.absolutePath}\" of=$finalPath'").exec()
+                                    
+                                    withContext(Dispatchers.Main) {
+                                        if (res.isSuccess) {
+                                            flashLog += "✅ ${task.partition} 刷入成功
+"
+                                            successCount++
+                                        } else {
+                                            flashLog += "❌ ${task.partition} 刷入失败: ${res.err.joinToString("")}
+"
+                                        }
+                                    }
+                                    tempFile.delete()
+                                }
+                                
+                                withContext(Dispatchers.Main) {
+                                    isFlashing = false
+                                    allDone = true
+                                    flashLog += "🎉 批量刷入完毕！成功 $successCount 个。"
+                                    showRebootDialog = true
+                                }
+                            } catch (e: Exception) {
+                                withContext(Dispatchers.Main) {
+                                    flashLog += "❌ 异常中断: ${e.message}"
+                                    isFlashing = false
+                                }
+                            }
+                        }
+                    },
+                    enabled = !isFlashing && pendingTasks.isNotEmpty(),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    modifier = androidx.compose.ui.Modifier.weight(1f)
+                ) {
+                    androidx.compose.material3.Text(if (isFlashing) "刷入中..." else "⚡ 批量刷入")
+                }
+            }
+            
+            // 重启生效按钮 (刷完之后出现)
+            if (allDone) {
+                androidx.compose.material3.Button(
+                    onClick = { com.topjohnwu.superuser.Shell.cmd("su -c 'reboot'").exec() },
+                    modifier = androidx.compose.ui.Modifier.fillMaxWidth().padding(top = 8.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    androidx.compose.material3.Text("🔄 立即重启系统生效")
+                }
+            }
+
+            androidx.compose.foundation.layout.Spacer(androidx.compose.ui.Modifier.height(8.dp))
+            androidx.compose.material3.Surface(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = androidx.compose.ui.Modifier.fillMaxWidth().height(100.dp)
+            ) {
+                androidx.compose.foundation.text.selection.SelectionContainer {
+                    androidx.compose.material3.Text(
+                        text = flashLog,
+                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = androidx.compose.ui.Modifier.padding(8.dp).verticalScroll(androidx.compose.foundation.rememberScrollState())
+                    )
+                }
+            }
+        }
+    }
+
+    if (showRebootDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showRebootDialog = false },
+            title = { androidx.compose.material3.Text("🎉 刷入任务结束") },
+            text = { androidx.compose.material3.Text("所有任务已处理完毕，建议立即重启生效。") },
+            confirmButton = {
+                androidx.compose.material3.TextButton(
+                    onClick = {
+                        com.topjohnwu.superuser.Shell.cmd("su -c 'reboot'").exec()
+                    }
+                ) {
+                    androidx.compose.material3.Text("立即重启")
+                }
+            },
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showRebootDialog = false }) {
+                    androidx.compose.material3.Text("稍后手动重启")
+                }
+            }
+        )
     }
 }
