@@ -1,6 +1,8 @@
 package org.bakasu.bakasu.huijui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.runtime.*
+import org.bakasu.bakasu.huijui.ui.HuijuiFlashDialog
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +34,16 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp) {
+    var showFlashDialog by remember { mutableStateOf(false) }
+    
+    // --- 自动注入：批量刷入入口按钮 ---
+    Button(
+        onClick = { showFlashDialog = true },
+        modifier = Modifier.fillMaxWidth().padding(16.dp)
+    ) {
+        Text("⚡ 批量刷入镜像 (RC-2)")
+    }
+
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     
@@ -253,6 +265,13 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         }
     }
 
+
+    // --- 自动注入：独立弹窗挂载 ---
+    if (showFlashDialog) {
+        HuijuiFlashDialog(
+            onDismiss = { showFlashDialog = false }
+        )
+    }
 }
 
 
