@@ -65,6 +65,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "分区备份救援",
                 description = "一键备份 boot/dtbo 等核心分区防变砖",
                 onClick = { showRescue = true }
@@ -75,6 +76,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Refresh,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "重启 SystemUI",
                 description = "专治状态栏卡死、界面掉帧，一键刷新界面",
                 onClick = {
@@ -92,6 +94,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.CleaningServices,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "极速清理内存",
                 description = "底层 drop_caches，强制回收系统缓存，释放 RAM",
                 onClick = {
@@ -109,6 +112,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         item {
             HuijuiToolCard(
                 icon = Icons.Default.Archive,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "模块备份与还原",
                 description = "防止模块变砖，随时打包或恢复已安装的模块",
                 onClick = {
@@ -122,6 +126,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = "批量刷入镜像",
                 description = "支持多选 .img 文件，自动识别分区并刷入",
                 onClick = { showFlashDialog = true }
