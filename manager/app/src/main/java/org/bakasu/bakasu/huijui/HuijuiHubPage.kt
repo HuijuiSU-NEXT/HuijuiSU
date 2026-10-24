@@ -168,13 +168,12 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                     Button(onClick = {
                         scope.launch(Dispatchers.IO) {
                             try {
-                                val installedModules = File("/data/adb/modules").listFiles()
+                                val result = Shell.cmd("ls /data/adb/modules").exec()
+                                val moduleNames = result.out.filter { it.isNotBlank() && !it.startsWith(".") }
                                 var count = 0
-                                installedModules?.forEach { dir ->
-                                    if (dir.isDirectory && !dir.name.startsWith(".")) {
-                                        val res = ModuleBackupManager.backupModule(dir.name, context)
-                                        if (res.isSuccess) count++
-                                    }
+                                moduleNames.forEach { name ->
+                                    val res = ModuleBackupManager.backupModule(name, context)
+                                    if (res.isSuccess) count++
                                 }
                                 withContext(Dispatchers.Main) {
                                     backupList = ModuleBackupManager.getBackupList(context)
