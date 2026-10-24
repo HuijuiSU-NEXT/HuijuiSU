@@ -1,8 +1,6 @@
 package org.bakasu.bakasu.huijui
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
-import org.bakasu.bakasu.huijui.ui.HuijuiFlashDialog
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,16 +32,6 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp) {
-    var showFlashDialog by remember { mutableStateOf(false) }
-    
-    // --- 自动注入：批量刷入入口按钮 ---
-    Button(
-        onClick = { showFlashDialog = true },
-        modifier = Modifier.fillMaxWidth().padding(16.dp)
-    ) {
-        Text("⚡ 批量刷入镜像 (RC-2)")
-    }
-
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     
@@ -51,13 +39,12 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     var toastMessage by remember { mutableStateOf<String?>(null) }
     
     var showBackupSheet by remember { mutableStateOf(false) }
-    var showFlashImage by remember { mutableStateOf(false) }
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = bottomPadding + 16.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             Text(
@@ -74,29 +61,6 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 title = "分区备份救援",
                 description = "一键备份 boot/dtbo 等核心分区防变砖",
                 onClick = { showRescue = true }
-            )
-        }
-
-        // 2. 重启 SystemUI
-        item {
-            HuijuiToolCard(
-                icon = Icons.TwoTone.Refresh,
-                title = "重启 SystemUI",
-                description = "专治状态栏卡死、界面掉帧，一键刷新界面",
-                onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        val res = Shell.cmd("pkill -f com.android.systemui").exec()
-                        withContext(Dispatchers.Main) {
-                            toastMessage = if (res.isSuccess) "SystemUI 重启指令已发送！" else "重启失败，请检查 Root 权限。"
-                        }
-                    }
-
-        item {
-            HuijuiToolCard(
-                icon = Icons.TwoTone.SaveAlt,
-                title = "刷入分区镜像",
-                description = "⚠️ 危险：将 .img 直接写入底层分区",
-                onClick = { showFlashImage = true }
             )
         }
 
@@ -154,10 +118,6 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     }
 
 
-    if (showFlashImage) {
-        FlashImageDialog(onDismiss = { showFlashImage = false })
-    }
-
     if (showBackupSheet) {
         androidx.compose.material3.ModalBottomSheet(
             onDismissRequest = { showBackupSheet = false }
@@ -183,12 +143,13 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                         onClick = {
                             scope.launch(Dispatchers.IO) {
                                 try {
-                                    val lsResult = com.topjohnwu.superuser.Shell.cmd("su -c 'ls /data/adb/modules'").exec()
-                                    val installedModules = lsResult.out.filter { it.isNotBlank() && !it.startsWith(".") }
+                                    val installedModules = java.io.File("/data/adb/modules").listFiles()
                                     var count = 0
-                                    installedModules.forEach { moduleId ->
-                                        val res = org.bakasu.bakasu.data.module.ModuleBackupManager.backupModule(moduleId, context)
-                                        if (res.isSuccess) count++
+                                    installedModules?.forEach { dir ->
+                                        if (dir.isDirectory && !dir.name.startsWith(".")) {
+                                            val res = org.bakasu.bakasu.data.module.ModuleBackupManager.backupModule(dir.name, context)
+                                            if (res.isSuccess) count++
+                                        }
                                     }
                                     withContext(Dispatchers.Main) {
                                         backupList = org.bakasu.bakasu.data.module.ModuleBackupManager.getBackupList(context)
@@ -265,13 +226,6 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         }
     }
 
-
-    // --- 自动注入：独立弹窗挂载 ---
-    if (showFlashDialog) {
-        HuijuiFlashDialog(
-            onDismiss = { showFlashDialog = false }
-        )
-    }
 }
 
 
