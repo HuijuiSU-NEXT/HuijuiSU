@@ -1,6 +1,7 @@
 package org.bakasu.bakasu.huijui
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -138,7 +139,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // 5. 批量刷入镜像
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { showFlashDialog = true },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
             ) {
                 HuijuiToolCard(

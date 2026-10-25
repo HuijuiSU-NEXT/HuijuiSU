@@ -132,43 +132,28 @@ fun HuijuiFlashDialog(onDismiss: () -> Unit) {
             }
 
             if (allDone) {
+                Spacer(Modifier.height(8.dp))
                 Button(
-                    onClick = { Shell.cmd("su -c 'reboot'").exec() },
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                    onClick = { 
+                        showRebootDialog = false
+                        Shell.cmd("svc power reboot").exec()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
                 ) {
-                    Text("🔄 立即重启生效")
+                    Text("🔄 立即重启系统")
                 }
             }
-
+            
             Spacer(Modifier.height(8.dp))
-            Surface(color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth().height(100.dp)) {
-                SelectionContainer {
-                    Text(
-                        text = flashLog,
-                        fontFamily = FontFamily.Monospace,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(8.dp).verticalScroll(rememberScrollState())
-                    )
-                }
+            SelectionContainer {
+                Text(
+                    text = flashLog,
+                    fontFamily = FontFamily.Monospace,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.fillMaxWidth().height(120.dp).verticalScroll(rememberScrollState())
+                )
             }
         }
-    }
-
-    if (showRebootDialog) {
-        AlertDialog(
-            onDismissRequest = { showRebootDialog = false },
-            title = { Text("🎉 刷入完成") },
-            text = { Text("所有任务已处理完毕，建议立即重启生效。") },
-            confirmButton = {
-                TextButton(onClick = { Shell.cmd("su -c 'reboot'").exec() }) {
-                    Text("立即重启")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showRebootDialog = false }) {
-                    Text("稍后")
-                }
-            }
-        )
     }
 }
