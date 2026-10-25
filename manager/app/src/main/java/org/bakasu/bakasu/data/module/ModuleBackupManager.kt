@@ -18,14 +18,23 @@ object ModuleBackupManager {
 
     suspend fun backupModule(moduleId: String, context: Context): Result<File> = withContext(Dispatchers.IO) {
         try {
-            val srcPath = "/data/adb/modules/$moduleId"
+            val srcDir = File("/data/adb/modules/$moduleId")
             val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
             val destFile = File(getBackupDir(context), "${moduleId}_${timeStamp}.zip")
-            val cmd = "cd /data/adb/modules && zip -r '${destFile.absolutePath}' '$moduleId'"
-            val result = Shell.cmd(cmd).exec()
-
-            if (result.isSuccess && destFile.exists()) Result.success(destFile)
-            else Result.failure(Exception(result.err.joinToString("\n")))
+            
+            // 使用 Java 原生 ZipOutputStream 打包，彻底摆脱对 busybox/magisk zip 的依赖
+            java.util.zip.ZipOutputStream(destFile.outputStream()).use { zos ->
+                srcDir.walkTopDown().forEach { file ->
+                    if (file.isFile) {
+                        val entryName = file.absolutePath.substring(srcDir.absolutePath.length + 1)
+                        zos.putNextEntry(java.util.zip.ZipEntry(entryName))
+                        file.inputStream().use { it.copyTo(zos) }
+                        zos.closeEntry()
+                    }
+                }
+            }
+            if (destFile.exists() && destFile.length() > 0) Result.success(destFile)
+            else Result.failure(Exception("打包失败"))
         } catch (e: Exception) {
             Result.failure(e)
         }

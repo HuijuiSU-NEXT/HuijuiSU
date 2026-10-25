@@ -64,8 +64,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                     title = "分区备份救援",
                     description = "一键备份 boot/dtbo 等核心分区防变砖",
                     onClick = { 
-                        showRescue = true 
-                        Toast.makeText(context, "正准备调起备份弹窗", Toast.LENGTH_SHORT).show()
+                        showRescue = true
                     }
                 )
             }
@@ -151,6 +150,10 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 )
             }
         }
+    }
+
+    if (showRescue) {
+        HuijuiRescue(onDismiss = { showRescue = false })
     }
 
     if (showFlashDialog) {
