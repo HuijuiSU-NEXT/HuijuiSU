@@ -55,7 +55,8 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // 1. 核心救援
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { showRescue = true
+                    android.widget.Toast.makeText(context, "救援功能正在接入中", android.widget.Toast.LENGTH_SHORT).show() },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
             ) {
                 HuijuiToolCard(
@@ -73,7 +74,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // 2. 重启 SystemUI
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { scope.launch(Dispatchers.IO) { val res = Shell.cmd("pkill -f com.android.systemui").exec(); withContext(Dispatchers.Main) { Toast.makeText(context, if (res.isSuccess) "已发送重启指令" else "重启失败", Toast.LENGTH_SHORT).show() } } },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
             ) {
                 HuijuiToolCard(
@@ -96,7 +97,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // 3. 极速清理内存
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { scope.launch(Dispatchers.IO) { val res = Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec(); withContext(Dispatchers.Main) { Toast.makeText(context, if (res.isSuccess) "内存已清理" else "清理失败", Toast.LENGTH_SHORT).show() } } },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
             ) {
                 HuijuiToolCard(
@@ -119,7 +120,8 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         // 4. 模块备份
         item {
             Card(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth().clickable { backupList = ModuleBackupManager.getBackupList(context)
+                    showBackupSheet = true },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.9f))
             ) {
                 HuijuiToolCard(
