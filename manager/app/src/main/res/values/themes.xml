@@ -7,7 +7,7 @@
 
     <style name="Theme.KernelSU.Starting" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">#121212</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.KernelSU</item>
     </style>
 
