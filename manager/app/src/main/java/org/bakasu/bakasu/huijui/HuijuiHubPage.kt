@@ -153,7 +153,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     }
 
     if (showRescue) {
-        HuijuiRescue(onDismiss = { showRescue = false })
+        android.widget.Toast.makeText(context, "弹窗准备中", android.widget.Toast.LENGTH_SHORT).show()
     }
 
     if (showFlashDialog) {
