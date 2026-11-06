@@ -171,6 +171,41 @@
                 <action android:name="org.bakasu.bakasu.magica.LAUNCH" />
             </intent-filter>
         </receiver>
-    </application>
+    
+        <activity
+            android:name=".nova.NovaActivity"
+            android:process=":nova"
+            android:exported="false"
+            android:label="HuiJuiSU Nova"
+            android:launchMode="singleTop"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:theme="@style/Theme.KernelSU" />
+        <activity-alias
+            android:name=".nova.NovaLauncher"
+            android:targetActivity=".nova.NovaActivity"
+            android:exported="true"
+            android:label="HuiJuiSU Nova"
+            android:icon="@mipmap/ic_launcher">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <service
+            android:name=".nova.wallpaper.NovaWallpaperService"
+            android:process=":nova"
+            android:exported="true"
+            android:label="@string/nova_wallpaper_desc"
+            android:permission="android.permission.BIND_WALLPAPER">
+            <intent-filter>
+                <action android:name="android.service.wallpaper.WallpaperService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.wallpaper"
+                android:resource="@xml/nova_wallpaper" />
+        </service>
+
+</application>
 
 </manifest>

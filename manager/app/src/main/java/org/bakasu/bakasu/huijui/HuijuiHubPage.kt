@@ -52,6 +52,41 @@ fun HuijuiHubPage(bottomPadding: Dp) {
             )
         }
 
+        // Nova 独立界面入口：全新界面层，与旧 UI 并存
+        item {
+            androidx.compose.material3.Card(
+                modifier = Modifier.fillMaxWidth().clickable {
+                    context.startActivity(
+                        android.content.Intent(context, org.bakasu.bakasu.nova.NovaActivity::class.java)
+                    )
+                },
+                colors = androidx.compose.material3.CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.85f)
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Nova 独立界面",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "柔光玻璃 · 液态玻璃 · 纯色 / 1024 种动画",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
+
         // 1. 核心救援
         item {
             Card(

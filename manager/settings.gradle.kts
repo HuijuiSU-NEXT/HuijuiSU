@@ -21,5 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "HuiJuiSU_Next"
 include(":app")
+include(":huijuiui")
 include(":baselineprofile")
 include(":lint-rules")

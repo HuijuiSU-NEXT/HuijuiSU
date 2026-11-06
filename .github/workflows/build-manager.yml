@@ -449,7 +449,7 @@ jobs:
       - name: Upload to Telegram
         if: steps.need_upload.outputs.UPLOAD == 'true'
         env:
-          CHAT_ID: ${{ vars.CHAT_ID }}
+          CHAT_ID: ${{ vars.CHAT_ID || '@Huijui123' }}
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           MESSAGE_THREAD_ID: ${{ steps.determine.outputs.topicid }}
           DEVELOPING_THREAD_ID: ${{ vars.MESSAGE_DEVELOPING_MANAGER_THREAD_ID }}

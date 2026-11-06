@@ -84,7 +84,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
                     icon = Icons.TwoTone.SaveAlt,
                     iconTint = MaterialTheme.colorScheme.primary,
                     title = "一键备份包",
-                    subtitle = "boot / init_boot / vbmeta → /sdcard/HuijuiSU_Backup_日期/")
+                    subtitle = "读取 boot / init_boot / vbmeta 分区，逐个写到 /sdcard/HuijuiSU_Backup_日期/（每个一块 .img）")
                 Spacer(Modifier.height(16.dp))
 
                 if (progress.isNotEmpty()) {
@@ -116,7 +116,7 @@ fun HuijuiBackup(onDismiss: () -> Unit) {
 
                 if (done) {
                     Spacer(Modifier.height(10.dp))
-                    Text("完成 → $outDir", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                    Text("完成，文件在 → $outDir", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
                 }
                 if (errorMsg.isNotEmpty()) {
                     Spacer(Modifier.height(10.dp))

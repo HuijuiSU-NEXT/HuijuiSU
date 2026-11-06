@@ -23,6 +23,12 @@ class KernelSUApplication : Application() {
                 // avoid loading unnecessary thing when starting MagicaService
                 return
             }
+            if (processName.endsWith(":nova")) {
+                // Nova 是纯界面进程：不需要 Koin / Root Shell / 隐藏规则。
+                // 跳过下面那段 runBlocking 初始化，冷启动直接省掉最重的一块；
+                // 代价是这个进程里不能再用依赖注入的仓库（Nova 目前也确实不用）。
+                return
+            }
         }
 
         // 防御性初始化：防止 Activity 重建或进程快速重启时重复启动 Koin

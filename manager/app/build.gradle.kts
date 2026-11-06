@@ -51,8 +51,10 @@ android {
             }
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
+            // Miuix 的 KMP 产物在 R8 下会重复定义内部类（PagerSwipeNode$1$1 等），
+            // 先关掉混淆保证能出包；体积换稳定，后续用 packagingOptions 解决
+            isMinifyEnabled = false
+            isShrinkResources = false
             vcsInfo.include = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             externalNativeBuild {
@@ -132,7 +134,7 @@ android {
         minSdk = androidMinSdkVersion
         targetSdk = androidTargetSdkVersion
         versionCode = managerVersionCode
-        versionName = "v4.5.1-rc2"
+        versionName = "v6.0"
         applicationId = managerPackageName
 
         val isPrBuild = rootProject.extra["isPrBuild"] as Boolean
@@ -193,9 +195,25 @@ aboutLibraries {
     }
 }
 
+
+// Miuix 的 KMP 根产物和 -android 产物会重复打同一批类（R8/D8 报 defined multiple times），
+// 这里只保留 android 变体
+configurations.configureEach {
+    exclude(group = "top.yukonga.miuix.kmp", module = "miuix-ui")
+    exclude(group = "top.yukonga.miuix.kmp", module = "miuix-ui-runtime")
+    exclude(group = "top.yukonga.miuix.kmp", module = "miuix-icons")
+    exclude(group = "top.yukonga.miuix.kmp", module = "miuix-squircle")
+}
+
 dependencies {
     lintChecks(project(":lint-rules"))
     baselineProfile(project(":baselineprofile"))
+
+    implementation(project(":huijuiui"))
+    // Miuix 只在 app 侧打包一次（huijuiui 里用 compileOnly），避免 dex 重复定义
+    implementation("top.yukonga.miuix.kmp:miuix-ui-android:0.9.4")
+    implementation("top.yukonga.miuix.kmp:miuix-icons-android:0.9.4")
+    implementation("top.yukonga.miuix.kmp:miuix-squircle-android:0.9.4")
 
     implementation(platform(libs.koin.bom))
     implementation(libs.koin.core)
