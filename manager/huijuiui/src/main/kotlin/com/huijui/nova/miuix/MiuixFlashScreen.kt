@@ -133,7 +133,8 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                     "/storage/emulated/0/Download",
                     "HuiJuiSU_patched_${System.currentTimeMillis()}.img",
                 )
-                val cmd = "ksud boot-patch -b '${target.absolutePath}' -o '${out.absolutePath}'"
+                // 加超时：ksud 在部分机型会卡在解包阶段，避免无限等待
+                val cmd = "timeout 180 ksud boot-patch -b '${target.absolutePath}' -o '${out.absolutePath}'"
                 log("$ $cmd")
 
                 MainScope().launch {
@@ -142,10 +143,18 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                         buf.append(line).append('\n')
                         log(line)
                     }
-                    if (r.ok) {
+                    // 不以退出码为准，直接看产物是否真的生成
+                    val produced = out.exists() && out.length() > 1024
+                    if (produced) {
                         log("")
                         log("✓ 已保存到：${out.absolutePath}")
+                        log("  大小：${out.length() / 1024} KB")
                         log("  刷入前请确认分区（boot / init_boot）")
+                    } else {
+                        log("")
+                        log("✗ 没有生成修补后的镜像")
+                        log("  ksud 退出码：${if (r.ok) 0 else 1}，输出见上")
+                        log("  若日志停在解包阶段，说明该镜像格式 ksud 不支持（常见于厂商改过内核压缩）")
                     }
                     if (!r.ok) {
                         val text = buf.toString()

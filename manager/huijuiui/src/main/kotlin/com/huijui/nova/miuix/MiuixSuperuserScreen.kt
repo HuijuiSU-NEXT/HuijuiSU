@@ -104,6 +104,8 @@ fun MiuixSuperuserScreen() {
     var pendingRevoke by remember { mutableStateOf<Triple<Int, String, String>?>(null) }
     var pickerOpen by remember { mutableStateOf(false) }
     var allApps by remember { mutableStateOf<List<Triple<Int, String, String>>>(emptyList()) }
+    var systemPkgs by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var showSystem by remember { mutableStateOf(false) }
     var filter by remember { mutableStateOf("") }
     var grantMsg by remember { mutableStateOf("") }
 
@@ -179,6 +181,7 @@ fun MiuixSuperuserScreen() {
                                 if (allApps.isEmpty()) {
                                     MainScope().launch {
                                         allApps = withContext(Dispatchers.IO) {
+                                            val sysTemp = mutableSetOf<String>()
                                             context.packageManager
                                                 .getInstalledApplications(android.content.pm.PackageManager.GET_META_DATA)
                                                 .mapNotNull { info ->
@@ -186,9 +189,13 @@ fun MiuixSuperuserScreen() {
                                                     val label = runCatching {
                                                         context.packageManager.getApplicationLabel(info).toString()
                                                     }.getOrDefault(pkg)
+                                                    val isSystem = (info.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0 &&
+                                                        (info.flags and android.content.pm.ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0
+                                                    if (isSystem) sysTemp.add(pkg)
                                                     Triple(info.uid, label, pkg)
                                                 }
                                                 .sortedBy { it.second.lowercase() }
+                                                .also { systemPkgs = sysTemp.toSet() }
                                         }
                                     }
                                 }
@@ -213,7 +220,7 @@ fun MiuixSuperuserScreen() {
                     Text(S("选择应用授予 Root"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                     Spacer(Modifier.height(2.dp))
                     Text(
-                        "共 ${allApps.size} 个应用 · 走内核 app_profile ioctl 写入",
+                        "用户应用 ${allApps.count { it.third !in systemPkgs }} / 系统 ${systemPkgs.size} · ${if (showSystem) "显示全部" else "仅用户应用"}",
                         fontSize = 9.sp,
                         color = dim,
                     )
@@ -245,7 +252,24 @@ fun MiuixSuperuserScreen() {
                         )
                     }
                     Spacer(Modifier.height(6.dp))
+                    Row(
+                        Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Text(
+                            if (showSystem) "包含系统应用" else "仅用户应用",
+                            fontSize = 10.sp,
+                            color = dim,
+                            modifier = Modifier.weight(1f),
+                        )
+                        com.huijui.nova.ui.NovaSwitch(
+                            checked = showSystem,
+                            onCheckedChange = { showSystem = it },
+                            accent = accent,
+                        )
+                    }
                     allApps
+                        .filter { showSystem || it.third !in systemPkgs }
                         .filter {
                             filter.isBlank() ||
                                 it.second.contains(filter, true) ||

@@ -52,7 +52,7 @@ fun GlassCard(
     }
 
     // 壁纸模式：深色玻璃（黑底 + 顶部高光），比白色磨砂更通透也更清晰
-    val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper
+    val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper || LocalNovaDark.current
     val topColor = if (wallpaper) Color.White.copy(alpha = 0.26f) else Color.White.copy(alpha = (base + 0.10f).coerceAtMost(1f))
     val midColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.24f) else Color.White.copy(alpha = base)
     val botColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.32f) else Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f))

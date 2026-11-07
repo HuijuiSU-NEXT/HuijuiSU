@@ -41,10 +41,17 @@ val LocalNovaDark = staticCompositionLocalOf { false }
  * 出现「背景变暗、字还是黑的」。
  */
 @Composable
-fun novaInk(): Color = LocalHuiColors.current.text
+fun novaInk(): Color {
+    // 壁纸背景通常偏暗；深色主题同理。两种情况都用白字，避免「黑底黑字」
+    val onDark = LocalNovaUiMode.current == NovaUiMode.Wallpaper || LocalNovaDark.current
+    return if (onDark) Color.White.copy(alpha = 0.96f) else LocalHuiColors.current.text
+}
 
 @Composable
-fun novaDim(): Color = LocalHuiColors.current.textDim
+fun novaDim(): Color {
+    val onDark = LocalNovaUiMode.current == NovaUiMode.Wallpaper || LocalNovaDark.current
+    return if (onDark) Color.White.copy(alpha = 0.70f) else LocalHuiColors.current.textDim
+}
 
 @Composable
 fun novaBg(): Color = LocalHuiColors.current.bg
