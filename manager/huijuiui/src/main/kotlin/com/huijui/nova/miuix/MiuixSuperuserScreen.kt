@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -52,6 +53,42 @@ import com.huijui.nova.ui.lightColorScheme
  * 数据来自 `/data/adb/ksu/.allowlist`（KernelSU 的授权表），
  * uid → 包名用系统的 PackageManager 解析，不需要额外 root 权限。
  */
+
+/** 应用图标：优先取真实图标，取不到回退首字母。 */
+@androidx.compose.runtime.Composable
+private fun AppIcon(pkg: String, label: String, size: androidx.compose.ui.unit.Dp, accent: Color) {
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val bmp: androidx.compose.ui.graphics.ImageBitmap? = androidx.compose.runtime.remember(pkg) {
+        runCatching {
+            val d = ctx.packageManager.getApplicationIcon(pkg)
+            val w = d.intrinsicWidth.coerceAtLeast(64)
+            val h = d.intrinsicHeight.coerceAtLeast(64)
+            val bm = android.graphics.Bitmap.createBitmap(w, h, android.graphics.Bitmap.Config.ARGB_8888)
+            val canvas = android.graphics.Canvas(bm)
+            d.setBounds(0, 0, w, h)
+            d.draw(canvas)
+            bm.asImageBitmap()
+        }.getOrNull()
+    }
+    Box(
+        Modifier
+            .size(size)
+            .clip(RoundedCornerShape(10.dp))
+            .background(accent.copy(alpha = 0.15f)),
+        contentAlignment = Alignment.Center,
+    ) {
+        if (bmp != null) {
+            androidx.compose.foundation.Image(
+                bitmap = bmp,
+                contentDescription = label,
+                modifier = Modifier.size(size),
+            )
+        } else {
+            Text(label.take(1), fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = accent)
+        }
+    }
+}
+
 @Composable
 fun MiuixSuperuserScreen() {
     val context = LocalContext.current
@@ -319,20 +356,7 @@ fun MiuixSuperuserScreen() {
                         padding = PaddingValues(14.dp),
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                Modifier
-                                    .size(34.dp)
-                                    .clip(RoundedCornerShape(10.dp))
-                                    .background(accent.copy(alpha = 0.15f)),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                Text(
-                                    e.label.take(1),
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    color = accent,
-                                )
-                            }
+                            AppIcon(e.pkg, e.label, 34.dp, accent)
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
                                 Text(e.label, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = ink, maxLines = 1)

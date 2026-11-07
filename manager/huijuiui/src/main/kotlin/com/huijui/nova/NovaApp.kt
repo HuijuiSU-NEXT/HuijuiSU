@@ -259,6 +259,12 @@ fun NovaApp(
         }
 
         // 全屏子页面：铺在壁纸之上（半透明浅色遮罩），主页面此时不渲染
+        // 系统返回键 / 手势：先关子页面，再回首页标签，最后才退出
+        androidx.activity.compose.BackHandler(enabled = overlay != null) { back() }
+        androidx.activity.compose.BackHandler(enabled = overlay == null && tab != 0) {
+            tab = 0
+        }
+
         overlay?.let { page ->
             Box(
                 Modifier
