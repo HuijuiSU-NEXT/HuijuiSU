@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.launch
 import androidx.compose.runtime.LaunchedEffect
@@ -52,7 +54,7 @@ fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
     var expanded by remember { mutableStateOf<String?>(null) }
-
+    var installing by remember { mutableStateOf(false) }
     suspend fun refresh() {
         loading = true
         val list = NovaModules.list()
@@ -62,6 +64,27 @@ fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
     }
 
     LaunchedEffect(Unit) { refresh() }
+
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val pickZip = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri == null) {
+            installing = false
+            return@rememberLauncherForActivityResult
+        }
+        installing = true
+        kotlinx.coroutines.MainScope().launch {
+            val target = java.io.File(context.cacheDir, "module_${System.currentTimeMillis()}.zip")
+            runCatching {
+                context.contentResolver.openInputStream(uri)?.use { input ->
+                    target.outputStream().use { out -> input.copyTo(out) }
+                }
+            }
+            com.huijui.nova.hide.HideBundle.run("ksud module install '${target.absolutePath}'")
+            installing = false
+            refresh()
+        }
+    }
+
 
     MiuixTheme(colors = lightColorScheme()) {
         Column(
@@ -85,6 +108,14 @@ fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
                         color = dim,
                     )
                 }
+                Text(
+                    if (installing) "安装中…" else "安装",
+                    fontSize = 12.sp,
+                    color = accent,
+                    modifier = Modifier
+                        .clickable { if (!installing) pickZip.launch(arrayOf("application/zip")) }
+                        .padding(8.dp),
+                )
                 Text(
                     "刷新",
                     fontSize = 12.sp,

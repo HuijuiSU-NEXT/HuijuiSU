@@ -26,6 +26,7 @@ data class KsuStatus(
     val kernelSeries: Int = 0,
     val root: Boolean = false,
     val kernel: String = "",
+    val ksudVersion: String = "",
     val ksud: String = "",
     val detail: String = "",
 ) {
@@ -39,6 +40,7 @@ object KsuModeDetector {
             echo "ROOT=${'$'}([ "${'$'}(id -u)" = "0" ] && echo 1 || echo 0)"
             echo "KERNEL=${'$'}(uname -r 2>/dev/null)"
             echo "KSUD=${'$'}(command -v ksud 2>/dev/null || echo '')"
+            echo "KSUVER=${'$'}(ksud --version 2>/dev/null | head -1)"
             [ -d /data/adb/ksu ] && echo "KSU_DIR=1" || echo "KSU_DIR=0"
             [ -d /sys/module/kernelsu ] && echo "MODULE=1" || echo "MODULE=0"
             [ -f /data/adb/ksud ] && echo "KSUD_BIN=1" || echo "KSUD_BIN=0"
@@ -53,6 +55,7 @@ object KsuModeDetector {
         val kernel = flag("KERNEL").orEmpty()
             .ifBlank { System.getProperty("os.version").orEmpty() }
         val ksud = flag("KSUD").orEmpty()
+        val ksudVersion = flag("KSUVER").orEmpty()
         val ksuDir = flag("KSU_DIR") == "1"
         val moduleLoaded = flag("MODULE") == "1"
         val ksudBin = flag("KSUD_BIN") == "1"
@@ -81,6 +84,7 @@ object KsuModeDetector {
             root = root,
             kernel = kernel,
             ksud = ksud.ifBlank { if (ksudBin) "/data/adb/ksud" else "" },
+            ksudVersion = ksudVersion,
             detail = detail,
         )
     }

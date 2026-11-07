@@ -58,6 +58,7 @@ fun MiuixSuperuserScreen() {
     var entries by remember { mutableStateOf<List<Entry>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var note by remember { mutableStateOf("") }
+    var pendingRevoke by remember { mutableStateOf<Pair<Int, String>?>(null) }
 
     suspend fun load() {
         loading = true
@@ -129,6 +130,49 @@ fun MiuixSuperuserScreen() {
             }
 
             Spacer(Modifier.height(12.dp))
+
+            pendingRevoke?.let { (uid, label) ->
+                GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
+                    Text("撤销 $label 的授权？", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "会先备份 .allowlist 为 .allowlist.bak，再从表中删除 uid $uid，重启后生效。",
+                        fontSize = 10.sp,
+                        color = dim,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            "取消",
+                            fontSize = 11.sp,
+                            color = dim,
+                            modifier = Modifier
+                                .clickable { pendingRevoke = null }
+                                .padding(6.dp),
+                        )
+                        Text(
+                            "确认撤销",
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFD9534F),
+                            modifier = Modifier
+                                .clickable {
+                                    val u = uid
+                                    pendingRevoke = null
+                                    MainScope().launch {
+                                        HideBundle.run(
+                                            "cp /data/adb/ksu/.allowlist /data/adb/ksu/.allowlist.bak 2>/dev/null; " +
+                                                "sed -i '/\\b$u\\b/d' /data/adb/ksu/.allowlist",
+                                        )
+                                        load()
+                                    }
+                                }
+                                .padding(6.dp),
+                        )
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
+            }
 
             if (entries.isEmpty()) {
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(18.dp)) {

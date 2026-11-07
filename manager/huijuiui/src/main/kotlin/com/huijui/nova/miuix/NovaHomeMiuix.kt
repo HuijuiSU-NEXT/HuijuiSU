@@ -195,7 +195,16 @@ fun NovaHomeMiuixScreen(
                                 fontWeight = FontWeight.Medium,
                                 color = ink,
                             )
-                            Text(ksu.mode.desc, fontSize = 9.sp, color = dim)
+                            Text(
+                                if (ksu.ksudVersion.isNotBlank()) {
+                                    "${ksu.mode.desc} · ksud ${ksu.ksudVersion}"
+                                } else {
+                                    ksu.mode.desc
+                                },
+                                fontSize = 9.sp,
+                                color = dim,
+                                maxLines = 1,
+                            )
                         }
                         if (ksu.mode == com.huijui.nova.device.KsuMode.NonGki4x) {
                             Text("进入 ▸", fontSize = 9.sp, color = dim)
