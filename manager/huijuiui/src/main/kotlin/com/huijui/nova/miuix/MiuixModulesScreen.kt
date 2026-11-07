@@ -46,7 +46,8 @@ import top.yukonga.miuix.kmp.theme.lightColorScheme
  * `/data/adb/modules`，开关直接建/删 `disable` 文件，和官方管理器语义一致。
  */
 @Composable
-fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
+fun MiuixModulesScreen(
+    onOpenRepo: () -> Unit = {},onBack: () -> Unit = {}, embedded: Boolean = false) {
     val accent = LocalHuiColors.current.accent
     val ink = com.huijui.nova.design.novaInk()
     val dim = com.huijui.nova.design.novaDim()
@@ -108,6 +109,12 @@ fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
                         color = dim,
                     )
                 }
+                Text(
+                    "在线",
+                    fontSize = 12.sp,
+                    color = accent,
+                    modifier = Modifier.clickable { onOpenRepo() }.padding(8.dp),
+                )
                 Text(
                     if (installing) "安装中…" else "安装",
                     fontSize = 12.sp,

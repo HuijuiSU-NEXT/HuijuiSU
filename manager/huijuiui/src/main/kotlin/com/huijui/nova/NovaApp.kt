@@ -101,6 +101,7 @@ enum class NovaOverlay(val title: String) {
     Checkup("一键体检"),
     Patches("补丁中心"),
     Susfs("SUSFS"),
+    Repo("在线模块"),
     Lab("实验"),
 }
 
@@ -194,6 +195,7 @@ fun NovaApp(
                 ) { index ->
                     when (NovaTab.entries[index]) {
                         NovaTab.Modules -> com.huijui.nova.miuix.MiuixModulesScreen(
+                            onOpenRepo = { overlay = NovaOverlay.Repo },
                             embedded = true,
                             onBack = {},
                         )
@@ -284,6 +286,9 @@ fun NovaApp(
                         onBack = { overlay = null },
                     )
                     NovaOverlay.KernelSettings -> com.huijui.nova.miuix.MiuixKernelSettingsScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Repo -> com.huijui.nova.miuix.MiuixRepoScreen(
                         onBack = { overlay = null },
                     )
                     NovaOverlay.Susfs -> com.huijui.nova.miuix.MiuixSusfsScreen(
