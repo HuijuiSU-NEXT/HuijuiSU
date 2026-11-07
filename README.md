@@ -197,6 +197,23 @@ userspace/                ksud 等用户态程序
 
 每条都有风险分级（安全 / 谨慎），谨慎项会弹确认框并列出要改的属性。
 
+
+### SUSFS 面板
+
+对标 SukiSU / ReSukiSU 的 SUSFS 设置，并把 `ksud susfs config` 的能力全部开放：
+
+| 能力 | 命令 |
+|---|---|
+| 总开关 | `susfs config enable` / `disable` |
+| 日志 | `susfs config logging add` / `remove` |
+| AVC 日志伪造 | `susfs config avc_log_spoofing add` / `remove` |
+| 隐藏 sus 挂载 | `susfs config hide_sus_mnts_for_non_su_procs add` / `remove` |
+| 隐藏路径增删 | `susfs config sus_path add <path> --loop` / `remove <path>` |
+| 配置导出 | `susfs config backup` |
+| 恢复默认 | `susfs config restore` |
+
+内核没有编译 susfs 时，页面会明确提示「只能看不能改」，不会给出无效开关。
+
 ## 内核支持范围
 
 | 内核系列 | 支持方式 | 说明 |

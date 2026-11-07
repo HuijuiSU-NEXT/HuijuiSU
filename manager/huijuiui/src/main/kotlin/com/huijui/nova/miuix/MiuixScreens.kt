@@ -170,6 +170,7 @@ fun MiuixToolsScreen(
     onBack: (() -> Unit)? = null,
     onOpenLegacy: () -> Unit = {},
     onOpenPatches: () -> Unit = {},
+    onOpenSusfs: () -> Unit = {},
 ) {
     val ink = novaInk()
 
@@ -213,6 +214,16 @@ fun MiuixToolsScreen(
             Spacer(Modifier.height(12.dp))
 
             SectionLabel("内核")
+            LightCard(onClick = onOpenSusfs) {
+                RowItem(
+                    HuiIcons.Gauge,
+                    "SUSFS",
+                    "隐藏路径 · 日志 · AVC 伪造 · 配置备份",
+                    "进入",
+                    accent,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
             LightCard(onClick = { onOpenLegacy() }) {
                 RowItem(
                     HuiIcons.Cpu,

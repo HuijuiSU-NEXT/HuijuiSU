@@ -100,6 +100,7 @@ enum class NovaOverlay(val title: String) {
     KernelSettings("内核设置"),
     Checkup("一键体检"),
     Patches("补丁中心"),
+    Susfs("SUSFS"),
     Lab("实验"),
 }
 
@@ -261,6 +262,7 @@ fun NovaApp(
                         onBack = { overlay = null },
                         onOpenLegacy = { overlay = NovaOverlay.Legacy4x },
                         onOpenPatches = { overlay = NovaOverlay.Patches },
+                        onOpenSusfs = { overlay = NovaOverlay.Susfs },
                     )
                     NovaOverlay.Terminal -> com.huijui.nova.miuix.MiuixTerminalScreen(
                         onBack = { overlay = null },
@@ -282,6 +284,9 @@ fun NovaApp(
                         onBack = { overlay = null },
                     )
                     NovaOverlay.KernelSettings -> com.huijui.nova.miuix.MiuixKernelSettingsScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Susfs -> com.huijui.nova.miuix.MiuixSusfsScreen(
                         onBack = { overlay = null },
                     )
                     NovaOverlay.Patches -> com.huijui.nova.miuix.MiuixPatchScreen(
