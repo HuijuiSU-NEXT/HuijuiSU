@@ -111,10 +111,67 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                 execute(cmd)
             }
             FlashAction.Patch -> {
-                val out = File(context.cacheDir, "patched_${System.currentTimeMillis()}.img")
+                // 先校验是不是真正的 Android boot 镜像：前 8 字节必须是 ANDROID!
+                val magic = runCatching {
+                    target.inputStream().use { ins ->
+                        val buf = ByteArray(8)
+                        val n = ins.read(buf)
+                        if (n >= 8) String(buf, 0, 8) else ""
+                    }
+                }.getOrDefault("")
+
+                if (magic != "ANDROID!") {
+                    log("✗ 这不是 Android boot 镜像（头部不是 ANDROID!）")
+                    log("  可能是：init_boot / vendor_boot / 解压后的 Image / 别的文件")
+                    log("  请选择设备对应的 boot.img 或 init_boot.img")
+                    running = null
+                    return@rememberLauncherForActivityResult
+                }
+
+                // 输出到系统 Download 目录：ksud 以 root 运行，可直接写入
+                val out = File(
+                    "/storage/emulated/0/Download",
+                    "HuiJuiSU_patched_${System.currentTimeMillis()}.img",
+                )
                 val cmd = "ksud boot-patch -b '${target.absolutePath}' -o '${out.absolutePath}'"
                 log("$ $cmd")
-                execute(cmd)
+
+                MainScope().launch {
+                    val buf = StringBuilder()
+                    val r = com.huijui.nova.hide.HideBundle.run(cmd) { line ->
+                        buf.append(line).append('\n')
+                        log(line)
+                    }
+                    if (r.ok) {
+                        log("")
+                        log("✓ 已保存到：${out.absolutePath}")
+                        log("  刷入前请确认分区（boot / init_boot）")
+                    }
+                    if (!r.ok) {
+                        val text = buf.toString()
+                        // 常见失败：内核不是 gzip 压缩（厂商用 lz4/lzma），ksud 的自动识别会失败
+                        if (text.contains("invalid gzip header", true) ||
+                            text.contains("Failed to get KMI", true)
+                        ) {
+                            val kmi = com.huijui.nova.hide.HideBundle.run(
+                                "uname -r",
+                            ).output.firstOrNull()?.trim()?.split("-")?.firstOrNull()?.split(".")?.take(2)
+                                ?.joinToString(".") ?: ""
+                            log("")
+                            log("↓ 自动识别失败，用内核版本 ${kmi} 重试一次")
+                            val retry = "ksud boot-patch -b '${target.absolutePath}' -o '${out.absolutePath}' --kmi $kmi"
+                            log("$ $retry")
+                            com.huijui.nova.hide.HideBundle.run(retry) { line -> log(line) }
+                        } else {
+                            log("")
+                            log("补丁失败。常见原因：")
+                            log("· 镜像内核非 gzip 压缩（厂商改过），ksud 无法解包")
+                            log("· 镜像来自别的机型 / 分区不对")
+                            log("· 4.x 非 GKI 内核：LKM 补丁不适用，需内核补丁")
+                        }
+                    }
+                    running = null
+                }
             }
             FlashAction.Flash -> {
                 confirmFile = target
