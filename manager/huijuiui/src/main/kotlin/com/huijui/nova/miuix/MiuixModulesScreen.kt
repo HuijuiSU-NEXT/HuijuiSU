@@ -36,9 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.design.LocalHuiColors
 import com.huijui.nova.modules.NovaModules
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.theme.lightColorScheme
+import com.huijui.nova.ui.Text
+import com.huijui.nova.ui.MiuixTheme
+import com.huijui.nova.ui.lightColorScheme
 
 
 /**

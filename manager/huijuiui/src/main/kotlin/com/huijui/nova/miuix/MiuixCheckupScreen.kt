@@ -37,9 +37,9 @@ import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.theme.lightColorScheme
+import com.huijui.nova.ui.Text
+import com.huijui.nova.ui.MiuixTheme
+import com.huijui.nova.ui.lightColorScheme
 
 /**
  * 一键体检。

@@ -32,9 +32,6 @@ android {
 
 dependencies {
     // HyperOS 风格的 Compose 组件库：纯矢量、无模糊、低功耗
-    compileOnly("top.yukonga.miuix.kmp:miuix-ui-android:0.9.4")
-    compileOnly("top.yukonga.miuix.kmp:miuix-icons-android:0.9.4")
-    compileOnly("top.yukonga.miuix.kmp:miuix-squircle-android:0.9.4")
     implementation(platform(libs.androidx.compose.bom))
     implementation("androidx.compose.ui:ui")
     implementation("androidx.compose.foundation:foundation")

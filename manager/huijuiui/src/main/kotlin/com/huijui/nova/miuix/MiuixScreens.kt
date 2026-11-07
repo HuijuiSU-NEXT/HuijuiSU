@@ -51,9 +51,9 @@ import com.huijui.nova.wallpaper.HuiMediaSpec
 import com.huijui.nova.wallpaper.HuiWallpaper
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.theme.lightColorScheme
+import com.huijui.nova.ui.Text
+import com.huijui.nova.ui.MiuixTheme
+import com.huijui.nova.ui.lightColorScheme
 
 /* ------------------------------------------------------------------ */
 /*  浅色平面版式                                                        */

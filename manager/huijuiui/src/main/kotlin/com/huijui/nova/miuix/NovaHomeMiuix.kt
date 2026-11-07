@@ -38,9 +38,9 @@ import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.LocalNovaUiMode
 import com.huijui.nova.design.NovaUiMode
 import com.huijui.nova.design.LocalHuiColors
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.theme.lightColorScheme
+import com.huijui.nova.ui.Text
+import com.huijui.nova.ui.MiuixTheme
+import com.huijui.nova.ui.lightColorScheme
 
 /**
  * 重制版首页：HyperOS 风格的浅色平面。

@@ -37,9 +37,9 @@ import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.device.KsuModeDetector
 import com.huijui.nova.device.KsuStatus
-import top.yukonga.miuix.kmp.basic.Text
-import top.yukonga.miuix.kmp.theme.MiuixTheme
-import top.yukonga.miuix.kmp.theme.lightColorScheme
+import com.huijui.nova.ui.Text
+import com.huijui.nova.ui.MiuixTheme
+import com.huijui.nova.ui.lightColorScheme
 
 /**
  * 4.x（非 GKI）专用模式。
