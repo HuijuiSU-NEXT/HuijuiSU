@@ -33,6 +33,7 @@ import com.huijui.nova.components.HuiIcon
 import com.huijui.nova.components.HuiIcons
 import com.huijui.nova.device.rememberDeviceSnapshot
 import com.huijui.nova.design.novaInk
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.LocalNovaUiMode
 import com.huijui.nova.design.NovaUiMode
@@ -96,7 +97,7 @@ fun NovaHomeMiuixScreen(
                         color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White else ink,
                     )
                     Text(
-                        "%d月%d日".format(
+                        S("%d月%d日").format(
                             java.util.Calendar.getInstance().get(java.util.Calendar.MONTH) + 1,
                             java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH),
                         ),
@@ -106,7 +107,7 @@ fun NovaHomeMiuixScreen(
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        "Nova Edition",
+                        S("Nova Edition"),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
                         color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White else ink,
@@ -139,7 +140,7 @@ fun NovaHomeMiuixScreen(
                         }
                         Spacer(Modifier.width(12.dp))
                         Column(Modifier.weight(1f)) {
-                            Text("Root 已激活", fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                            Text(S("Root 已激活"), fontSize = 17.sp, fontWeight = FontWeight.SemiBold, color = ink)
                             Text(
                                 "Android ${device.androidRelease} · ${device.abi}",
                                 fontSize = 11.sp,
@@ -207,7 +208,7 @@ fun NovaHomeMiuixScreen(
                             )
                         }
                         if (ksu.mode == com.huijui.nova.device.KsuMode.NonGki4x) {
-                            Text("进入 ▸", fontSize = 9.sp, color = dim)
+                            Text(S("进入 ▸"), fontSize = 9.sp, color = dim)
                         } else if (ksu.detail.isNotBlank()) {
                             Text(ksu.detail, fontSize = 9.sp, color = dim, maxLines = 1)
                         }
@@ -222,10 +223,10 @@ fun NovaHomeMiuixScreen(
                     corner = 20.dp,
                 ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text("电池温度", fontSize = 11.sp, color = dim)
+                        Text(S("电池温度"), fontSize = 11.sp, color = dim)
                         Spacer(Modifier.height(4.dp))
                         Text("31.4°", fontSize = 28.sp, fontWeight = FontWeight.Light, color = ink)
-                        Text("正常", fontSize = 11.sp, color = accent)
+                        Text(S("正常"), fontSize = 11.sp, color = accent)
                     }
                 }
                 GlassCard(
@@ -233,17 +234,17 @@ fun NovaHomeMiuixScreen(
                     corner = 20.dp,
                 ) {
                     Column(Modifier.padding(16.dp)) {
-                        Text("已装模块", fontSize = 11.sp, color = dim)
+                        Text(S("已装模块"), fontSize = 11.sp, color = dim)
                         Spacer(Modifier.height(4.dp))
                         Text("7", fontSize = 28.sp, fontWeight = FontWeight.Light, color = ink)
-                        Text("+1 待更新", fontSize = 11.sp, color = accent)
+                        Text(S("+1 待更新"), fontSize = 11.sp, color = accent)
                     }
                 }
             }
 
             // 快捷操作
             Text(
-                "快捷操作",
+                S("快捷操作"),
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Medium,
                 color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) {
@@ -255,12 +256,12 @@ fun NovaHomeMiuixScreen(
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard(HuiIcons.Download, "刷写中心", "模块 · 修补 · 刷分区", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Flash) }
-                ActionCard(HuiIcons.Shield, "一键隐藏", "Zygisk · LSPosed · HMA", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Hide) }
+                ActionCard(HuiIcons.Download, S("刷写中心"), "模块 · 修补 · 刷分区", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Flash) }
+                ActionCard(HuiIcons.Shield, S("一键隐藏"), "Zygisk · LSPosed · HMA", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Hide) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard(HuiIcons.Module, "全部工具", "检测 · 终端 · 重启", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Tools) }
-                ActionCard(HuiIcons.Gauge, "一键体检", "冲突 · 隐藏 · 备份", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Checkup) }
+                ActionCard(HuiIcons.Module, S("全部工具"), "检测 · 终端 · 重启", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Tools) }
+                ActionCard(HuiIcons.Gauge, S("一键体检"), "冲突 · 隐藏 · 备份", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Checkup) }
             }
 
             Spacer(Modifier.height(90.dp))

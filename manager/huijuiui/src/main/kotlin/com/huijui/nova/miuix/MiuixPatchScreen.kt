@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.patches.Patches
@@ -94,11 +95,11 @@ fun MiuixPatchScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("补丁中心", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("补丁中心"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text("${Patches.builtin.size} 个内置补丁 · 重启自动恢复", fontSize = 11.sp, color = dim)
                 }
                 Text(
-                    "刷新",
+                    S("刷新"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier.clickable { MainScope().launch { refresh() } }.padding(8.dp),
@@ -228,7 +229,7 @@ fun MiuixPatchScreen(onBack: () -> Unit) {
                     Spacer(Modifier.height(14.dp))
                     Row {
                         Text(
-                            "取消",
+                            S("取消"),
                             fontSize = 12.sp,
                             color = dim,
                             modifier = Modifier
@@ -237,7 +238,7 @@ fun MiuixPatchScreen(onBack: () -> Unit) {
                         )
                         Spacer(Modifier.width(8.dp))
                         Text(
-                            "应用",
+                            S("应用"),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFFB08A2E),

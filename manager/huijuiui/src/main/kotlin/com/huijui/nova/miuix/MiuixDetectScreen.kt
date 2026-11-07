@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.detect.ChunqiuCheck
 import com.huijui.nova.design.LocalHuiColors
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ fun MiuixDetectScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("春秋检测", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("春秋检测"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         when {
                             running -> "检测中…"

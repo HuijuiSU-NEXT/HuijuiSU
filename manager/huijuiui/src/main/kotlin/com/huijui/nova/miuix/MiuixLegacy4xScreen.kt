@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.device.KsuModeDetector
@@ -91,7 +92,7 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("4.x 兼容模式", fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("4.x 兼容模式"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (status.kernelSeries > 0) "当前内核 ${status.kernelSeries}.x" else "未识别到内核版本",
                         fontSize = 11.sp,
@@ -104,7 +105,7 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
                         .background(accent.copy(alpha = 0.16f))
                         .padding(horizontal = 10.dp, vertical = 4.dp),
                 ) {
-                    Text("非 GKI", fontSize = 10.sp, color = accent)
+                    Text(S("非 GKI"), fontSize = 10.sp, color = accent)
                 }
             }
 
@@ -127,7 +128,7 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
 
             // 两条路
             GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(16.dp)) {
-                Text("两条可行路线", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                Text(S("两条可行路线"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                 Spacer(Modifier.height(10.dp))
 
                 Row(
@@ -140,10 +141,10 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
                     ) { Text("1", fontSize = 12.sp, color = accent, fontWeight = FontWeight.Bold) }
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("修补现成 boot.img", fontSize = 13.sp, color = ink, fontWeight = FontWeight.Medium)
+                        Text(S("修补现成 boot.img"), fontSize = 13.sp, color = ink, fontWeight = FontWeight.Medium)
                         Text("有官方 boot 镜像时最快，ksud 直接改包", fontSize = 10.sp, color = dim)
                     }
-                    Text("去修补", fontSize = 11.sp, color = accent)
+                    Text(S("去修补"), fontSize = 11.sp, color = accent)
                 }
 
                 Spacer(Modifier.height(12.dp))
@@ -155,7 +156,7 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
                     ) { Text("2", fontSize = 12.sp, color = dim, fontWeight = FontWeight.Bold) }
                     Spacer(Modifier.width(10.dp))
                     Column(Modifier.weight(1f)) {
-                        Text("编内核补丁", fontSize = 13.sp, color = ink, fontWeight = FontWeight.Medium)
+                        Text(S("编内核补丁"), fontSize = 13.sp, color = ink, fontWeight = FontWeight.Medium)
                         Text("有内核源码时最彻底，见下方命令", fontSize = 10.sp, color = dim)
                     }
                 }
@@ -166,7 +167,7 @@ fastboot flash boot out/arch/arm64/boot/Image.gz-dtb
             // 编译指引
             GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text("内核编译流程", fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ink, modifier = Modifier.weight(1f))
+                    Text(S("内核编译流程"), fontSize = 12.sp, fontWeight = FontWeight.Medium, color = ink, modifier = Modifier.weight(1f))
                     Text(
                         if (copied) "已复制" else "复制",
                         fontSize = 11.sp,

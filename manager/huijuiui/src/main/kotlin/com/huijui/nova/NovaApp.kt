@@ -81,11 +81,13 @@ import com.huijui.nova.motion.huiPress
 import com.huijui.nova.wallpaper.HuiMediaSpec
 import com.huijui.nova.wallpaper.HuiWallpaper
 
-enum class NovaTab(val label: String, val icon: HuiGlyph) {
+enum class NovaTab(private val zh: String, val icon: HuiGlyph) {
     Home("首页", HuiIcons.Home),
     Modules("模块", HuiIcons.Module),
     Superuser("超级用户", HuiIcons.Shield),
-    Settings("设置", HuiIcons.Settings),
+    Settings("设置", HuiIcons.Settings);
+
+    val label: String get() = com.huijui.nova.design.S(zh)
 }
 
 /** 从首页卡片打开的全屏子页面。 */
@@ -129,6 +131,8 @@ fun NovaApp(
     themeMode: NovaThemeMode = NovaThemeMode.System,
     onThemeModeChange: (NovaThemeMode) -> Unit = {},
 ) {
+    val i18nCtx = androidx.compose.ui.platform.LocalContext.current
+    androidx.compose.runtime.LaunchedEffect(Unit) { com.huijui.nova.design.I18n.load(i18nCtx) }
     var tab by remember { mutableIntStateOf(0) }
     var subPageOpen by remember { mutableStateOf(false) }
     var overlay by remember { mutableStateOf<NovaOverlay?>(null) }

@@ -31,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -123,7 +124,7 @@ fun MiuixKernelSettingsScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("内核设置", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("内核设置"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (loading) "读取中…" else "ksud feature · ${features.size} 项",
                         fontSize = 11.sp,
@@ -131,7 +132,7 @@ fun MiuixKernelSettingsScreen(onBack: () -> Unit) {
                     )
                 }
                 Text(
-                    "刷新",
+                    S("刷新"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier

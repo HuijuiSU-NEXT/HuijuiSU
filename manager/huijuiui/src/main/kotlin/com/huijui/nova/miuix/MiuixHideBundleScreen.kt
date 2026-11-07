@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -93,7 +94,7 @@ fun MiuixHideBundleScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("一键隐藏套件", fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("一键隐藏套件"), fontSize = 22.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         "Zygisk Next · LSPosed · HMA-OSS · OhMyKeymint",
                         fontSize = 10.sp,

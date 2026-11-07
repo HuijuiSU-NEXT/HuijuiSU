@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.susfs.Susfs
@@ -99,7 +100,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("SUSFS", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("SUSFS"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         when {
                             loading -> "读取中…"
@@ -112,7 +113,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                     )
                 }
                 Text(
-                    "刷新",
+                    S("刷新"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier.clickable { MainScope().launch { refresh() } }.padding(8.dp),
@@ -137,8 +138,8 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(16.dp)) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Column(Modifier.weight(1f)) {
-                            Text("SUSFS 总开关", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
-                            Text("启用后才会应用下面的隐藏规则", fontSize = 9.sp, color = dim)
+                            Text(S("SUSFS 总开关"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                            Text(S("启用后才会应用下面的隐藏规则"), fontSize = 9.sp, color = dim)
                         }
                         Box(
                             Modifier
@@ -194,7 +195,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
 
                 // 隐藏路径
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
-                    Text("隐藏路径", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Text(S("隐藏路径"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                     Spacer(Modifier.height(2.dp))
                     Text(
                         "路径及其子路径对已 umount 的应用进程不可见（只对 uid ≥ 10000 生效）",
@@ -216,7 +217,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                                 modifier = Modifier.weight(1f),
                             )
                             Text(
-                                "删除",
+                                S("删除"),
                                 fontSize = 10.sp,
                                 color = Color(0xFFD9534F),
                                 modifier = Modifier
@@ -227,7 +228,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                     }
 
                     if (paths.isEmpty()) {
-                        Text("还没有隐藏路径", fontSize = 10.sp, color = dim)
+                        Text(S("还没有隐藏路径"), fontSize = 10.sp, color = dim)
                     }
 
                     Spacer(Modifier.height(8.dp))
@@ -253,7 +254,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                             },
                         )
                         Text(
-                            "添加",
+                            S("添加"),
                             fontSize = 11.sp,
                             color = accent,
                             modifier = Modifier
@@ -271,11 +272,11 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
 
                 // 备份 / 恢复
                 GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
-                    Text("配置备份", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Text(S("配置备份"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            "导出到 /sdcard",
+                            S("导出到 /sdcard"),
                             fontSize = 11.sp,
                             color = accent,
                             modifier = Modifier
@@ -285,7 +286,7 @@ fun MiuixSusfsScreen(onBack: () -> Unit) {
                                 .padding(6.dp),
                         )
                         Text(
-                            "恢复默认",
+                            S("恢复默认"),
                             fontSize = 11.sp,
                             color = Color(0xFFB08A2E),
                             modifier = Modifier

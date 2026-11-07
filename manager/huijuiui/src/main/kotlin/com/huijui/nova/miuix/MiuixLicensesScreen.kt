@@ -25,6 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import top.yukonga.miuix.kmp.basic.Text
@@ -83,8 +84,8 @@ fun MiuixLicensesScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("开源许可", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
-                    Text("随 APK 分发的组件与来源", fontSize = 11.sp, color = dim)
+                    Text(S("开源许可"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("随 APK 分发的组件与来源"), fontSize = 11.sp, color = dim)
                 }
             }
 
@@ -104,10 +105,10 @@ fun MiuixLicensesScreen(onBack: () -> Unit) {
                     Spacer(Modifier.width(12.dp))
                     Column(Modifier.weight(1f)) {
                         Text("HuiJuiSU", fontSize = 14.sp, fontWeight = FontWeight.Medium, color = ink)
-                        Text("本项目以 GPL-3.0 发布", fontSize = 10.sp, color = dim)
+                        Text(S("本项目以 GPL-3.0 发布"), fontSize = 10.sp, color = dim)
                     }
                     Text(
-                        "查看",
+                        S("查看"),
                         fontSize = 11.sp,
                         color = accent,
                         modifier = Modifier

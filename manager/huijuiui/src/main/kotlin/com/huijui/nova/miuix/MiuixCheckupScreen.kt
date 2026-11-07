@@ -32,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.checkup.Checkup
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import kotlinx.coroutines.MainScope
@@ -85,7 +86,7 @@ fun MiuixCheckupScreen(
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("一键体检", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("一键体检"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (running) "检查中…" else report.summary,
                         fontSize = 11.sp,
@@ -93,7 +94,7 @@ fun MiuixCheckupScreen(
                     )
                 }
                 Text(
-                    "重测",
+                    S("重测"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier.clickable { if (!running) start() }.padding(8.dp),

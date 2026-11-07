@@ -40,6 +40,7 @@ import com.huijui.nova.design.HuiMotionLevel
 import com.huijui.nova.design.HuiThemeState
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.design.novaBg
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.LocalNovaUiMode
 import com.huijui.nova.design.NovaGlass
@@ -189,36 +190,36 @@ fun MiuixToolsScreen(
 
     Box(Modifier.fillMaxSize()) {
         MiuixPage(title = "工具", subtitle = "刷写 · 隐藏 · 管理") {
-            SectionLabel("刷写")
+            SectionLabel(S("刷写"))
             LightCard(onClick = { showFlash = true }) {
                 RowItem(
                     HuiIcons.Download,
-                    "刷写中心",
-                    "安装模块 · 修补镜像 · 刷入分区",
+                    S("刷写中心"),
+                    S("安装模块 · 修补镜像 · 刷入分区"),
                     "进入",
                     accent,
                 )
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionLabel("隐藏套件")
+            SectionLabel(S("隐藏套件"))
             LightCard(onClick = { showHide = true }) {
                 RowItem(
                     HuiIcons.Shield,
-                    "一键隐藏（hide_bundle）",
-                    "Zygisk Next · LSPosed · HMA-OSS · OhMyKeymint",
+                    S("一键隐藏（hide_bundle）"),
+                    S("Zygisk Next · LSPosed · HMA-OSS · OhMyKeymint"),
                     "进入",
                     accent,
                 )
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionLabel("内核")
+            SectionLabel(S("内核"))
             LightCard(onClick = onOpenSusfs) {
                 RowItem(
                     HuiIcons.Gauge,
-                    "SUSFS",
-                    "隐藏路径 · 日志 · AVC 伪造 · 配置备份",
+                    S("SUSFS"),
+                    S("隐藏路径 · 日志 · AVC 伪造 · 配置备份"),
                     "进入",
                     accent,
                 )
@@ -227,32 +228,32 @@ fun MiuixToolsScreen(
             LightCard(onClick = { onOpenLegacy() }) {
                 RowItem(
                     HuiIcons.Cpu,
-                    "4.x 兼容模式",
-                    "非 GKI：内核补丁 / 修补 boot",
+                    S("4.x 兼容模式"),
+                    S("非 GKI：内核补丁 / 修补 boot"),
                     "进入",
                     accent,
                 )
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionLabel("检查与修复")
+            SectionLabel(S("检查与修复"))
             LightCard(onClick = onOpenPatches) {
                 RowItem(
                     HuiIcons.Zap,
-                    "补丁中心",
-                    "一键隐藏属性 · 重置可调试标记 · 伪装 BL",
+                    S("补丁中心"),
+                    S("一键隐藏属性 · 重置可调试标记 · 伪装 BL"),
                     "进入",
                     accent,
                 )
             }
             Spacer(Modifier.height(12.dp))
 
-            SectionLabel("检测")
+            SectionLabel(S("检测"))
             LightCard(onClick = { showDetect = true }) {
                 RowItem(
                     HuiIcons.Gauge,
-                    "春秋检测",
-                    "9 组特征 · 属性 / 挂载 / maps / 进程 / SELinux",
+                    S("春秋检测"),
+                    S("9 组特征 · 属性 / 挂载 / maps / 进程 / SELinux"),
                     "运行",
                     accent,
                 )
@@ -261,11 +262,11 @@ fun MiuixToolsScreen(
 
             SectionLabel("管理")
             LightCard {
-                RowItem(HuiIcons.Module, "模块管理", "已装模块 · 启用 / 停用", "进入", accent, onClick = { showModules = true })
-                RowItem(HuiIcons.Terminal, "终端", "临时 Root Shell · 逐条 su 执行", "进入", accent) {
+                RowItem(HuiIcons.Module, S("模块管理"), S("已装模块 · 启用 / 停用"), "进入", accent, onClick = { showModules = true })
+                RowItem(HuiIcons.Terminal, S("终端"), S("临时 Root Shell · 逐条 su 执行"), "进入", accent) {
                     showTerminal = true
                 }
-                RowItem(HuiIcons.Refresh, "重启设备", "重启 / Recovery / 关机", "选择", accent) {
+                RowItem(HuiIcons.Refresh, S("重启设备"), S("重启 / Recovery / 关机"), "选择", accent) {
                     confirmReboot = "menu"
                 }
             }
@@ -343,7 +344,7 @@ fun MiuixToolsScreen(
                 padding = PaddingValues(18.dp),
                 alpha = 0.96f,
             ) {
-                Text("重启设备", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                Text(S("重启设备"), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = ink)
                 Spacer(Modifier.height(8.dp))
                 listOf(
                     "重启" to "reboot",
@@ -368,7 +369,7 @@ fun MiuixToolsScreen(
                 }
                 Spacer(Modifier.height(4.dp))
                 Text(
-                    "取消",
+                    S("取消"),
                     fontSize = 12.sp,
                     color = novaDim(),
                     modifier = Modifier
@@ -395,7 +396,7 @@ fun MiuixLabScreen(
 
     val accent = LocalHuiColors.current.accent
     MiuixPage(title = "实验", subtitle = "材质 · 动效") {
-        SectionLabel("材质")
+        SectionLabel(S("材质"))
         LightCard {
             HuiMaterial.entries.forEach { material ->
                 val active = theme.material == material
@@ -463,7 +464,7 @@ fun MiuixSettingsScreen(
     val context = androidx.compose.ui.platform.LocalContext.current
 
     MiuixPage(title = "设置", subtitle = "外观 · 壁纸 · 关于") {
-        SectionLabel("界面")
+        SectionLabel(S("界面"))
         LightCard {
             NovaUiMode.entries.forEach { mode ->
                 RowItem(
@@ -478,7 +479,7 @@ fun MiuixSettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("玻璃")
+        SectionLabel(S("玻璃"))
         LightCard {
             NovaGlass.entries.forEach { g ->
                 RowItem(
@@ -493,7 +494,7 @@ fun MiuixSettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("深浅色")
+        SectionLabel(S("深浅色"))
         LightCard {
             NovaThemeMode.entries.forEach { m ->
                 RowItem(
@@ -516,7 +517,7 @@ fun MiuixSettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("强调色")
+        SectionLabel(S("强调色"))
         LightCard {
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                 HuiAccent.entries.forEach { item ->
@@ -544,19 +545,33 @@ fun MiuixSettingsScreen(
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("内核")
+        SectionLabel(S("内核"))
         LightCard(onClick = onOpenKernelSettings) {
             RowItem(
                 HuiIcons.Cpu,
-                "内核设置",
-                "su 兼容 · umount · sulog · adb root · SELinux 隐藏",
+                S("内核设置"),
+                S("su 兼容 · umount · sulog · adb root · SELinux 隐藏"),
                 "进入",
                 accent,
             )
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("壁纸")
+        SectionLabel(S("语言"))
+        LightCard {
+            RowItem(
+                HuiIcons.Info,
+                S("界面语言"),
+                if (com.huijui.nova.design.I18n.lang == com.huijui.nova.design.Lang.En) "English" else "中文",
+                "切换",
+                accent,
+            ) {
+                com.huijui.nova.design.I18n.toggle(context)
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        SectionLabel(S("壁纸"))
         LightCard {
             RowItem(
                 HuiIcons.Palette,
@@ -565,12 +580,12 @@ fun MiuixSettingsScreen(
                 onClick = onPickMedia,
             )
             if (media != null) {
-                RowItem(HuiIcons.Close, "移除媒体壁纸", onClick = onClearMedia)
+                RowItem(HuiIcons.Close, S("移除媒体壁纸"), onClick = onClearMedia)
             }
         }
         Spacer(Modifier.height(12.dp))
 
-        SectionLabel("关于")
+        SectionLabel(S("关于"))
         LightCard {
             val pkgInfo = runCatching {
                 context.packageManager.getPackageInfo(context.packageName, 0)
@@ -584,14 +599,14 @@ fun MiuixSettingsScreen(
             var updateState by remember { mutableStateOf("") }
             RowItem(
                 HuiIcons.Info,
-                "HuiJuiSU Nova",
-                "$versionName ($versionCode) · Compose 独立界面",
+                S("HuiJuiSU Nova"),
+                S("$versionName ($versionCode) · Compose 独立界面"),
                 "当前",
                 accent,
             ) {}
             RowItem(
                 HuiIcons.Download,
-                "检查更新",
+                S("检查更新"),
                 if (updateState.isBlank()) "从 GitHub Releases 获取最新版本" else updateState,
                 "检查",
                 accent,
@@ -619,34 +634,34 @@ fun MiuixSettingsScreen(
             }
             RowItem(
                 HuiIcons.Rocket,
-                "GitHub 源码",
-                "github.com/HuijuiSU/HuiJuiSU",
+                S("GitHub 源码"),
+                S("github.com/HuijuiSU/HuiJuiSU"),
                 "打开",
                 accent,
             ) { openUrl(context, "https://github.com/HuijuiSU/HuiJuiSU") }
             RowItem(
                 HuiIcons.Shield,
-                "开源许可",
-                "GPL-3.0 · 组件清单",
+                S("开源许可"),
+                S("GPL-3.0 · 组件清单"),
                 "查看",
                 accent,
             ) { onOpenLicenses() }
             RowItem(
                 HuiIcons.SoundOn,
-                "Telegram 频道",
-                "t.me/Huijui123",
+                S("Telegram 频道"),
+                S("t.me/Huijui123"),
                 "加入",
                 accent,
             ) { openUrl(context, "https://t.me/Huijui123") }
             RowItem(
                 HuiIcons.Bell,
-                "QQ 群",
-                "763278354",
+                S("QQ 群"),
+                S("763278354"),
                 "复制",
                 accent,
             ) { copyText(context, "763278354") }
             if (onClose != null) {
-                RowItem(HuiIcons.Close, "关闭 Nova", "回到经典界面") { onClose() }
+                RowItem(HuiIcons.Close, S("关闭 Nova"), S("回到经典界面")) { onClose() }
             }
         }
     }

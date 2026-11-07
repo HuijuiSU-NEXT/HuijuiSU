@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -126,7 +127,7 @@ fun MiuixRepoScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("在线模块", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("在线模块"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         when {
                             loading -> "拉取索引中…"
@@ -158,13 +159,13 @@ fun MiuixRepoScreen(onBack: () -> Unit) {
                     textStyle = TextStyle(fontSize = 12.sp, color = ink),
                     modifier = Modifier.weight(1f),
                     decorationBox = { inner ->
-                        if (query.isEmpty()) Text("搜索模块 / 作者", fontSize = 12.sp, color = dim.copy(alpha = 0.6f))
+                        if (query.isEmpty()) Text(S("搜索模块 / 作者"), fontSize = 12.sp, color = dim.copy(alpha = 0.6f))
                         inner()
                     },
                 )
                 if (query.isNotEmpty()) {
                     Text(
-                        "清除",
+                        S("清除"),
                         fontSize = 10.sp,
                         color = dim,
                         modifier = Modifier.clickable { query = "" }.padding(4.dp),
@@ -250,7 +251,7 @@ fun MiuixRepoScreen(onBack: () -> Unit) {
 
                 if (!loading && shown.isEmpty() && error.isBlank()) {
                     GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(16.dp)) {
-                        Text("没有匹配的模块", fontSize = 11.sp, color = dim)
+                        Text(S("没有匹配的模块"), fontSize = 11.sp, color = dim)
                     }
                 }
 

@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.design.LocalNovaDark
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -104,11 +105,11 @@ fun MiuixTerminalScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("终端", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("终端"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(if (busy) "执行中…" else "su -c，逐条执行", fontSize = 11.sp, color = dim)
                 }
                 Text(
-                    "清屏",
+                    S("清屏"),
                     fontSize = 12.sp,
                     color = dim,
                     modifier = Modifier
@@ -197,7 +198,7 @@ fun MiuixTerminalScreen(onBack: () -> Unit) {
                         .clickable { run(input); input = "" }
                         .padding(horizontal = 14.dp, vertical = 6.dp),
                 ) {
-                    Text("运行", fontSize = 11.sp, color = ink)
+                    Text(S("运行"), fontSize = 11.sp, color = ink)
                 }
             }
             Spacer(Modifier.height(16.dp))

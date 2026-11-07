@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.design.LocalHuiColors
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -145,7 +146,7 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("刷写", fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("刷写"), fontSize = 24.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(running ?: "选文件 → 执行", fontSize = 11.sp, color = dim)
                 }
             }
@@ -172,7 +173,7 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                             Text(item.title, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = ink)
                             Text(item.desc, fontSize = 10.sp, color = dim)
                         }
-                        Text("选择", fontSize = 11.sp, color = accent)
+                        Text(S("选择"), fontSize = 11.sp, color = accent)
                     }
                 }
             }
@@ -206,7 +207,7 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                 contentAlignment = Alignment.Center,
             ) {
                 GlassCard(Modifier.padding(28.dp), corner = 20.dp, padding = PaddingValues(18.dp)) {
-                    Text("确认刷入？", fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("确认刷入？"), fontSize = 16.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Spacer(Modifier.height(6.dp))
                     Text(
                         "会把 ${file.name} 写进 boot 分区，写错可能无法开机。",
@@ -216,7 +217,7 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                     Spacer(Modifier.height(14.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            "取消",
+                            S("取消"),
                             fontSize = 12.sp,
                             color = dim,
                             modifier = Modifier
@@ -224,7 +225,7 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
                                 .padding(vertical = 8.dp, horizontal = 12.dp),
                         )
                         Text(
-                            "确认刷入",
+                            S("确认刷入"),
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFFD9534F),

@@ -1,5 +1,7 @@
 package com.huijui.nova.miuix
 
+import com.huijui.nova.design.S
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -102,7 +104,7 @@ fun MiuixModulesScreen(
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("模块", fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("模块"), fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (loading) "读取中…" else "${modules.size} 个模块",
                         fontSize = 11.sp,
@@ -110,7 +112,7 @@ fun MiuixModulesScreen(
                     )
                 }
                 Text(
-                    "在线",
+                    S("在线"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier.clickable { onOpenRepo() }.padding(8.dp),
@@ -124,7 +126,7 @@ fun MiuixModulesScreen(
                         .padding(8.dp),
                 )
                 Text(
-                    "刷新",
+                    S("刷新"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier.clickable { kotlinx.coroutines.MainScope().launch { refresh() } },

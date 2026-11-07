@@ -34,6 +34,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.huijui.nova.design.S
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
@@ -121,7 +122,7 @@ fun MiuixSuperuserScreen() {
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
-                    Text("超级用户", fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = ink)
+                    Text(S("超级用户"), fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (loading) "读取中…" else "${entries.size} 个应用已授权",
                         fontSize = 11.sp,
@@ -159,7 +160,7 @@ fun MiuixSuperuserScreen() {
                         .padding(8.dp),
                 )
                 Text(
-                    "刷新",
+                    S("刷新"),
                     fontSize = 12.sp,
                     color = accent,
                     modifier = Modifier
@@ -172,7 +173,7 @@ fun MiuixSuperuserScreen() {
 
             if (pickerOpen) {
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
-                    Text("选择应用授予 Root", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Text(S("选择应用授予 Root"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                     Spacer(Modifier.height(2.dp))
                     Text(
                         "共 ${allApps.size} 个应用 · 走内核 app_profile ioctl 写入",
@@ -200,7 +201,7 @@ fun MiuixSuperuserScreen() {
                             modifier = Modifier.weight(1f),
                             decorationBox = { inner ->
                                 if (filter.isEmpty()) {
-                                    Text("搜索应用 / 包名", fontSize = 11.sp, color = dim.copy(alpha = 0.6f))
+                                    Text(S("搜索应用 / 包名"), fontSize = 11.sp, color = dim.copy(alpha = 0.6f))
                                 }
                                 inner()
                             },
@@ -244,7 +245,7 @@ fun MiuixSuperuserScreen() {
                                         maxLines = 1,
                                     )
                                 }
-                                Text("授权", fontSize = 10.sp, color = accent)
+                                Text(S("授权"), fontSize = 10.sp, color = accent)
                             }
                         }
                 }
@@ -263,7 +264,7 @@ fun MiuixSuperuserScreen() {
                     Spacer(Modifier.height(10.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
                         Text(
-                            "取消",
+                            S("取消"),
                             fontSize = 11.sp,
                             color = dim,
                             modifier = Modifier
@@ -271,7 +272,7 @@ fun MiuixSuperuserScreen() {
                                 .padding(6.dp),
                         )
                         Text(
-                            "确认撤销",
+                            S("确认撤销"),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.SemiBold,
                             color = Color(0xFFD9534F),
