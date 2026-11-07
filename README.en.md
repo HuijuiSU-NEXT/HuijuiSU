@@ -10,7 +10,7 @@
 [![Compose](https://img.shields.io/badge/Compose-1.13-4285F4)](https://developer.android.com/jetpack/compose)
 [![MinSDK](https://img.shields.io/badge/Android-8.0%2B-3DDC84)](https://developer.android.com)
 
-[中文](README.md) · **English**
+[中文](README.md) · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
 [Download](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
 [Changelog](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
