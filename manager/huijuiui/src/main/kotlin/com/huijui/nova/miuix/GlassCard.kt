@@ -18,6 +18,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.huijui.nova.design.LocalHuiColors
 import com.huijui.nova.design.LocalNovaDark
+import com.huijui.nova.design.LocalNovaUiMode
+import com.huijui.nova.design.NovaUiMode
 import com.huijui.nova.design.LocalNovaGlass
 import com.huijui.nova.design.NovaGlass
 
@@ -49,18 +51,16 @@ fun GlassCard(
         NovaGlass.ClearFrost -> if (dark) alpha * 0.40f else if (minimal) alpha + 0.12f else alpha * 0.62f
     }
 
+    // 壁纸模式：深色玻璃（黑底 + 顶部高光），比白色磨砂更通透也更清晰
+    val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper
+    val topColor = if (wallpaper) Color.White.copy(alpha = 0.22f) else Color.White.copy(alpha = (base + 0.10f).coerceAtMost(1f))
+    val midColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.34f) else Color.White.copy(alpha = base)
+    val botColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.42f) else Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f))
+
     Column(
         modifier
             .clip(shape)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = (base + 0.10f).coerceAtMost(1f)),
-                        Color.White.copy(alpha = base),
-                        Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f)),
-                    ),
-                ),
-            )
+            .background(Brush.verticalGradient(listOf(topColor, midColor, botColor)))
             .border(
                 width = 1.dp,
                 brush = Brush.verticalGradient(

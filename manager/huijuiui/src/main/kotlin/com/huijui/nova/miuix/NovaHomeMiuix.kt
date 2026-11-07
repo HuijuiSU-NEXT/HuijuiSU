@@ -66,9 +66,10 @@ fun NovaHomeMiuixScreen(
     
 
     MiuixTheme(colors = lightColorScheme()) {
-        val cardColor = Color.White.copy(alpha = 0.68f)
-        val ink = Color(0xFF101820)
-        val dim = Color(0xFF4A5A68)
+        val wallpaperMode = LocalNovaUiMode.current == NovaUiMode.Wallpaper
+        val cardColor = if (wallpaperMode) Color(0xFF0B1020).copy(alpha = 0.34f) else Color.White.copy(alpha = 0.68f)
+        val ink = if (wallpaperMode) Color.White.copy(alpha = 0.96f) else Color(0xFF101820)
+        val dim = if (wallpaperMode) Color.White.copy(alpha = 0.72f) else Color(0xFF4A5A68)
 
         Column(
             modifier
@@ -92,8 +93,10 @@ fun NovaHomeMiuixScreen(
                             cal.get(java.util.Calendar.HOUR_OF_DAY),
                             cal.get(java.util.Calendar.MINUTE),
                         ),
-                        fontSize = 46.sp,
+                        fontSize = 52.sp,
                         fontWeight = FontWeight.Light,
+                        letterSpacing = (-2).sp,
+                        lineHeight = 56.sp,
                         color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White else ink,
                     )
                     Text(
@@ -102,7 +105,8 @@ fun NovaHomeMiuixScreen(
                             java.util.Calendar.getInstance().get(java.util.Calendar.DAY_OF_MONTH),
                         ),
                         fontSize = 12.sp,
-                        color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White.copy(alpha = 0.8f) else dim,
+                        letterSpacing = 1.2.sp,
+                        color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White.copy(alpha = 0.85f) else dim,
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
@@ -110,6 +114,7 @@ fun NovaHomeMiuixScreen(
                         S("Nova Edition"),
                         fontSize = 15.sp,
                         fontWeight = FontWeight.SemiBold,
+                        letterSpacing = 0.8.sp,
                         color = if (LocalNovaUiMode.current == NovaUiMode.Wallpaper) Color.White else ink,
                     )
                     Text(
@@ -272,7 +277,7 @@ fun NovaHomeMiuixScreen(
 @Composable
 private fun MiniStat(label: String, value: String, modifier: Modifier, ink: Color, dim: Color) {
     Column(modifier) {
-        Text(label, fontSize = 10.sp, color = dim)
+        Text(label, fontSize = 10.sp, letterSpacing = 0.4.sp, color = dim)
         Text(value, fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
     }
 }
