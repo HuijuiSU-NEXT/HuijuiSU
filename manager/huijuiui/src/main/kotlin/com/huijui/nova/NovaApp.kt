@@ -168,7 +168,8 @@ fun NovaApp(
         wallpaper = wallpaper,
         media = if (uiMode == NovaUiMode.Minimal) null else media,
         // 深色模式下壁纸必须压暗：否则深玻璃 + 深字 + 亮壁纸三个互相打架
-        scrim = if (dark) 0.58f else 0.06f,
+        // 壁纸本身不变暗（用户要求：只让卡片变暗），遮罩置 0
+        scrim = 0f,
         background = if (uiMode == NovaUiMode.Minimal) {
             { Box(Modifier.fillMaxSize().background(novaBg())) }
         } else {

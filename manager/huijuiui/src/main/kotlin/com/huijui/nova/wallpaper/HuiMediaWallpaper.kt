@@ -144,42 +144,66 @@ fun HuiVideoWallpaper(
     modifier: Modifier = Modifier,
 ) {
     val owner = LocalLifecycleOwner.current
-    var view by remember { mutableStateOf<VideoView?>(null) }
+    var player by remember { mutableStateOf<android.media.MediaPlayer?>(null) }
 
-    // 退到后台就暂停解码：视频壁纸不暂停的话，息屏后还在持续吃电
+    // 退到后台暂停解码，避免息屏后持续吃电
     DisposableEffect(owner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_PAUSE -> runCatching { view?.pause() }
-                Lifecycle.Event.ON_RESUME -> runCatching { view?.start() }
+                Lifecycle.Event.ON_PAUSE -> runCatching { player?.pause() }
+                Lifecycle.Event.ON_RESUME -> runCatching { player?.start() }
                 else -> Unit
             }
         }
         owner.lifecycle.addObserver(observer)
-        onDispose { owner.lifecycle.removeObserver(observer) }
+        onDispose {
+            owner.lifecycle.removeObserver(observer)
+            runCatching { player?.release() }
+        }
     }
 
-    // 竖屏视频按比例会留上下黑边，放大 1.3 倍裁切铺满
     Box(modifier) {
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer { scaleX = 1.26f; scaleY = 1.26f },
             factory = { ctx ->
-                VideoView(ctx).apply {
-                    setMediaController(null as MediaController?)
-                    setVideoURI(Uri.parse(uri))
-                    setOnPreparedListener { mp ->
-                        mp.isLooping = true
-                        mp.setVolume(0f, 0f)
-                        start()
+                // 用 TextureView 而不是 VideoView(SurfaceView)：
+                // SurfaceView 是独立图层，会导致点击穿透失败、按压时闪黑块、叠在上面的卡片发灰。
+                android.view.TextureView(ctx).apply {
+                    surfaceTextureListener = object : android.view.TextureView.SurfaceTextureListener {
+                        override fun onSurfaceTextureAvailable(
+                            st: android.graphics.SurfaceTexture,
+                            width: Int,
+                            height: Int,
+                        ) {
+                            runCatching {
+                                val mp = android.media.MediaPlayer()
+                                mp.setDataSource(ctx, android.net.Uri.parse(uri))
+                                mp.setSurface(android.view.Surface(st))
+                                mp.isLooping = true
+                                mp.setVolume(0f, 0f)
+                                mp.setOnPreparedListener { it.start() }
+                                mp.prepareAsync()
+                                player = mp
+                            }
+                        }
+
+                        override fun onSurfaceTextureSizeChanged(
+                            st: android.graphics.SurfaceTexture,
+                            width: Int,
+                            height: Int,
+                        ) = Unit
+
+                        override fun onSurfaceTextureDestroyed(st: android.graphics.SurfaceTexture): Boolean {
+                            runCatching { player?.release() }
+                            player = null
+                            return true
+                        }
+
+                        override fun onSurfaceTextureUpdated(st: android.graphics.SurfaceTexture) = Unit
                     }
-                    view = this
                 }
-            },
-            onRelease = { released ->
-                runCatching { released.stopPlayback() }
-                if (view === released) view = null
             },
         )
     }
