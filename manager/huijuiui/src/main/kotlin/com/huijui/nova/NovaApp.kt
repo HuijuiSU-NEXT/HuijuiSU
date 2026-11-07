@@ -295,6 +295,7 @@ fun NovaApp(
                                 "detect" -> NovaOverlay.Detect
                                 "modules" -> null
                                 "flash" -> NovaOverlay.Flash
+                                "patches" -> NovaOverlay.Patches
                                 else -> null
                             }
                             if (key == "modules") overlay = NovaOverlay.Tools

@@ -130,6 +130,18 @@ object Checkup {
             },
         )
 
+        if (hits > 0) {
+            add(
+                Item(
+                    "有 ${com.huijui.nova.patches.Patches.builtin.count { it.risk != com.huijui.nova.patches.Patches.Risk.Dangerous }} 个补丁可尝试",
+                    "针对属性与引导状态的一键伪装，重启自动恢复",
+                    Level.Info,
+                    "补丁中心",
+                    "patches",
+                ),
+            )
+        }
+
         // 4. boot 备份
         val backup = HideBundle.run(
             "ls -d /sdcard/HuiJuiSU_Backup_* 2>/dev/null | tail -1",

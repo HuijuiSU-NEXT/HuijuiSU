@@ -107,7 +107,16 @@ fun MiuixPatchScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
-            Patches.builtin.forEach { patch ->
+            Patches.Group.entries.forEach { group ->
+                val list = Patches.builtin.filter { it.group == group }
+                if (list.isEmpty()) return@forEach
+                Text(
+                    group.label,
+                    fontSize = 11.sp,
+                    color = dim,
+                    modifier = Modifier.padding(start = 6.dp, top = 4.dp, bottom = 6.dp),
+                )
+                list.forEach { patch ->
                 val riskColor = when (patch.risk) {
                     Patches.Risk.Safe -> accent
                     Patches.Risk.Caution -> Color(0xFFB08A2E)
@@ -167,6 +176,8 @@ fun MiuixPatchScreen(onBack: () -> Unit) {
                         )
                     }
                 }
+                }
+                Spacer(Modifier.height(6.dp))
             }
 
             // 输出
