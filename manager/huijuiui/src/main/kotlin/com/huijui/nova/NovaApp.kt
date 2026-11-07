@@ -370,24 +370,26 @@ fun NovaDock(
         label = "dockPosition",
     )
 
-    // 浅色玻璃 Dock：和上面卡片同一套语言
+    // 玻璃 Dock：和卡片同一套材质语言（深色玻璃 + 顶部高光 + 底部压暗），
+    // 不再用 shadow —— 它在部分 GPU 上会渲染成一块实心塑料。
+    val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper
+    val dockTop = if (wallpaper) Color.White.copy(alpha = 0.20f) else Color.White.copy(alpha = 0.72f)
+    val dockMid = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.36f) else Color.White.copy(alpha = 0.55f)
+    val dockBot = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.46f) else Color.White.copy(alpha = 0.45f)
+
     Box(
         modifier
             .fillMaxWidth()
-            .shadow(18.dp, shapes.pill, clip = false, ambientColor = Color(0x33101820), spotColor = Color(0x55101820))
             .clip(shapes.pill)
-            .background(
-                Brush.verticalGradient(
-                    listOf(
-                        Color.White.copy(alpha = 0.70f),
-                        Color.White.copy(alpha = 0.52f),
-                    ),
-                ),
-            )
+            .background(Brush.verticalGradient(listOf(dockTop, dockMid, dockBot)))
             .border(
                 1.dp,
                 Brush.verticalGradient(
-                    listOf(Color.White.copy(alpha = 0.9f), Color.White.copy(alpha = 0.2f)),
+                    listOf(
+                        Color.White.copy(alpha = if (wallpaper) 0.42f else 0.9f),
+                        Color.White.copy(alpha = 0.12f),
+                        Color.Black.copy(alpha = if (wallpaper) 0.18f else 0.06f),
+                    ),
                 ),
                 shapes.pill,
             ),
@@ -400,7 +402,7 @@ fun NovaDock(
                     // 指示器只在绘制阶段运行：读 position，不触发重组
                     if (rowWidth <= 0 || tabCount == 0) return@drawBehind
                     val itemWidth = rowWidth.toFloat() / tabCount
-                    val inset = 6.dp.toPx()
+                    val inset = 5.dp.toPx()
                     val left = position * itemWidth + inset
                     val top = inset
                     val width = itemWidth - inset * 2
@@ -461,8 +463,14 @@ private fun DockItem(
     val colors = LocalHuiColors.current
     val type = LocalHuiTypography.current
     val interaction = remember { MutableInteractionSource() }
+    val dockOnDark = LocalNovaUiMode.current == NovaUiMode.Wallpaper
     val iconTint by animateColorAsState(
-        targetValue = if (active) Color(0xFF101820) else Color(0xFF5B6875),
+        targetValue = when {
+            active && dockOnDark -> Color.White
+            active -> Color(0xFF101820)
+            dockOnDark -> Color.White.copy(alpha = 0.62f)
+            else -> Color(0xFF5B6875)
+        },
         animationSpec = tween(220, easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)),
         label = "dockTint",
     )
