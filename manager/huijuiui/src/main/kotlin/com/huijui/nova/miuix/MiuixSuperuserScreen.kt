@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -28,13 +29,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.huijui.nova.design.novaDim
 import com.huijui.nova.design.novaInk
 import com.huijui.nova.hide.HideBundle
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.launch
 import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
@@ -59,6 +64,10 @@ fun MiuixSuperuserScreen() {
     var loading by remember { mutableStateOf(true) }
     var note by remember { mutableStateOf("") }
     var pendingRevoke by remember { mutableStateOf<Pair<Int, String>?>(null) }
+    var pickerOpen by remember { mutableStateOf(false) }
+    var allApps by remember { mutableStateOf<List<Triple<Int, String, String>>>(emptyList()) }
+    var filter by remember { mutableStateOf("") }
+    var grantMsg by remember { mutableStateOf("") }
 
     suspend fun load() {
         loading = true
@@ -120,6 +129,36 @@ fun MiuixSuperuserScreen() {
                     )
                 }
                 Text(
+                    if (pickerOpen) "收起" else "添加",
+                    fontSize = 12.sp,
+                    color = accent,
+                    modifier = Modifier
+                        .clickable {
+                            if (pickerOpen) {
+                                pickerOpen = false
+                            } else {
+                                pickerOpen = true
+                                if (allApps.isEmpty()) {
+                                    MainScope().launch {
+                                        allApps = withContext(Dispatchers.IO) {
+                                            context.packageManager
+                                                .getInstalledApplications(android.content.pm.PackageManager.GET_META_DATA)
+                                                .mapNotNull { info ->
+                                                    val pkg = info.packageName ?: return@mapNotNull null
+                                                    val label = runCatching {
+                                                        context.packageManager.getApplicationLabel(info).toString()
+                                                    }.getOrDefault(pkg)
+                                                    Triple(info.uid, label, pkg)
+                                                }
+                                                .sortedBy { it.second.lowercase() }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        .padding(8.dp),
+                )
+                Text(
                     "刷新",
                     fontSize = 12.sp,
                     color = accent,
@@ -130,6 +169,87 @@ fun MiuixSuperuserScreen() {
             }
 
             Spacer(Modifier.height(12.dp))
+
+            if (pickerOpen) {
+                GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
+                    Text("选择应用授予 Root", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        "共 ${allApps.size} 个应用 · 走内核 app_profile ioctl 写入",
+                        fontSize = 9.sp,
+                        color = dim,
+                    )
+                    if (grantMsg.isNotBlank()) {
+                        Spacer(Modifier.height(4.dp))
+                        Text(grantMsg, fontSize = 9.sp, color = accent)
+                    }
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(ink.copy(alpha = 0.05f))
+                            .padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        BasicTextField(
+                            value = filter,
+                            onValueChange = { filter = it },
+                            singleLine = true,
+                            textStyle = TextStyle(fontSize = 11.sp, color = ink),
+                            modifier = Modifier.weight(1f),
+                            decorationBox = { inner ->
+                                if (filter.isEmpty()) {
+                                    Text("搜索应用 / 包名", fontSize = 11.sp, color = dim.copy(alpha = 0.6f))
+                                }
+                                inner()
+                            },
+                        )
+                    }
+                    Spacer(Modifier.height(6.dp))
+                    allApps
+                        .filter {
+                            filter.isBlank() ||
+                                it.second.contains(filter, true) ||
+                                it.third.contains(filter, true)
+                        }
+                        .take(40)
+                        .forEach { (uid, label, pkg) ->
+                            Row(
+                                Modifier
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        MainScope().launch {
+                                            val code = withContext(Dispatchers.IO) {
+                                                com.huijui.nova.native.KsuNative.grant(uid, pkg, true)
+                                            }
+                                            grantMsg = if (code == 0) {
+                                                "已授权 $label（重启后生效）"
+                                            } else {
+                                                "写入失败 code=$code（驱动 fd 拿不到或内核拒绝）"
+                                            }
+                                            if (code == 0) load()
+                                        }
+                                    }
+                                    .padding(vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Column(Modifier.weight(1f)) {
+                                    Text(label, fontSize = 12.sp, color = ink, maxLines = 1)
+                                    Text(
+                                        "$pkg · uid $uid",
+                                        fontSize = 9.sp,
+                                        color = dim,
+                                        fontFamily = FontFamily.Monospace,
+                                        maxLines = 1,
+                                    )
+                                }
+                                Text("授权", fontSize = 10.sp, color = accent)
+                            }
+                        }
+                }
+                Spacer(Modifier.height(10.dp))
+            }
 
             pendingRevoke?.let { (uid, label) ->
                 GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
