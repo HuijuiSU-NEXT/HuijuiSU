@@ -400,7 +400,8 @@ jobs:
 
   upload-telegram:
     needs: [repack-manager, telegram-bot-api]
-    if: github.event_name != 'pull_request' && github.event_name != 'workflow_call'
+    # 只有手动触发才往 TG 传文件；tag 发布只由 release.yml 发一条消息，避免重复刷屏
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     strategy:
       matrix:

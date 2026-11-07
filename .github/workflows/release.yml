@@ -61,8 +61,9 @@ jobs:
             exit 0
           fi
 
-          TEXT=$(printf '🚀 <b>HuiJuiSU %s 正式发布</b>\n\n🔗 %s\n💬 https://t.me/Huijui123\n👥 QQ 群 763278354' \
-            "$TAG" "https://github.com/${REPO}/releases/tag/${TAG}")
+          NOTES=$(printf '• 壁纸不再拉伸（等比 cover）\n• 视频层改 TextureView，修复点击穿透 / 闪黑块\n• 深色与壁纸下文字转白\n• Dock 支持左右拖动，指示器液态玻璃\n• 超级用户默认只列用户应用\n• 修补 boot 加超时与产物校验')
+          TEXT=$(printf '🚀 <b>HuiJuiSU NEXT %s</b>\n\n%s\n\n⬇️ %s\n💬 https://t.me/Huijui123' \
+            "$TAG" "$NOTES" "https://github.com/${REPO}/releases/tag/${TAG}")
 
           curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -d "chat_id=${CHAT_ID}" \
