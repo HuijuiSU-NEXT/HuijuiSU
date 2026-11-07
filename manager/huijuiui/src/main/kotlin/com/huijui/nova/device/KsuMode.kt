@@ -14,6 +14,7 @@ import com.huijui.nova.hide.HideBundle
  */
 enum class KsuMode(val label: String, val desc: String) {
     NotWorking("未工作", "没有检测到 KernelSU 在运行"),
+    NonGki4x("4.x 内核", "非 GKI：只能打内核补丁或修补 boot，不能用 LKM"),
     Lkm("LKM 模式", "内核模块加载（kernelsu.ko）"),
     Gki("GKI 内置", "KernelSU 编译进内核镜像"),
     Legacy("非 GKI / 补丁", "旧内核手工打补丁"),
@@ -22,6 +23,7 @@ enum class KsuMode(val label: String, val desc: String) {
 
 data class KsuStatus(
     val mode: KsuMode = KsuMode.NotWorking,
+    val kernelSeries: Int = 0,
     val root: Boolean = false,
     val kernel: String = "",
     val ksud: String = "",
@@ -54,9 +56,11 @@ object KsuModeDetector {
         val ksudBin = flag("KSUD_BIN") == "1"
         val version = out.lastOrNull { it.matches(Regex("^\\d+.*")) }.orEmpty()
 
+        val series = Regex("""^(\d+)\.""").find(kernel)?.groupValues?.get(1)?.toIntOrNull() ?: 0
         val mode = when {
             !ksuDir && !ksudBin && ksud.isBlank() -> KsuMode.NotWorking
             moduleLoaded -> KsuMode.Lkm
+            series in 1..4 -> KsuMode.NonGki4x
             ksuDir && ksudBin -> KsuMode.Gki
             ksuDir -> KsuMode.Legacy
             else -> KsuMode.Unknown
@@ -71,6 +75,7 @@ object KsuModeDetector {
 
         return KsuStatus(
             mode = mode,
+            kernelSeries = series,
             root = root,
             kernel = kernel,
             ksud = ksud.ifBlank { if (ksudBin) "/data/adb/ksud" else "" },

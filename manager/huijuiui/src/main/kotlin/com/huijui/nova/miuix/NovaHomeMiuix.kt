@@ -168,7 +168,8 @@ fun NovaHomeMiuixScreen(
                                     when (ksu.mode) {
                                         com.huijui.nova.device.KsuMode.Lkm,
                                         com.huijui.nova.device.KsuMode.Gki -> Color(0xFF2E9E6B)
-                                        com.huijui.nova.device.KsuMode.Legacy -> Color(0xFFB08A2E)
+                                        com.huijui.nova.device.KsuMode.Legacy,
+                                        com.huijui.nova.device.KsuMode.NonGki4x -> Color(0xFFB08A2E)
                                         com.huijui.nova.device.KsuMode.Unknown -> Color(0xFF7A8899)
                                         com.huijui.nova.device.KsuMode.NotWorking -> Color(0xFFD9534F)
                                     },

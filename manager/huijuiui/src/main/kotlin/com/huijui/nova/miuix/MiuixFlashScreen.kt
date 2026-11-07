@@ -43,7 +43,7 @@ import java.io.File
 
 private enum class FlashAction(val title: String, val desc: String, val mime: String) {
     Install("安装模块", "选 zip，交给 ksud / magisk 安装", "application/zip"),
-    Patch("修补镜像", "选 boot.img，ksud boot-patch 生成修补件", "*/*"),
+    Patch("修补 boot", "选 boot.img / init_boot.img，生成 KernelSU 修补件", "*/*"),
     Flash("刷入镜像", "选 .img 写入分区（危险，二次确认）", "*/*"),
 }
 
@@ -64,6 +64,18 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
     var running by remember { mutableStateOf<String?>(null) }
     var action by remember { mutableStateOf(FlashAction.Install) }
     var confirmFile by remember { mutableStateOf<File?>(null) }
+    var kernelHint by remember { mutableStateOf("") }
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        val status = com.huijui.nova.device.KsuModeDetector.detect()
+        kernelHint = if (status.kernelSeries in 1..4) {
+            "当前内核 ${status.kernelSeries}.x（非 GKI）：LKM 用不了，需要内核补丁或修补 boot 后刷入"
+        } else if (status.kernelSeries >= 5) {
+            "当前内核 ${status.kernelSeries}.x：走 LKM，可直接装模块或修补 boot"
+        } else {
+            ""
+        }
+    }
 
     fun log(vararg lines: String) {
         output = (output + lines).takeLast(120)
@@ -139,6 +151,13 @@ fun MiuixFlashScreen(onBack: () -> Unit) {
             }
 
             Spacer(Modifier.height(12.dp))
+
+            if (kernelHint.isNotBlank()) {
+                GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
+                    Text(kernelHint, fontSize = 11.sp, color = dim)
+                }
+                Spacer(Modifier.height(10.dp))
+            }
 
             GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
                 FlashAction.entries.forEach { item ->
