@@ -36,8 +36,6 @@ import top.yukonga.miuix.kmp.basic.Text
 import top.yukonga.miuix.kmp.theme.MiuixTheme
 import top.yukonga.miuix.kmp.theme.lightColorScheme
 
-private val Ink = Color(0xFF101820)
-private val Dim = Color(0xFF50606E)
 
 /**
  * 模块列表页。
@@ -46,8 +44,10 @@ private val Dim = Color(0xFF50606E)
  * `/data/adb/modules`，开关直接建/删 `disable` 文件，和官方管理器语义一致。
  */
 @Composable
-fun MiuixModulesScreen(onBack: () -> Unit) {
+fun MiuixModulesScreen(onBack: () -> Unit = {}, embedded: Boolean = false) {
     val accent = LocalHuiColors.current.accent
+    val ink = com.huijui.nova.design.novaInk()
+    val dim = com.huijui.nova.design.novaDim()
     var modules by remember { mutableStateOf<List<NovaModules.Module>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var error by remember { mutableStateOf<String?>(null) }
@@ -71,18 +71,18 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
         ) {
             Spacer(Modifier.height(14.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
+                if (!embedded) Text(
                     "‹",
                     fontSize = 26.sp,
-                    color = Ink,
+                    color = ink,
                     modifier = Modifier.clickable { onBack() }.padding(end = 12.dp),
                 )
                 Column(Modifier.weight(1f)) {
-                    Text("模块", fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = Ink)
+                    Text("模块", fontSize = 25.sp, fontWeight = FontWeight.SemiBold, color = ink)
                     Text(
                         if (loading) "读取中…" else "${modules.size} 个模块",
                         fontSize = 11.sp,
-                        color = Dim,
+                        color = dim,
                     )
                 }
                 Text(
@@ -117,7 +117,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                                     .width(4.dp)
                                     .height(34.dp)
                                     .clip(RoundedCornerShape(2.dp))
-                                    .background(if (module.enabled) accent else Dim.copy(alpha = 0.4f)),
+                                    .background(if (module.enabled) accent else dim.copy(alpha = 0.4f)),
                             )
                             Spacer(Modifier.width(12.dp))
                             Column(Modifier.weight(1f)) {
@@ -125,13 +125,13 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                                     module.name,
                                     fontSize = 15.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    color = Ink,
+                                    color = ink,
                                     maxLines = 1,
                                 )
                                 Text(
                                     "${module.version}${if (module.author.isNotBlank()) " · ${module.author}" else ""}",
                                     fontSize = 10.sp,
-                                    color = Dim,
+                                    color = dim,
                                     maxLines = 1,
                                 )
                             }
@@ -139,7 +139,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                                 Modifier
                                     .clip(RoundedCornerShape(50))
                                     .background(
-                                        (if (module.enabled) accent else Dim).copy(alpha = 0.14f),
+                                        (if (module.enabled) accent else dim).copy(alpha = 0.14f),
                                     )
                                     .clickable {
                                         kotlinx.coroutines.MainScope().launch {
@@ -152,7 +152,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                                 Text(
                                     if (module.enabled) "已启用" else "已停用",
                                     fontSize = 11.sp,
-                                    color = if (module.enabled) accent else Dim,
+                                    color = if (module.enabled) accent else dim,
                                 )
                             }
                         }
@@ -164,7 +164,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                             Text(
                                 module.description,
                                 fontSize = 10.sp,
-                                color = Dim,
+                                color = dim,
                                 lineHeight = 14.sp,
                             )
                             Spacer(Modifier.height(8.dp))
@@ -173,7 +173,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                             Box(
                                 Modifier
                                     .clip(RoundedCornerShape(50))
-                                    .background(Dim.copy(alpha = 0.12f))
+                                    .background(dim.copy(alpha = 0.12f))
                                     .clickable {
                                         kotlinx.coroutines.MainScope().launch {
                                             NovaModules.setEnabled(module.id, !module.enabled)
@@ -185,7 +185,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
                                 Text(
                                     if (module.enabled) "停用" else "启用",
                                     fontSize = 10.sp,
-                                    color = Dim,
+                                    color = dim,
                                 )
                             }
                             Box(
@@ -208,7 +208,7 @@ fun MiuixModulesScreen(onBack: () -> Unit) {
 
                 if (error != null) {
                     GlassCard(Modifier.fillMaxWidth(), padding = PaddingValues(16.dp)) {
-                        Text(error!!, fontSize = 12.sp, color = Dim)
+                        Text(error!!, fontSize = 12.sp, color = dim)
                     }
                 }
                 Spacer(Modifier.height(90.dp))

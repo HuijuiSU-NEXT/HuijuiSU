@@ -165,7 +165,10 @@ private fun RowItem(
 /* ------------------------------------------------------------------ */
 
 @Composable
-fun MiuixToolsScreen(onSubPageChange: (Boolean) -> Unit = {}) {
+fun MiuixToolsScreen(
+    onSubPageChange: (Boolean) -> Unit = {},
+    onBack: (() -> Unit)? = null,
+) {
     val ink = novaInk()
 
     var showHide by remember { mutableStateOf(false) }

@@ -49,7 +49,10 @@ import top.yukonga.miuix.kmp.theme.lightColorScheme
  * - 圆角、间距、字号全部来自 Miuix 的 HyperOS 规范。
  */
 @Composable
-fun NovaHomeMiuixScreen(modifier: Modifier = Modifier) {
+fun NovaHomeMiuixScreen(
+    modifier: Modifier = Modifier,
+    onOpen: (com.huijui.nova.NovaOverlay) -> Unit = {},
+) {
     val device = rememberDeviceSnapshot()
     var ksu by remember { androidx.compose.runtime.mutableStateOf(com.huijui.nova.device.KsuStatus()) }
     androidx.compose.runtime.LaunchedEffect(Unit) {
@@ -228,12 +231,12 @@ fun NovaHomeMiuixScreen(modifier: Modifier = Modifier) {
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard(HuiIcons.Download, "刷入内核", "payload.bin / boot.img", accent, ink, dim, cardColor, Modifier.weight(1f))
-                ActionCard(HuiIcons.Shield, "隐藏中心", "SUSFS · 挂载隔离", accent, ink, dim, cardColor, Modifier.weight(1f))
+                ActionCard(HuiIcons.Download, "刷写中心", "模块 · 修补 · 刷分区", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Flash) }
+                ActionCard(HuiIcons.Shield, "一键隐藏", "Zygisk · LSPosed · HMA", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Hide) }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                ActionCard(HuiIcons.Module, "模块仓库", "1416 个模块在线", accent, ink, dim, cardColor, Modifier.weight(1f))
-                ActionCard(HuiIcons.Terminal, "终端", "临时 Root Shell", accent, ink, dim, cardColor, Modifier.weight(1f))
+                ActionCard(HuiIcons.Module, "全部工具", "检测 · 终端 · 重启", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Tools) }
+                ActionCard(HuiIcons.Terminal, "终端", "临时 Root Shell", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Terminal) }
             }
 
             Spacer(Modifier.height(90.dp))
@@ -257,13 +260,14 @@ private fun ActionCard(
     accent: Color,
     ink: Color,
     dim: Color,
-    cardColor: Color,
     modifier: Modifier,
+    onClick: () -> Unit = {},
 ) {
     GlassCard(
         modifier = modifier,
         corner = 20.dp,
         padding = PaddingValues(16.dp),
+        onClick = onClick,
     ) {
         Column {
             Box(

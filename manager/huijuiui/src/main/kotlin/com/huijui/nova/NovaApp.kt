@@ -83,9 +83,19 @@ import com.huijui.nova.wallpaper.HuiWallpaper
 
 enum class NovaTab(val label: String, val icon: HuiGlyph) {
     Home("首页", HuiIcons.Home),
-    Tools("工具", HuiIcons.Module),
-    Lab("实验", HuiIcons.Sparkle),
+    Modules("模块", HuiIcons.Module),
+    Superuser("超级用户", HuiIcons.Shield),
     Settings("设置", HuiIcons.Settings),
+}
+
+/** 从首页卡片打开的全屏子页面。 */
+enum class NovaOverlay(val title: String) {
+    Tools("全部工具"),
+    Terminal("终端"),
+    Flash("刷写中心"),
+    Detect("春秋检测"),
+    Hide("一键隐藏"),
+    Lab("实验"),
 }
 
 /**
@@ -114,6 +124,7 @@ fun NovaApp(
 ) {
     var tab by remember { mutableIntStateOf(0) }
     var subPageOpen by remember { mutableStateOf(false) }
+    var overlay by remember { mutableStateOf<NovaOverlay?>(null) }
     // 切标签时必须复位：否则从子页面切走，Dock 会一直藏着
     androidx.compose.runtime.LaunchedEffect(tab) { subPageOpen = false }
     val colors = LocalHuiColors.current
@@ -154,7 +165,7 @@ fun NovaApp(
             Modifier
                 .fillMaxSize()
                 // 子页面打开时把状态栏/导航栏区域也铺成页面底色，避免底部露出壁纸
-                .background(if (subPageOpen) novaBg() else Color.Transparent)
+                .background(if (subPageOpen || overlay != null) novaBg() else Color.Transparent)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
             Box(Modifier.weight(1f)) {
@@ -175,14 +186,13 @@ fun NovaApp(
                     label = "tab",
                 ) { index ->
                     when (NovaTab.entries[index]) {
-                        NovaTab.Home -> com.huijui.nova.miuix.NovaHomeMiuixScreen()
-                        NovaTab.Tools -> com.huijui.nova.miuix.MiuixToolsScreen(
-                            onSubPageChange = { subPageOpen = it },
+                        NovaTab.Modules -> com.huijui.nova.miuix.MiuixModulesScreen(
+                            embedded = true,
+                            onBack = {},
                         )
-                        NovaTab.Lab -> com.huijui.nova.miuix.MiuixLabScreen(
-                            theme = theme,
-                            onMaterialChange = onMaterialChange,
-                            onMotionChange = onMotionChange,
+                        NovaTab.Superuser -> com.huijui.nova.miuix.MiuixSuperuserScreen()
+                        NovaTab.Home -> com.huijui.nova.miuix.NovaHomeMiuixScreen(
+                            onOpen = { overlay = it },
                         )
                         NovaTab.Settings -> com.huijui.nova.miuix.MiuixSettingsScreen(
                             theme = theme,
@@ -207,7 +217,7 @@ fun NovaApp(
                 }
             }
             androidx.compose.animation.AnimatedVisibility(
-                visible = !subPageOpen,
+                visible = !subPageOpen && overlay == null,
                 enter = androidx.compose.animation.fadeIn() +
                     androidx.compose.animation.slideInVertically { it / 3 },
                 exit = androidx.compose.animation.fadeOut() +
@@ -218,6 +228,38 @@ fun NovaApp(
                     onSelect = { tab = it },
                     modifier = Modifier.padding(horizontal = 18.dp, vertical = 10.dp),
                 )
+            }
+        }
+
+        // 全屏子页面：盖住 Dock，铺满整个窗口
+        overlay?.let { page ->
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(novaBg()),
+            ) {
+                when (page) {
+                    NovaOverlay.Tools -> com.huijui.nova.miuix.MiuixToolsScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Terminal -> com.huijui.nova.miuix.MiuixTerminalScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Flash -> com.huijui.nova.miuix.MiuixFlashScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Detect -> com.huijui.nova.miuix.MiuixDetectScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Hide -> com.huijui.nova.miuix.MiuixHideBundleScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.Lab -> com.huijui.nova.miuix.MiuixLabScreen(
+                        theme = theme,
+                        onMaterialChange = onMaterialChange,
+                        onMotionChange = onMotionChange,
+                    )
+                }
             }
         }
         }
