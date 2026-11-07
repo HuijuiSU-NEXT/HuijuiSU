@@ -49,7 +49,9 @@ object KsuModeDetector {
         val out = HideBundle.run(script).output
         fun flag(key: String) = out.firstOrNull { it.startsWith("$key=") }?.substringAfter("=")
         val root = flag("ROOT") == "1"
+        // 没 root 时 uname 拿不到，退回 JVM 的 os.version
         val kernel = flag("KERNEL").orEmpty()
+            .ifBlank { System.getProperty("os.version").orEmpty() }
         val ksud = flag("KSUD").orEmpty()
         val ksuDir = flag("KSU_DIR") == "1"
         val moduleLoaded = flag("MODULE") == "1"

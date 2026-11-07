@@ -168,6 +168,7 @@ private fun RowItem(
 fun MiuixToolsScreen(
     onSubPageChange: (Boolean) -> Unit = {},
     onBack: (() -> Unit)? = null,
+    onOpenLegacy: () -> Unit = {},
 ) {
     val ink = novaInk()
 
@@ -204,6 +205,18 @@ fun MiuixToolsScreen(
                     HuiIcons.Shield,
                     "一键隐藏（hide_bundle）",
                     "Zygisk Next · LSPosed · HMA-OSS · OhMyKeymint",
+                    "进入",
+                    accent,
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+
+            SectionLabel("内核")
+            LightCard(onClick = { onOpenLegacy() }) {
+                RowItem(
+                    HuiIcons.Cpu,
+                    "4.x 兼容模式",
+                    "非 GKI：内核补丁 / 修补 boot",
                     "进入",
                     accent,
                 )

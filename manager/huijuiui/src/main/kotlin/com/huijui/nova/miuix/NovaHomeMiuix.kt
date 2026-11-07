@@ -1,6 +1,7 @@
 package com.huijui.nova.miuix
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -158,8 +159,19 @@ fun NovaHomeMiuixScreen(
 
                     Spacer(Modifier.height(12.dp))
 
-                    // 工作模式：未工作 / LKM / GKI / 非 GKI
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    // 工作模式：未工作 / LKM / GKI / 非 GKI / 4.x
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (ksu.mode == com.huijui.nova.device.KsuMode.NonGki4x) {
+                                    Modifier.clickable { onOpen(com.huijui.nova.NovaOverlay.Legacy4x) }
+                                } else {
+                                    Modifier
+                                },
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
                         Box(
                             Modifier
                                 .size(6.dp)
@@ -185,7 +197,9 @@ fun NovaHomeMiuixScreen(
                             )
                             Text(ksu.mode.desc, fontSize = 9.sp, color = dim)
                         }
-                        if (ksu.detail.isNotBlank()) {
+                        if (ksu.mode == com.huijui.nova.device.KsuMode.NonGki4x) {
+                            Text("进入 ▸", fontSize = 9.sp, color = dim)
+                        } else if (ksu.detail.isNotBlank()) {
                             Text(ksu.detail, fontSize = 9.sp, color = dim, maxLines = 1)
                         }
                     }
