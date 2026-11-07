@@ -64,7 +64,7 @@ fun MiuixSuperuserScreen() {
     var entries by remember { mutableStateOf<List<Entry>>(emptyList()) }
     var loading by remember { mutableStateOf(true) }
     var note by remember { mutableStateOf("") }
-    var pendingRevoke by remember { mutableStateOf<Pair<Int, String>?>(null) }
+    var pendingRevoke by remember { mutableStateOf<Triple<Int, String, String>?>(null) }
     var pickerOpen by remember { mutableStateOf(false) }
     var allApps by remember { mutableStateOf<List<Triple<Int, String, String>>>(emptyList()) }
     var filter by remember { mutableStateOf("") }
@@ -252,7 +252,7 @@ fun MiuixSuperuserScreen() {
                 Spacer(Modifier.height(10.dp))
             }
 
-            pendingRevoke?.let { (uid, label) ->
+            pendingRevoke?.let { (uid, pkg, label) ->
                 GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
                     Text("撤销 $label 的授权？", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
                     Spacer(Modifier.height(4.dp))
@@ -282,8 +282,10 @@ fun MiuixSuperuserScreen() {
                                     pendingRevoke = null
                                     MainScope().launch {
                                         HideBundle.run(
-                                            "cp /data/adb/ksu/.allowlist /data/adb/ksu/.allowlist.bak 2>/dev/null; " +
-                                                "sed -i '/\\b$u\\b/d' /data/adb/ksu/.allowlist",
+                                            // 优先走 ksud 的 ioctl 撤销；失败再退回改授权表
+                                            "ksud profile revoke '$pkg' $u 2>/dev/null || " +
+                                                "(cp /data/adb/ksu/.allowlist /data/adb/ksu/.allowlist.bak 2>/dev/null; " +
+                                                "sed -i '/\\b$u\\b/d' /data/adb/ksu/.allowlist)",
                                         )
                                         load()
                                     }

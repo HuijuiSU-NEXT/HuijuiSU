@@ -521,3 +521,29 @@ pub fn umount_list_list() -> anyhow::Result<Vec<MountInfo>> {
 
     Ok(list)
 }
+
+
+/// 撤销某 uid 的 root 授权。
+///
+/// 直接按 C 布局写字节：version@0、key@4、curr_uid@260、allow_su@264。
+/// 不引用 bindgen 生成的匿名 union 字段名，避免不同 bindgen 版本命名差异。
+pub fn revoke_app_profile(uid: i32, key: &str) -> Result<()> {
+    let size = std::mem::size_of::<uapi::app_profile>();
+    if size < 272 {
+        bail!("unexpected app_profile size: {size}");
+    }
+    let mut buf = vec![0u8; size];
+
+    buf[0..4].copy_from_slice(&uapi::KSU_APP_PROFILE_VER.to_ne_bytes());
+    let key_bytes = key.as_bytes();
+    let n = key_bytes.len().min(255);
+    buf[4..4 + n].copy_from_slice(&key_bytes[..n]);
+    buf[260..264].copy_from_slice(&uid.to_ne_bytes());
+    buf[264] = 0; // allow_su = false
+
+    ksuctl(
+        uapi::KSU_IOCTL_SET_APP_PROFILE_RUST,
+        buf.as_mut_ptr() as *mut u8,
+    )?;
+    Ok(())
+}

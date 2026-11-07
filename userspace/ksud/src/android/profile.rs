@@ -15,6 +15,13 @@ pub fn set_sepolicy(pkg: String, policy: String) -> Result<()> {
     Ok(())
 }
 
+/// 撤销某个应用的 root 授权（走内核 app_profile ioctl）。
+pub fn revoke(pkg: String, uid: i32) -> Result<()> {
+    crate::android::ksucalls::revoke_app_profile(uid, &pkg)?;
+    println!("revoked {pkg} (uid {uid})");
+    Ok(())
+}
+
 pub fn get_sepolicy(pkg: String) -> Result<()> {
     let policy_file = Path::new(defs::PROFILE_SELINUX_DIR).join(pkg);
     let policy = std::fs::read_to_string(policy_file)?;

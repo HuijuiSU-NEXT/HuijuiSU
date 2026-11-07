@@ -451,6 +451,14 @@ enum Profile {
         id: String,
     },
 
+    /// revoke root of <package-name> (writes app_profile via ioctl)
+    Revoke {
+        /// package name
+        package: String,
+        /// uid of the package
+        uid: i32,
+    },
+
     /// list all templates
     ListTemplates {
         /// print template names instead of ids
@@ -767,6 +775,7 @@ pub fn run() -> Result<()> {
             Profile::GetTemplate { id } => profile::get_template(id),
             Profile::SetTemplate { id, template } => profile::set_template(id, template),
             Profile::DeleteTemplate { id } => profile::delete_template(id),
+            Profile::Revoke { package, uid } => profile::revoke(package, uid),
             Profile::ListTemplates { name, locale } => {
                 profile::list_templates(name, locale.as_deref())
             }
