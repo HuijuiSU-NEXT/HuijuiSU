@@ -5,6 +5,10 @@ on:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-manager:
     uses: ./.github/workflows/build-manager.yml
@@ -13,6 +17,8 @@ jobs:
     needs:
       - build-manager
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Download Manager artifacts
         uses: actions/download-artifact@v8
