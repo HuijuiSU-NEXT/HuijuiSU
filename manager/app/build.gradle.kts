@@ -135,7 +135,7 @@ android {
         targetSdk = androidTargetSdkVersion
         versionCode = managerVersionCode
         // 版本名跟着 git tag 走（CI 里是 v6.1 这类），本地构建回退到 v6.1
-        versionName = System.getenv("GITHUB_REF_NAME")?.takeIf { it.startsWith("v") } ?: "v6.1"
+        versionName = System.getenv("GITHUB_REF_NAME")?.takeIf { it.startsWith("v") } ?: "v6.1.1"
         applicationId = managerPackageName
 
         val isPrBuild = rootProject.extra["isPrBuild"] as Boolean
