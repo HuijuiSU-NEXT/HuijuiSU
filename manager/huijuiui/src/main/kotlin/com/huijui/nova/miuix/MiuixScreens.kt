@@ -431,6 +431,7 @@ fun MiuixSettingsScreen(
     onPickMedia: () -> Unit = {},
     onClearMedia: () -> Unit = {},
     onClose: (() -> Unit)? = null,
+    onOpenLicenses: () -> Unit = {},
 ) {
     val accent = LocalHuiColors.current.accent
     val ink = novaInk()
@@ -534,7 +535,51 @@ fun MiuixSettingsScreen(
 
         SectionLabel("关于")
         LightCard {
-            RowItem(HuiIcons.Info, "HuiJuiSU Nova", "v6.0 · Compose 独立界面", "版本", accent) {}
+            val pkgInfo = runCatching {
+                context.packageManager.getPackageInfo(context.packageName, 0)
+            }.getOrNull()
+            val versionName = pkgInfo?.versionName ?: "?"
+            val versionCode = if (android.os.Build.VERSION.SDK_INT >= 28) {
+                pkgInfo?.longVersionCode ?: 0L
+            } else {
+                @Suppress("DEPRECATION") (pkgInfo?.versionCode ?: 0).toLong()
+            }
+            var updateState by remember { mutableStateOf("") }
+            RowItem(
+                HuiIcons.Info,
+                "HuiJuiSU Nova",
+                "$versionName ($versionCode) · Compose 独立界面",
+                "当前",
+                accent,
+            ) {}
+            RowItem(
+                HuiIcons.Download,
+                "检查更新",
+                if (updateState.isBlank()) "从 GitHub Releases 获取最新版本" else updateState,
+                "检查",
+                accent,
+            ) {
+                if (updateState.isBlank()) {
+                    updateState = "检查中…"
+                    kotlinx.coroutines.MainScope().launch {
+                        updateState = runCatching {
+                            val conn = java.net.URL(
+                                "https://api.github.com/repos/HuijuiSU-NEXT/HuijuiSU/releases/latest",
+                            ).openConnection() as java.net.HttpURLConnection
+                            conn.connectTimeout = 8000
+                            conn.readTimeout = 8000
+                            conn.setRequestProperty("User-Agent", "HuiJuiSU")
+                            val body = conn.inputStream.bufferedReader().readText()
+                            val tag = Regex(""""tag_name"\s*:\s*"([^"]+)"""").find(body)?.groupValues?.get(1)
+                            when {
+                                tag == null -> "获取失败"
+                                tag == versionName -> "已是最新（$tag）"
+                                else -> "有新版本 $tag"
+                            }
+                        }.getOrElse { "网络不可用" }
+                    }
+                }
+            }
             RowItem(
                 HuiIcons.Rocket,
                 "GitHub 源码",
@@ -545,10 +590,10 @@ fun MiuixSettingsScreen(
             RowItem(
                 HuiIcons.Shield,
                 "开源许可",
-                "GPL-3.0 · 内核与管理器同源",
+                "GPL-3.0 · 组件清单",
                 "查看",
                 accent,
-            ) { openUrl(context, "https://github.com/HuijuiSU/HuiJuiSU/blob/main/LICENSE") }
+            ) { onOpenLicenses() }
             RowItem(
                 HuiIcons.SoundOn,
                 "Telegram 频道",

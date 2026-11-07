@@ -96,6 +96,7 @@ enum class NovaOverlay(val title: String) {
     Detect("春秋检测"),
     Hide("一键隐藏"),
     Legacy4x("4.x 兼容模式"),
+    Licenses("开源许可"),
     Lab("实验"),
 }
 
@@ -214,6 +215,7 @@ fun NovaApp(
                             onPickMedia = onPickMedia,
                             onClearMedia = onClearMedia,
                             onClose = onClose,
+                            onOpenLicenses = { overlay = NovaOverlay.Licenses },
                         )
                     }
                 }
@@ -270,6 +272,9 @@ fun NovaApp(
                     NovaOverlay.Legacy4x -> com.huijui.nova.miuix.MiuixLegacy4xScreen(
                         onBack = { overlay = null },
                         onOpenPatch = { overlay = NovaOverlay.Flash },
+                    )
+                    NovaOverlay.Licenses -> com.huijui.nova.miuix.MiuixLicensesScreen(
+                        onBack = { overlay = null },
                     )
                     NovaOverlay.Lab -> com.huijui.nova.miuix.MiuixLabScreen(
                         theme = theme,
