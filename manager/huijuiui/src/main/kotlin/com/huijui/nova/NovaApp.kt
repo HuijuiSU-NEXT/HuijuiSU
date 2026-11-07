@@ -80,6 +80,12 @@ import com.huijui.nova.motion.HuiEase
 import com.huijui.nova.motion.huiPress
 import com.huijui.nova.wallpaper.HuiMediaSpec
 import com.huijui.nova.wallpaper.HuiWallpaper
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.ui.input.pointer.pointerInput
+import kotlin.math.roundToInt
 
 enum class NovaTab(private val zh: String, val icon: HuiGlyph) {
     Home("首页", HuiIcons.Home),
@@ -372,6 +378,9 @@ fun NovaDock(
     val haptic = LocalHapticFeedback.current
 
     var rowWidth by remember { mutableStateOf(0) }
+    // 拖动时用 dragFraction 覆盖指示器位置，松手后回到吸附动画
+    var dragFraction by remember { mutableStateOf<Float?>(null) }
+    var dragPx by remember { mutableStateOf(0f) }
     val tabCount = NovaTab.entries.size
     val position by animateFloatAsState(
         targetValue = selected.toFloat(),
@@ -411,12 +420,39 @@ fun NovaDock(
             Modifier
                 .fillMaxWidth()
                 .onSizeChanged { rowWidth = it.width }
+                .draggable(
+                    orientation = Orientation.Horizontal,
+                    state = rememberDraggableState { delta ->
+                        if (rowWidth > 0) {
+                            dragPx = (dragPx + delta).coerceIn(0f, rowWidth.toFloat())
+                            dragFraction = (dragPx / rowWidth * tabCount)
+                                .coerceIn(0f, (tabCount - 1).toFloat())
+                        }
+                    },
+                    onDragStarted = { offset ->
+                        dragPx = offset.x
+                        dragFraction = if (rowWidth > 0) {
+                            (offset.x / rowWidth * tabCount).coerceIn(0f, (tabCount - 1).toFloat())
+                        } else null
+                    },
+                    onDragStopped = {
+                        dragFraction?.let { f ->
+                            val target = f.roundToInt().coerceIn(0, tabCount - 1)
+                            if (target != selected) {
+                                haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
+                                onSelect(target)
+                            }
+                        }
+                        dragFraction = null
+                    },
+                )
                 .drawBehind {
-                    // 指示器只在绘制阶段运行：读 position，不触发重组
+                    // 指示器只在绘制阶段运行：读 position / dragFraction，不触发重组
                     if (rowWidth <= 0 || tabCount == 0) return@drawBehind
                     val itemWidth = rowWidth.toFloat() / tabCount
                     val inset = 5.dp.toPx()
-                    val left = position * itemWidth + inset
+                    val shown = dragFraction ?: position
+                    val left = shown * itemWidth + inset
                     val top = inset
                     val width = itemWidth - inset * 2
                     val height = size.height - inset * 2
@@ -431,8 +467,35 @@ fun NovaDock(
                         size = Size(width, height),
                         cornerRadius = CornerRadius(height / 2f),
                     )
+                    // 液态玻璃：先在指示器外圈铺一层柔光，再压一条顶部高光
                     drawRoundRect(
-                        color = colors.accent.copy(alpha = 0.35f),
+                        brush = Brush.radialGradient(
+                            colors = listOf(
+                                colors.accent.copy(alpha = 0.35f),
+                                Color.Transparent,
+                            ),
+                            center = Offset(left + width / 2f, top + height / 2f),
+                            radius = width * 0.9f,
+                        ),
+                        topLeft = Offset(left - width * 0.2f, top - height * 0.6f),
+                        size = Size(width * 1.4f, height * 2.2f),
+                        cornerRadius = CornerRadius(height),
+                    )
+                    drawRoundRect(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.White.copy(alpha = if (wallpaper) 0.45f else 0.75f),
+                                Color.White.copy(alpha = 0.05f),
+                            ),
+                            startY = top,
+                            endY = top + height,
+                        ),
+                        topLeft = Offset(left, top),
+                        size = Size(width, height * 0.5f),
+                        cornerRadius = CornerRadius(height / 2f),
+                    )
+                    drawRoundRect(
+                        color = colors.accent.copy(alpha = 0.42f),
                         topLeft = Offset(left, top),
                         size = Size(width, height),
                         cornerRadius = CornerRadius(height / 2f),
