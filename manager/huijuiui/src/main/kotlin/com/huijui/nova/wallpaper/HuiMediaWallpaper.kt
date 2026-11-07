@@ -163,14 +163,29 @@ fun HuiVideoWallpaper(
     }
 
     Box(modifier) {
+        // 等比铺满（cover），不拉伸变形；由 TextureView 的 Matrix 完成
         AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-                .graphicsLayer { scaleX = 1.26f; scaleY = 1.26f },
+            modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
                 // 用 TextureView 而不是 VideoView(SurfaceView)：
                 // SurfaceView 是独立图层，会导致点击穿透失败、按压时闪黑块、叠在上面的卡片发灰。
                 android.view.TextureView(ctx).apply {
+                    var videoW = 0
+                    var videoH = 0
+                    fun applyCover(tv: android.view.TextureView) {
+                        if (videoW <= 0 || videoH <= 0 || tv.width == 0 || tv.height == 0) return
+                        val scale = maxOf(
+                            tv.width.toFloat() / videoW,
+                            tv.height.toFloat() / videoH,
+                        )
+                        val m = android.graphics.Matrix()
+                        m.setScale(scale, scale, tv.width / 2f, tv.height / 2f)
+                        tv.setTransform(m)
+                    }
+                    addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
+                        (v as? android.view.TextureView)?.let { applyCover(it) }
+                    }
+
                     surfaceTextureListener = object : android.view.TextureView.SurfaceTextureListener {
                         override fun onSurfaceTextureAvailable(
                             st: android.graphics.SurfaceTexture,
@@ -183,7 +198,12 @@ fun HuiVideoWallpaper(
                                 mp.setSurface(android.view.Surface(st))
                                 mp.isLooping = true
                                 mp.setVolume(0f, 0f)
-                                mp.setOnPreparedListener { it.start() }
+                                mp.setOnPreparedListener {
+                                    videoW = it.videoWidth
+                                    videoH = it.videoHeight
+                                    applyCover(this@apply)
+                                    it.start()
+                                }
                                 mp.prepareAsync()
                                 player = mp
                             }

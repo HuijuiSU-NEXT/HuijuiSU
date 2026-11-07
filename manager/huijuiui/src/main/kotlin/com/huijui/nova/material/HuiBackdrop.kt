@@ -52,7 +52,7 @@ fun HuiBackdropHost(
         // 视频交给系统壁纸层（NovaWallpaperService）：满屏、且不在应用进程里解码，
         // 不会和 Compose 抢 CPU。窗口内再放一个 VideoView 会导致滑动掉帧甚至 ANR。
         if (isVideo && media != null) {
-            HuiVideoWallpaper(media.previewUri ?: media.uri, Modifier.fillMaxSize())
+            HuiVideoWallpaper(media.uri, Modifier.fillMaxSize())
         }
 
         Box(
