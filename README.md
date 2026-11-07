@@ -29,19 +29,19 @@ HuiJuiSU 是 **KernelSU 的一个分支**，包含完整的内核模块（LKM）
 
 | 首页（背景动图 + 柔光玻璃） | 简约整洁模式 |
 |---|---|
-| ![首页](docs/images/home.png) | ![简约](docs/images/home-minimal.png) |
+| ![首页](docs/images/home.jpg) | ![简约](docs/images/home-minimal.jpg) |
 
 | 工具页 | 设置 |
 |---|---|
-| ![工具](docs/images/tools.png) | ![设置](docs/images/settings.png) |
+| ![工具](docs/images/tools.jpg) | ![设置](docs/images/settings.jpg) |
 
 | 春秋检测 | 一键隐藏套件 |
 |---|---|
-| ![检测](docs/images/detect.png) | ![隐藏](docs/images/hide-bundle.png) |
+| ![检测](docs/images/detect.jpg) | ![隐藏](docs/images/hide-bundle.jpg) |
 
 | 刷写中心 | 终端 |
 |---|---|
-| ![刷写](docs/images/flash.png) | ![终端](docs/images/terminal.png) |
+| ![刷写](docs/images/flash.jpg) | ![终端](docs/images/terminal.jpg) |
 
 ## 核心特性
 
