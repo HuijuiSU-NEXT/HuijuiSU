@@ -1,0 +1,35 @@
+name: Notify Telegram
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要推送的 tag"
+        required: false
+        default: "v6.0"
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Post to channel
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ vars.CHAT_ID || '@Huijui123' }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$BOT_TOKEN" ]; then
+            echo "::error::缺少仓库 secret BOT_TOKEN（@BotFather 申请），无法推送到 Telegram"
+            exit 1
+          fi
+          TEXT=$(printf 'HuiJuiSU %s\n\n下载：https://github.com/%s/releases/tag/%s\nTG：https://t.me/Huijui123\nQQ 群：763278354' "$TAG" "$REPO" "$TAG")
+          code=$(curl -sS -o tg.json -w '%{http_code}' -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" -d "chat_id=${CHAT_ID}" --data-urlencode "text=${TEXT}" -d "parse_mode=HTML")
+          echo "http=$code"
+          head -c 300 tg.json
+          [ "$code" = "200" ]
