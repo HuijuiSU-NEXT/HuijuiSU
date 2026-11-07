@@ -58,9 +58,14 @@ fun GlassCard(
 
     // 壁纸模式：深色玻璃（黑底 + 顶部高光），比白色磨砂更通透也更清晰
     val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper || LocalNovaDark.current
-    val topColor = if (wallpaper) Color.White.copy(alpha = 0.26f) else Color.White.copy(alpha = (base + 0.10f).coerceAtMost(1f))
-    val midColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.24f) else Color.White.copy(alpha = base)
-    val botColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.32f) else Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f))
+    // 壁纸模式下，深/浅色通过「黑的浓度」体现：深色更厚，浅色更薄更亮
+    val darkTint = if (dark) 0.30f else 0.18f
+    val topColor = if (wallpaper) Color.White.copy(alpha = if (dark) 0.24f else 0.34f)
+                   else Color.White.copy(alpha = (base + 0.10f).coerceAtMost(1f))
+    val midColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = darkTint)
+                   else Color.White.copy(alpha = base)
+    val botColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = darkTint + 0.10f)
+                   else Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f))
 
     // 按压反馈：轻微缩小 + 弹回，塑料感/无反馈都避免
     val pressed by interaction.collectIsPressedAsState()

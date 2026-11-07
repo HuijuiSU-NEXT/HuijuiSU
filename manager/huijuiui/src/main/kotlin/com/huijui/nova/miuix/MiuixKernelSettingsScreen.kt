@@ -143,6 +143,17 @@ fun MiuixKernelSettingsScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(12.dp))
 
+            // ksud 不可用时，开关点了也没用，直接说明
+            val hasKsud = remember(loading) {
+                !loading && features.any { states[it.id] != null && states[it.id] != "不可用" }
+            }
+            if (!loading && !hasKsud) {
+                GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
+                    Text("ksud 不可用：这 5 个开关依赖内核接口，没有 ksud 或没有 root 时切换不会生效。", fontSize = 10.sp, color = dim, lineHeight = 15.sp)
+                }
+                Spacer(Modifier.height(10.dp))
+            }
+
             if (note.isNotBlank()) {
                 GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
                     Text(note, fontSize = 11.sp, color = dim)
