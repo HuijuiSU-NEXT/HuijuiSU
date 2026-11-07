@@ -49,7 +49,11 @@ import com.huijui.nova.ui.lightColorScheme
  */
 @Composable
 fun MiuixModulesScreen(
-    onOpenRepo: () -> Unit = {},onBack: () -> Unit = {}, embedded: Boolean = false) {
+    onOpenRepo: () -> Unit = {},
+    onOpenWebUi: (String) -> Unit = {},
+    onBack: () -> Unit = {},
+    embedded: Boolean = false,
+) {
     val accent = LocalHuiColors.current.accent
     val ink = com.huijui.nova.design.novaInk()
     val dim = com.huijui.nova.design.novaDim()
@@ -210,6 +214,18 @@ fun MiuixModulesScreen(
                             Spacer(Modifier.height(8.dp))
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                            if (module.hasWebUi) {
+                                Box(
+                                    Modifier
+                                        .clip(RoundedCornerShape(50))
+                                        .background(accent.copy(alpha = 0.16f))
+                                        .clickable { onOpenWebUi(module.id) }
+                                        .padding(horizontal = 12.dp, vertical = 6.dp),
+                                ) {
+                                    Text("打开 WebUI", fontSize = 10.sp, color = accent)
+                                }
+                            }
+
                             Box(
                                 Modifier
                                     .clip(RoundedCornerShape(50))

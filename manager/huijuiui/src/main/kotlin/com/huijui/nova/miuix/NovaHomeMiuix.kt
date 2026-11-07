@@ -87,6 +87,27 @@ fun NovaHomeMiuixScreen(
         ) {
             Spacer(Modifier.height(8.dp))
 
+            // root 不可用时先告诉用户原因，避免以为功能坏了
+            if (com.huijui.nova.device.RootCheck.state != com.huijui.nova.device.RootCheck.State.Unknown &&
+                com.huijui.nova.device.RootCheck.state != com.huijui.nova.device.RootCheck.State.Granted
+            ) {
+                GlassCard(
+                    modifier = Modifier.fillMaxWidth(),
+                    corner = 16.dp,
+                    padding = PaddingValues(14.dp),
+                    onClick = { onOpen(com.huijui.nova.NovaOverlay.Diagnose) },
+                ) {
+                    Text(
+                        com.huijui.nova.device.RootCheck.message,
+                        fontSize = 11.sp,
+                        color = dim,
+                        lineHeight = 16.sp,
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text("点这里查看诊断 ▸", fontSize = 10.sp, color = accent)
+                }
+            }
+
             // 时间
             Row(
                 Modifier.fillMaxWidth(),

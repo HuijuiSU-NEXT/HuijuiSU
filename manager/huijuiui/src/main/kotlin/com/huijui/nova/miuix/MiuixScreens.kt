@@ -174,6 +174,7 @@ fun MiuixToolsScreen(
     onOpenLegacy: () -> Unit = {},
     onOpenPatches: () -> Unit = {},
     onOpenHeal: () -> Unit = {},
+    onOpenDiagnose: () -> Unit = {},
     onOpenSusfs: () -> Unit = {},
 ) {
     val ink = novaInk()
@@ -240,6 +241,16 @@ fun MiuixToolsScreen(
             Spacer(Modifier.height(12.dp))
 
             SectionLabel(S("检查与修复"))
+            LightCard(onClick = onOpenDiagnose) {
+                RowItem(
+                    HuiIcons.Info,
+                    S("诊断"),
+                    S("root 状态 · ksud · 授权表 · 模块数，一键复制"),
+                    S("进入"),
+                    accent,
+                )
+            }
+            Spacer(Modifier.height(10.dp))
             LightCard(onClick = onOpenPatches) {
                 RowItem(
                     HuiIcons.Zap,

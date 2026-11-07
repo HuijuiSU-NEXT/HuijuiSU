@@ -18,6 +18,7 @@ object NovaModules {
         val description: String,
         val enabled: Boolean,
         val pendingUpdate: Boolean,
+        val hasWebUi: Boolean = false,
     )
 
     suspend fun list(): List<Module> {
@@ -29,6 +30,7 @@ object NovaModules {
               echo "##${'$'}id"
               if [ -f "${'$'}d/disable" ]; then echo "disable=1"; else echo "disable=0"; fi
               if [ -f "${'$'}d/update" ]; then echo "update=1"; else echo "update=0"; fi
+              if [ -d "${'$'}d/webroot" ]; then echo "webui=1"; fi
               if [ -f "${'$'}d/module.prop" ]; then
                 grep -E '^(name|version|author|description)=' "${'$'}d/module.prop" 2>/dev/null
               fi
@@ -51,6 +53,7 @@ object NovaModules {
         var desc = ""
         var dis = false
         var upd = false
+        var webui = false
 
         fun flush() {
             val cur = id ?: return
@@ -62,8 +65,9 @@ object NovaModules {
                 description = desc,
                 enabled = !dis,
                 pendingUpdate = upd,
+                hasWebUi = webui,
             )
-            id = null; name = ""; ver = ""; auth = ""; desc = ""; dis = false; upd = false
+            id = null; name = ""; ver = ""; auth = ""; desc = ""; dis = false; upd = false; webui = false
         }
 
         result.output.forEach { raw ->
@@ -79,6 +83,7 @@ object NovaModules {
                 line.startsWith("description=") -> desc = line.removePrefix("description=").trim()
                 line == "disable=1" -> dis = true
                 line == "update=1" -> upd = true
+                line == "webui=1" -> webui = true
             }
         }
         flush()

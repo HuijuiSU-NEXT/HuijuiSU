@@ -107,6 +107,7 @@ enum class NovaOverlay(val title: String) {
     Licenses("开源许可"),
     KernelSettings("内核设置"),
     Checkup("一键体检"),
+    Diagnose("诊断"),
     Heal("自愈中心"),
     Patches("补丁中心"),
     Susfs("SUSFS"),
@@ -140,9 +141,11 @@ fun NovaApp(
 ) {
     val i18nCtx = androidx.compose.ui.platform.LocalContext.current
     androidx.compose.runtime.LaunchedEffect(Unit) { com.huijui.nova.design.I18n.load(i18nCtx) }
+    androidx.compose.runtime.LaunchedEffect(Unit) { com.huijui.nova.device.RootCheck.check() }
     var tab by remember { mutableIntStateOf(0) }
     var subPageOpen by remember { mutableStateOf(false) }
     var overlay by remember { mutableStateOf<NovaOverlay?>(null) }
+    var webUiModule by remember { mutableStateOf<String?>(null) }
     val overlayStack = remember { androidx.compose.runtime.mutableStateListOf<NovaOverlay>() }
     // 打开子页：记住来路，返回时逐级回退（工具 → 补丁 → 工具 → 首页）
     val go: (NovaOverlay) -> Unit = { next ->
@@ -217,6 +220,7 @@ fun NovaApp(
                     when (NovaTab.entries[index]) {
                         NovaTab.Modules -> com.huijui.nova.miuix.MiuixModulesScreen(
                             onOpenRepo = { go(NovaOverlay.Repo) },
+                            onOpenWebUi = { webUiModule = it },
                             embedded = true,
                             onBack = {},
                         )
@@ -266,6 +270,15 @@ fun NovaApp(
         }
 
         // 全屏子页面：铺在壁纸之上（半透明浅色遮罩），主页面此时不渲染
+        webUiModule?.let { id ->
+            androidx.activity.compose.BackHandler { webUiModule = null }
+            com.huijui.nova.miuix.MiuixWebUiScreen(
+                moduleId = id,
+                onBack = { webUiModule = null },
+            )
+            return@CompositionLocalProvider
+        }
+
         // 系统返回键 / 手势：先关子页面，再回首页标签，最后才退出
         androidx.activity.compose.BackHandler(enabled = overlay != null) { back() }
         androidx.activity.compose.BackHandler(enabled = overlay == null && tab != 0) {
@@ -292,6 +305,7 @@ fun NovaApp(
                         onOpenLegacy = { go(NovaOverlay.Legacy4x) },
                         onOpenPatches = { go(NovaOverlay.Patches) },
                         onOpenHeal = { go(NovaOverlay.Heal) },
+                        onOpenDiagnose = { go(NovaOverlay.Diagnose) },
                         onOpenSusfs = { go(NovaOverlay.Susfs) },
                     )
                     NovaOverlay.Terminal -> com.huijui.nova.miuix.MiuixTerminalScreen(
@@ -323,6 +337,9 @@ fun NovaApp(
                         onBack = { back() },
                     )
                     NovaOverlay.Patches -> com.huijui.nova.miuix.MiuixPatchScreen(
+                        onBack = { back() },
+                    )
+                    NovaOverlay.Diagnose -> com.huijui.nova.miuix.MiuixDiagnoseScreen(
                         onBack = { back() },
                     )
                     NovaOverlay.Heal -> com.huijui.nova.miuix.MiuixHealScreen(
