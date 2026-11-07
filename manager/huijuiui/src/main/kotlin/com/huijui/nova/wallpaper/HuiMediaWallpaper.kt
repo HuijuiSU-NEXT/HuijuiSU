@@ -174,12 +174,15 @@ fun HuiVideoWallpaper(
                     var videoH = 0
                     fun applyCover(tv: android.view.TextureView) {
                         if (videoW <= 0 || videoH <= 0 || tv.width == 0 || tv.height == 0) return
-                        val scale = maxOf(
-                            tv.width.toFloat() / videoW,
-                            tv.height.toFloat() / videoH,
-                        )
+                        // TextureView 默认把画面非等比铺满 view，所以这里要「反向补偿」：
+                        // 先求出真实的 cover 比例，再换算成相对默认拉伸的修正系数。
+                        val vw = tv.width.toFloat()
+                        val vh = tv.height.toFloat()
+                        val scaleX = vw / videoW
+                        val scaleY = vh / videoH
+                        val cover = maxOf(scaleX, scaleY)
                         val m = android.graphics.Matrix()
-                        m.setScale(scale, scale, tv.width / 2f, tv.height / 2f)
+                        m.setScale(cover / scaleX, cover / scaleY, vw / 2f, vh / 2f)
                         tv.setTransform(m)
                     }
                     addOnLayoutChangeListener { v, _, _, _, _, _, _, _, _ ->
@@ -213,7 +216,9 @@ fun HuiVideoWallpaper(
                             st: android.graphics.SurfaceTexture,
                             width: Int,
                             height: Int,
-                        ) = Unit
+                        ) {
+                            applyCover(this@apply)
+                        }
 
                         override fun onSurfaceTextureDestroyed(st: android.graphics.SurfaceTexture): Boolean {
                             runCatching { player?.release() }

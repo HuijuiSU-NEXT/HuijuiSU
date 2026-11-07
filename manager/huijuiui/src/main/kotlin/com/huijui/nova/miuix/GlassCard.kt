@@ -9,10 +9,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -57,8 +62,20 @@ fun GlassCard(
     val midColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.24f) else Color.White.copy(alpha = base)
     val botColor = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.32f) else Color.White.copy(alpha = (base - 0.08f).coerceAtLeast(0.02f))
 
+    // 按压反馈：轻微缩小 + 弹回，塑料感/无反馈都避免
+    val pressed by interaction.collectIsPressedAsState()
+    val scale by animateFloatAsState(
+        targetValue = if (pressed) 0.975f else 1f,
+        animationSpec = spring(dampingRatio = 0.62f, stiffness = 700f),
+        label = "cardScale",
+    )
+
     Column(
         modifier
+            .graphicsLayer {
+                scaleX = scale
+                scaleY = scale
+            }
             .clip(shape)
             .background(Brush.verticalGradient(listOf(topColor, midColor, botColor)))
             .border(
