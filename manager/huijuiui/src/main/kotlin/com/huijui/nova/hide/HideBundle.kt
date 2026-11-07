@@ -19,6 +19,9 @@ import java.io.InputStreamReader
  */
 object HideBundle {
 
+    // KernelSU 对并发 su 调用会返回 EACCES，这里串行化并失败重试
+    private val rootMutex = kotlinx.coroutines.sync.Mutex()
+
     const val MODULE_ID = "hide_bundle"
     const val MODULE_DIR = "/data/adb/modules/$MODULE_ID"
     const val LOG_PATH = "/data/adb/hide_bundle.log"
@@ -103,6 +106,25 @@ object HideBundle {
         command: String,
         onLine: ((String) -> Unit)? = null,
     ): Result = withContext(Dispatchers.IO) {
+        rootMutex.lock()
+        try {
+            var last: Result? = null
+            repeat(2) { attempt ->
+                val r = runOnce(command, onLine)
+                if (r.ok || !r.output.any { it.contains("Permission denied") }) return@withContext r
+                last = r
+                kotlinx.coroutines.delay(200L * (attempt + 1))
+            }
+            last ?: Result(-1, emptyList())
+        } finally {
+            rootMutex.unlock()
+        }
+    }
+
+    private suspend fun runOnce(
+        command: String,
+        onLine: ((String) -> Unit)? = null,
+    ): Result = withContext(Dispatchers.IO) {
         runCatching {
             val process = ProcessBuilder("su", "-c", command)
                 .redirectErrorStream(true)
@@ -122,6 +144,35 @@ object HideBundle {
         }.getOrElse { error ->
             Result(-1, listOf("执行失败：${error.message}"))
         }
+    }
+
+    /**
+     * 执行多行脚本。
+     *
+     * 直接 `su -c "<多行>"` 在部分设备/内核上会执行失败，
+     * 这里把脚本 base64 编码后单行写盘再执行，稳定性最好。
+     */
+    suspend fun runScript(
+        script: String,
+        onLine: ((String) -> Unit)? = null,
+    ): Result {
+        val b64 = android.util.Base64.encodeToString(
+            script.toByteArray(),
+            android.util.Base64.NO_WRAP,
+        )
+        val cmd = "echo '$b64' | base64 -d > /data/local/tmp/nova_script.sh && " +
+            "sh /data/local/tmp/nova_script.sh; exit 0"
+        return run(cmd, onLine)
+    }
+
+    /** 读取二进制文件（如 allowlist），返回原始字节。 */
+    suspend fun runRaw(command: String): ByteArray = withContext(Dispatchers.IO) {
+        runCatching {
+            val process = ProcessBuilder("su", "-c", command).start()
+            val out = process.inputStream.readBytes()
+            process.waitFor()
+            out
+        }.getOrDefault(ByteArray(0))
     }
 
     /** 读取一个文件（用 su，因为路径在 /data/adb）。 */

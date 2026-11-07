@@ -18,7 +18,7 @@ object SelfHeal {
 
     /** 扫描模块之间互相覆盖的文件。 */
     suspend fun conflicts(): List<Conflict> {
-        val r = HideBundle.run(
+        val r = HideBundle.runScript(
             """
             for d in /data/adb/modules/*/; do
               id=${'$'}(basename "${'$'}d")
@@ -53,7 +53,7 @@ object SelfHeal {
 
     /** 清理包缓存与残留。 */
     suspend fun clearCaches(): List<String> {
-        val r = HideBundle.run(
+        val r = HideBundle.runScript(
             "rm -rf /data/local/tmp/* 2>/dev/null; " +
                 "rm -rf /data/adb/ksu/log/* 2>/dev/null; echo cleaned",
         )

@@ -170,7 +170,6 @@
     
         <activity
             android:name=".nova.NovaActivity"
-            android:process=":nova"
             android:exported="true"
             android:label="HuiJuiSU"
             android:icon="@mipmap/ic_launcher"

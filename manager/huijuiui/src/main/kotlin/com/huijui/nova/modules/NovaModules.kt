@@ -21,37 +21,69 @@ object NovaModules {
     )
 
     suspend fun list(): List<Module> {
+        // 不用特殊分隔符（不同 shell 对 \037 处理不一致）：
+        // 用 "##<id>" 分段，逐行解析 module.prop 的键值
         val script = """
             for d in /data/adb/modules/*/; do
               id=${'$'}(basename "${'$'}d")
-              prop="${'$'}d/module.prop"
-              [ -f "${'$'}prop" ] || continue
-              name=${'$'}(grep -m1 '^name=' "${'$'}prop" | cut -d= -f2-)
-              ver=${'$'}(grep -m1 '^version=' "${'$'}prop" | cut -d= -f2-)
-              auth=${'$'}(grep -m1 '^author=' "${'$'}prop" | cut -d= -f2-)
-              desc=${'$'}(grep -m1 '^description=' "${'$'}prop" | cut -d= -f2-)
-              dis=0; [ -f "${'$'}d/disable" ] && dis=1
-              upd=0; [ -f "${'$'}d/update" ] && upd=1
-              echo "${'$'}id|${'$'}name|${'$'}ver|${'$'}auth|${'$'}desc|${'$'}dis|${'$'}upd"
+              echo "##${'$'}id"
+              if [ -f "${'$'}d/disable" ]; then echo "disable=1"; else echo "disable=0"; fi
+              if [ -f "${'$'}d/update" ]; then echo "update=1"; else echo "update=0"; fi
+              if [ -f "${'$'}d/module.prop" ]; then
+                grep -E '^(name|version|author|description)=' "${'$'}d/module.prop" 2>/dev/null
+              fi
             done
+            exit 0
         """.trimIndent()
 
-        val result = HideBundle.run(script)
-        if (!result.ok) return emptyList()
+        val result = HideBundle.runScript(script)
+        android.util.Log.d(
+            "HuiJuiModules",
+            "ok=${result.ok} lines=${result.output.size} head=${result.output.take(3)}",
+        )
+        if (result.output.isEmpty()) return emptyList()
 
-        return result.output.mapNotNull { line ->
-            val parts = line.split("|")
-            if (parts.size < 7) return@mapNotNull null
-            Module(
-                id = parts[0],
-                name = parts[1].ifBlank { parts[0] },
-                version = parts[2],
-                author = parts[3],
-                description = parts[4],
-                enabled = parts[5] != "1",
-                pendingUpdate = parts[6] == "1",
+        val modules = mutableListOf<Module>()
+        var id: String? = null
+        var name = ""
+        var ver = ""
+        var auth = ""
+        var desc = ""
+        var dis = false
+        var upd = false
+
+        fun flush() {
+            val cur = id ?: return
+            modules += Module(
+                id = cur,
+                name = name.ifBlank { cur },
+                version = ver,
+                author = auth,
+                description = desc,
+                enabled = !dis,
+                pendingUpdate = upd,
             )
-        }.sortedBy { it.name.lowercase() }
+            id = null; name = ""; ver = ""; auth = ""; desc = ""; dis = false; upd = false
+        }
+
+        result.output.forEach { raw ->
+            val line = raw.trim()
+            when {
+                line.startsWith("##") -> {
+                    flush()
+                    id = line.removePrefix("##").trim()
+                }
+                line.startsWith("name=") -> name = line.removePrefix("name=").trim()
+                line.startsWith("version=") -> ver = line.removePrefix("version=").trim()
+                line.startsWith("author=") -> auth = line.removePrefix("author=").trim()
+                line.startsWith("description=") -> desc = line.removePrefix("description=").trim()
+                line == "disable=1" -> dis = true
+                line == "update=1" -> upd = true
+            }
+        }
+        flush()
+
+        return modules.sortedBy { it.name.lowercase() }
     }
 
     suspend fun setEnabled(id: String, enabled: Boolean): Boolean {

@@ -79,7 +79,7 @@ object Checkup {
         )
 
         // 2. 模块冲突
-        val modules = HideBundle.run(
+        val modules = HideBundle.runScript(
             """
             for d in /data/adb/modules/*/; do
               id=${'$'}(basename "${'$'}d")

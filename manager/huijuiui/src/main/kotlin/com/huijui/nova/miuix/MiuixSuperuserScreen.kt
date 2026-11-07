@@ -215,6 +215,66 @@ fun MiuixSuperuserScreen() {
 
             Spacer(Modifier.height(12.dp))
 
+            pendingRevoke?.let { (uid, pkg, label) ->
+                GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
+                    Text("撤销 $label 的授权？", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
+                    Spacer(Modifier.height(4.dp))
+                    Text(
+                        "会先备份 .allowlist 为 .allowlist.bak，再从表中删除 uid $uid，重启后生效。",
+                        fontSize = 10.sp,
+                        color = dim,
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                        Text(
+                            S("取消"),
+                            fontSize = 11.sp,
+                            color = dim,
+                            modifier = Modifier
+                                .clickable { pendingRevoke = null }
+                                .padding(6.dp),
+                        )
+                        Text(
+                            S("确认撤销"),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFFD9534F),
+                            modifier = Modifier
+                                .clickable {
+                                    val u = uid
+                                    pendingRevoke = null
+                                    MainScope().launch {
+                                        HideBundle.run(
+                                            // 优先走 ksud 的 ioctl 撤销；失败再退回改授权表
+                                            "ksud profile revoke '$pkg' $u 2>/dev/null || " +
+                                                "(cp /data/adb/ksu/.allowlist /data/adb/ksu/.allowlist.bak 2>/dev/null; " +
+                                                "sed -i '/\\b$u\\b/d' /data/adb/ksu/.allowlist)",
+                                        )
+                                        load()
+                                    }
+                                }
+                                .padding(6.dp),
+                        )
+                    }
+                }
+                Spacer(Modifier.height(10.dp))
+            }
+
+            if (entries.isEmpty()) {
+                GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(18.dp)) {
+                    Text(
+                        if (loading) "读取授权表…" else note.ifBlank { "没有授权记录" },
+                        fontSize = 12.sp,
+                        color = dim,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Text(
+                        "在应用第一次请求 root 时，这里会出现记录；也可以在下面的终端里用 ksud 管理。",
+                        fontSize = 10.sp,
+                        color = dim,
+                    )
+                }
+            } else {
             if (pickerOpen) {
                 GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(14.dp)) {
                     Text(S("选择应用授予 Root"), fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
@@ -315,66 +375,6 @@ fun MiuixSuperuserScreen() {
                 Spacer(Modifier.height(10.dp))
             }
 
-            pendingRevoke?.let { (uid, pkg, label) ->
-                GlassCard(Modifier.fillMaxWidth(), corner = 16.dp, padding = PaddingValues(14.dp)) {
-                    Text("撤销 $label 的授权？", fontSize = 13.sp, fontWeight = FontWeight.Medium, color = ink)
-                    Spacer(Modifier.height(4.dp))
-                    Text(
-                        "会先备份 .allowlist 为 .allowlist.bak，再从表中删除 uid $uid，重启后生效。",
-                        fontSize = 10.sp,
-                        color = dim,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                        Text(
-                            S("取消"),
-                            fontSize = 11.sp,
-                            color = dim,
-                            modifier = Modifier
-                                .clickable { pendingRevoke = null }
-                                .padding(6.dp),
-                        )
-                        Text(
-                            S("确认撤销"),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = Color(0xFFD9534F),
-                            modifier = Modifier
-                                .clickable {
-                                    val u = uid
-                                    pendingRevoke = null
-                                    MainScope().launch {
-                                        HideBundle.run(
-                                            // 优先走 ksud 的 ioctl 撤销；失败再退回改授权表
-                                            "ksud profile revoke '$pkg' $u 2>/dev/null || " +
-                                                "(cp /data/adb/ksu/.allowlist /data/adb/ksu/.allowlist.bak 2>/dev/null; " +
-                                                "sed -i '/\\b$u\\b/d' /data/adb/ksu/.allowlist)",
-                                        )
-                                        load()
-                                    }
-                                }
-                                .padding(6.dp),
-                        )
-                    }
-                }
-                Spacer(Modifier.height(10.dp))
-            }
-
-            if (entries.isEmpty()) {
-                GlassCard(Modifier.fillMaxWidth(), corner = 18.dp, padding = PaddingValues(18.dp)) {
-                    Text(
-                        if (loading) "读取授权表…" else note.ifBlank { "没有授权记录" },
-                        fontSize = 12.sp,
-                        color = dim,
-                    )
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        "在应用第一次请求 root 时，这里会出现记录；也可以在下面的终端里用 ksud 管理。",
-                        fontSize = 10.sp,
-                        color = dim,
-                    )
-                }
-            } else {
                 entries.forEach { e ->
                     GlassCard(
                         modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
