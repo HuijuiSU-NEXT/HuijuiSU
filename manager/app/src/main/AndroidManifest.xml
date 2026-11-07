@@ -45,10 +45,6 @@
             android:autoRemoveFromRecents="true"
             android:theme="@style/Theme.KernelSU.Starting">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -175,22 +171,17 @@
         <activity
             android:name=".nova.NovaActivity"
             android:process=":nova"
-            android:exported="false"
-            android:label="HuiJuiSU Nova"
+            android:exported="true"
+            android:label="HuiJuiSU"
+            android:icon="@mipmap/ic_launcher"
             android:launchMode="singleTop"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
-            android:theme="@style/Theme.KernelSU" />
-        <activity-alias
-            android:name=".nova.NovaLauncher"
-            android:targetActivity=".nova.NovaActivity"
-            android:exported="true"
-            android:label="HuiJuiSU Nova"
-            android:icon="@mipmap/ic_launcher">
+            android:theme="@style/Theme.KernelSU">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity-alias>
+        </activity>
 
         <service
             android:name=".nova.wallpaper.NovaWallpaperService"

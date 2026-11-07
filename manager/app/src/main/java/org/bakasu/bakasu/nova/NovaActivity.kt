@@ -203,7 +203,18 @@ class NovaActivity : ComponentActivity() {
                             media = null
                             NovaWallpaperStore.clearMedia(context)
                         },
-                        onClose = { finish() },
+                        onClose = {
+                            // Nova 是唯一入口，关闭后回到经典管理器
+                            runCatching {
+                                startActivity(
+                                    android.content.Intent(
+                                        this@NovaActivity,
+                                        org.bakasu.bakasu.ui.MainActivity::class.java,
+                                    ),
+                                )
+                            }
+                            finish()
+                        },
                     )
                 }
             }
