@@ -97,6 +97,7 @@ enum class NovaOverlay(val title: String) {
     Hide("一键隐藏"),
     Legacy4x("4.x 兼容模式"),
     Licenses("开源许可"),
+    KernelSettings("内核设置"),
     Lab("实验"),
 }
 
@@ -216,6 +217,7 @@ fun NovaApp(
                             onClearMedia = onClearMedia,
                             onClose = onClose,
                             onOpenLicenses = { overlay = NovaOverlay.Licenses },
+                            onOpenKernelSettings = { overlay = NovaOverlay.KernelSettings },
                         )
                     }
                 }
@@ -274,6 +276,9 @@ fun NovaApp(
                         onOpenPatch = { overlay = NovaOverlay.Flash },
                     )
                     NovaOverlay.Licenses -> com.huijui.nova.miuix.MiuixLicensesScreen(
+                        onBack = { overlay = null },
+                    )
+                    NovaOverlay.KernelSettings -> com.huijui.nova.miuix.MiuixKernelSettingsScreen(
                         onBack = { overlay = null },
                     )
                     NovaOverlay.Lab -> com.huijui.nova.miuix.MiuixLabScreen(

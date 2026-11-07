@@ -432,6 +432,7 @@ fun MiuixSettingsScreen(
     onClearMedia: () -> Unit = {},
     onClose: (() -> Unit)? = null,
     onOpenLicenses: () -> Unit = {},
+    onOpenKernelSettings: () -> Unit = {},
 ) {
     val accent = LocalHuiColors.current.accent
     val ink = novaInk()
@@ -516,6 +517,18 @@ fun MiuixSettingsScreen(
                     }
                 }
             }
+        }
+        Spacer(Modifier.height(12.dp))
+
+        SectionLabel("内核")
+        LightCard(onClick = onOpenKernelSettings) {
+            RowItem(
+                HuiIcons.Cpu,
+                "内核设置",
+                "su 兼容 · umount · sulog · adb root · SELinux 隐藏",
+                "进入",
+                accent,
+            )
         }
         Spacer(Modifier.height(12.dp))
 
