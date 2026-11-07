@@ -14,8 +14,20 @@ import java.net.URL
  */
 object ModuleRepo {
 
-    private const val RAW = "https://raw.githubusercontent.com/HuijuiSU-NEXT/Huijui_Module_Repo/main/modules.json"
-    private const val API = "https://api.github.com/repos/HuijuiSU-NEXT/Huijui_Module_Repo/contents/modules.json"
+    private const val REPO = "HuijuiSU-NEXT/Huijui_Module_Repo"
+    private const val BRANCH = "main"
+    private const val FILE = "modules.json"
+
+    /** 依次尝试；前面的挂了就换下一条。国内网络通常 jsDelivr / ghproxy 更通。 */
+    val mirrors: List<Pair<String, String>> = listOf(
+        "GitHub" to "https://raw.githubusercontent.com/$REPO/$BRANCH/$FILE",
+        "GitHub API" to "https://api.github.com/repos/$REPO/contents/$FILE",
+        "jsDelivr" to "https://cdn.jsdelivr.net/gh/$REPO@$BRANCH/$FILE",
+        "ghproxy" to "https://ghproxy.net/https://raw.githubusercontent.com/$REPO/$BRANCH/$FILE",
+        "gh-proxy" to "https://gh-proxy.com/https://raw.githubusercontent.com/$REPO/$BRANCH/$FILE",
+        "gitmirror" to "https://raw.gitmirror.com/$REPO/$BRANCH/$FILE",
+        "ghproxy.cn" to "https://ghproxy.cn/https://raw.githubusercontent.com/$REPO/$BRANCH/$FILE",
+    )
 
     data class Mod(
         val id: String,
@@ -29,20 +41,38 @@ object ModuleRepo {
         val updatedAt: String,
     )
 
-    private fun download(): String {
-        runCatching { fetch(RAW, raw = true) }.getOrNull()?.let { return it }
-        return fetch(API, raw = true)
-    }
+    /** 上一次成功用的镜像名，界面上显示出来方便排查。 */
+    @Volatile
+    var lastMirror: String = ""
+        private set
 
-    private fun fetch(url: String, raw: Boolean): String {
+    private fun fetch(url: String): String {
         val conn = URL(url).openConnection() as HttpURLConnection
-        conn.connectTimeout = 15000
-        conn.readTimeout = 30000
+        conn.connectTimeout = 8000
+        conn.readTimeout = 20000
+        conn.instanceFollowRedirects = true
         conn.setRequestProperty("User-Agent", "HuiJuiSU")
         if (url.contains("api.github.com")) {
             conn.setRequestProperty("Accept", "application/vnd.github.raw")
         }
         return conn.inputStream.bufferedReader().use { it.readText() }
+    }
+
+    /** 逐条试镜像，返回第一条能解析成功的内容。 */
+    private fun download(): String {
+        val errors = StringBuilder()
+        for ((name, url) in mirrors) {
+            val text = runCatching { fetch(url) }.getOrElse { e ->
+                errors.append(name).append(": ").append(e.message ?: "fail").append('\n')
+                null
+            } ?: continue
+            if (text.trimStart().startsWith("[")) {
+                lastMirror = name
+                return text
+            }
+            errors.append(name).append(": 返回内容不是数组\n")
+        }
+        throw IllegalStateException("所有镜像都失败：\n$errors")
     }
 
     /** 拉取并解析，按星标与更新时间排序，最多返回 [limit] 条。 */

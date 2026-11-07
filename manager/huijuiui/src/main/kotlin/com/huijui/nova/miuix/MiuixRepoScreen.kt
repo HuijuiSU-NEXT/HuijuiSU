@@ -72,7 +72,7 @@ fun MiuixRepoScreen(onBack: () -> Unit) {
             kotlinx.coroutines.delay(25_000)
             if (loading) {
                 loading = false
-                error = "网络超时：拉不到仓库索引（检查设备联网）"
+                error = "网络超时：所有镜像都不可达（检查设备联网）"
             }
         }
         withContext(Dispatchers.IO) {
@@ -132,7 +132,7 @@ fun MiuixRepoScreen(onBack: () -> Unit) {
                         when {
                             loading -> "拉取索引中…"
                             error.isNotBlank() -> error
-                            else -> "${all.size} 个模块 · 来自 Huijui_Module_Repo"
+                            else -> "${all.size} 个模块 · ${ModuleRepo.lastMirror.ifBlank { "本地" }}"
                         },
                         fontSize = 11.sp,
                         color = dim,
