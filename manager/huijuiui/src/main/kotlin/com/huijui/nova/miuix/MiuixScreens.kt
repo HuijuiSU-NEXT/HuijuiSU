@@ -173,6 +173,7 @@ fun MiuixToolsScreen(
     onBack: (() -> Unit)? = null,
     onOpenLegacy: () -> Unit = {},
     onOpenPatches: () -> Unit = {},
+    onOpenHeal: () -> Unit = {},
     onOpenSusfs: () -> Unit = {},
 ) {
     val ink = novaInk()

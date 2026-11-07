@@ -101,6 +101,7 @@ enum class NovaOverlay(val title: String) {
     Licenses("开源许可"),
     KernelSettings("内核设置"),
     Checkup("一键体检"),
+    Heal("自愈中心"),
     Patches("补丁中心"),
     Susfs("SUSFS"),
     Repo("在线模块"),
@@ -277,6 +278,7 @@ fun NovaApp(
                         onBack = { back() },
                         onOpenLegacy = { go(NovaOverlay.Legacy4x) },
                         onOpenPatches = { go(NovaOverlay.Patches) },
+                        onOpenHeal = { go(NovaOverlay.Heal) },
                         onOpenSusfs = { go(NovaOverlay.Susfs) },
                     )
                     NovaOverlay.Terminal -> com.huijui.nova.miuix.MiuixTerminalScreen(
@@ -310,6 +312,9 @@ fun NovaApp(
                     NovaOverlay.Patches -> com.huijui.nova.miuix.MiuixPatchScreen(
                         onBack = { back() },
                     )
+                    NovaOverlay.Heal -> com.huijui.nova.miuix.MiuixHealScreen(
+                        onBack = { back() },
+                    )
                     NovaOverlay.Checkup -> com.huijui.nova.miuix.MiuixCheckupScreen(
                         onBack = { back() },
                         onOpen = { key ->
@@ -318,6 +323,7 @@ fun NovaApp(
                                 "detect" -> NovaOverlay.Detect
                                 "flash" -> NovaOverlay.Flash
                                 "patches" -> NovaOverlay.Patches
+                                "heal" -> NovaOverlay.Heal
                                 "modules" -> NovaOverlay.Tools
                                 else -> null
                             }

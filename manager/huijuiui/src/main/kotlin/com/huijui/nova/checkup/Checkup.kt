@@ -105,8 +105,8 @@ object Checkup {
                     "模块文件冲突（${byPath.size} 处）",
                     "$sample —— 后加载的会盖掉前一个，可能开不了机",
                     Level.Bad,
-                    "看模块",
-                    "modules",
+                    "去自愈",
+                    "heal",
                 ),
             )
         } else {
