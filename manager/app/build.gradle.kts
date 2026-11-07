@@ -235,11 +235,6 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     // Nova 用到的 Miuix 核心组件（huijuiui 里是 compileOnly，运行时由 app 提供）
-    implementation("top.yukonga.miuix.kmp:miuix-ui-android:0.9.4")
-    implementation("top.yukonga.miuix.kmp:miuix-icons-android:0.9.4")
-    implementation("top.yukonga.miuix.kmp:miuix-squircle-android:0.9.4")
-    implementation(libs.miuix.blur)
-    implementation(libs.miuix.nav)
 
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
