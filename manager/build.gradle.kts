@@ -44,8 +44,13 @@ extra["androidCompileNdkVersion"] = libs.versions.ndk.get()
 extra["androidSourceCompatibility"] = JavaVersion.VERSION_21
 extra["androidTargetCompatibility"] = JavaVersion.VERSION_21
 extra["managerVersionCode"] = 30000 + getGitCommitCount() + 700
-// 版本名跟着 tag 走：CI 用 GITHUB_REF_NAME，本地回退 v6.1
-extra["managerVersionName"] = System.getenv("GITHUB_REF_NAME")?.takeIf { it.startsWith("v") } ?: "v6.1.1"
+// 版本名直接取当前 commit 最近的 tag（本地/CI 都准）
+// 版本名直接取最近 tag；用 providers.exec 兼容 configuration cache
+val gitTag: String = providers.exec {
+    commandLine("git", "describe", "--tags", "--abbrev=0")
+}.standardOutput.asText.get().trim().takeIf { it.startsWith("v") } ?: "v6.1.1"
+
+extra["managerVersionName"] = gitTag
 extra["isPrBuild"] = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
 extra["defaultManagerPackageName"] = "com.huijui.sunext"
 extra["managerPackageName"] = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: extra["defaultManagerPackageName"]
