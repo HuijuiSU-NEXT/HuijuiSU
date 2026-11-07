@@ -60,6 +60,13 @@ fun NovaHomeMiuixScreen(
     androidx.compose.runtime.LaunchedEffect(Unit) {
         ksu = com.huijui.nova.device.KsuModeDetector.detect()
     }
+    val ctx = androidx.compose.ui.platform.LocalContext.current
+    val batteryPercent = androidx.compose.runtime.remember {
+        runCatching {
+            val bm = ctx.getSystemService(android.content.Context.BATTERY_SERVICE) as android.os.BatteryManager
+            bm.getIntProperty(android.os.BatteryManager.BATTERY_PROPERTY_CAPACITY)
+        }.getOrDefault(-1)
+    }
     val ink = novaInk()
     val dim = novaDim()
     val accent = LocalHuiColors.current.accent
@@ -152,7 +159,12 @@ fun NovaHomeMiuixScreen(
                                 color = dim,
                             )
                         }
-                        Text("86%", fontSize = 26.sp, fontWeight = FontWeight.Light, color = ink)
+                        Text(
+                            if (batteryPercent in 0..100) "$batteryPercent%" else "--",
+                            fontSize = 26.sp,
+                            fontWeight = FontWeight.Light,
+                            color = ink,
+                        )
                     }
 
                     Spacer(Modifier.height(16.dp))

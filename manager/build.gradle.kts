@@ -48,7 +48,7 @@ extra["managerVersionCode"] = 30000 + getGitCommitCount() + 700
 // 版本名直接取最近 tag；用 providers.exec 兼容 configuration cache
 val gitTag: String = providers.exec {
     commandLine("git", "describe", "--tags", "--abbrev=0")
-}.standardOutput.asText.get().trim().takeIf { it.startsWith("v") } ?: "v6.1.1"
+}.standardOutput.asText.get().trim().takeIf { it.startsWith("v") } ?: "v6.1.2"
 
 extra["managerVersionName"] = gitTag
 extra["isPrBuild"] = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false

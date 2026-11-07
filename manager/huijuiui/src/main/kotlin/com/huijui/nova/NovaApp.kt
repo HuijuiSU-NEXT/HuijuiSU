@@ -429,11 +429,12 @@ fun NovaDock(
                                 .coerceIn(0f, (tabCount - 1).toFloat())
                         }
                     },
-                    onDragStarted = { offset ->
-                        dragPx = offset.x
-                        dragFraction = if (rowWidth > 0) {
-                            (offset.x / rowWidth * tabCount).coerceIn(0f, (tabCount - 1).toFloat())
-                        } else null
+                    onDragStarted = {
+                        // 从当前选中的位置开始累加，避免按下瞬间指示器跳到手指处
+                        dragPx = if (rowWidth > 0) {
+                            (selected + 0.5f) * (rowWidth.toFloat() / tabCount)
+                        } else 0f
+                        dragFraction = selected.toFloat()
                     },
                     onDragStopped = {
                         dragFraction?.let { f ->

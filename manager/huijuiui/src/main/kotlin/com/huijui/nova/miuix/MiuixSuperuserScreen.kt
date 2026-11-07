@@ -105,7 +105,7 @@ fun MiuixSuperuserScreen() {
     var pickerOpen by remember { mutableStateOf(false) }
     var allApps by remember { mutableStateOf<List<Triple<Int, String, String>>>(emptyList()) }
     var systemPkgs by remember { mutableStateOf<Set<String>>(emptySet()) }
-    var showSystem by remember { mutableStateOf(false) }
+    var showSystem by remember { mutableStateOf(false) } // 默认仅用户应用
     var filter by remember { mutableStateOf("") }
     var grantMsg by remember { mutableStateOf("") }
 
@@ -296,6 +296,8 @@ fun MiuixSuperuserScreen() {
                                     .padding(vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
+                                AppIcon(pkg, label, 30.dp, accent)
+                                Spacer(Modifier.width(10.dp))
                                 Column(Modifier.weight(1f)) {
                                     Text(label, fontSize = 12.sp, color = ink, maxLines = 1)
                                     Text(
