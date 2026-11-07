@@ -260,7 +260,7 @@ fun NovaHomeMiuixScreen(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 ActionCard(HuiIcons.Module, "全部工具", "检测 · 终端 · 重启", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Tools) }
-                ActionCard(HuiIcons.Terminal, "终端", "临时 Root Shell", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Terminal) }
+                ActionCard(HuiIcons.Gauge, "一键体检", "冲突 · 隐藏 · 备份", accent, ink, dim, Modifier.weight(1f)) { onOpen(com.huijui.nova.NovaOverlay.Checkup) }
             }
 
             Spacer(Modifier.height(90.dp))

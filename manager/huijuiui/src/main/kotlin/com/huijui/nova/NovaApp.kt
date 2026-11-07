@@ -98,6 +98,7 @@ enum class NovaOverlay(val title: String) {
     Legacy4x("4.x 兼容模式"),
     Licenses("开源许可"),
     KernelSettings("内核设置"),
+    Checkup("一键体检"),
     Lab("实验"),
 }
 
@@ -280,6 +281,19 @@ fun NovaApp(
                     )
                     NovaOverlay.KernelSettings -> com.huijui.nova.miuix.MiuixKernelSettingsScreen(
                         onBack = { overlay = null },
+                    )
+                    NovaOverlay.Checkup -> com.huijui.nova.miuix.MiuixCheckupScreen(
+                        onBack = { overlay = null },
+                        onOpen = { key ->
+                            overlay = when (key) {
+                                "legacy" -> NovaOverlay.Legacy4x
+                                "detect" -> NovaOverlay.Detect
+                                "modules" -> null
+                                "flash" -> NovaOverlay.Flash
+                                else -> null
+                            }
+                            if (key == "modules") overlay = NovaOverlay.Tools
+                        },
                     )
                     NovaOverlay.Lab -> com.huijui.nova.miuix.MiuixLabScreen(
                         theme = theme,
