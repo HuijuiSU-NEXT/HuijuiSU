@@ -27,6 +27,13 @@ jobs:
           name: "Manager-release"
           merge-multiple: true
 
+      - name: Download LKM artifacts
+        uses: actions/download-artifact@v8
+        with:
+          path: lkm
+          pattern: "*-lkm"
+          merge-multiple: true
+
       - name: Check is rc tags
         id: is_rc_tag
         run: |
@@ -42,6 +49,7 @@ jobs:
           prerelease: ${{ steps.is_rc_tag.outputs.IS_RC_TAG == 'true' }}
           files: |
             manager/*.apk
+            lkm/*.ko
 
   notify:
     needs:
