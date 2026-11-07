@@ -161,11 +161,12 @@ fun NovaApp(
             LocalNovaGlass provides glass,
             LocalNovaDark provides dark,
         ) {
+        if (overlay == null) {
         Column(
             Modifier
                 .fillMaxSize()
                 // 子页面打开时把状态栏/导航栏区域也铺成页面底色，避免底部露出壁纸
-                .background(if (subPageOpen || overlay != null) novaBg() else Color.Transparent)
+                .background(if (subPageOpen) novaBg() else Color.Transparent)
                 .windowInsetsPadding(WindowInsets.safeDrawing),
         ) {
             Box(Modifier.weight(1f)) {
@@ -231,12 +232,22 @@ fun NovaApp(
             }
         }
 
-        // 全屏子页面：盖住 Dock，铺满整个窗口
+        }
+
+        // 全屏子页面：铺在壁纸之上（半透明浅色遮罩），主页面此时不渲染
         overlay?.let { page ->
             Box(
                 Modifier
                     .fillMaxSize()
-                    .background(novaBg()),
+                    .background(
+                        androidx.compose.ui.graphics.Brush.verticalGradient(
+                            listOf(
+                                novaBg().copy(alpha = if (dark) 0.78f else 0.62f),
+                                novaBg().copy(alpha = if (dark) 0.86f else 0.74f),
+                            ),
+                        ),
+                    )
+                    .windowInsetsPadding(WindowInsets.safeDrawing),
             ) {
                 when (page) {
                     NovaOverlay.Tools -> com.huijui.nova.miuix.MiuixToolsScreen(
