@@ -136,6 +136,15 @@ fun NovaApp(
     var tab by remember { mutableIntStateOf(0) }
     var subPageOpen by remember { mutableStateOf(false) }
     var overlay by remember { mutableStateOf<NovaOverlay?>(null) }
+    val overlayStack = remember { androidx.compose.runtime.mutableStateListOf<NovaOverlay>() }
+    // 打开子页：记住来路，返回时逐级回退（工具 → 补丁 → 工具 → 首页）
+    val go: (NovaOverlay) -> Unit = { next ->
+        overlay?.let { if (it != next) overlayStack.add(it) }
+        overlay = next
+    }
+    val back: () -> Unit = {
+        overlay = if (overlayStack.isNotEmpty()) overlayStack.removeAt(overlayStack.lastIndex) else null
+    }
     // 切标签时必须复位：否则从子页面切走，Dock 会一直藏着
     androidx.compose.runtime.LaunchedEffect(tab) { subPageOpen = false }
     val colors = LocalHuiColors.current
@@ -199,13 +208,13 @@ fun NovaApp(
                 ) { index ->
                     when (NovaTab.entries[index]) {
                         NovaTab.Modules -> com.huijui.nova.miuix.MiuixModulesScreen(
-                            onOpenRepo = { overlay = NovaOverlay.Repo },
+                            onOpenRepo = { go(NovaOverlay.Repo) },
                             embedded = true,
                             onBack = {},
                         )
                         NovaTab.Superuser -> com.huijui.nova.miuix.MiuixSuperuserScreen()
                         NovaTab.Home -> com.huijui.nova.miuix.NovaHomeMiuixScreen(
-                            onOpen = { overlay = it },
+                            onOpen = { go(it) },
                         )
                         NovaTab.Settings -> com.huijui.nova.miuix.MiuixSettingsScreen(
                             theme = theme,
@@ -225,8 +234,8 @@ fun NovaApp(
                             onPickMedia = onPickMedia,
                             onClearMedia = onClearMedia,
                             onClose = onClose,
-                            onOpenLicenses = { overlay = NovaOverlay.Licenses },
-                            onOpenKernelSettings = { overlay = NovaOverlay.KernelSettings },
+                            onOpenLicenses = { go(NovaOverlay.Licenses) },
+                            onOpenKernelSettings = { go(NovaOverlay.KernelSettings) },
                         )
                     }
                 }
@@ -265,54 +274,54 @@ fun NovaApp(
             ) {
                 when (page) {
                     NovaOverlay.Tools -> com.huijui.nova.miuix.MiuixToolsScreen(
-                        onBack = { overlay = null },
-                        onOpenLegacy = { overlay = NovaOverlay.Legacy4x },
-                        onOpenPatches = { overlay = NovaOverlay.Patches },
-                        onOpenSusfs = { overlay = NovaOverlay.Susfs },
+                        onBack = { back() },
+                        onOpenLegacy = { go(NovaOverlay.Legacy4x) },
+                        onOpenPatches = { go(NovaOverlay.Patches) },
+                        onOpenSusfs = { go(NovaOverlay.Susfs) },
                     )
                     NovaOverlay.Terminal -> com.huijui.nova.miuix.MiuixTerminalScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Flash -> com.huijui.nova.miuix.MiuixFlashScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Detect -> com.huijui.nova.miuix.MiuixDetectScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Hide -> com.huijui.nova.miuix.MiuixHideBundleScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Legacy4x -> com.huijui.nova.miuix.MiuixLegacy4xScreen(
-                        onBack = { overlay = null },
-                        onOpenPatch = { overlay = NovaOverlay.Flash },
+                        onBack = { back() },
+                        onOpenPatch = { go(NovaOverlay.Flash) },
                     )
                     NovaOverlay.Licenses -> com.huijui.nova.miuix.MiuixLicensesScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.KernelSettings -> com.huijui.nova.miuix.MiuixKernelSettingsScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Repo -> com.huijui.nova.miuix.MiuixRepoScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Susfs -> com.huijui.nova.miuix.MiuixSusfsScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Patches -> com.huijui.nova.miuix.MiuixPatchScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                     )
                     NovaOverlay.Checkup -> com.huijui.nova.miuix.MiuixCheckupScreen(
-                        onBack = { overlay = null },
+                        onBack = { back() },
                         onOpen = { key ->
-                            overlay = when (key) {
+                            val target = when (key) {
                                 "legacy" -> NovaOverlay.Legacy4x
                                 "detect" -> NovaOverlay.Detect
-                                "modules" -> null
                                 "flash" -> NovaOverlay.Flash
                                 "patches" -> NovaOverlay.Patches
+                                "modules" -> NovaOverlay.Tools
                                 else -> null
                             }
-                            if (key == "modules") overlay = NovaOverlay.Tools
+                            if (target != null) go(target)
                         },
                     )
                     NovaOverlay.Lab -> com.huijui.nova.miuix.MiuixLabScreen(
