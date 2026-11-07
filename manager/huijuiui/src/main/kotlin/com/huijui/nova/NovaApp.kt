@@ -373,9 +373,9 @@ fun NovaDock(
     // 玻璃 Dock：和卡片同一套材质语言（深色玻璃 + 顶部高光 + 底部压暗），
     // 不再用 shadow —— 它在部分 GPU 上会渲染成一块实心塑料。
     val wallpaper = LocalNovaUiMode.current == NovaUiMode.Wallpaper
-    val dockTop = if (wallpaper) Color.White.copy(alpha = 0.20f) else Color.White.copy(alpha = 0.72f)
-    val dockMid = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.36f) else Color.White.copy(alpha = 0.55f)
-    val dockBot = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.46f) else Color.White.copy(alpha = 0.45f)
+    val dockTop = if (wallpaper) Color.White.copy(alpha = 0.26f) else Color.White.copy(alpha = 0.72f)
+    val dockMid = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.26f) else Color.White.copy(alpha = 0.55f)
+    val dockBot = if (wallpaper) Color(0xFF0B1020).copy(alpha = 0.34f) else Color.White.copy(alpha = 0.45f)
 
     Box(
         modifier

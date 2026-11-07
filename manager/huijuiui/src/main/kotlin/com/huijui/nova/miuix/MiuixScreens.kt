@@ -49,8 +49,10 @@ import com.huijui.nova.design.NovaUiMode
 import com.huijui.nova.design.LocalHuiColors
 import com.huijui.nova.wallpaper.HuiMediaSpec
 import com.huijui.nova.wallpaper.HuiWallpaper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import com.huijui.nova.ui.Text
 import com.huijui.nova.ui.MiuixTheme
 import com.huijui.nova.ui.lightColorScheme
@@ -607,28 +609,23 @@ fun MiuixSettingsScreen(
             RowItem(
                 HuiIcons.Download,
                 S("检查更新"),
-                if (updateState.isBlank()) "从 GitHub Releases 获取最新版本" else updateState,
-                "检查",
+                if (updateState.isBlank()) S("从 GitHub Releases 获取最新版本") else updateState,
+                S("检查"),
                 accent,
             ) {
                 if (updateState.isBlank()) {
-                    updateState = "检查中…"
+                    updateState = S("检查中…")
                     kotlinx.coroutines.MainScope().launch {
-                        updateState = runCatching {
-                            val conn = java.net.URL(
-                                "https://api.github.com/repos/HuijuiSU-NEXT/HuijuiSU/releases/latest",
-                            ).openConnection() as java.net.HttpURLConnection
-                            conn.connectTimeout = 8000
-                            conn.readTimeout = 8000
-                            conn.setRequestProperty("User-Agent", "HuiJuiSU")
-                            val body = conn.inputStream.bufferedReader().readText()
-                            val tag = Regex(""""tag_name"\s*:\s*"([^"]+)"""").find(body)?.groupValues?.get(1)
-                            when {
-                                tag == null -> "获取失败"
-                                tag == versionName -> "已是最新（$tag）"
-                                else -> "有新版本 $tag"
+                        withContext(Dispatchers.IO) {
+                            val cache = java.io.File(context.cacheDir, "release.json")
+                            val rel = com.huijui.nova.update.UpdateChecker.latest(cache)
+                            updateState = when {
+                                rel == null -> "网络不可用"
+                                com.huijui.nova.update.UpdateChecker.compare(versionName, rel.tag) < 0 ->
+                                    "有新版本 ${rel.tag}" + if (rel.fromCache) "（缓存）" else ""
+                                else -> "已是最新（${rel.tag}）"
                             }
-                        }.getOrElse { "网络不可用" }
+                        }
                     }
                 }
             }
