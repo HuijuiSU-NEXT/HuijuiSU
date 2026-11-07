@@ -169,6 +169,7 @@ fun MiuixToolsScreen(
     onSubPageChange: (Boolean) -> Unit = {},
     onBack: (() -> Unit)? = null,
     onOpenLegacy: () -> Unit = {},
+    onOpenPatches: () -> Unit = {},
 ) {
     val ink = novaInk()
 
@@ -217,6 +218,18 @@ fun MiuixToolsScreen(
                     HuiIcons.Cpu,
                     "4.x 兼容模式",
                     "非 GKI：内核补丁 / 修补 boot",
+                    "进入",
+                    accent,
+                )
+            }
+            Spacer(Modifier.height(12.dp))
+
+            SectionLabel("检查与修复")
+            LightCard(onClick = onOpenPatches) {
+                RowItem(
+                    HuiIcons.Zap,
+                    "补丁中心",
+                    "一键隐藏属性 · 重置可调试标记 · 伪装 BL",
                     "进入",
                     accent,
                 )
