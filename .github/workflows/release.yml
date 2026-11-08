@@ -40,3 +40,28 @@ jobs:
           prerelease: ${{ steps.is_rc_tag.outputs.IS_RC_TAG == 'true' }}
           files: |
             manager/*.apk
+
+  notify:
+    needs:
+      - release
+    if: success()
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 5
+    steps:
+      - name: Send text notification
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHANNEL_ID: ${{ vars.CHANNEL_ID }}
+          TAG: ${{ github.ref_name }}
+          REPO: ${{ github.repository }}
+        run: |
+          [ -z "$BOT_TOKEN" ] && echo "no token, skip" && exit 0
+          TEXT=$(printf '🚀 <b>HuiJuiSU %s</b>\n\n• 内置隐藏 / 自查 / 元模块，一键可用\n• 真热刷入，装完即生效\n• 启动与功耗优化\n\n⬇️ https://github.com/%s/releases/tag/%s' "$TAG" "$REPO" "$TAG")
+          for CHAT in "${CHANNEL_ID:-@HuijuiSU}" "@Huijui123"; do
+            echo "-> $CHAT"
+            curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+              -d "chat_id=$CHAT" --data-urlencode "text=$TEXT" \
+              -d "parse_mode=HTML" -d "disable_web_page_preview=false" | head -c 200 || true
+            echo
+          done
