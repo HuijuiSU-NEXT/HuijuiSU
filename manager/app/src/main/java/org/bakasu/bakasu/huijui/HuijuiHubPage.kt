@@ -16,6 +16,7 @@ import androidx.compose.material.icons.twotone.Search
 import androidx.compose.material.icons.twotone.Layers
 import androidx.compose.material.icons.twotone.Extension
 import androidx.compose.material.icons.twotone.Build
+import androidx.compose.material.icons.twotone.Security
 import androidx.compose.material.icons.twotone.RestartAlt
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material3.*
@@ -74,7 +75,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
             val ok = withContext(Dispatchers.IO) {
                 runCatching { block() }.getOrElse { false }
             }
-            val msg = if (ok) done else "失败：请确认已授予 Root"
+            val msg = if (ok) done else "失败：命令没有成功（先看上面 Root 状态卡）"
             status = status + (key to msg)
             busyKey = null
             toastMessage = msg
@@ -91,6 +92,35 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 text = "HuiJuiSU 极客工具箱",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(bottom = 8.dp),
+            )
+        }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Security,
+                title = "Root 状态",
+                description = status["root"] ?: "查看 root 是否真的可用（功能提示无 root 时先看这里）",
+                onClick = {
+                    busyKey = "root"
+                    status = status + ("root" to "检测中…")
+                    scope.launch {
+                        val detail = withContext(Dispatchers.IO) {
+                            runCatching {
+                                val r = Shell.cmd(
+                                    "echo APP_UID=$(id -u); " +
+                                        "command -v su || echo NO_SU; " +
+                                        "su -c 'echo SU_UID=$(id -u)' 2>&1; " +
+                                        "ls /data/adb/ksu/bin/ksud 2>/dev/null || true",
+                                ).exec()
+                                val out = (r.out + r.err).joinToString(" ").replace("\n", " ").trim()
+                                "code=${r.code} " + out.take(90)
+                            }.getOrElse { "检测失败：${it.message}" }
+                        }
+                        status = status + ("root" to detail)
+                        busyKey = null
+                        toastMessage = "Root 状态已刷新"
+                    }
+                },
             )
         }
 
