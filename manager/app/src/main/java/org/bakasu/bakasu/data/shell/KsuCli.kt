@@ -154,7 +154,7 @@ class KsuCliRepository(context: Context) {
     suspend fun getFeatureStatus(feature: String): String = withContext(Dispatchers.IO) {
         val shell = getRootShell()
         val out = shell.newJob()
-            .add("${getKsuDaemonPath()} feature check $feature").to(ArrayList<String>(), null)
+            .add("timeout 15 ${getKsuDaemonPath()} feature check $feature").to(ArrayList<String>(), null)
             .exec().out
         out.firstOrNull()?.trim().orEmpty()
     }
@@ -181,7 +181,7 @@ class KsuCliRepository(context: Context) {
         val shell = getRootShell()
 
         val out = shell.newJob()
-            .add("${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
+            .add("timeout 20 ${getKsuDaemonPath()} module list").to(ArrayList(), null).exec().out
         return out.joinToString("\n").ifBlank { "[]" }
     }
 
@@ -254,7 +254,7 @@ class KsuCliRepository(context: Context) {
                 this?.copyTo(output)
             }
             val cmd = "module install ${file.absolutePath}"
-            val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
+            val result = flashWithIO("timeout 180 ${getKsuDaemonPath()} $cmd", onStdout, onStderr)
 // Log Removed for stealth
 
             if (result.isSuccess) {
@@ -307,7 +307,7 @@ class KsuCliRepository(context: Context) {
         }
 
         val result = withNewRootShell(true) {
-            newJob().add("${getKsuDaemonPath()} module action $moduleId")
+            newJob().add("timeout 180 ${getKsuDaemonPath()} module action $moduleId")
                 .to(stdoutCallback, stderrCallback).exec()
         }
 // Log Removed for stealth
@@ -320,7 +320,7 @@ class KsuCliRepository(context: Context) {
         onStdout: (String) -> Unit,
         onStderr: (String) -> Unit): Boolean {
         val result = flashWithIO(
-            "${getKsuDaemonPath()} boot-restore -f",
+            "timeout 60 ${getKsuDaemonPath()} boot-restore -f",
             onStdout,
             onStderr)
         onFinish(result.isSuccess, result.code)
@@ -333,7 +333,7 @@ class KsuCliRepository(context: Context) {
         onStderr: (String) -> Unit): Boolean {
         val result =
             flashWithIO(
-                "${getKsuDaemonPath()} uninstall --package-name ${BuildConfig.APPLICATION_ID}",
+                "timeout 120 ${getKsuDaemonPath()} uninstall --package-name ${BuildConfig.APPLICATION_ID}",
                 onStdout,
                 onStderr)
         onFinish(result.isSuccess, result.code)
