@@ -411,10 +411,15 @@ jobs:
           name: telegram-bot-api-binary
           path: telegram-bot-api-binary
 
+  # 说明：这一步会往 Telegram 传几十 MB 的 APK，网络不稳时会长时间挂住，
+  # 进而把后面的 release 卡死。这里加超时 + 允许失败，保证发布不被阻塞；
+  # 发布通知由 release.yml 的 notify 负责（只发一条文字消息）。
   upload-telegram:
     needs: [repack-manager, telegram-bot-api]
     if: github.event_name != 'pull_request' && github.event_name != 'workflow_call'
     runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 10
     strategy:
       matrix:
         manager_type: [ "spoofed", "normal" ]
