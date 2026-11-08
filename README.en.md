@@ -12,7 +12,10 @@
 
 **English** · [简体中文](README.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
+**Latest: v6.1.5** — ships 16 `kernelsu.ko` builds (8 KMI × 2 ABIs)
+
 [Download](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
+[**Install routes (read first)**](docs/INSTALL_ROUTES.md) ·
 [Changelog](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
 [Telegram](https://t.me/Huijui123)
 
@@ -97,12 +100,25 @@ Four-tab manager shell, dark glass material, dynamic wallpaper.
 
 ## Kernel support
 
-| Kernel series | Method | Notes |
-|---|---|---|
-| 6.x (6.6 / 6.12 / 6.18) | LKM | CI builds `kernelsu.ko` |
-| 5.10 / 5.15 | LKM | CI builds `kernelsu.ko` |
-| 4.x (4.9 / 4.14 / 4.19) | Kernel patch | **LKM cannot work**; needs device kernel source |
-| Non-GKI 5.x | Kernel patch | Same as above |
+| KMI | Android | LKM | Method |
+|---|---|---|---|
+| `android12-5.10` | 12 | ✅ | LKM |
+| `android13-5.10` | 13 | ✅ | LKM |
+| `android13-5.15` | 13 | ✅ | LKM |
+| `android14-5.15` | 14 | ✅ | LKM |
+| `android14-6.1` | 14 | ✅ | LKM |
+| `android15-6.6` | 15 | ✅ | LKM |
+| `android16-6.12` | 16 | ✅ | LKM |
+| `android17-6.18` | 17 | ✅ | LKM |
+| 4.x (4.9 / 4.14 / 4.19) | 8–11 | ❌ | Kernel patch |
+| Non-GKI 5.x | 10–13 | ❌ | Kernel patch |
+
+All `kernelsu.ko` files ship with each release, prefixed by ABI:
+
+```
+aarch64-android16-6.12_kernelsu.ko
+x86_64-android16-6.12_kernelsu.ko
+```
 
 The manager detects the kernel form automatically — not working / LKM / GKI built-in / 4.x non-GKI — and shows it on the home tab.
 
@@ -118,6 +134,24 @@ The manager detects the kernel form automatically — not working / LKM / GKI bu
 | 4.x or non-GKI custom kernel | **Path B: kernel patch** (rebuild boot) |
 
 Full steps, commands and troubleshooting 👉 **[Install routes](docs/INSTALL_ROUTES.md)**
+
+### Path A — LKM (GKI 2.0)
+
+```bash
+# 1. Grab the ko matching your KMI, e.g. 6.12 on arm64
+adb push aarch64-android16-6.12_kernelsu.ko /data/local/tmp/
+adb shell su -c "ksud insmod /data/local/tmp/aarch64-android16-6.12_kernelsu.ko"
+adb shell su -c "lsmod | grep -i ksu"
+
+# 2. Install the manager APK
+```
+
+### Path B — kernel patch (4.x / non-GKI)
+
+Fetch the device kernel source → apply the KernelSU patch → build boot → `fastboot flash boot`.
+Full commands: [install routes](docs/INSTALL_ROUTES.md).
+
+### Both
 
 1. Download the right ABI from [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases)
    - Not sure? Use `universal`

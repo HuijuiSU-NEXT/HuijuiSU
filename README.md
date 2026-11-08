@@ -12,7 +12,10 @@
 
 **简体中文** · [繁體中文](README.zh-TW.md) · [English](README.en.md) · [日本語](README.ja.md) · [한국어](README.ko.md) · [Русский](README.ru.md)
 
+**最新：v6.1.5** —— 随包发布 16 个 `kernelsu.ko`（8 KMI × 2 架构）
+
 [下载](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
+[**安装路线（先看这个）**](docs/INSTALL_ROUTES.md) ·
 [更新日志](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) ·
 [TG 群](https://t.me/Huijui123) ·
 [QQ 群 763278354](https://qm.qq.com/q/763278354)
@@ -98,12 +101,25 @@
 
 ## 内核支持
 
-| 内核系列 | 支持方式 | 说明 |
-|---|---|---|
-| 6.x（6.6 / 6.12 / 6.18） | LKM | CI 构建 `kernelsu.ko` |
-| 5.10 / 5.15 | LKM | CI 构建 `kernelsu.ko` |
-| 4.x（4.9 / 4.14 / 4.19） | 内核补丁 | **不能用 LKM**，需设备内核源码 |
-| 非 GKI 5.x | 内核补丁 | 同上 |
+| KMI | Android | LKM | 方式 |
+|---|---|---|---|
+| `android12-5.10` | 12 | ✅ | LKM |
+| `android13-5.10` | 13 | ✅ | LKM |
+| `android13-5.15` | 13 | ✅ | LKM |
+| `android14-5.15` | 14 | ✅ | LKM |
+| `android14-6.1` | 14 | ✅ | LKM |
+| `android15-6.6` | 15 | ✅ | LKM |
+| `android16-6.12` | 16 | ✅ | LKM |
+| `android17-6.18` | 17 | ✅ | LKM |
+| 4.x（4.9 / 4.14 / 4.19） | 8–11 | ❌ | 内核补丁（需内核源码） |
+| 非 GKI 5.x | 10–13 | ❌ | 内核补丁 |
+
+所有 `kernelsu.ko` 都随 Release 发布，文件名带架构前缀：
+
+```
+aarch64-android16-6.12_kernelsu.ko
+x86_64-android16-6.12_kernelsu.ko
+```
 
 管理器会自动识别内核形态：未工作 / LKM / GKI 内置 / 4.x 非 GKI，并在首页显示。
 
@@ -120,8 +136,25 @@
 
 完整步骤、命令与排错见 👉 **[安装路线文档](docs/INSTALL_ROUTES.md)**
 
+### 路线 A：LKM（GKI 2.0）
+
+```bash
+# 1. 下载与内核 KMI 匹配的 ko，例如 6.12 的 arm64 设备
+adb push aarch64-android16-6.12_kernelsu.ko /data/local/tmp/
+adb shell su -c "ksud insmod /data/local/tmp/aarch64-android16-6.12_kernelsu.ko"
+adb shell su -c "lsmod | grep -i ksu"     # 有 kernelsu 即成功
+
+# 2. 安装管理器 APK（arm64 选 arm64-v8a，不确定选 universal）
+```
+
+### 路线 B：内核补丁（4.x / 非 GKI）
+
+拿到设备内核源码 → 打 KernelSU 补丁 → 编译 boot → `fastboot flash boot`。
+详细命令见 [安装路线文档](docs/INSTALL_ROUTES.md)。
+
+### 通用
+
 1. 到 [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) 下载对应架构
-   - 不确定就选 `universal`
 2. 覆盖安装即可（`applicationId` 固定，不丢数据）
 3. 首次进入模块页需授予 root
 
