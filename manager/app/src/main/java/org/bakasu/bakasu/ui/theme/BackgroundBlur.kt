@@ -1430,9 +1430,16 @@ internal fun BackgroundInitializer(
         }
     }
 
+    // 限制解码尺寸：之前按原图解码，一张 4000x3000 的壁纸要占 48MB，
+    // 低内存设备容易直接被系统杀掉；这里按屏幕尺寸封顶（最大 2160）。
+    val screen = context.resources.displayMetrics
+    val bgW = screen.widthPixels.coerceIn(1, 2160)
+    val bgH = screen.heightPixels.coerceIn(1, 2160)
+
     renderState.imagePainter = rememberAsyncImagePainter(
         model = ImageRequest.Builder(context)
             .data(uri)
+            .size(bgW, bgH)
             .allowHardware(false)
             .crossfade(true)
             .build(),

@@ -35,11 +35,19 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     
-    var showRescue by remember { mutableStateOf(false) }
     var toastMessage by remember { mutableStateOf<String?>(null) }
     
     var showBackupSheet by remember { mutableStateOf(false) }
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
+
+    // 关键：之前只写了 toastMessage 状态，从来没有弹出来，
+    // 所以这些按钮点起来像“没反应”。这里统一消费一次。
+    LaunchedEffect(toastMessage) {
+        toastMessage?.let { msg ->
+            android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
+            toastMessage = null
+        }
+    }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -54,13 +62,32 @@ fun HuijuiHubPage(bottomPadding: Dp) {
             )
         }
 
-        // 1. 核心救援
+        // 1. 备份 boot 分区（真实可用：dd 到 Download，失败会明确提示）
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
-                title = "分区备份救援",
-                description = "一键备份 boot/dtbo 等核心分区防变砖",
-                onClick = { showRescue = true }
+                title = "备份 boot 分区",
+                description = "防变砖：把当前 boot 镜像导出到 Download",
+                onClick = {
+                    scope.launch(Dispatchers.IO) {
+                        val ts = System.currentTimeMillis()
+                        val out = "/storage/emulated/0/Download/boot_backup_$ts.img"
+                        val cmd = """
+                            B=${'$'}(readlink -f /dev/block/by-name/boot 2>/dev/null || echo /dev/block/by-name/boot)
+                            [ -e "${'$'}B" ] || { echo NO_BOOT; exit 1; }
+                            dd if=${'$'}B of='$out' bs=4M 2>/dev/null && echo "OK '$out'"
+                        """.trimIndent()
+                        val res = Shell.cmd(cmd).exec()
+                        val text = res.out.joinToString("\n")
+                        withContext(Dispatchers.Main) {
+                            toastMessage = when {
+                                text.contains("OK ") -> "已备份到 Download"
+                                text.contains("NO_BOOT") -> "找不到 boot 分区，可能不是标准布局"
+                                else -> "备份失败，请检查 Root 权限"
+                            }
+                        }
+                    }
+                }
             )
         }
 
@@ -110,11 +137,6 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 }
             )
         }
-    }
-
-    if (showRescue) {
-        // 假设原来有这个弹窗
-        // RescueBackupDialog(onDismiss = { showRescue = false })
     }
 
     if (showBackupSheet) {
