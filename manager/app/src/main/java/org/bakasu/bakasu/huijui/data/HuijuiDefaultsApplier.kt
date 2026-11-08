@@ -39,50 +39,29 @@ object HuijuiDefaultsApplier {
                 return@withContext
             }
 
+            // 先把随 APK 内置的资源部署到 /data/adb/huijui（模块包 + 自查脚本）
+            HuijuiBuiltinBundle.deployIfNeeded(context)
+
             Log.i(TAG, "开始应用默认隐藏规则 v${HuijuiHiddenDefaults.DEFAULTS_VERSION}")
 
-            // 1. 应用 sus_path 列表
-            var pathSuccess = 0
-            HuijuiHiddenDefaults.SUS_PATHS.forEach { path ->
-                val out = runKsud("sus_path add '$path'")
-                if (out.isBlank() || !out.contains("error", ignoreCase = true)) {
-                    pathSuccess++
-                    Log.d(TAG, "  ✓ sus_path: $path")
-                } else {
-                    Log.w(TAG, "  ✗ sus_path: $path -> $out")
+            // 1~4 合并成一次 su 调用：
+            // 之前每条规则一个 su 进程（十几条 = 十几个进程），启动时明显卡顿；
+            // 现在拼成一个脚本一次执行，启动开销从 O(n) 降到 O(1)。
+            val script = buildString {
+                appendLine("K=/data/adb/ksud")
+                HuijuiHiddenDefaults.SUS_PATHS.forEach { appendLine("\$K sus_path add '$it' 2>/dev/null") }
+                HuijuiHiddenDefaults.SUS_KSTATS.forEach { appendLine("\$K sus_kstat add '$it' normal 2>/dev/null") }
+                if (HuijuiHiddenDefaults.ENABLE_SUS_MOUNT) {
+                    appendLine("\$K hide_sus_mnts_for_non_su_procs add 2>/dev/null")
                 }
-            }
-            Log.i(TAG, "  sus_path: $pathSuccess/${HuijuiHiddenDefaults.SUS_PATHS.size} 成功")
-
-            // 2. 应用 sus_kstat 列表
-            var kstatSuccess = 0
-            HuijuiHiddenDefaults.SUS_KSTATS.forEach { path ->
-                val out = runKsud("sus_kstat add '$path' normal")
-                if (out.isBlank() || !out.contains("error", ignoreCase = true)) {
-                    kstatSuccess++
-                    Log.d(TAG, "  ✓ sus_kstat: $path")
-                } else {
-                    Log.w(TAG, "  ✗ sus_kstat: $path -> $out")
+                if (HuijuiHiddenDefaults.ENABLE_AVC_LOG_SPOOFING) {
+                    appendLine("\$K avc_log_spoofing add 2>/dev/null")
                 }
+                appendLine("\$K feature save 2>/dev/null")
+                append("echo HUijuiDone")
             }
-            Log.i(TAG, "  sus_kstat: $kstatSuccess/${HuijuiHiddenDefaults.SUS_KSTATS.size} 成功")
-
-            // 3. 开启挂载点隐藏
-            if (HuijuiHiddenDefaults.ENABLE_SUS_MOUNT) {
-                val out = runKsud("hide_sus_mnts_for_non_su_procs add")
-                Log.i(TAG, if (out.isBlank() || !out.contains("error", true))
-                    "  ✓ 挂载点隐藏已开启" else "  ✗ 挂载点隐藏：$out")
-            }
-
-            // 4. 开启 AVC 日志伪装
-            if (HuijuiHiddenDefaults.ENABLE_AVC_LOG_SPOOFING) {
-                val out = runKsud("avc_log_spoofing add")
-                Log.i(TAG, if (out.isBlank() || !out.contains("error", true))
-                    "  ✓ AVC 日志伪装已开启" else "  ✗ AVC 日志伪装：$out")
-            }
-
-            // 5. 保存配置
-            runKsud("feature save")
+            val out = runShell(script)
+            Log.i(TAG, "隐藏规则一次应用完成：${out.contains("HUijuiDone")}")
 
             // 记录已应用版本
             prefs.edit()
