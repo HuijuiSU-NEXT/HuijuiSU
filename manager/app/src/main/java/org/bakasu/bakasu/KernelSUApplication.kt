@@ -1,6 +1,7 @@
 package org.bakasu.bakasu
 
 import android.app.Application
+import org.bakasu.bakasu.BuildConfig
 import android.os.Build
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,11 @@ class KernelSUApplication : Application() {
         // 防御性初始化：防止 Activity 重建或进程快速重启时重复启动 Koin
         val koin = runCatching {
             startKoin {
-                androidLogger()
+                // release 下关掉 Koin 的逐条日志：日志本身在冷启动里能占几十毫秒
+                androidLogger(
+                    if (BuildConfig.DEBUG) org.koin.core.logger.Level.DEBUG
+                    else org.koin.core.logger.Level.NONE,
+                )
                 androidContext(this@KernelSUApplication)
                 modules(appModules)
             }.koin
