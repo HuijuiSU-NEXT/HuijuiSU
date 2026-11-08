@@ -11,6 +11,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.twotone.CleaningServices
 import androidx.compose.material.icons.twotone.FolderDelete
 import androidx.compose.material.icons.twotone.Refresh
+import androidx.compose.material.icons.twotone.Shield
+import androidx.compose.material.icons.twotone.Search
+import androidx.compose.material.icons.twotone.Layers
 import androidx.compose.material.icons.twotone.RestartAlt
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material3.*
@@ -158,6 +161,76 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 onClick = {
                     backupList = ModuleBackupManager.getBackupList(context)
                     showBackupSheet = true
+                },
+            )
+        }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Shield,
+                title = "一键隐藏",
+                description = status["hide"] ?: "安装内置隐藏模块（恋雪 v1.3）并尝试热激活",
+                onClick = {
+                    busyKey = "hide"
+                    status = status + ("hide" to "正在安装隐藏模块…")
+                    scope.launch {
+                        val r = withContext(Dispatchers.IO) {
+                            runCatching {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions
+                                    .installHideBundle(context)
+                            }.getOrElse { org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions.Result(false, "失败：${it.message}") }
+                        }
+                        status = status + ("hide" to r.message)
+                        busyKey = null
+                        toastMessage = r.message
+                    }
+                },
+            )
+        }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Search,
+                title = "Evil Service 自查",
+                description = status["evil"] ?: "扫描常见 Evil Service 痕迹，输出结果摘要",
+                onClick = {
+                    busyKey = "evil"
+                    status = status + ("evil" to "正在扫描…")
+                    scope.launch {
+                        val summary = withContext(Dispatchers.IO) {
+                            runCatching {
+                                val out = org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions
+                                    .runEvilCheck(context)
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions
+                                    .summarizeEvilCheck(out)
+                            }.getOrElse { "失败：${it.message}" }
+                        }
+                        status = status + ("evil" to summary)
+                        busyKey = null
+                        toastMessage = summary
+                    }
+                },
+            )
+        }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Layers,
+                title = "元模块状态",
+                description = status["meta"] ?: "查看 Hybrid Mount 运行时挂载状态",
+                onClick = {
+                    busyKey = "meta"
+                    status = status + ("meta" to "查询中…")
+                    scope.launch {
+                        val st = withContext(Dispatchers.IO) {
+                            runCatching {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions.metaStatus()
+                            }.getOrElse { "失败：${it.message}" }
+                        }
+                        status = status + ("meta" to st.take(80))
+                        busyKey = null
+                        toastMessage = "元模块状态已刷新"
+                    }
                 },
             )
         }
