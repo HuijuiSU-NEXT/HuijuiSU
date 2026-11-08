@@ -9,7 +9,9 @@ import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.twotone.CleaningServices
+import androidx.compose.material.icons.twotone.FolderDelete
 import androidx.compose.material.icons.twotone.Refresh
+import androidx.compose.material.icons.twotone.RestartAlt
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -29,19 +31,28 @@ import org.bakasu.bakasu.data.module.ModuleBackupManager
 import com.topjohnwu.superuser.Shell
 import java.io.File
 
+/**
+ * 极客工具箱。
+ *
+ * 这一版重做的原因：
+ * 1. 每张卡片都有可见的执行结果 —— 之前的按钮只写状态不显示，点了像没反应
+ * 2. 卡片按「能干啥」排序，重启这类风险操作放最后并二次确认
+ * 3. 结果直接显示在卡片副标题上，Toast 只是补充
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HuijuiHubPage(bottomPadding: Dp) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    
+
     var toastMessage by remember { mutableStateOf<String?>(null) }
-    
     var showBackupSheet by remember { mutableStateOf(false) }
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
+    var showRebootConfirm by remember { mutableStateOf(false) }
 
-    // 关键：之前只写了 toastMessage 状态，从来没有弹出来，
-    // 所以这些按钮点起来像“没反应”。这里统一消费一次。
+    var status by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    var busyKey by remember { mutableStateOf<String?>(null) }
+
     LaunchedEffect(toastMessage) {
         toastMessage?.let { msg ->
             android.widget.Toast.makeText(context, msg, android.widget.Toast.LENGTH_SHORT).show()
@@ -49,27 +60,41 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         }
     }
 
+    fun runTool(key: String, working: String, done: String, block: suspend () -> Boolean) {
+        if (busyKey != null) return
+        busyKey = key
+        status = status + (key to working)
+        scope.launch {
+            val ok = withContext(Dispatchers.IO) {
+                runCatching { block() }.getOrElse { false }
+            }
+            val msg = if (ok) done else "失败：请确认已授予 Root"
+            status = status + (key to msg)
+            busyKey = null
+            toastMessage = msg
+        }
+    }
+
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(top = 16.dp, start = 16.dp, end = 16.dp, bottom = bottomPadding + 16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         item {
             Text(
                 text = "HuiJuiSU 极客工具箱",
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier.padding(bottom = 8.dp),
             )
         }
 
-        // 1. 备份 boot 分区（真实可用：dd 到 Download，失败会明确提示）
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.SaveAlt,
                 title = "备份 boot 分区",
-                description = "防变砖：把当前 boot 镜像导出到 Download",
+                description = status["boot"] ?: "防变砖：把当前 boot 镜像导出到 Download",
                 onClick = {
-                    scope.launch(Dispatchers.IO) {
+                    runTool("boot", "正在备份 boot 分区…", "已备份到 Download") {
                         val ts = System.currentTimeMillis()
                         val out = "/storage/emulated/0/Download/boot_backup_$ts.img"
                         val cmd = """
@@ -77,55 +102,54 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                             [ -e "${'$'}B" ] || { echo NO_BOOT; exit 1; }
                             dd if=${'$'}B of='$out' bs=4M 2>/dev/null && echo "OK '$out'"
                         """.trimIndent()
-                        val res = Shell.cmd(cmd).exec()
-                        val text = res.out.joinToString("\n")
-                        withContext(Dispatchers.Main) {
-                            toastMessage = when {
-                                text.contains("OK ") -> "已备份到 Download"
-                                text.contains("NO_BOOT") -> "找不到 boot 分区，可能不是标准布局"
-                                else -> "备份失败，请检查 Root 权限"
-                            }
-                        }
+                        Shell.cmd(cmd).exec().out.joinToString("\n").contains("OK ")
                     }
-                }
+                },
             )
         }
 
-        // 2. 重启 SystemUI
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Refresh,
                 title = "重启 SystemUI",
-                description = "专治状态栏卡死、界面掉帧，一键刷新界面",
+                description = status["sysui"] ?: "专治状态栏卡死、界面掉帧，一键刷新界面",
                 onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        val res = Shell.cmd("pkill -f com.android.systemui").exec()
-                        withContext(Dispatchers.Main) {
-                            toastMessage = if (res.isSuccess) "SystemUI 重启指令已发送！" else "重启失败，请检查 Root 权限。"
-                        }
+                    runTool("sysui", "正在重启 SystemUI…", "SystemUI 已重启") {
+                        Shell.cmd("pkill -f com.android.systemui").exec().isSuccess
                     }
-                }
+                },
             )
         }
 
-        // 3. 极速清理内存
         item {
             HuijuiToolCard(
                 icon = Icons.TwoTone.CleaningServices,
-                title = "极速清理内存",
-                description = "底层 drop_caches，强制回收系统缓存，释放 RAM",
+                title = "清理内存缓存",
+                description = status["mem"] ?: "drop_caches 回收系统缓存，释放 RAM",
                 onClick = {
-                    scope.launch(Dispatchers.IO) {
-                        val res = Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec()
-                        withContext(Dispatchers.Main) {
-                            toastMessage = if (res.isSuccess) "内存缓存已极速清理完毕！" else "清理失败，请检查 Root 权限。"
-                        }
+                    runTool("mem", "正在清理…", "内存缓存已清理") {
+                        Shell.cmd("sync; echo 3 > /proc/sys/vm/drop_caches").exec().isSuccess
                     }
-                }
+                },
             )
         }
 
-        // 4. 模块备份
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.FolderDelete,
+                title = "清理临时文件",
+                description = status["tmp"] ?: "清空 /data/local/tmp 与模块安装残留",
+                onClick = {
+                    runTool("tmp", "正在清理…", "临时文件已清理") {
+                        Shell.cmd(
+                            "rm -rf /data/local/tmp/* 2>/dev/null; " +
+                                "rm -rf /data/adb/modules_update/* 2>/dev/null; true",
+                        ).exec().isSuccess
+                    }
+                },
+            )
+        }
+
         item {
             HuijuiToolCard(
                 icon = Icons.Default.Archive,
@@ -134,9 +158,37 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 onClick = {
                     backupList = ModuleBackupManager.getBackupList(context)
                     showBackupSheet = true
-                }
+                },
             )
         }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.RestartAlt,
+                title = "重启设备",
+                description = status["reboot"] ?: "改完内核参数或模块后，重启最稳妥",
+                onClick = { showRebootConfirm = true },
+            )
+        }
+    }
+
+    if (showRebootConfirm) {
+        AlertDialog(
+            onDismissRequest = { showRebootConfirm = false },
+            title = { Text("重启设备？") },
+            text = { Text("会立即重启，未保存的操作会中断。") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showRebootConfirm = false
+                    runTool("reboot", "正在重启…", "重启指令已发送") {
+                        Shell.cmd("svc power reboot || reboot").exec().isSuccess
+                    }
+                }) { Text("重启") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRebootConfirm = false }) { Text("取消") }
+            },
+        )
     }
 
     if (showBackupSheet) {
@@ -144,7 +196,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
             Column(modifier = Modifier.padding(16.dp).fillMaxHeight(0.8f)) {
                 Text("本地模块备份", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 if (backupList.isEmpty()) {
                     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
                         Text("暂无备份文件", color = Color.Gray)
@@ -155,11 +207,15 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                             Row(
                                 modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 Column {
                                     Text(file.name, fontWeight = FontWeight.Medium)
-                                    Text(String.format("%.2f MB", file.length() / (1024.0 * 1024.0)), style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                                    Text(
+                                        String.format("%.2f MB", file.length() / (1024.0 * 1024.0)),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = Color.Gray,
+                                    )
                                 }
                                 Row {
                                     Button(onClick = {
@@ -170,7 +226,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                                             }
                                         }
                                     }) { Text("还原") }
-                                    
+
                                     IconButton(onClick = {
                                         ModuleBackupManager.deleteBackup(file)
                                         backupList = ModuleBackupManager.getBackupList(context)
@@ -193,33 +249,39 @@ fun HuijuiToolCard(
     icon: ImageVector,
     title: String,
     description: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp)
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 6.dp),
     ) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp),
             )
             Spacer(modifier = Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                Text(text = description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                Text(
+                    text = description,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                 contentDescription = "进入",
-                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
             )
         }
     }
