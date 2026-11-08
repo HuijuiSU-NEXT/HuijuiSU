@@ -14,6 +14,8 @@ import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Shield
 import androidx.compose.material.icons.twotone.Search
 import androidx.compose.material.icons.twotone.Layers
+import androidx.compose.material.icons.twotone.Extension
+import androidx.compose.material.icons.twotone.Build
 import androidx.compose.material.icons.twotone.RestartAlt
 import androidx.compose.material.icons.twotone.SaveAlt
 import androidx.compose.material3.*
@@ -52,6 +54,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
     var showBackupSheet by remember { mutableStateOf(false) }
     var backupList by remember { mutableStateOf<List<File>>(emptyList()) }
     var showRebootConfirm by remember { mutableStateOf(false) }
+    var showChunqiuConfirm by remember { mutableStateOf(false) }
 
     var status by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var busyKey by remember { mutableStateOf<String?>(null) }
@@ -237,12 +240,77 @@ fun HuijuiHubPage(bottomPadding: Dp) {
 
         item {
             HuijuiToolCard(
+                icon = Icons.TwoTone.Extension,
+                title = "安装元模块",
+                description = status["metainstall"] ?: "安装内置 Hybrid Mount（模块挂载的基础）",
+                onClick = {
+                    busyKey = "metainstall"
+                    status = status + ("metainstall" to "正在安装元模块…")
+                    scope.launch {
+                        val r = withContext(Dispatchers.IO) {
+                            runCatching {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions
+                                    .installMetaModule(context)
+                            }.getOrElse {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions.Result(false, "失败：${it.message}")
+                            }
+                        }
+                        status = status + ("metainstall" to r.message)
+                        busyKey = null
+                        toastMessage = r.message
+                    }
+                },
+            )
+        }
+
+        item {
+            HuijuiToolCard(
+                icon = Icons.TwoTone.Build,
+                title = "春秋词条修复",
+                description = status["chunqiu"] ?: "运行内置修复脚本（会修改系统属性，需确认）",
+                onClick = { showChunqiuConfirm = true },
+            )
+        }
+
+        item {
+            HuijuiToolCard(
                 icon = Icons.TwoTone.RestartAlt,
                 title = "重启设备",
                 description = status["reboot"] ?: "改完内核参数或模块后，重启最稳妥",
                 onClick = { showRebootConfirm = true },
             )
         }
+    }
+
+    if (showChunqiuConfirm) {
+        AlertDialog(
+            onDismissRequest = { showChunqiuConfirm = false },
+            title = { Text("运行春秋词条修复？") },
+            text = { Text("脚本会修改系统属性以规避检测。\n建议先备份 boot 分区，出问题可回滚。") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showChunqiuConfirm = false
+                    busyKey = "chunqiu"
+                    status = status + ("chunqiu" to "正在执行…")
+                    scope.launch {
+                        val r = withContext(Dispatchers.IO) {
+                            runCatching {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions
+                                    .runChunqiuFix(context)
+                            }.getOrElse {
+                                org.bakasu.bakasu.huijui.data.HuijuiBuiltinActions.Result(false, "失败：${it.message}")
+                            }
+                        }
+                        status = status + ("chunqiu" to r.message)
+                        busyKey = null
+                        toastMessage = r.message
+                    }
+                }) { Text("执行") }
+            },
+            dismissButton = {
+                TextButton(onClick = { showChunqiuConfirm = false }) { Text("取消") }
+            },
+        )
     }
 
     if (showRebootConfirm) {

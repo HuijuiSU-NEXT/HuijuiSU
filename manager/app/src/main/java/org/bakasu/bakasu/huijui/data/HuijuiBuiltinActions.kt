@@ -72,4 +72,33 @@ object HuijuiBuiltinActions {
     }
 
     data class Result(val ok: Boolean, val message: String)
+
+    /**
+     * 运行内置的春秋词条修复脚本。
+     *
+     * 脚本在 zip 里，先解压到 /data/adb/huijui/chunqiu/ 再执行。
+     * 这是个会改系统属性的脚本，调用方必须先让用户确认。
+     */
+    suspend fun runChunqiuFix(context: Context): Result {
+        HuijuiBuiltinBundle.deployIfNeeded(context)
+        val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.CHUNQIU_ZIP_NAME)
+        if (!zip.isFile) return Result(false, "内置脚本未就位（需要 root 部署）")
+
+        val dir = "${HuijuiBuiltinBundle.DEVICE_DIR}/chunqiu"
+        val script = "$dir/JinBeiChunQiuFixToolPro2.sh"
+        val out = HuijuiShellUtils.runAsRoot(
+            "rm -rf '$dir'; mkdir -p '$dir'; " +
+                "unzip -o -q '${zip.absolutePath}' -d '$dir' 2>/dev/null || " +
+                "(cd '$dir' && /data/adb/ksu/bin/busybox unzip -o -q '${zip.absolutePath}'); " +
+                "S=${'$'}(find '$dir' -name '*.sh' | head -1); " +
+                "[ -n \"${'$'}S\" ] || { echo NO_SCRIPT; exit 1; }; " +
+                "sh \"${'$'}S\" >/dev/null 2>&1; echo DONE",
+            timeoutSeconds = 120,
+        )
+        return when {
+            out.contains("NO_SCRIPT") -> Result(false, "包里没有找到脚本")
+            out.contains("DONE") -> Result(true, "修复脚本已执行")
+            else -> Result(false, "执行失败：${out.take(120)}")
+        }
+    }
 }
