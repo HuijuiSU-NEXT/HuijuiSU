@@ -29,6 +29,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.SideEffect
@@ -417,11 +418,31 @@ private fun BackgroundLayer(
         (themeConfig.isEnableBlurExp && hasBlurBitmap) ||
             (themeConfig.isEnableBlur && hasBackgroundBitmap)
 
-    LaunchedEffect(needsFallbackFrames, needsBlurFrames) {
-        if (!needsFallbackFrames && !needsBlurFrames) return@LaunchedEffect
+    // 只在前后台可见时刷新，并且限制到 30fps：
+    // 之前是每一帧都触发一次重绘（60/120fps），静止界面也在持续占用 GPU，
+    // 这是功耗和掉帧的主要来源。
+    val themeLifecycleOwner = LocalLifecycleOwner.current
+    var uiResumed by remember {
+        mutableStateOf(themeLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED))
+    }
+    DisposableEffect(themeLifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, _ ->
+            uiResumed = themeLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
+        }
+        themeLifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { themeLifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
+    LaunchedEffect(needsFallbackFrames, needsBlurFrames, uiResumed) {
+        if (!needsFallbackFrames && !needsBlurFrames) return@LaunchedEffect
+        if (!uiResumed) return@LaunchedEffect
+
+        var lastTickNanos = 0L
         while (true) {
-            withFrameNanos { }
+            val frameNanos = withFrameNanos { it }
+            // 33ms 节流（约 30fps），blur 背景不再独占每一帧
+            if (lastTickNanos != 0L && frameNanos - lastTickNanos < 33_000_000L) continue
+            lastTickNanos = frameNanos
             renderState.blurFrameTick = if (renderState.blurFrameTick == Int.MAX_VALUE) {
                 0
             } else {
