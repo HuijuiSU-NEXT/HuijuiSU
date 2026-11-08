@@ -136,7 +136,12 @@ fun ManualAddDialog(
                 val decodedContent = withContext(Dispatchers.IO) {
                     runCatching {
                         context.contentResolver.openInputStream(it)?.use { stream ->
-                            stream.readBytes().decodeToString(throwOnInvalidSequence = true)
+                            runCatching {
+                                // 限制读取大小，避免读到异常大文件把进程撑爆
+                                val buf = ByteArray(256 * 1024)
+                                val n = stream.read(buf)
+                                if (n <= 0) "" else String(buf, 0, n, Charsets.UTF_8)
+                            }.getOrDefault("")
                         }
                     }
                 }

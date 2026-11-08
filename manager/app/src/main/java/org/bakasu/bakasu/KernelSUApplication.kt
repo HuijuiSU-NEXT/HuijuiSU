@@ -18,6 +18,7 @@ import org.koin.core.context.startKoin
 class KernelSUApplication : Application() {
     override fun onCreate() {
         super.onCreate()
+        installCrashLogger()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val processName = getProcessName()
             if (processName.endsWith("MagicaService")) {
@@ -57,6 +58,38 @@ class KernelSUApplication : Application() {
             } catch (e: Exception) {
                 // 忽略隐藏规则应用异常
             }
+        }
+    }
+
+    /**
+     * 崩溃日志：写到 cache/crash/，用户可在「设置 → 关于」或反馈里带上。
+     * 只记录，不吞异常——原行为保持不变。
+     */
+    private fun installCrashLogger() {
+        val previous = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            runCatching {
+                val dir = java.io.File(cacheDir, "crash").apply { mkdirs() }
+                val file = java.io.File(
+                    dir,
+                    "crash-${System.currentTimeMillis()}.txt",
+                )
+                file.writeText(
+                    buildString {
+                        appendLine("time=${java.util.Date()}")
+                        appendLine("thread=${thread.name}")
+                        appendLine("device=${Build.MANUFACTURER} ${Build.MODEL} / Android ${Build.VERSION.RELEASE} (SDK ${Build.VERSION.SDK_INT})")
+                        appendLine("version=${packageManager.getPackageInfo(packageName, 0).versionName}")
+                        appendLine()
+                        val sw = java.io.StringWriter()
+                        throwable.printStackTrace(java.io.PrintWriter(sw))
+                        append(sw.toString())
+                    },
+                )
+                // 只保留最近 10 份
+                dir.listFiles()?.sortedByDescending { it.lastModified() }?.drop(10)?.forEach { it.delete() }
+            }
+            previous?.uncaughtException(thread, throwable)
         }
     }
 }

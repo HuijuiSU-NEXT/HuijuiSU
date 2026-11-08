@@ -38,6 +38,7 @@
         android:zygotePreloadName="org.bakasu.bakasu.magica.AppZygotePreload">
         <activity
             android:name=".ui.MainActivity"
+            android:resizeableActivity="true"
             android:exported="true"
             android:enabled="true"
             android:launchMode="singleTask"

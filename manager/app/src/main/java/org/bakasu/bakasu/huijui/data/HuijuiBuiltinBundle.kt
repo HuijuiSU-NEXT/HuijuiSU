@@ -24,16 +24,18 @@ object HuijuiBuiltinBundle {
     private const val KEY_VERSION = "deployed_version"
 
     /** 每次改动内置文件内容时 +1，触发重新部署。 */
-    const val VERSION = 2
+    const val VERSION = 3
 
     const val DEVICE_DIR = "/data/adb/huijui"
     const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.3.zip"
     const val EVIL_SH_ASSET = "huijui/evil_service_check.sh"
     const val CHUNQIU_ZIP_ASSET = "huijui/chunqiu_fix_v1.zip"
+    const val HYBRID_ZIP_ASSET = "huijui/hybrid_mount_6.2.5.zip"
 
     const val HIDE_ZIP_NAME = "hide_bundle_v1.3.zip"
     const val EVIL_SH_NAME = "evil_service_check.sh"
     const val CHUNQIU_ZIP_NAME = "chunqiu_fix_v1.zip"
+    const val HYBRID_ZIP_NAME = "hybrid_mount_6.2.5.zip"
 
     /** 设备上的模块包路径（不存在返回 null）。 */
     fun deviceHideZip(): File? = File(DEVICE_DIR, HIDE_ZIP_NAME).takeIf { it.isFile }
@@ -63,8 +65,9 @@ object HuijuiBuiltinBundle {
             val zipOk = File(DEVICE_DIR, HIDE_ZIP_NAME).let { it.isFile && it.length() > 0 }
             val shOk = File(DEVICE_DIR, EVIL_SH_NAME).let { it.isFile && it.length() > 0 }
             val cqOk = File(DEVICE_DIR, CHUNQIU_ZIP_NAME).let { it.isFile && it.length() > 0 }
+            val hmOk = File(DEVICE_DIR, HYBRID_ZIP_NAME).let { it.isFile && it.length() > 0 }
 
-            if (deployed >= VERSION && zipOk && shOk && cqOk) {
+            if (deployed >= VERSION && zipOk && shOk && cqOk && hmOk) {
                 Log.d(TAG, "内置资源已就位 (v$deployed)")
                 return@withContext true
             }
@@ -75,6 +78,11 @@ object HuijuiBuiltinBundle {
             }
             val cq = File(context.cacheDir, CHUNQIU_ZIP_NAME).also { out ->
                 context.assets.open(CHUNQIU_ZIP_ASSET).use { input ->
+                    out.outputStream().use { input.copyTo(it) }
+                }
+            }
+            val hm = File(context.cacheDir, HYBRID_ZIP_NAME).also { out ->
+                context.assets.open(HYBRID_ZIP_ASSET).use { input ->
                     out.outputStream().use { input.copyTo(it) }
                 }
             }
@@ -90,6 +98,8 @@ object HuijuiBuiltinBundle {
                 append("cp '${zip.absolutePath}' '$DEVICE_DIR/$HIDE_ZIP_NAME'; ")
                 append("cp '${sh.absolutePath}' '$DEVICE_DIR/$EVIL_SH_NAME'; ")
                 append("cp '${cq.absolutePath}' '$DEVICE_DIR/$CHUNQIU_ZIP_NAME'; ")
+                append("cp '${hm.absolutePath}' '$DEVICE_DIR/$HYBRID_ZIP_NAME'; ")
+                append("chmod 644 '$DEVICE_DIR/$HYBRID_ZIP_NAME'; ")
                 append("chmod 644 '$DEVICE_DIR/$HIDE_ZIP_NAME'; ")
                 append("chmod 644 '$DEVICE_DIR/$CHUNQIU_ZIP_NAME'; ")
                 append("chmod 755 '$DEVICE_DIR/$EVIL_SH_NAME'; ")
