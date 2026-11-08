@@ -28,10 +28,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material.icons.twotone.Send
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,6 +89,8 @@ fun AboutScreen() {
     val themeConfig: ThemeConfig = koinInject()
     val cardConfig: CardConfig = koinInject()
     val navigator = LocalNavigator.current
+    var showTgChoice by remember { mutableStateOf(false) }
+
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(
         rememberTopAppBarState(
             initialHeightOffset = -154f,
@@ -179,22 +188,30 @@ fun AboutScreen() {
                     item {
                         SettingsJumpPageWidget(
                             icon = Icons.TwoTone.Group,
-                            title = stringResource(R.string.join_telegram_group),
-                            description = stringResource(R.string.join_telegram_group_detail),
+                            title = "加入 QQ 群",
+                            description = "Huijui123 内测反馈群，点击直接加入",
                             onClick = {
                                 val ctx = context
-                                val qqGroupUin = "763278354"
-                                val scheme = "mqqapi://card/show_pslcard?src_type=internal&version=1&card_type=group&uin=$qqGroupUin"
-                                try {
-                                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(scheme))
-                                    ctx.startActivity(intent)
-                                } catch (e: Exception) {
-                                    // 未安装 QQ，复制群号
-                                    val clipboard = ctx.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                                    clipboard.setPrimaryClip(ClipData.newPlainText("QQ Group", qqGroupUin))
-                                    Toast.makeText(ctx, "群号已复制：$qqGroupUin", Toast.LENGTH_LONG).show()
+                                val inviteUrl = "https://qm.qq.com/q/5pS7RgzhJe"
+                                val scheme = "mqqapi://card/show_pslcard?src_type=internal&version=1&card_type=group&uin=763278354"
+                                val opened = runCatching {
+                                    ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(scheme)))
+                                }.isSuccess
+                                if (!opened) {
+                                    runCatching {
+                                        ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(inviteUrl)))
+                                    }.onFailure {
+                                        Toast.makeText(ctx, "请手动打开：$inviteUrl", Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             })
+                    }
+                    item {
+                        SettingsJumpPageWidget(
+                            icon = Icons.TwoTone.Send,
+                            title = "加入 TG 群 / 频道",
+                            description = "群：t.me/Huijui123　频道：t.me/HuijuiSU",
+                            onClick = { showTgChoice = true })
                     }
                     item {
                         SettingsJumpPageWidget(
@@ -212,6 +229,32 @@ fun AboutScreen() {
                 Spacer(modifier = Modifier.height(innerPadding.calculateBottomPadding()))
             }
         }
+    }
+
+    if (showTgChoice) {
+        AlertDialog(
+            onDismissRequest = { showTgChoice = false },
+            title = { Text("加入 Telegram") },
+            text = { Text("要进群聊还是频道？\n\n群聊：t.me/Huijui123\n频道：t.me/HuijuiSU") },
+            confirmButton = {
+                TextButton(onClick = {
+                    showTgChoice = false
+                    runCatching {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/Huijui123")))
+                    }
+                }) { Text("进群") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showTgChoice = false
+                    runCatching {
+                        context.startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/HuijuiSU")))
+                    }
+                }) { Text("进频道") }
+            },
+        )
     }
 }
 
