@@ -111,6 +111,15 @@
 
 ## 安装
 
+> **先确认内核类型**，再选路线。选错是“装了管理器却没有 root”的最常见原因。
+
+| 你的内核 | 路线 |
+|---|---|
+| GKI 2.0（5.10 / 5.15 / 6.1 / 6.6 / 6.12 / 6.18） | **路线 A：LKM**（不需要重编内核） |
+| 4.x 或非 GKI 魔改内核 | **路线 B：内核补丁**（需重编 boot） |
+
+完整步骤、命令与排错见 👉 **[安装路线文档](docs/INSTALL_ROUTES.md)**
+
 1. 到 [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases) 下载对应架构
    - 不确定就选 `universal`
 2. 覆盖安装即可（`applicationId` 固定，不丢数据）

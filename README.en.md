@@ -110,6 +110,15 @@ The manager detects the kernel form automatically — not working / LKM / GKI bu
 
 ## Install
 
+> **Check your kernel type first.** Picking the wrong path is the #1 reason for "manager installed but no root".
+
+| Your kernel | Path |
+|---|---|
+| GKI 2.0 (5.10 / 5.15 / 6.1 / 6.6 / 6.12 / 6.18) | **Path A: LKM** (no kernel rebuild) |
+| 4.x or non-GKI custom kernel | **Path B: kernel patch** (rebuild boot) |
+
+Full steps, commands and troubleshooting 👉 **[Install routes](docs/INSTALL_ROUTES.md)**
+
 1. Download the right ABI from [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases)
    - Not sure? Use `universal`
 2. Install over the old version — `applicationId` is stable, data is kept
