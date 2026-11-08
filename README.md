@@ -45,6 +45,11 @@ cd manager
 
 ## 贡献者
 
+<a href="https://github.com/HuijuiSU-NEXT/HuijuiSU/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HuijuiSU-NEXT/HuijuiSU&max=100" alt="Contributors" />
+</a>
+
+
 - [hhcdxii-ship-it](https://github.com/hhcdxii-ship-it) —— 内核 / 管理器 / 发布
 - [Yuyan9178345](https://github.com/Yuyan9178345) —— 隐藏模块（[Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module)）
 
