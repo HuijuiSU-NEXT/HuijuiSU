@@ -39,7 +39,7 @@ object HuijuiBuiltinActions {
     /** 安装内置元模块 Hybrid Mount（其它模块的挂载基础）。 */
     suspend fun installMetaModule(context: Context): Result {
         HuijuiBuiltinBundle.deployIfNeeded(context)
-        if (HotModule.metaReady()) return Result(true, "元模块已就位")
+        if (HotModule.metaState() == HotModule.MetaState.READY) return Result(true, "元模块已就位")
         val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.HYBRID_ZIP_NAME)
         if (!zip.isFile) return Result(false, "内置元模块未就位（需要 root 部署）")
 
@@ -57,7 +57,7 @@ object HuijuiBuiltinActions {
         HuijuiBuiltinBundle.runEvilCheck(context)
 
     /** 元模块运行时状态。 */
-    fun metaStatus(): String = HotModule.status().ifBlank { "元模块未运行" }
+    fun metaStatus(): String = HotModule.status().ifBlank { HotModule.metaMessage() }
 
     /** 按输出做一句人话总结，卡片只显示这一行。 */
     fun summarizeEvilCheck(output: String): String {

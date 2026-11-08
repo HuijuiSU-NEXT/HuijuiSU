@@ -12,17 +12,42 @@ import java.util.zip.ZipFile
  * ```
  * hybrid-mount runtime status|prepare-reboot|load ID|unload ID|reload ID
  * ```
- * 约束（来自它自己的实现）：
- * - 纯 VFS 文件计划的模块可以热加载
- * - 混合后端（Magic / Overlay）的模块仍然需要重启
- * - 元模块本身没装好时，热加载不可用
+ *
+ * 注意两个容易误判的点（之前「永远显示未加载元模块」就是这两个）：
+ *
+ * 1. KernelSU 安装模块后先落到 `/data/adb/modules_update/`，**重启才会进 `/data/adb/modules/`**。
+ *    只查 `modules/` 会把「已安装待重启」误判成「没装」。
+ * 2. 安装后二进制在模块根目录 `hybrid-mount`（`customize.sh` 会把 `binaries/` 删掉），
+ *    不是 `hybrid-mount-arm64` 那个名字。
  */
 object HotModule {
 
-    private const val META_DIR = "/data/adb/modules/hybrid_mount"
-    private const val RUNTIME_DIR = "/data/adb/hybrid-mount"
+    private const val META_ID = "hybrid_mount"
+    private const val MODULES = "/data/adb/modules"
+    private const val UPDATES = "/data/adb/modules_update"
+
+    enum class MetaState { READY, NEEDS_REBOOT, MISSING }
 
     data class Result(val ok: Boolean, val message: String)
+
+    /** 当前元模块状态。 */
+    fun metaState(): MetaState {
+        // 已生效：模块目录存在、未被禁用、二进制可执行
+        val active = "$MODULES/$META_ID"
+        if (File("$active/module.prop").isFile && !File("$active/disable").exists()) {
+            if (File("$active/hybrid-mount").isFile) return MetaState.READY
+            return MetaState.NEEDS_REBOOT
+        }
+        // 已安装待重启：落在 modules_update
+        if (File("$UPDATES/$META_ID/module.prop").isFile) return MetaState.NEEDS_REBOOT
+        return MetaState.MISSING
+    }
+
+    fun metaMessage(): String = when (metaState()) {
+        MetaState.READY -> "元模块已生效"
+        MetaState.NEEDS_REBOOT -> "元模块已安装，重启后生效（重启前无法热刷入）"
+        MetaState.MISSING -> "未检测到元模块 Hybrid Mount"
+    }
 
     /** 从模块 zip 里读出 id（module.prop 的 id= 行）。 */
     fun moduleIdOf(zip: File): String? = runCatching {
@@ -34,31 +59,33 @@ object HotModule {
         }
     }.getOrNull()
 
-    /** 元模块是否已就绪。 */
-    fun metaReady(): Boolean = File("$META_DIR/module.prop").isFile &&
-        !File("$META_DIR/disable").exists()
+    /** 按当前架构选择可执行文件（安装后位于模块根目录）。 */
+    private fun binary(): String? {
+        val dir = "$MODULES/$META_ID"
+        listOf(
+            "$dir/hybrid-mount",
+            "$dir/binaries/hybrid-mount-arm64",
+            "$dir/binaries/hybrid-mount-armv7",
+            "$dir/binaries/hybrid-mount-x86_64",
+            "$dir/binaries/hybrid-mount-riscv64",
+        ).firstOrNull { File(it).isFile }?.let { return it }
 
-    /** 按当前架构选择 hybrid-mount 可执行文件。 */
-    private fun binary(): String {
-        val runtime = File("$META_DIR/hybrid-mount")
-        if (runtime.isFile) return runtime.absolutePath
         val arch = runCatching {
-            ProcessBuilder("uname", "-m").start().inputStream.bufferedReader().readText().trim()
+            java.io.File("/proc/cpuinfo").readText()
         }.getOrDefault("")
         val name = when {
-            arch.contains("aarch64") || arch.contains("arm64") -> "arm64"
-            arch.startsWith("armv7") || arch.contains("armv8l") -> "armv7"
+            arch.contains("aarch64") || File("/system/lib64").isDirectory -> "arm64"
             arch.contains("x86_64") -> "x86_64"
-            arch.contains("riscv64") -> "riscv64"
-            else -> "arm64"
+            arch.contains("riscv") -> "riscv64"
+            else -> "armv7"
         }
-        return "$META_DIR/binaries/hybrid-mount-$name"
+        return listOf("$dir/binaries/hybrid-mount-$name", "$UPDATES/$META_ID/binaries/hybrid-mount-$name")
+            .firstOrNull { File(it).isFile }
     }
 
-    /** 运行 hybrid-mount runtime <args...>，返回输出。 */
+    /** 运行 hybrid-mount runtime <args...>。 */
     fun runtime(vararg args: String): String {
-        val bin = binary()
-        if (!File(bin).isFile) return "元模块未就绪"
+        val bin = binary() ?: return "元模块未安装"
         val cmd = buildString {
             append("'").append(bin).append("' runtime ")
             args.forEach { append("'").append(it).append("' ") }
@@ -69,25 +96,31 @@ object HotModule {
 
     /**
      * 热激活刚安装的模块。
-     *
-     * @return ok=true 表示已在不重启的前提下生效
      */
-    fun activate(moduleId: String): Result {
-        if (!metaReady()) {
-            return Result(false, "元模块未安装：装好 Hybrid Mount 后即可热激活")
-        }
-        val out = runtime("load", moduleId)
-        val lower = out.lowercase()
-        return when {
-            lower.contains("reboot required") || lower.contains("full reboot") ||
-                lower.contains("mixed backends") -> Result(false, "需重启：该模块不是纯 VFS 计划")
-            lower.contains("not found") || lower.contains("installed module not found") ->
-                Result(false, "热激活失败：模块未安装到位")
-            lower.contains("error") || lower.contains("panicked") -> Result(false, "热激活失败：$out")
-            else -> Result(true, "已热激活（无需重启）")
+    fun activate(moduleId: String): Result = when (metaState()) {
+        MetaState.MISSING ->
+            Result(false, "未检测到 Hybrid Mount 元模块：先安装元模块并重启")
+        MetaState.NEEDS_REBOOT ->
+            Result(false, "元模块已安装但还没生效：重启一次后即可热刷入")
+        MetaState.READY -> {
+            val out = runtime("load", moduleId)
+            val lower = out.lowercase()
+            when {
+                lower.contains("reboot required") || lower.contains("full reboot") ||
+                    lower.contains("mixed backends") -> Result(false, "需重启：该模块不是纯 VFS 计划")
+                lower.contains("not found") -> Result(false, "热激活失败：模块未安装到位")
+                lower.contains("panicked") || lower.contains("error") ->
+                    Result(false, "热激活失败：${out.take(80)}")
+                else -> Result(true, "已热激活（无需重启）")
+            }
         }
     }
 
-    /** 运行时状态（用于设置页/诊断展示）。 */
-    fun status(): String = runtime("status")
+    /** 运行时状态（用于工具卡片）。 */
+    fun status(): String {
+        val state = metaMessage()
+        if (metaState() != MetaState.READY) return state
+        val out = runtime("status")
+        return if (out.isBlank()) state else out.lineSequence().take(3).joinToString(" ").take(120)
+    }
 }
