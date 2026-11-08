@@ -1,0 +1,53 @@
+name: Announce to Telegram
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "要宣传的 tag（默认 v6.1.5）"
+        required: false
+        default: "v6.1.5"
+
+permissions:
+  contents: read
+
+jobs:
+  announce:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send message
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ vars.CHAT_ID || '@Huijui123' }}
+          TAG: ${{ inputs.tag }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$BOT_TOKEN" ] || [ -z "$CHAT_ID" ]; then
+            echo "::warning::BOT_TOKEN / CHAT_ID 未配置，跳过"
+            exit 0
+          fi
+
+          TEXT=$(cat <<EOF
+🚀 <b>HuiJuiSU NEXT ${TAG}</b>
+
+这次是「装得上、用得起来」的版本：
+
+• 超级用户：授权表按内核二进制格式解析，列表自动置顶
+• 模块：解析更稳（含 WebUI 识别），展开即可打开模块的 HTML 界面
+• 稳定性：root 调用串行化；拿不到 root 时首页直接说明原因
+• 诊断页：root 状态 / ksud / 授权表 / 模块数，一键复制
+
+📦 LKM 随版本发布（aarch64 / x86_64 × 8 个 KMI）
+
+📖 安装两条路线（先看这个）：
+https://github.com/${REPO}/blob/main/docs/INSTALL_ROUTES.md
+
+⬇️ https://github.com/${REPO}/releases/tag/${TAG}
+EOF
+)
+
+          curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            --data-urlencode "text=${TEXT}" \
+            -d "parse_mode=HTML" \
+            -d "disable_web_page_preview=false" | head -c 300
