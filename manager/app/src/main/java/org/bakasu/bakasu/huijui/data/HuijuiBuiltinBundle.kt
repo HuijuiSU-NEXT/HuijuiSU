@@ -23,6 +23,11 @@ object HuijuiBuiltinBundle {
     private const val PREFS = "huijui_builtin"
     private const val KEY_VERSION = "deployed_version"
 
+    /** 最近一次部署失败的原因（给 UI 显示）。 */
+    @Volatile
+    var lastError: String = ""
+        private set
+
     /** 每次改动内置文件内容时 +1，触发重新部署。 */
     const val VERSION = 4
 
@@ -36,6 +41,17 @@ object HuijuiBuiltinBundle {
     const val EVIL_SH_NAME = "evil_service_check.sh"
     const val CHUNQIU_ZIP_NAME = "chunqiu_fix_v1.zip"
     const val HYBRID_ZIP_NAME = "hybrid_mount_6.2.5.zip"
+
+
+    /** 用 root 判断设备上的文件是否存在且非空（应用进程自己 stat /data/adb 会失败）。 */
+    suspend fun remoteExists(path: String): Boolean = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+        val out = org.bakasu.bakasu.huijui.util.HuijuiShellUtils.runAsRoot(
+            "test -s '$path' && echo __YES__ || echo __NO__",
+            timeoutSeconds = 15,
+            trim = true,
+        )
+        out.contains("__YES__")
+    }
 
     /** 设备上的模块包路径（不存在返回 null）。 */
     fun deviceHideZip(): File? = File(DEVICE_DIR, HIDE_ZIP_NAME).takeIf { it.isFile }
@@ -62,10 +78,10 @@ object HuijuiBuiltinBundle {
         try {
             val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             val deployed = prefs.getInt(KEY_VERSION, 0)
-            val zipOk = File(DEVICE_DIR, HIDE_ZIP_NAME).let { it.isFile && it.length() > 0 }
-            val shOk = File(DEVICE_DIR, EVIL_SH_NAME).let { it.isFile && it.length() > 0 }
-            val cqOk = File(DEVICE_DIR, CHUNQIU_ZIP_NAME).let { it.isFile && it.length() > 0 }
-            val hmOk = File(DEVICE_DIR, HYBRID_ZIP_NAME).let { it.isFile && it.length() > 0 }
+            val zipOk = remoteExists("$DEVICE_DIR/$HIDE_ZIP_NAME")
+            val shOk = remoteExists("$DEVICE_DIR/$EVIL_SH_NAME")
+            val cqOk = remoteExists("$DEVICE_DIR/$CHUNQIU_ZIP_NAME")
+            val hmOk = remoteExists("$DEVICE_DIR/$HYBRID_ZIP_NAME")
 
             if (deployed >= VERSION && zipOk && shOk && cqOk && hmOk) {
                 Log.d(TAG, "内置资源已就位 (v$deployed)")
@@ -113,6 +129,7 @@ object HuijuiBuiltinBundle {
                 Log.i(TAG, "内置资源部署完成 v$VERSION")
             } else {
                 Log.w(TAG, "内置资源部署失败：$out")
+                lastError = out.take(200)
             }
             ok
         } catch (t: Throwable) {

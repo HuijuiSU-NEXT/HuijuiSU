@@ -19,7 +19,10 @@ object HuijuiBuiltinActions {
     suspend fun installHideBundle(context: Context): Result {
         HuijuiBuiltinBundle.deployIfNeeded(context)
         val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.HIDE_ZIP_NAME)
-        if (!zip.isFile) return Result(false, "内置隐藏模块未就位（需要 root 部署）")
+        if (!HuijuiBuiltinBundle.remoteExists(zip.absolutePath)) {
+            val why = HuijuiBuiltinBundle.lastError
+            return Result(false, "内置隐藏模块未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
+        }
 
         val out = HuijuiShellUtils.runAsRoot(
             "/data/adb/ksud module install '${zip.absolutePath}' 2>&1",
@@ -41,7 +44,10 @@ object HuijuiBuiltinActions {
         HuijuiBuiltinBundle.deployIfNeeded(context)
         if (HotModule.metaState() == HotModule.MetaState.READY) return Result(true, "元模块已就位")
         val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.HYBRID_ZIP_NAME)
-        if (!zip.isFile) return Result(false, "内置元模块未就位（需要 root 部署）")
+        if (!HuijuiBuiltinBundle.remoteExists(zip.absolutePath)) {
+            val why = HuijuiBuiltinBundle.lastError
+            return Result(false, "内置元模块未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
+        }
 
         val out = HuijuiShellUtils.runAsRoot(
             "/data/adb/ksud module install '${zip.absolutePath}' 2>&1",
@@ -82,7 +88,10 @@ object HuijuiBuiltinActions {
     suspend fun runChunqiuFix(context: Context): Result {
         HuijuiBuiltinBundle.deployIfNeeded(context)
         val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.CHUNQIU_ZIP_NAME)
-        if (!zip.isFile) return Result(false, "内置脚本未就位（需要 root 部署）")
+        if (!HuijuiBuiltinBundle.remoteExists(zip.absolutePath)) {
+            val why = HuijuiBuiltinBundle.lastError
+            return Result(false, "内置脚本未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
+        }
 
         val dir = "${HuijuiBuiltinBundle.DEVICE_DIR}/chunqiu"
         val script = "$dir/JinBeiChunQiuFixToolPro2.sh"
