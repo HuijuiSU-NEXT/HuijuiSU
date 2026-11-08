@@ -32,7 +32,21 @@ jobs:
         with:
           path: lkm
           pattern: "*-lkm"
-          merge-multiple: true
+
+      # artifacts 名形如 aarch64-android16-6.12-lkm，里面的文件都叫 <kmi>_kernelsu.ko，
+      # 直接 merge 会互相覆盖，这里按架构加前缀，避免只剩一份。
+      - name: Flatten LKM with arch prefix
+        run: |
+          mkdir -p lkm-out
+          for d in lkm/*/; do
+            base=$(basename "$d")
+            arch=${base%%-*}
+            for f in "$d"*.ko; do
+              [ -f "$f" ] || continue
+              cp "$f" "lkm-out/${arch}-$(basename "$f")"
+            done
+          done
+          ls -l lkm-out
 
       - name: Check is rc tags
         id: is_rc_tag
@@ -49,7 +63,7 @@ jobs:
           prerelease: ${{ steps.is_rc_tag.outputs.IS_RC_TAG == 'true' }}
           files: |
             manager/*.apk
-            lkm/*.ko
+            lkm-out/*.ko
 
   notify:
     needs:
