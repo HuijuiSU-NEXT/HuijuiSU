@@ -1,5 +1,6 @@
 package org.bakasu.bakasu.huijui.feature
 
+import org.bakasu.bakasu.huijui.util.HuijuiShellUtils
 import java.io.File
 import java.util.zip.ZipFile
 
@@ -55,7 +56,7 @@ object HotModule {
     }
 
     /** 运行 hybrid-mount runtime <args...>，返回输出。 */
-    fun runtime(vararg args: String): String = runCatching {
+    fun runtime(vararg args: String): String {
         val bin = binary()
         if (!File(bin).isFile) return "元模块未就绪"
         val cmd = buildString {
@@ -63,11 +64,8 @@ object HotModule {
             args.forEach { append("'").append(it).append("' ") }
             append("2>&1")
         }
-        val p = ProcessBuilder("su", "-c", cmd).redirectErrorStream(true).start()
-        val out = p.inputStream.bufferedReader().readText().trim()
-        p.waitFor()
-        out
-    }.getOrDefault("")
+        return HuijuiShellUtils.runAsRoot(cmd, timeoutSeconds = 60, trim = true)
+    }
 
     /**
      * 热激活刚安装的模块。
