@@ -257,20 +257,17 @@ class KsuCliRepository(context: Context) {
             val result = flashWithIO("${getKsuDaemonPath()} $cmd", onStdout, onStderr)
 // Log Removed for stealth
 
-            file.delete()
-
             if (result.isSuccess) {
-                // 热刷入：模块已落到 modules_update，立即把它的运行脚本跑一遍，
-                // 不必等重启（对 resetprop / hosts / 主题类模块立即生效）
-                val hot = getKsuDaemonPath() + " module install --help >/dev/null 2>&1; " +
-                    "M=\$(ls -dt /data/adb/modules_update/*/ 2>/dev/null | head -1); " +
-                    "[ -n \"\$M\" ] && { " +
-                    "[ -f \"\${M}post-fs-data.sh\" ] && sh \"\${M}post-fs-data.sh\" >/dev/null 2>&1; " +
-                    "[ -f \"\${M}service.sh\" ] && sh \"\${M}service.sh\" >/dev/null 2>&1; " +
-                    "echo HOT_OK; }"
-                val hotResult = flashWithIO("su -c '${hot}'", onStdout, onStderr)
-                onStdout("热应用：${if (hotResult.isSuccess) "已执行模块脚本" else "跳过（模块无脚本或需重启）"}")
+                // 真热刷入：读出模块 id，交给内置元模块 Hybrid Mount 的 runtime 接口
+                val moduleId = org.bakasu.bakasu.huijui.feature.HotModule.moduleIdOf(file)
+                if (moduleId != null) {
+                    val hot = org.bakasu.bakasu.huijui.feature.HotModule.activate(moduleId)
+                    onStdout("热激活：${hot.message}")
+                } else {
+                    onStdout("热激活：跳过（读不到 module.prop）")
+                }
             }
+            file.delete()
 
             onFinish(result.isSuccess, result.code)
             return result.isSuccess

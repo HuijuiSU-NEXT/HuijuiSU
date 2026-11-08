@@ -24,7 +24,7 @@ object HuijuiBuiltinBundle {
     private const val KEY_VERSION = "deployed_version"
 
     /** 每次改动内置文件内容时 +1，触发重新部署。 */
-    const val VERSION = 3
+    const val VERSION = 4
 
     const val DEVICE_DIR = "/data/adb/huijui"
     const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.3.zip"
@@ -108,6 +108,7 @@ object HuijuiBuiltinBundle {
             val out = HuijuiShellUtils.runAsRoot(cmd)
             val ok = out.contains(HIDE_ZIP_NAME)
             if (ok) {
+                ensureBootModule(context)
                 prefs.edit().putInt(KEY_VERSION, VERSION).apply()
                 Log.i(TAG, "内置资源部署完成 v$VERSION")
             } else {
@@ -126,5 +127,34 @@ object HuijuiBuiltinBundle {
         val path = File(DEVICE_DIR, EVIL_SH_NAME)
         if (!path.isFile) return@withContext "内置脚本不可用（需要 root 部署）"
         HuijuiShellUtils.runAsRoot("sh '${path.absolutePath}' 2>&1")
+    }
+
+    /**
+     * 写入开机自启模块 `huijui_core`。
+     *
+     * 作用：设备重启后由 KernelSU 拉起，几秒内完成
+     * - 首次应用隐藏默认值
+     * - 自动安装元模块 Hybrid Mount
+     * - 再自动安装一键隐藏模块
+     *
+     * 用户不需要打开管理器。
+     */
+    private fun ensureBootModule(context: Context) {
+        val dir = "/data/adb/modules/huijui_core"
+        fun b64(asset: String): String = android.util.Base64.encodeToString(
+            context.assets.open("huijui/core/$asset").use { it.readBytes() },
+            android.util.Base64.NO_WRAP,
+        )
+        val sb = StringBuilder()
+        sb.append("mkdir -p $dir; ")
+        listOf("module.prop", "post-fs-data.sh", "boot-completed.sh").forEach { name ->
+            sb.append("echo '${b64(name)}' | base64 -d > $dir/$name; ")
+        }
+        sb.append("chmod 644 $dir/module.prop; ")
+        sb.append("chmod 755 $dir/post-fs-data.sh $dir/boot-completed.sh; ")
+        sb.append("touch $dir/update; ")   // 让内核下次启动扫描到
+        sb.append("ls $dir")
+        val out = HuijuiShellUtils.runAsRoot(sb.toString(), timeoutSeconds = 30)
+        Log.i(TAG, "开机自启模块写入：${out.contains("module.prop")}")
     }
 }

@@ -1,0 +1,6 @@
+id=huijui_core
+name=HuiJuiSU 核心内置
+version=v1.0
+versionCode=1
+author=HuiJuiSU
+description=随管理器内置：开机时静默应用隐藏默认值，并在首次开机后自动装好元模块与隐藏模块。无需手动操作。
