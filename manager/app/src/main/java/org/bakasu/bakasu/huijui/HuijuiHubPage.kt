@@ -113,14 +113,8 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                     scope.launch {
                         val detail = withContext(Dispatchers.IO) {
                             runCatching {
-                                val r = Shell.cmd(
-                                    "echo APP_UID=$(id -u); " +
-                                        "command -v su || echo NO_SU; " +
-                                        "su -c 'echo SU_UID=$(id -u)' 2>&1; " +
-                                        "ls /data/adb/ksu/bin/ksud 2>/dev/null || true",
-                                ).exec()
-                                val out = (r.out + r.err).joinToString(" ").replace("\n", " ").trim()
-                                "code=${r.code} " + out.take(90)
+                                org.bakasu.bakasu.huijui.util.HuijuiShellUtils.diagnose()
+                                    .replace("\n", " | ")
                             }.getOrElse { "检测失败：${it.message}" }
                         }
                         status = status + ("root" to detail)
