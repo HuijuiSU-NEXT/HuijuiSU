@@ -24,22 +24,31 @@ object HuijuiBuiltinActions {
             return Result(false, "内置隐藏模块未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
         }
 
-        // 先清掉旧版本（v1.3 等），避免重启后新旧并存
+        // 只清理「待安装」残留；正在运行的模块目录交给 ksud 自己覆盖，
+        // 直接删掉 /data/adb/modules/hide_bundle 会让安装器判定异常。
         HuijuiShellUtils.runAsRoot(
-            "rm -rf /data/adb/modules/hide_bundle /data/adb/modules_update/hide_bundle 2>/dev/null; true",
-            timeoutSeconds = 30,
+            "rm -rf /data/adb/modules_update/hide_bundle 2>/dev/null; true",
+            timeoutSeconds = 20,
         )
 
+        // ksud 路径在不同版本里不一样，逐个试
+        val ksud = listOf("/data/adb/ksu/bin/ksud", "/data/adb/ksud", "/system/bin/ksud")
+            .firstOrNull { HuijuiShellUtils.runAsRootOk("test -x '$it'", 10) }
+        if (ksud == null) return Result(false, "找不到 ksud（内核可能未正确安装）")
+
         val out = HuijuiShellUtils.runAsRoot(
-            "/data/adb/ksud module install '${zip.absolutePath}' 2>&1",
+            "$ksud module install '${zip.absolutePath}' 2>&1; echo __EXIT__\$?",
             timeoutSeconds = 120,
         )
         if (out.contains(HuijuiShellUtils.TIMEOUT_MARK)) {
             return Result(false, "安装超时：root 无响应，请确认管理器已被授予 root")
         }
-        val ok = out.contains("success", true) || out.contains("installed", true) ||
-            !out.contains("error", true)
-        if (!ok) return Result(false, "安装失败：${out.take(120)}")
+        // 以退出码为准，不再用「输出里没有 error」这种不可靠判断
+        val ok = out.contains("__EXIT__0")
+        if (!ok) {
+            val tail = out.lineSequence().filter { it.isNotBlank() }.toList().takeLast(3).joinToString(" / ")
+            return Result(false, "安装失败：${tail.take(160)}")
+        }
 
         // KernelSU 装完模块先落到 modules_update，重启才生效；这里如实反馈
         val pending = HuijuiShellUtils.runAsRoot(

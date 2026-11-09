@@ -158,11 +158,15 @@ object HuijuiBuiltinBundle {
                 append("chmod 644 '$DEVICE_DIR/$HIDE_ZIP_NAME' '$DEVICE_DIR/$CHUNQIU_ZIP_NAME' '$DEVICE_DIR/$HYBRID_ZIP_NAME' 2>/dev/null; ")
                 append("chmod 755 '$DEVICE_DIR/$EVIL_SH_NAME' 2>/dev/null; ")
                 append("ls '$DEVICE_DIR'/hide_bundle_v1*.zip 2>/dev/null | grep -v '$HIDE_ZIP_NAME\\$' | xargs -r rm -f 2>/dev/null; ")
-                append("ls -l $DEVICE_DIR")
+                // 显式校验四个文件都非空，再打成功标记（不再靠解析 ls 输出）
+                append("test -s '$DEVICE_DIR/$HIDE_ZIP_NAME' && test -s '$DEVICE_DIR/$EVIL_SH_NAME' ")
+                append("&& test -s '$DEVICE_DIR/$CHUNQIU_ZIP_NAME' && test -s '$DEVICE_DIR/$HYBRID_ZIP_NAME' ")
+                append("&& echo __DEPLOY_OK__ || { echo __DEPLOY_FAIL__; ls -l '$DEVICE_DIR'; }")
             }
             val out = HuijuiShellUtils.runAsRoot(cmd)
-            val ok = out.contains(HIDE_ZIP_NAME)
+            val ok = out.contains("__DEPLOY_OK__")
             if (ok) {
+                lastError = ""
                 ensureBootModule(context)
                 prefs.edit().putInt(KEY_VERSION, VERSION).apply()
                 Log.i(TAG, "内置资源部署完成 v$VERSION")
