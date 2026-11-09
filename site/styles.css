@@ -144,3 +144,60 @@ footer .small{font-size:12px;opacity:.65}
   .tr{grid-template-columns:1fr 1fr;gap:6px 10px}
   .tr.th{display:none}
 }
+
+/* ===== 多页补充 ===== */
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:50;
+  background:linear-gradient(90deg,var(--a1),var(--a2),var(--a3));
+  box-shadow:0 0 12px rgba(62,230,196,.6)}
+.nav .links a.active{color:var(--fg)}
+.nav .links a.active::after{content:"";display:block;height:2px;margin-top:3px;
+  background:linear-gradient(90deg,var(--a1),var(--a2));border-radius:2px}
+
+.page{max-width:900px;margin:0 auto;padding:64px 24px 40px}
+.page.narrow{max-width:760px}
+.page-title{font-size:clamp(28px,5vw,44px);margin:0 0 10px}
+.page-sub{color:var(--dim);margin:0 0 38px}
+
+.feature-block{display:flex;gap:18px;padding:26px;margin-bottom:18px;border-radius:20px;
+  border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(12px);
+  transition:.3s;position:relative;overflow:hidden}
+.feature-block:hover{border-color:rgba(62,230,196,.35);transform:translateY(-3px)}
+.fb-ico{font-size:26px;line-height:1}
+.fb-body{flex:1}
+.fb-body h2{margin:0 0 10px;font-size:19px}
+.fb-body p{margin:0 0 10px;color:var(--dim);font-size:15px}
+.fb-body ul{margin:8px 0 0;padding-left:20px;color:var(--dim);font-size:14px;line-height:1.9}
+.fb-body strong{color:var(--fg)}
+.fb-body code,.page code{background:rgba(120,160,255,.14);padding:2px 6px;border-radius:6px;
+  font-family:ui-monospace,Menlo,monospace;font-size:13px;color:#cfe3ff}
+.inline-code{background:rgba(8,10,16,.8);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;font-size:13px;color:#cfe3ff;overflow-x:auto}
+
+.mini{width:100%;border-collapse:collapse;margin:10px 0;font-size:14px}
+.mini th,.mini td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);color:var(--dim)}
+.mini th{color:var(--fg);font-weight:600;background:rgba(120,160,255,.07)}
+.mini td:first-child{color:var(--fg)}
+
+.grid-2.small{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-top:12px}
+.mini-card{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:rgba(12,16,26,.6)}
+.mini-card b{display:block;font-size:14px;margin-bottom:4px}
+.mini-card span{font-size:12px;color:var(--dim)}
+.muted{color:var(--dim);font-size:14px}
+
+.callout{display:flex;gap:10px;align-items:flex-start;margin-top:16px;padding:14px 16px;
+  border-radius:14px;border:1px solid rgba(62,230,196,.3);background:rgba(62,230,196,.07);font-size:14px}
+.callout b{white-space:nowrap}
+.callout span{color:var(--dim)}
+.callout.warn{border-color:rgba(240,180,92,.35);background:rgba(240,180,92,.08)}
+
+.faq-list details{margin-bottom:12px}
+.faq-list ul{margin:8px 0 0;padding-left:20px;color:var(--dim);font-size:14px}
+
+.links-list{margin:0;padding-left:20px;color:var(--dim);font-size:15px;line-height:2}
+.links-list a{color:var(--a1)}
+
+.page-nav{display:flex;justify-content:space-between;gap:14px;margin-top:44px;flex-wrap:wrap}
+
+@media(max-width:640px){
+  .feature-block{flex-direction:column;gap:10px}
+}

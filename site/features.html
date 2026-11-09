@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>功能详情 — HuiJuiSU</title>
+<link rel="icon" href="assets/icon192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="grid"></div></div>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="index.html"><img src="assets/icon192.png" alt="logo" /><span>HuiJuiSU</span></a>
+  <nav class="links">
+    <a href="index.html">首页</a><a class="active" href="features.html">功能</a>
+    <a href="install.html">安装</a><a href="faq.html">FAQ</a><a href="about.html">关于</a>
+    <a class="ghost" href="https://github.com/HuijuiSU-NEXT/HuijuiSU" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main class="page">
+  <h1 class="page-title reveal">功能详情</h1>
+  <p class="page-sub reveal">从内置资源到热刷入，从工具箱到稳定性，逐项说明它到底做了什么。</p>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">🛡</div>
+    <div class="fb-body">
+      <h2>内置一键隐藏</h2>
+      <p>隐藏模块<strong>随 APK 分发</strong>，不需要用户自己找包、导文件。首次启动自动部署到 <code>/data/adb/huijui/</code>，版本变化时自动覆盖。</p>
+      <ul>
+        <li>内置模块：Zygisk Next、LSPosed、HMA-OSS、OhMyKeymint、PIF-Dates</li>
+        <li>自动导入 HMA 配置与 keybox</li>
+        <li>自动生成黑白名单、写 denylist</li>
+        <li>安装前清理旧版本，避免新旧并存</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">⚡</div>
+    <div class="fb-body">
+      <h2>真·热刷入</h2>
+      <p>接入内置元模块 Hybrid Mount 的运行时接口：</p>
+      <pre class="inline-code">hybrid-mount runtime load &lt;模块 id&gt;</pre>
+      <ul>
+        <li>纯 VFS 文件计划的模块：装完立即挂载，<strong>不用重启</strong></li>
+        <li>Magic / Overlay 后端：会明确提示「需重启」，而不是含糊其辞</li>
+        <li>元模块未就绪时，提示先装元模块并重启</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">🚀</div>
+    <div class="fb-body">
+      <h2>开机秒激活</h2>
+      <p>内置 <code>huijui_core</code> 模块，开机过程自动完成隐藏配置：</p>
+      <table class="mini">
+        <tr><th>脚本</th><th>时机</th><th>做什么</th></tr>
+        <tr><td>post-fs-data.sh</td><td>开机早期</td><td>首次应用隐藏默认值（只跑一次）</td></tr>
+        <tr><td>boot-completed.sh</td><td>开机完成</td><td>自动安装元模块与隐藏模块</td></tr>
+      </table>
+      <p class="muted">安装动作放在 boot-completed，避免拖慢开机。</p>
+    </div>
+  </section>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">🧰</div>
+    <div class="fb-body">
+      <h2>极客工具箱</h2>
+      <div class="grid-2 small">
+        <div class="mini-card"><b>备份 boot 分区</b><span>dd 到 Download，失败说明原因</span></div>
+        <div class="mini-card"><b>重启 SystemUI</b><span>状态栏卡死时自救</span></div>
+        <div class="mini-card"><b>清理内存缓存</b><span>drop_caches 释放 RAM</span></div>
+        <div class="mini-card"><b>清理临时文件</b><span>/data/local/tmp 与安装残留</span></div>
+        <div class="mini-card"><b>模块备份与还原</b><span>打包 / 恢复已装模块</span></div>
+        <div class="mini-card"><b>一键隐藏</b><span>安装内置隐藏模块并尝试热激活</span></div>
+        <div class="mini-card"><b>Evil Service 自查</b><span>扫描后给出结论摘要</span></div>
+        <div class="mini-card"><b>元模块状态</b><span>Hybrid Mount 运行状态</span></div>
+        <div class="mini-card"><b>安装元模块</b><span>缺失时一键安装</span></div>
+        <div class="mini-card"><b>春秋词条修复</b><span>二次确认后执行内置脚本</span></div>
+        <div class="mini-card"><b>重启设备</b><span>二次确认</span></div>
+        <div class="mini-card"><b>Root 状态</b><span>显示真实 UID 与 su 输出</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">🌡</div>
+    <div class="fb-body">
+      <h2>功耗与性能</h2>
+      <table class="mini">
+        <tr><th>项</th><th>改动</th><th>效果</th></tr>
+        <tr><td>背景模糊</td><td>限流 30fps + 后台停止</td><td>静止界面 GPU 负载减半</td></tr>
+        <tr><td>隐藏规则</td><td>十几条 su 合并为一次</td><td>启动进程数 O(n) → O(1)</td></tr>
+        <tr><td>Koin 日志</td><td>release 关闭</td><td>冷启动省几十毫秒</td></tr>
+        <tr><td>壁纸解码</td><td>按屏幕封顶 ≤2160</td><td>4K 图内存 48MB → 8MB</td></tr>
+        <tr><td>ksud 调用</td><td>全部加超时</td><td>内核无响应不再无限转圈</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section class="feature-block reveal">
+    <div class="fb-ico">🔒</div>
+    <div class="fb-body">
+      <h2>稳定性与保护</h2>
+      <ul>
+        <li><strong>核心模块防误删</strong>：内置隐藏模块禁止卸载与停用</li>
+        <li><strong>崩溃日志</strong>：写入 cache/crash，含机型/系统/堆栈</li>
+        <li><strong>root 侧文件判断</strong>：不再因为应用无权读 /data/adb 而误报</li>
+        <li><strong>安全失败</strong>：部署失败会带出真实错误，不吞异常</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="page-nav reveal">
+    <a class="btn" href="index.html">← 返回首页</a>
+    <a class="btn primary" href="install.html">下一步：安装 →</a>
+  </div>
+</main>
+
+<footer><img src="assets/icon192.png" alt="" /><p>HuiJuiSU NEXT Ultra · GPL-3.0</p></footer>
+<script src="app.js"></script>
+</body>
+</html>

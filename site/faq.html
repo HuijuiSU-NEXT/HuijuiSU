@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>FAQ — HuiJuiSU</title>
+<link rel="icon" href="assets/icon192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="grid"></div></div>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="index.html"><img src="assets/icon192.png" alt="logo" /><span>HuiJuiSU</span></a>
+  <nav class="links">
+    <a href="index.html">首页</a><a href="features.html">功能</a>
+    <a href="install.html">安装</a><a class="active" href="faq.html">FAQ</a><a href="about.html">关于</a>
+    <a class="ghost" href="https://github.com/HuijuiSU-NEXT/HuijuiSU" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main class="page narrow">
+  <h1 class="page-title reveal">常见问题</h1>
+  <p class="page-sub reveal">按「现象 → 原因 → 处理」整理，遇到问题先扫一遍这里。</p>
+
+  <div class="faq-list">
+    <details class="reveal"><summary>装了管理器，但所有功能都说没有 root</summary>
+      <p>先看工具箱里的「Root 状态」卡片：</p>
+      <ul><li>出现 <code>SU_UID=0</code> → root 正常，问题在具体命令</li>
+      <li>提示无法执行 su → 管理器未被内核认可，需刷本项目内核或用本内核认可的管理器授权</li></ul>
+    </details>
+
+    <details class="reveal"><summary>一键隐藏提示「未就位」</summary>
+      <p>v5.0.8 起已修复：改为 root 侧直接写入并校验，不再经过「应用缓存 → root 复制」这条会被 SELinux 拒绝的路径。</p>
+      <p>若仍出现，说明写入失败，卡片会显示真实错误（例如权限不足）。</p>
+    </details>
+
+    <details class="reveal"><summary>元模块显示「未检测到」</summary>
+      <p>Hybrid Mount 装完需要重启一次才会生效。重启后状态应变为「元模块已生效」。</p>
+      <p>若重启后仍提示未检测到，检查 <code>/data/adb/modules/hybrid_mount/module.prop</code> 是否存在。</p>
+    </details>
+
+    <details class="reveal"><summary>热刷入提示需要重启</summary>
+      <p>只有纯 VFS 文件计划的模块能免重启；Magic / Overlay 后端必须重启。这是 Hybrid Mount 的设计约束，不是管理器的限制。</p>
+    </details>
+
+    <details class="reveal"><summary>能卸载或停用内置隐藏模块吗</summary>
+      <p>不能。v5.0.10 起禁止卸载，v5.0.11 起同时禁止停用，避免隐藏链路失效导致检测不过甚至开机异常。</p>
+      <p>需要彻底移除只能通过命令行绕过管理器，但不建议。</p>
+    </details>
+
+    <details class="reveal"><summary>版本号一直显示 v4.5.1-rc1</summary>
+      <p>这是历史 bug：<code>versionName</code> 被硬编码。v5.0.3 起改为读取构建变量，之后版本号会正常显示。</p>
+    </details>
+
+    <details class="reveal"><summary>软件包冲突装不上</summary>
+      <p>先卸载同包名的旧版本；如果签名不同，系统会拒绝覆盖安装。</p>
+    </details>
+
+    <details class="reveal"><summary>开机卡 logo</summary>
+      <p>多半是 Zygisk 或 LSPosed 与内核不兼容。可尝试进入安全模式，或禁用对应模块后重启。</p>
+    </details>
+  </div>
+
+  <div class="page-nav reveal">
+    <a class="btn" href="install.html">← 安装</a>
+    <a class="btn primary" href="about.html">下一步：关于 →</a>
+  </div>
+</main>
+
+<footer><img src="assets/icon192.png" alt="" /><p>HuiJuiSU NEXT Ultra · GPL-3.0</p></footer>
+<script src="app.js"></script>
+</body>
+</html>

@@ -78,3 +78,34 @@ window.addEventListener('pointermove', e => {
   glow.style.opacity = '1';
 }, { passive: true });
 window.addEventListener('pointerleave', () => (glow.style.opacity = '0'));
+
+// 顶部滚动进度条
+const bar = document.getElementById('progress');
+if (bar) {
+  const onScroll = () => {
+    const h = document.documentElement;
+    const max = h.scrollHeight - h.clientHeight;
+    bar.style.width = (max > 0 ? (h.scrollTop / max) * 100 : 0) + '%';
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+}
+
+// 页面标题轻微视差
+const pageTitle = document.querySelector('.page-title');
+if (pageTitle) {
+  window.addEventListener('scroll', () => {
+    const y = Math.min(window.scrollY, 400);
+    pageTitle.style.transform = `translateY(${y * 0.08}px)`;
+    pageTitle.style.opacity = String(1 - y / 900);
+  }, { passive: true });
+}
+
+// 平滑锚点
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const id = a.getAttribute('href').slice(1);
+    const el = document.getElementById(id);
+    if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  });
+});

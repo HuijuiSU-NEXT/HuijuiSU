@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>安装 — HuiJuiSU</title>
+<link rel="icon" href="assets/icon192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="bg"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div><div class="grid"></div></div>
+<div class="progress" id="progress"></div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="index.html"><img src="assets/icon192.png" alt="logo" /><span>HuiJuiSU</span></a>
+  <nav class="links">
+    <a href="index.html">首页</a><a href="features.html">功能</a>
+    <a class="active" href="install.html">安装</a><a href="faq.html">FAQ</a><a href="about.html">关于</a>
+    <a class="ghost" href="https://github.com/HuijuiSU-NEXT/HuijuiSU" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main class="page">
+  <h1 class="page-title reveal">安装</h1>
+  <p class="page-sub reveal">先确认内核类型，再选路线。选错是「装了却没有 root」的最常见原因。</p>
+
+  <div class="tabs reveal">
+    <button class="tab active" data-tab="lkm">GKI 2.0 · LKM</button>
+    <button class="tab" data-tab="patch">4.x / 非 GKI · 内核补丁</button>
+  </div>
+
+  <section class="tabpane active" id="tab-lkm">
+    <h2>适用</h2>
+    <p class="muted">内核 5.10 / 5.15 / 6.1 / 6.6 / 6.12 / 6.18，能刷 boot 或 init_boot 的设备。不需要重编内核。</p>
+
+    <h2>步骤</h2>
+    <ol class="steps">
+      <li>确认 KMI：<code>uname -r</code>，例如 <code>6.12.69</code> 对应 <code>android16-6.12</code></li>
+      <li>下载对应 <code>kernelsu.ko</code>（aarch64 / x86_64）</li>
+      <li>推送并加载 ko</li>
+      <li>安装管理器 APK</li>
+      <li>打开 App → 工具箱 → 一键隐藏</li>
+    </ol>
+
+    <div class="code"><pre id="c1"># 以 6.12 的 arm64 设备为例
+adb push aarch64-android16-6.12_kernelsu.ko /data/local/tmp/
+adb shell su -c "ksud insmod /data/local/tmp/aarch64-android16-6.12_kernelsu.ko"
+adb shell su -c "lsmod | grep -i ksu"
+adb install HuiJuiSU_NEXT_Ultra_arm64-v8a-release.apk</pre><button class="copy" data-copy="c1">复制</button></div>
+
+    <div class="callout">
+      <b>已内置 KernelSU？</b>
+      <span>如果 <code>lsmod</code> 里已经有 ksu，跳过第 3 步，直接装管理器，并在原管理器里授权它。</span>
+    </div>
+  </section>
+
+  <section class="tabpane" id="tab-patch">
+    <h2>适用</h2>
+    <p class="muted">4.x 内核、非 GKI 的 5.x 魔改内核。LKM 无法加载，只能把 KernelSU 编进内核。</p>
+
+    <h2>步骤</h2>
+    <ol class="steps">
+      <li>准备设备内核源码与原始 boot.img（刷坏可回滚）</li>
+      <li>应用 KernelSU 补丁</li>
+      <li>用设备原本的编译脚本产出 boot</li>
+      <li>fastboot 刷入</li>
+      <li>安装管理器 APK</li>
+    </ol>
+
+    <div class="code"><pre id="c2">git clone --depth=1 &lt;你的内核仓库&gt; -b &lt;分支&gt; kernel && cd kernel
+curl -LSs "https://raw.githubusercontent.com/HuijuiSU-NEXT/HuijuiSU/main/kernel/setup.sh" | bash -s main
+
+# 产出镜像后
+fastboot flash boot new-boot.img</pre><button class="copy" data-copy="c2">复制</button></div>
+
+    <div class="callout warn">
+      <b>风险提示</b>
+      <span>刷 boot 有变砖风险，务必先备份原始 boot 分区，并确认能进 fastboot。</span>
+    </div>
+  </section>
+
+  <h2 class="reveal" id="compat">兼容性</h2>
+  <div class="table reveal">
+    <div class="tr th"><span>内核</span><span>Android</span><span>方式</span><span>状态</span></div>
+    <div class="tr"><span>5.10</span><span>12 / 13</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>5.15</span><span>13 / 14</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>6.1</span><span>14</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>6.6</span><span>15</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>6.12</span><span>16</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>6.18</span><span>17</span><span>LKM</span><span class="ok">支持</span></div>
+    <div class="tr"><span>4.4 ~ 4.19</span><span>8 ~ 11</span><span>内核补丁</span><span class="warn">需自编</span></div>
+    <div class="tr"><span>非 GKI 5.x</span><span>10 ~ 13</span><span>内核补丁</span><span class="warn">需自编</span></div>
+  </div>
+
+  <div class="page-nav reveal">
+    <a class="btn" href="features.html">← 功能详情</a>
+    <a class="btn primary" href="faq.html">下一步：FAQ →</a>
+  </div>
+</main>
+
+<footer><img src="assets/icon192.png" alt="" /><p>HuiJuiSU NEXT Ultra · GPL-3.0</p></footer>
+<script src="app.js"></script>
+</body>
+</html>
