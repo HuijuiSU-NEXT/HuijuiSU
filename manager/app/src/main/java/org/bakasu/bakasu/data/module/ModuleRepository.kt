@@ -116,6 +116,12 @@ class ModuleRepository(
     private val PROTECTED_MODULES = setOf("hide_bundle")
 
     suspend fun setModuleEnabled(moduleId: String, enabled: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
+        // 内置核心模块禁止停用：关掉后隐藏链路会失效，很容易导致检测不过、甚至开机异常
+        if (!enabled && moduleId in PROTECTED_MODULES) {
+            return@withContext Result.failure(
+                IllegalStateException("内置核心模块，禁止停用（$moduleId）"),
+            )
+        }
         runCatching { check(ksuCliRepository.toggleModule(moduleId, enabled)) }
             .onSuccess { updateCachedEnabled(moduleId, enabled) }
     }
