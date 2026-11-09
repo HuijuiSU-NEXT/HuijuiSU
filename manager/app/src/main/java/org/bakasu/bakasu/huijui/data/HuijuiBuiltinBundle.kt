@@ -53,12 +53,6 @@ object HuijuiBuiltinBundle {
         out.contains("__YES__")
     }
 
-    /** 设备上的模块包路径（不存在返回 null）。 */
-    fun deviceHideZip(): File? = File(DEVICE_DIR, HIDE_ZIP_NAME).takeIf { it.isFile }
-
-    /** 设备上的自查脚本路径（不存在返回 null）。 */
-    fun deviceEvilScript(): File? = File(DEVICE_DIR, EVIL_SH_NAME).takeIf { it.isFile }
-
     /** APK 内的模块包，复制到应用缓存后返回（供模块安装器使用）。 */
     fun cachedHideZip(context: Context): File? = runCatching {
         val out = File(context.cacheDir, HIDE_ZIP_NAME)
@@ -141,9 +135,17 @@ object HuijuiBuiltinBundle {
     /** 执行 Evil Service 自查，返回脚本输出。 */
     suspend fun runEvilCheck(context: Context): String = withContext(Dispatchers.IO) {
         deployIfNeeded(context)
-        val path = File(DEVICE_DIR, EVIL_SH_NAME)
-        if (!path.isFile) return@withContext "内置脚本不可用（需要 root 部署）"
-        HuijuiShellUtils.runAsRoot("sh '${path.absolutePath}' 2>&1")
+        val path = "$DEVICE_DIR/$EVIL_SH_NAME"
+        // 用 root 判断 + 执行，应用进程本身读不到 /data/adb
+        val out = HuijuiShellUtils.runAsRoot(
+            "test -s '$path' && sh '$path' 2>&1 || echo __NO_SCRIPT__",
+            timeoutSeconds = 120,
+        )
+        if (out.contains("__NO_SCRIPT__") && out.trim().lines().size <= 1) {
+            "内置脚本不可用：${lastError.ifBlank { "部署失败，请检查 root 授权" }}"
+        } else {
+            out
+        }
     }
 
     /**

@@ -30,17 +30,29 @@ object HotModule {
 
     data class Result(val ok: Boolean, val message: String)
 
-    /** 当前元模块状态。 */
+    /**
+     * 当前元模块状态。
+     *
+     * 注意：必须用 root 判断文件是否存在。
+     * 应用进程对 /data/adb 没有读权限，`File(...).isFile` 永远返回 false，
+     * 之前「明明装了元模块却提示未检测到」就是这个原因。
+     */
     fun metaState(): MetaState {
-        // 已生效：模块目录存在、未被禁用、二进制可执行
-        val active = "$MODULES/$META_ID"
-        if (File("$active/module.prop").isFile && !File("$active/disable").exists()) {
-            if (File("$active/hybrid-mount").isFile) return MetaState.READY
-            return MetaState.NEEDS_REBOOT
+        val probe = HuijuiShellUtils.runAsRoot(
+            "test -f $MODULES/$META_ID/module.prop && echo __ACTIVE__; " +
+                "test -f $MODULES/$META_ID/disable && echo __DISABLED__; " +
+                "test -x $MODULES/$META_ID/hybrid-mount && echo __BIN__; " +
+                "test -f $UPDATES/$META_ID/module.prop && echo __UPDATED__; true",
+            timeoutSeconds = 15,
+            trim = true,
+        )
+        return when {
+            probe.contains("__ACTIVE__") && !probe.contains("__DISABLED__") && probe.contains("__BIN__") ->
+                MetaState.READY
+            probe.contains("__ACTIVE__") || probe.contains("__UPDATED__") ->
+                MetaState.NEEDS_REBOOT
+            else -> MetaState.MISSING
         }
-        // 已安装待重启：落在 modules_update
-        if (File("$UPDATES/$META_ID/module.prop").isFile) return MetaState.NEEDS_REBOOT
-        return MetaState.MISSING
     }
 
     fun metaMessage(): String = when (metaState()) {
@@ -59,28 +71,24 @@ object HotModule {
         }
     }.getOrNull()
 
-    /** 按当前架构选择可执行文件（安装后位于模块根目录）。 */
+    /** 按当前架构选择可执行文件（安装后位于模块根目录），用 root 探测。 */
     private fun binary(): String? {
         val dir = "$MODULES/$META_ID"
-        listOf(
+        val candidates = listOf(
             "$dir/hybrid-mount",
             "$dir/binaries/hybrid-mount-arm64",
             "$dir/binaries/hybrid-mount-armv7",
             "$dir/binaries/hybrid-mount-x86_64",
             "$dir/binaries/hybrid-mount-riscv64",
-        ).firstOrNull { File(it).isFile }?.let { return it }
-
-        val arch = runCatching {
-            java.io.File("/proc/cpuinfo").readText()
-        }.getOrDefault("")
-        val name = when {
-            arch.contains("aarch64") || File("/system/lib64").isDirectory -> "arm64"
-            arch.contains("x86_64") -> "x86_64"
-            arch.contains("riscv") -> "riscv64"
-            else -> "armv7"
-        }
-        return listOf("$dir/binaries/hybrid-mount-$name", "$UPDATES/$META_ID/binaries/hybrid-mount-$name")
-            .firstOrNull { File(it).isFile }
+        )
+        // 一次 root 调用找出第一个存在的
+        val script = candidates.joinToString("; ") { "test -x '$it' && echo 'BIN:$it'" } + "; true"
+        val out = HuijuiShellUtils.runAsRoot(script, timeoutSeconds = 15, trim = true)
+        out.lineSequence().firstOrNull { it.startsWith("BIN:") }
+            ?.removePrefix("BIN:")?.trim()
+            ?.takeIf { it.isNotBlank() }
+            ?.let { return it }
+        return null
     }
 
     /** 运行 hybrid-mount runtime <args...>。 */
