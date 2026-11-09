@@ -201,3 +201,7 @@ footer .small{font-size:12px;opacity:.65}
 @media(max-width:640px){
   .feature-block{flex-direction:column;gap:10px}
 }
+
+.foot-links{display:flex;gap:18px;justify-content:center;margin:12px 0;flex-wrap:wrap;font-size:13px}
+.foot-links a{color:var(--dim)}
+.foot-links a:hover{color:var(--a1)}
