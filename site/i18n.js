@@ -2,7 +2,7 @@
 window.I18N = {
   "zh-CN": {
     nav_home:"首页", nav_feat:"功能", nav_install:"安装", nav_faq:"FAQ", nav_about:"关于",
-    cta_dl:"下载（GitHub）", cta_gh:"查看 GitHub", cta_more:"功能详情",
+    cta_dl:"下载（GitHub）", cta_gh:"查看 GitHub", cta_more:"功能详情", cta_about:"关于",
     feat_title:"核心能力", feat_sub:"不只是管理器：把隐藏、元模块、热刷入全部收进来",
     c1t:"内置一键隐藏", c1d:"随 APK 分发隐藏模块，首次启动自动部署；安装前清理旧版本，避免新旧并存。",
     c2t:"真·热刷入", c2d:"接入 Hybrid Mount runtime，纯 VFS 计划的模块装完即挂载，不用重启。",
@@ -16,7 +16,7 @@ window.I18N = {
   },
   "zh-TW": {
     nav_home:"首頁", nav_feat:"功能", nav_install:"安裝", nav_faq:"FAQ", nav_about:"關於",
-    cta_dl:"下載（GitHub）", cta_gh:"查看 GitHub", cta_more:"功能詳情",
+    cta_dl:"下載（GitHub）", cta_gh:"查看 GitHub", cta_more:"功能詳情", cta_about:"關於",
     feat_title:"核心能力", feat_sub:"不只是管理器：把隱藏、元模組、熱刷入全部收進來",
     c1t:"內建一鍵隱藏", c1d:"隨 APK 分發隱藏模組，首次啟動自動部署；安裝前清理舊版本，避免新舊並存。",
     c2t:"真·熱刷入", c2d:"接入 Hybrid Mount runtime，純 VFS 計畫的模組裝完即掛載，不用重啟。",
@@ -30,7 +30,7 @@ window.I18N = {
   },
   "en": {
     nav_home:"Home", nav_feat:"Features", nav_install:"Install", nav_faq:"FAQ", nav_about:"About",
-    cta_dl:"Download (GitHub)", cta_gh:"View GitHub", cta_more:"Feature details",
+    cta_dl:"Download (GitHub)", cta_gh:"View GitHub", cta_more:"Feature details", cta_about:"About",
     feat_title:"Core capabilities", feat_sub:"More than a manager: hiding, meta-module and hot-flash built in",
     c1t:"Built-in one-click hide", c1d:"Hide module ships inside the APK and deploys on first launch; old versions are cleaned before install.",
     c2t:"True hot flash", c2d:"Hooked into Hybrid Mount runtime: pure-VFS modules mount right after install, no reboot.",
@@ -44,7 +44,7 @@ window.I18N = {
   },
   "ja": {
     nav_home:"ホーム", nav_feat:"機能", nav_install:"導入", nav_faq:"FAQ", nav_about:"概要",
-    cta_dl:"ダウンロード（GitHub）", cta_gh:"GitHub を見る", cta_more:"機能詳細",
+    cta_dl:"ダウンロード（GitHub）", cta_gh:"GitHub を見る", cta_more:"機能詳細", cta_about:"概要",
     feat_title:"主な機能", feat_sub:"管理アプリ以上のもの：隠蔽・メタモジュール・ホットフラッシュを内蔵",
     c1t:"ワンクリック隠蔽（内蔵）", c1d:"隠蔽モジュールを APK に同梱し、初回起動で自動配置。導入前に旧版を削除します。",
     c2t:"本物のホットフラッシュ", c2d:"Hybrid Mount の runtime に接続。純 VFS のモジュールは再起動なしでマウントされます。",
@@ -58,7 +58,7 @@ window.I18N = {
   },
   "ko": {
     nav_home:"홈", nav_feat:"기능", nav_install:"설치", nav_faq:"FAQ", nav_about:"소개",
-    cta_dl:"다운로드 (GitHub)", cta_gh:"GitHub 보기", cta_more:"기능 상세",
+    cta_dl:"다운로드 (GitHub)", cta_gh:"GitHub 보기", cta_more:"기능 상세", cta_about:"소개",
     feat_title:"핵심 기능", feat_sub:"단순한 관리자가 아닙니다: 숨김·메타 모듈·핫 플래시 내장",
     c1t:"원클릭 숨김 내장", c1d:"숨김 모듈을 APK에 포함해 첫 실행 시 자동 배포하고, 설치 전에 이전 버전을 정리합니다.",
     c2t:"진짜 핫 플래시", c2d:"Hybrid Mount runtime 연결. 순수 VFS 모듈은 재부팅 없이 바로 마운트됩니다.",
@@ -72,7 +72,7 @@ window.I18N = {
   },
   "ru": {
     nav_home:"Главная", nav_feat:"Функции", nav_install:"Установка", nav_faq:"FAQ", nav_about:"О проекте",
-    cta_dl:"Скачать (GitHub)", cta_gh:"Открыть GitHub", cta_more:"Подробности",
+    cta_dl:"Скачать (GitHub)", cta_gh:"Открыть GitHub", cta_more:"Подробности", cta_about:"О проекте",
     feat_title:"Ключевые возможности", feat_sub:"Больше чем менеджер: скрытие, мета-модуль и горячая прошивка",
     c1t:"Встроенное скрытие", c1d:"Модуль скрытия входит в APK и разворачивается при первом запуске; старые версии удаляются.",
     c2t:"Настоящая горячая прошивка", c2d:"Подключение к Hybrid Mount runtime: чистые VFS-модули монтируются без перезагрузки.",

@@ -184,3 +184,12 @@ if (dlg) {
   dlg.querySelector('.dlg-close').addEventListener('click', close);
   dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
 }
+
+// 卡片内跟随光标的光斑
+document.querySelectorAll('.card').forEach(card => {
+  card.addEventListener('pointermove', e => {
+    const r = card.getBoundingClientRect();
+    card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+    card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  }, { passive: true });
+});

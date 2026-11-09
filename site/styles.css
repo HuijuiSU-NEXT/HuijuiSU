@@ -298,3 +298,57 @@ h1,.tagline,.sub,.card p,.card h3{overflow-wrap:anywhere;word-break:break-word}
 html,body{width:100%;max-width:100vw;overflow-x:hidden}
 .hero,.section,.page,footer{max-width:100%}
 .hero-inner,.cards,.stats,.cta,.table,.faq,.feature-block{max-width:100%}
+
+/* ===== 语言选择器美化 ===== */
+.lang{
+  appearance:none;-webkit-appearance:none;
+  background:rgba(16,22,34,.85);
+  border:1px solid var(--line);
+  color:var(--fg);
+  border-radius:10px;
+  padding:7px 30px 7px 12px;
+  font-size:13px;line-height:1;
+  cursor:pointer;outline:none;
+  background-image:linear-gradient(45deg,transparent 50%,var(--dim) 50%),
+                   linear-gradient(135deg,var(--dim) 50%,transparent 50%);
+  background-position:calc(100% - 15px) 52%, calc(100% - 10px) 52%;
+  background-size:5px 5px,5px 5px;
+  background-repeat:no-repeat;
+  transition:border-color .25s, box-shadow .25s;
+}
+.lang:hover{border-color:rgba(62,230,196,.5);box-shadow:0 0 0 1px rgba(62,230,196,.16)}
+.lang:focus{border-color:var(--a1)}
+.lang option{background:#0b0f18;color:#e9edf7}
+
+/* ===== 卡片图标与动效 ===== */
+.card .ico{width:44px;height:44px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(62,230,196,.14),rgba(79,139,255,.12));
+  border:1px solid rgba(62,230,196,.18);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;transition:transform .3s, box-shadow .3s}
+.card .ico svg{width:22px!important;height:22px!important;max-width:22px;max-height:22px;display:block}
+.card:hover .ico{transform:translateY(-2px) rotate(-4deg);box-shadow:0 10px 24px rgba(62,230,196,.18)}
+
+/* ===== 更细腻的卡片动效 ===== */
+.card{will-change:transform;transform:translateZ(0)}
+.card h3{transition:color .25s}
+.card:hover h3{color:var(--a1)}
+.card::before{content:"";position:absolute;inset:0;border-radius:20px;
+  background:radial-gradient(320px 160px at var(--mx,50%) var(--my,0%),rgba(62,230,196,.10),transparent 70%);
+  opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover::before{opacity:1}
+
+/* ===== Hero 标题流光 ===== */
+.grad{background-size:200% 100%;animation:shift 6s ease-in-out infinite}
+@keyframes shift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+
+/* ===== 导航更精致 ===== */
+.nav{box-shadow:0 1px 0 rgba(150,170,220,.06)}
+.links a{position:relative;transition:color .2s}
+.links a::after{content:"";position:absolute;left:0;right:100%;bottom:-6px;height:2px;
+  background:linear-gradient(90deg,var(--a1),var(--a2));transition:right .3s;border-radius:2px}
+.links a:hover::after{right:0}
+
+/* ===== 关于按钮（hero 第四个） ===== */
+.cta .btn:nth-child(4){border-color:rgba(176,107,255,.35)}
+.cta .btn:nth-child(4):hover{border-color:var(--a3);box-shadow:0 10px 26px rgba(176,107,255,.2)}
