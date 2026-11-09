@@ -108,18 +108,20 @@ object HuijuiBuiltinActions {
      * 这是个会改系统属性的脚本，调用方必须先让用户确认。
      */
     suspend fun runChunqiuFix(context: Context): Result {
-        // 先解压到应用缓存（不依赖设备上的 unzip），再交给 root 执行
+        // 春秋脚本是交互式的（菜单 + read），不能在后台直接跑，
+        // 否则会一直等输入。这里只负责解压并复制到 Download，交给用户用 MT 以 root 手动执行。
         val script = HuijuiBuiltinBundle.extractChunqiu(context)
             ?: return Result(false, "解压内置脚本失败")
 
+        val dest = "/sdcard/Download/JinBeiChunQiuFixToolPro2.sh"
         val out = HuijuiShellUtils.runAsRoot(
-            "sh '${script.absolutePath}' 2>&1; echo __DONE__",
-            timeoutSeconds = 180,
+            "mkdir -p /sdcard/Download; cp '${script.absolutePath}' '$dest' && chmod 755 '$dest' && echo __COPIED__",
+            timeoutSeconds = 60,
         )
         return when {
-            out.contains("__DONE__") -> Result(true, "修复脚本已执行")
-            out.isBlank() -> Result(false, "执行失败：没有输出（可能未授予 root）")
-            else -> Result(false, "执行失败：${out.lineSequence().first().take(100)}")
+            out.contains("__COPIED__") -> Result(true, "已复制到 $dest，请用 MT 管理器以 root 运行")
+            out.isBlank() -> Result(false, "复制失败：没有输出（可能未授予 root）")
+            else -> Result(false, "复制失败：${out.lineSequence().first().take(80)}")
         }
     }
 }

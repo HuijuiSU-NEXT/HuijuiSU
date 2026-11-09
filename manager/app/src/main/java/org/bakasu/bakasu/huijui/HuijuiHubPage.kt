@@ -72,6 +72,14 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         busyKey = key
         status = status + (key to working)
         scope.launch {
+            // 看门狗：即使底层线程卡死，200 秒后也强制释放，避免整个工具箱被一个任务锁住
+            launch {
+                kotlinx.coroutines.delay(200_000L)
+                if (busyKey == key) {
+                    status = status + (key to "已超时：请重试（上一次执行没有返回）")
+                    busyKey = null
+                }
+            }
             val ok = try {
                 // 最长等 150 秒；超时也要回到 UI，否则会一直显示「正在…」
                 kotlinx.coroutines.withTimeoutOrNull(150_000L) {
@@ -83,8 +91,11 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                 false
             }
             val msg = if (ok) done else "失败：命令没有返回（可能未授权 root，或执行超时）"
-            status = status + (key to msg)
-            busyKey = null
+            // 只有自己还占着锁时才写回，避免覆盖后续操作
+            if (busyKey == key) {
+                status = status + (key to msg)
+                busyKey = null
+            }
             toastMessage = msg
         }
     }

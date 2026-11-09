@@ -32,6 +32,8 @@ object HuijuiShellUtils {
 
     private fun execProcess(argv: List<String>, timeoutSeconds: Long): String = try {
         val p = ProcessBuilder(argv).redirectErrorStream(true).start()
+        // 关键：不关 stdin，命令只要读一次输入就会永久等待（春秋脚本就踩了这个坑）
+        runCatching { p.outputStream.close() }
         val reader = p.inputStream.bufferedReader()
         val sb = StringBuilder()
         val done = pool.submit<Boolean> {
