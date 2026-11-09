@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>HuiJuiSU — 基于 KernelSU 的 Root 管理器</title>
+<meta name="description" content="HuiJuiSU NEXT Ultra：内置隐藏模块、真热刷入、开机秒激活的 KernelSU 下游分支管理器" />
+<link rel="icon" href="assets/icon192.png" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+<div class="bg">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+  <div class="grid"></div>
+</div>
+
+<header class="nav" id="nav">
+  <a class="brand" href="#top">
+    <img src="assets/icon192.png" alt="logo" />
+    <span>HuiJuiSU</span>
+  </a>
+  <nav class="links">
+    <a href="#features">特性</a>
+    <a href="#install">安装</a>
+    <a href="#compat">兼容</a>
+    <a href="#faq">FAQ</a>
+    <a class="ghost" href="https://github.com/HuijuiSU-NEXT/HuijuiSU" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="logo-wrap">
+        <div class="logo-glow"></div>
+        <img class="logo" src="assets/logo.png" alt="HuiJuiSU logo" />
+      </div>
+      <h1><span class="grad">HuiJuiSU</span> NEXT Ultra</h1>
+      <p class="tagline">基于 KernelSU 的 Root 管理器 · 内置隐藏 · 真热刷入 · 开机秒激活</p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/HuijuiSU-NEXT/HuijuiSU/releases/latest" target="_blank" rel="noopener">下载最新版</a>
+        <a class="btn" href="#install">查看安装</a>
+      </div>
+      <div class="stats">
+        <div class="stat"><b data-count="6">0</b><span>内置核心资源</span></div>
+        <div class="stat"><b data-count="5">0</b><span>CPU 架构</span></div>
+        <div class="stat"><b data-count="8">0</b><span>KMI 支持</span></div>
+        <div class="stat"><b data-count="100">0</b><span>累计提交</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="features" class="section">
+    <h2 class="reveal">核心能力</h2>
+    <p class="sub reveal">不只是管理器：把隐藏、元模块、热刷入全部收进来</p>
+    <div class="cards">
+      <article class="card reveal">
+        <div class="ico">🛡</div>
+        <h3>内置一键隐藏</h3>
+        <p>随 APK 分发隐藏模块，首次启动自动部署；安装前清理旧版本，避免新旧并存。</p>
+      </article>
+      <article class="card reveal">
+        <div class="ico">⚡</div>
+        <h3>真·热刷入</h3>
+        <p>接入 Hybrid Mount runtime，纯 VFS 计划的模块装完即挂载，不用重启。</p>
+      </article>
+      <article class="card reveal">
+        <div class="ico">🚀</div>
+        <h3>开机秒激活</h3>
+        <p>huijui_core 模块在开机过程中完成隐藏配置与依赖安装，无需手动打开管理器。</p>
+      </article>
+      <article class="card reveal">
+        <div class="ico">🧰</div>
+        <h3>极客工具箱</h3>
+        <p>boot 备份、SystemUI 重启、缓存清理、Evil Service 自查、春秋修复，一张卡片一件事。</p>
+      </article>
+      <article class="card reveal">
+        <div class="ico">🌡</div>
+        <h3>功耗优化</h3>
+        <p>背景模糊限流 30fps、退到后台停止；隐藏规则合并为一次 su，启动更快。</p>
+      </article>
+      <article class="card reveal">
+        <div class="ico">🔒</div>
+        <h3>核心防误删</h3>
+        <p>关键模块禁止卸载与停用，避免误操作导致隐藏链路失效。</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="install" class="section">
+    <h2 class="reveal">安装</h2>
+    <p class="sub reveal">先确认内核类型，再选路线</p>
+    <div class="tabs reveal">
+      <button class="tab active" data-tab="lkm">GKI · LKM</button>
+      <button class="tab" data-tab="patch">非 GKI · 内核补丁</button>
+    </div>
+
+    <div class="tabpane active" id="tab-lkm">
+      <p class="note">适用于 GKI 2.0（5.10 / 5.15 / 6.1 / 6.6 / 6.12 / 6.18），不需要重编内核。</p>
+      <ol class="steps">
+        <li>下载与内核 KMI 匹配的 <code>kernelsu.ko</code></li>
+        <li>推送并加载：<code>ksud insmod /data/local/tmp/xxx.ko</code></li>
+        <li>安装管理器 APK</li>
+        <li>打开 App，工具箱 → 一键隐藏</li>
+      </ol>
+      <div class="code reveal"><pre id="cmd1">adb push aarch64-android16-6.12_kernelsu.ko /data/local/tmp/
+adb shell su -c "ksud insmod /data/local/tmp/aarch64-android16-6.12_kernelsu.ko"
+adb shell su -c "lsmod | grep -i ksu"</pre><button class="copy" data-copy="cmd1">复制</button></div>
+    </div>
+
+    <div class="tabpane" id="tab-patch">
+      <p class="note">适用于 4.x / 非 GKI 魔改内核，需要重新编译 boot。</p>
+      <ol class="steps">
+        <li>拉取设备对应内核源码</li>
+        <li>应用 KernelSU 补丁</li>
+        <li>编译并刷入 boot</li>
+        <li>安装管理器 APK</li>
+      </ol>
+      <div class="code reveal"><pre id="cmd2">git clone --depth=1 &lt;你的内核仓库&gt; kernel && cd kernel
+curl -LSs "https://raw.githubusercontent.com/HuijuiSU-NEXT/HuijuiSU/main/kernel/setup.sh" | bash -s main
+# 用设备原本的编译脚本产出 boot.img 后
+fastboot flash boot new-boot.img</pre><button class="copy" data-copy="cmd2">复制</button></div>
+    </div>
+  </section>
+
+  <section id="compat" class="section">
+    <h2 class="reveal">兼容性</h2>
+    <div class="table reveal">
+      <div class="tr th"><span>内核</span><span>Android</span><span>方式</span><span>状态</span></div>
+      <div class="tr"><span>5.10</span><span>12 / 13</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>5.15</span><span>13 / 14</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>6.1</span><span>14</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>6.6</span><span>15</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>6.12</span><span>16</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>6.18</span><span>17</span><span>LKM</span><span class="ok">支持</span></div>
+      <div class="tr"><span>4.x / 非 GKI</span><span>8 ~ 13</span><span>内核补丁</span><span class="warn">需自编</span></div>
+    </div>
+  </section>
+
+  <section id="faq" class="section">
+    <h2 class="reveal">常见问题</h2>
+    <div class="faq reveal">
+      <details><summary>装完提示「未就位」？</summary><p>v5.0.8 起已修复：改为 root 侧直接写入并校验，不再经过应用缓存复制。</p></details>
+      <details><summary>元模块显示未检测到？</summary><p>Hybrid Mount 装完需要重启一次才会生效；重启后状态会变成「元模块已生效」。</p></details>
+      <details><summary>热刷入提示需重启？</summary><p>只有纯 VFS 文件计划的模块能免重启，Magic / Overlay 后端仍需重启，这是 Hybrid Mount 的限制。</p></details>
+      <details><summary>能卸载内置模块吗？</summary><p>不能。内置核心模块禁止卸载与停用，避免隐藏链路失效。</p></details>
+    </div>
+  </section>
+
+  <section class="section community">
+    <h2 class="reveal">社区</h2>
+    <div class="links-row reveal">
+      <a class="btn" href="https://t.me/Huijui123" target="_blank" rel="noopener">Telegram 群</a>
+      <a class="btn" href="https://t.me/HuijuiSU" target="_blank" rel="noopener">Telegram 频道</a>
+      <a class="btn" href="https://github.com/HuijuiSU-NEXT" target="_blank" rel="noopener">GitHub 组织</a>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <img src="assets/icon192.png" alt="" />
+  <p>HuiJuiSU NEXT Ultra · GPL-3.0 · 基于 KernelSU 的下游分支</p>
+  <p class="small">本页仅用于项目展示与安装指引</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
