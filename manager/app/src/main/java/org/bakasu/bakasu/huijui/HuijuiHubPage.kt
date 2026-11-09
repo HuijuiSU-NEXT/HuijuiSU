@@ -202,7 +202,7 @@ fun HuijuiHubPage(bottomPadding: Dp) {
             HuijuiToolCard(
                 icon = Icons.TwoTone.Shield,
                 title = "一键隐藏",
-                description = status["hide"] ?: "安装内置隐藏模块（恋雪 v1.3）并尝试热激活",
+                description = status["hide"] ?: "安装内置隐藏模块（恋雪 v1.4 super）并尝试热激活",
                 onClick = {
                     busyKey = "hide"
                     status = status + ("hide" to "正在安装隐藏模块…")

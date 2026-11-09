@@ -32,11 +32,24 @@ object HuijuiBuiltinActions {
             !out.contains("error", true)
         if (!ok) return Result(false, "安装失败：${out.take(120)}")
 
-        val hot = HotModule.activate("hide_bundle")
-        return Result(
-            true,
-            if (hot.ok) "已安装并热激活" else "已安装，${hot.message}",
+        // KernelSU 装完模块先落到 modules_update，重启才生效；这里如实反馈
+        val pending = HuijuiShellUtils.runAsRoot(
+            "test -f /data/adb/modules_update/hide_bundle/module.prop && echo PENDING || echo ACTIVE",
+            timeoutSeconds = 15,
+            trim = true,
         )
+        val version = HuijuiShellUtils.runAsRoot(
+            "grep -m1 '^version=' /data/adb/modules/hide_bundle/module.prop 2>/dev/null | cut -d= -f2",
+            timeoutSeconds = 15,
+            trim = true,
+        ).ifBlank { "?" }
+
+        val hot = HotModule.activate("hide_bundle")
+        return when {
+            pending.contains("PENDING") -> Result(true, "已安装，重启后生效（当前运行版本 $version）")
+            hot.ok -> Result(true, "已安装并热激活（$version）")
+            else -> Result(true, "已安装（$version），${hot.message}")
+        }
     }
 
     /** 安装内置元模块 Hybrid Mount（其它模块的挂载基础）。 */
