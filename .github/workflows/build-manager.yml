@@ -374,9 +374,11 @@ jobs:
           name: ${{ steps.determine.outputs.title }}-${{ matrix.build_type }}
           path: dist/*.apk
 
+  # 仅用于 upload-telegram 上传二进制，上传已停用；编这个要 20+ 分钟，
+  # 所以默认不跑，需要时手动改回 if 条件。
   telegram-bot-api:
     name: Telegram Bot API
-    if: github.event_name != 'pull_request' && github.event_name != 'workflow_call'
+    if: false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
