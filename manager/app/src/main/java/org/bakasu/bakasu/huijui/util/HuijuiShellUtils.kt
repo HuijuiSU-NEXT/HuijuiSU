@@ -72,7 +72,17 @@ object HuijuiShellUtils {
     /**
      * 依次尝试三条路径，返回 [Attempt]。
      */
+    /** 本应用是否已被内核授予 root。未授权时不要发起 su 调用，否则会长时间卡住。 */
+    fun isGranted(): Boolean = try {
+        Shell.isAppGrantedRoot() == true
+    } catch (t: Throwable) {
+        false
+    }
+
     fun probe(cmd: String, timeoutSeconds: Long = 20): Attempt {
+        // 未授权直接返回，避免 libsu / su 卡在等待授权
+        if (!isGranted()) return Attempt("none", NO_ROOT_MARK)
+
         val su = execProcess(listOf("su", "-c", cmd), timeoutSeconds)
         if (!looksBad(su)) return Attempt("su", su)
 
@@ -100,6 +110,7 @@ object HuijuiShellUtils {
     /** 给 UI 用的诊断信息：哪条路径可用。 */
     fun diagnose(): String {
         val out = StringBuilder()
+        out.appendLine("granted : " + if (isGranted()) "true" else "false")
         val a = execProcess(listOf("su", "-c", "id"), 8)
         out.appendLine("su      : " + if (looksBad(a)) a.take(60) else "OK")
         val b = execProcess(listOf("/data/adb/ksu/bin/ksud", "debug", "su", "-c", "id"), 8)
