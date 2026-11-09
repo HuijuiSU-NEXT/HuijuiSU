@@ -113,8 +113,19 @@ fun HuijuiHubPage(bottomPadding: Dp) {
                     scope.launch {
                         val detail = withContext(Dispatchers.IO) {
                             runCatching {
-                                org.bakasu.bakasu.huijui.util.HuijuiShellUtils.diagnose()
-                                    .replace("\n", " | ")
+                                val d = org.bakasu.bakasu.huijui.util.HuijuiShellUtils.diagnose()
+                                val others = runCatching {
+                                    context.packageManager
+                                        .getInstalledPackages(0)
+                                        .map { it.packageName }
+                                        .filter { it.startsWith("com.huijui.") && it != context.packageName }
+                                }.getOrElse { emptyList() }
+                                buildString {
+                                    append(d.replace("\n", " | "))
+                                    if (!org.bakasu.bakasu.huijui.util.HuijuiShellUtils.isGranted() && others.isNotEmpty()) {
+                                        append(" | 未授权：请在 ").append(others.joinToString()).append(" 里授权本应用")
+                                    }
+                                }
                             }.getOrElse { "检测失败：${it.message}" }
                         }
                         status = status + ("root" to detail)
