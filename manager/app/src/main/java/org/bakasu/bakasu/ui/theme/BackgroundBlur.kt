@@ -580,6 +580,9 @@ private fun StretchOverscrollCompensationState.resolveBitmapCompensation(
 private fun BackdropEffectScope.stretchOverscrollCompensationEffect(
     boundsInBackground: Rect,
     compensation: StretchBitmapCompensation) {
+    // 壁纸与模糊层不再跟随 overscroll 拉伸/滚动偏移，避免切页与列表滑动时背景跟着动
+    return
+
     val inputScale = downscaleFactor.coerceAtLeast(1).toFloat()
     val inputPadding = padding
 

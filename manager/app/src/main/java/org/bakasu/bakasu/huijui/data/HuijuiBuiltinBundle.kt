@@ -68,6 +68,30 @@ object HuijuiBuiltinBundle {
      * 把内置资源部署到 `/data/adb/huijui/`。
      * 幂等：版本未变且文件存在时直接跳过。
      */
+    /** 在应用内解压内置脚本包，返回其中第一个 .sh（root 可读应用缓存）。 */
+    fun extractChunqiu(context: Context): File? = runCatching {
+        val dir = File(context.cacheDir, "chunqiu").apply {
+            deleteRecursively()
+            mkdirs()
+        }
+        context.assets.open(CHUNQIU_ZIP_ASSET).use { input ->
+            java.util.zip.ZipInputStream(input).use { zis ->
+                var entry = zis.nextEntry
+                while (entry != null) {
+                    val out = File(dir, entry.name)
+                    if (entry.isDirectory) out.mkdirs()
+                    else {
+                        out.parentFile?.mkdirs()
+                        out.outputStream().use { zis.copyTo(it) }
+                    }
+                    zis.closeEntry()
+                    entry = zis.nextEntry
+                }
+            }
+        }
+        dir.walkTopDown().firstOrNull { it.isFile && it.name.endsWith(".sh") }
+    }.getOrNull()
+
     suspend fun deployIfNeeded(context: Context): Boolean = withContext(Dispatchers.IO) {
         try {
             val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)

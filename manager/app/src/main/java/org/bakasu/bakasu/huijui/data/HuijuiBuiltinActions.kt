@@ -86,28 +86,18 @@ object HuijuiBuiltinActions {
      * 这是个会改系统属性的脚本，调用方必须先让用户确认。
      */
     suspend fun runChunqiuFix(context: Context): Result {
-        HuijuiBuiltinBundle.deployIfNeeded(context)
-        val zip = File(HuijuiBuiltinBundle.DEVICE_DIR, HuijuiBuiltinBundle.CHUNQIU_ZIP_NAME)
-        if (!HuijuiBuiltinBundle.remoteExists(zip.absolutePath)) {
-            val why = HuijuiBuiltinBundle.lastError
-            return Result(false, "内置脚本未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
-        }
+        // 先解压到应用缓存（不依赖设备上的 unzip），再交给 root 执行
+        val script = HuijuiBuiltinBundle.extractChunqiu(context)
+            ?: return Result(false, "解压内置脚本失败")
 
-        val dir = "${HuijuiBuiltinBundle.DEVICE_DIR}/chunqiu"
-        val script = "$dir/JinBeiChunQiuFixToolPro2.sh"
         val out = HuijuiShellUtils.runAsRoot(
-            "rm -rf '$dir'; mkdir -p '$dir'; " +
-                "unzip -o -q '${zip.absolutePath}' -d '$dir' 2>/dev/null || " +
-                "(cd '$dir' && /data/adb/ksu/bin/busybox unzip -o -q '${zip.absolutePath}'); " +
-                "S=${'$'}(find '$dir' -name '*.sh' | head -1); " +
-                "[ -n \"${'$'}S\" ] || { echo NO_SCRIPT; exit 1; }; " +
-                "sh \"${'$'}S\" >/dev/null 2>&1; echo DONE",
-            timeoutSeconds = 120,
+            "sh '${script.absolutePath}' 2>&1; echo __DONE__",
+            timeoutSeconds = 180,
         )
         return when {
-            out.contains("NO_SCRIPT") -> Result(false, "包里没有找到脚本")
-            out.contains("DONE") -> Result(true, "修复脚本已执行")
-            else -> Result(false, "执行失败：${out.take(120)}")
+            out.contains("__DONE__") -> Result(true, "修复脚本已执行")
+            out.isBlank() -> Result(false, "执行失败：没有输出（可能未授予 root）")
+            else -> Result(false, "执行失败：${out.lineSequence().first().take(100)}")
         }
     }
 }
