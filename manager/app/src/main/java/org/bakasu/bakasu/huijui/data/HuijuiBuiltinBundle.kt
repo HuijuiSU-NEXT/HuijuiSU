@@ -11,7 +11,7 @@ import java.io.File
  * 内置资源包（随 APK 一起分发，不依赖用户导入）。
  *
  * 包含：
- * - `hide_bundle_v1.4_mod.zip`：一键隐藏模块（恋雪 v1.4（修复版））
+ * - `hide_bundle_v1.4_mod.zip`：一键隐藏模块（恋雪 v1.4 超级定制版）
  * - `hide_bundle_v1.4_mod.zip` 为定制内置版：去掉 120MB 检测 APK，修好春秋脚本路径与兜底解压
  * - `evil_service_check.sh`：Evil Service 自查脚本
  *
@@ -30,15 +30,15 @@ object HuijuiBuiltinBundle {
         private set
 
     /** 每次改动内置文件内容时 +1，触发重新部署。 */
-    const val VERSION = 7
+    const val VERSION = 8
 
     const val DEVICE_DIR = "/data/adb/huijui"
-    const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.4.zip"
+    const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.4_super.zip"
     const val EVIL_SH_ASSET = "huijui/evil_service_check.sh"
     const val CHUNQIU_ZIP_ASSET = "huijui/chunqiu_fix_v1.zip"
     const val HYBRID_ZIP_ASSET = "huijui/hybrid_mount_6.2.5.zip"
 
-    const val HIDE_ZIP_NAME = "hide_bundle_v1.4.zip"
+    const val HIDE_ZIP_NAME = "hide_bundle_v1.4_super.zip"
     const val EVIL_SH_NAME = "evil_service_check.sh"
     const val CHUNQIU_ZIP_NAME = "chunqiu_fix_v1.zip"
     const val HYBRID_ZIP_NAME = "hybrid_mount_6.2.5.zip"
@@ -127,19 +127,37 @@ object HuijuiBuiltinBundle {
                 }
             }
 
-            // root 才能写 /data/adb；没有 root 时静默跳过，不打扰用户
+            // 用 libsu 的 SuFileOutputStream 直接以 root 身份流式写入，
+            // 避免 “root 去读应用缓存” 被 SELinux 拒绝，导致资源永远部署不上。
+            fun push(assetPath: String, name: String): Boolean = runCatching {
+                val target = com.topjohnwu.superuser.io.SuFile("$DEVICE_DIR/$name")
+                target.parentFile?.mkdirs()
+                context.assets.open(assetPath).use { input ->
+                    com.topjohnwu.superuser.io.SuFileOutputStream.open(target).use { out ->
+                        input.copyTo(out)
+                    }
+                }
+                target.exists() && target.length() > 0
+            }.getOrDefault(false)
+
+            val pushed = listOf(
+                HIDE_ZIP_ASSET to HIDE_ZIP_NAME,
+                EVIL_SH_ASSET to EVIL_SH_NAME,
+                CHUNQIU_ZIP_ASSET to CHUNQIU_ZIP_NAME,
+                HYBRID_ZIP_ASSET to HYBRID_ZIP_NAME,
+            ).all { (asset, name) -> push(asset, name) }
+
+            if (!pushed) {
+                Log.w(TAG, "内置资源写入失败")
+                lastError = "资源写入 /data/adb/huijui 失败（检查 root 授权）"
+                return@withContext false
+            }
+
+            // 权限 + 清理旧版本包
             val cmd = buildString {
-                append("mkdir -p $DEVICE_DIR; ")
-                append("cp '${zip.absolutePath}' '$DEVICE_DIR/$HIDE_ZIP_NAME'; ")
-                append("cp '${sh.absolutePath}' '$DEVICE_DIR/$EVIL_SH_NAME'; ")
-                append("cp '${cq.absolutePath}' '$DEVICE_DIR/$CHUNQIU_ZIP_NAME'; ")
-                append("cp '${hm.absolutePath}' '$DEVICE_DIR/$HYBRID_ZIP_NAME'; ")
-                append("chmod 644 '$DEVICE_DIR/$HYBRID_ZIP_NAME'; ")
-                append("chmod 644 '$DEVICE_DIR/$HIDE_ZIP_NAME'; ")
-                append("chmod 644 '$DEVICE_DIR/$CHUNQIU_ZIP_NAME'; ")
-                // 清理旧版本的隐藏模块包，避免 /data/adb/huijui 越堆越多
-                append("ls '$DEVICE_DIR'/hide_bundle_v1*.zip 2>/dev/null | grep -v '/$HIDE_ZIP_NAME\\$' | xargs -r rm -f 2>/dev/null; ")
-                append("chmod 755 '$DEVICE_DIR/$EVIL_SH_NAME'; ")
+                append("chmod 644 '$DEVICE_DIR/$HIDE_ZIP_NAME' '$DEVICE_DIR/$CHUNQIU_ZIP_NAME' '$DEVICE_DIR/$HYBRID_ZIP_NAME' 2>/dev/null; ")
+                append("chmod 755 '$DEVICE_DIR/$EVIL_SH_NAME' 2>/dev/null; ")
+                append("ls '$DEVICE_DIR'/hide_bundle_v1*.zip 2>/dev/null | grep -v '$HIDE_ZIP_NAME\\$' | xargs -r rm -f 2>/dev/null; ")
                 append("ls -l $DEVICE_DIR")
             }
             val out = HuijuiShellUtils.runAsRoot(cmd)
