@@ -72,10 +72,17 @@ fun HuijuiHubPage(bottomPadding: Dp) {
         busyKey = key
         status = status + (key to working)
         scope.launch {
-            val ok = withContext(Dispatchers.IO) {
-                runCatching { block() }.getOrElse { false }
+            val ok = try {
+                // 最长等 150 秒；超时也要回到 UI，否则会一直显示「正在…」
+                kotlinx.coroutines.withTimeoutOrNull(150_000L) {
+                    withContext(Dispatchers.IO) {
+                        runCatching { block() }.getOrElse { false }
+                    }
+                } ?: false
+            } catch (t: Throwable) {
+                false
             }
-            val msg = if (ok) done else "失败：命令没有成功（先看上面 Root 状态卡）"
+            val msg = if (ok) done else "失败：命令没有返回（可能未授权 root，或执行超时）"
             status = status + (key to msg)
             busyKey = null
             toastMessage = msg

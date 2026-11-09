@@ -1,47 +1,60 @@
 package org.bakasu.bakasu.huijui.util
 
 import com.topjohnwu.superuser.Shell
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeoutException
 
 /**
  * HuiJuiSU 公共 Root Shell 执行工具。
  *
- * 重要：这里必须走 libsu 的 [Shell]，**不要**直接用 `ProcessBuilder("su", ...)`。
+ * 设计要点（都是踩过坑之后加的）：
  *
- * 原因：KernelSU 系的内核只对「被认可的管理器进程」放行 su，
- * 应用进程直接 exec `su` 会拿到 `EACCES (Permission denied)`；
- * libsu 走的是管理器自己建立的 root shell（ksud debug su），不受这个限制。
- *
- * 之前「一键隐藏 / Evil 自查 / 元模块 / 春秋修复」这些卡片全部提示没有 root，
- * 就是因为它们走的是 ProcessBuilder 那条路。
+ * 1. 走 libsu 的 [Shell]，不要直接 `ProcessBuilder("su")` —— 应用进程 exec su 会被内核拒绝。
+ * 2. **必须带超时**。libsu 的 `exec()` 在内核无响应、su 授权弹窗未处理时会永久阻塞，
+ *    表现为界面一直「正在安装…」停不下来。这里用独立线程 + Future 超时兜底。
+ * 3. 超时后返回 `TIMEOUT`，调用方据此提示用户，而不是无限等待。
  */
 object HuijuiShellUtils {
 
+    const val TIMEOUT_MARK = "__TIMEOUT__"
+
+    // 单线程执行：KernelSU 对并发 su 请求会排队甚至互相阻塞，
+    // 串行执行 + 超时，才不会出现多个卡片同时卡在「正在…」。
+    private val pool = Executors.newSingleThreadExecutor { r ->
+        Thread(r, "huijui-su").apply { isDaemon = true }
+    }
+
     /**
      * 以 Root 权限执行命令，返回 stdout + stderr 合并输出。
-     *
-     * @param cmd 完整 shell 命令
-     * @param timeoutSeconds 预留给调用方说明用；需要硬超时请用 `timeout N` 包住命令
-     * @param trim 是否对输出做 trim
+     * 超时返回 [TIMEOUT_MARK]，执行异常返回异常信息。
      */
     fun runAsRoot(
         cmd: String,
         timeoutSeconds: Long = 30,
         trim: Boolean = false,
-    ): String = try {
-        val result = Shell.cmd(cmd).exec()
-        val out = buildString {
-            result.out.forEach { appendLine(it) }
-            result.err.forEach { appendLine(it) }
+    ): String {
+        val task = pool.submit<String> {
+            val result = Shell.cmd(cmd).exec()
+            buildString {
+                result.out.forEach { appendLine(it) }
+                result.err.forEach { appendLine(it) }
+            }
         }
-        if (trim) out.trim() else out
-    } catch (t: Throwable) {
-        t.message ?: ""
+        val out = try {
+            task.get(timeoutSeconds, TimeUnit.SECONDS)
+        } catch (t: TimeoutException) {
+            task.cancel(true)
+            TIMEOUT_MARK
+        } catch (t: Throwable) {
+            t.cause?.message ?: t.message ?: ""
+        }
+        return if (trim) out.trim() else out
     }
 
-    /** 命令是否执行成功（退出码 0）。 */
-    fun runAsRootOk(cmd: String): Boolean = try {
-        Shell.cmd(cmd).exec().isSuccess
-    } catch (t: Throwable) {
-        false
+    /** 命令是否执行成功（退出码 0），超时视为失败。 */
+    fun runAsRootOk(cmd: String, timeoutSeconds: Long = 30): Boolean {
+        val r = runAsRoot(cmd, timeoutSeconds, trim = true)
+        return r.isNotBlank() && r != TIMEOUT_MARK && !r.contains("Permission denied")
     }
 }

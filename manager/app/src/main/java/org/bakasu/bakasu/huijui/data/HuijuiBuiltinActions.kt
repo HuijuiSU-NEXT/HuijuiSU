@@ -32,8 +32,11 @@ object HuijuiBuiltinActions {
 
         val out = HuijuiShellUtils.runAsRoot(
             "/data/adb/ksud module install '${zip.absolutePath}' 2>&1",
-            timeoutSeconds = 180,
+            timeoutSeconds = 120,
         )
+        if (out.contains(HuijuiShellUtils.TIMEOUT_MARK)) {
+            return Result(false, "安装超时：root 无响应，请确认管理器已被授予 root")
+        }
         val ok = out.contains("success", true) || out.contains("installed", true) ||
             !out.contains("error", true)
         if (!ok) return Result(false, "安装失败：${out.take(120)}")
