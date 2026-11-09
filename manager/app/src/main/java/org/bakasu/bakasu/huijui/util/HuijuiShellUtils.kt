@@ -79,21 +79,38 @@ object HuijuiShellUtils {
         false
     }
 
+    // 不同设备上 su 的位置不一样，逐个试。
+    // 注意：优先用 `su -c`（直接起 sh），避免 libsu 的 app_process 引导——
+    // 那一步会加载 base.art，root 进程读不到 oat 时会报
+    // "Invalid image header"，然后 libsu 永久等待。
+    private val suPaths = listOf(
+        "/system/bin/su",
+        "/debug_ramdisk/su",
+        "/data/adb/ksu/bin/su",
+        "su",
+    )
+
     fun probe(cmd: String, timeoutSeconds: Long = 20): Attempt {
         // 未授权直接返回，避免 libsu / su 卡在等待授权
         if (!isGranted()) return Attempt("none", NO_ROOT_MARK)
 
-        val su = execProcess(listOf("su", "-c", cmd), timeoutSeconds)
-        if (!looksBad(su)) return Attempt("su", su)
+        val tried = mutableListOf<String>()
+        for (path in suPaths) {
+            val r = execProcess(listOf(path, "-c", cmd), timeoutSeconds)
+            tried += r
+            if (!looksBad(r)) return Attempt("su:$path", r)
+        }
 
         val ksud = execProcess(listOf("/data/adb/ksu/bin/ksud", "debug", "su", "-c", cmd), timeoutSeconds)
+        tried += ksud
         if (!looksBad(ksud)) return Attempt("ksud", ksud)
 
         val libsu = execLibsu(cmd, timeoutSeconds)
+        tried += libsu
         if (!looksBad(libsu)) return Attempt("libsu", libsu)
 
         // 全失败：把最有信息量的结果带回去
-        val best = listOf(su, ksud, libsu).firstOrNull { it != TIMEOUT_MARK } ?: TIMEOUT_MARK
+        val best = tried.firstOrNull { it != TIMEOUT_MARK && it.isNotBlank() } ?: TIMEOUT_MARK
         return Attempt("none", best)
     }
 
