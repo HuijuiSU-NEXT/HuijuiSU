@@ -11,7 +11,7 @@ import java.io.File
  * 内置资源包（随 APK 一起分发，不依赖用户导入）。
  *
  * 包含：
- * - `hide_bundle_v1.4_mod.zip`：一键隐藏模块（恋雪 v1.4 定制内置版）
+ * - `hide_bundle_v1.4_mod.zip`：一键隐藏模块（恋雪 v1.4 超级定制版）
  * - `hide_bundle_v1.4_mod.zip` 为定制内置版：去掉 120MB 检测 APK，修好春秋脚本路径与兜底解压
  * - `evil_service_check.sh`：Evil Service 自查脚本
  *
@@ -30,15 +30,15 @@ object HuijuiBuiltinBundle {
         private set
 
     /** 每次改动内置文件内容时 +1，触发重新部署。 */
-    const val VERSION = 5
+    const val VERSION = 6
 
     const val DEVICE_DIR = "/data/adb/huijui"
-    const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.4_mod.zip"
+    const val HIDE_ZIP_ASSET = "huijui/hide_bundle_v1.4_super.zip"
     const val EVIL_SH_ASSET = "huijui/evil_service_check.sh"
     const val CHUNQIU_ZIP_ASSET = "huijui/chunqiu_fix_v1.zip"
     const val HYBRID_ZIP_ASSET = "huijui/hybrid_mount_6.2.5.zip"
 
-    const val HIDE_ZIP_NAME = "hide_bundle_v1.4_mod.zip"
+    const val HIDE_ZIP_NAME = "hide_bundle_v1.4_super.zip"
     const val EVIL_SH_NAME = "evil_service_check.sh"
     const val CHUNQIU_ZIP_NAME = "chunqiu_fix_v1.zip"
     const val HYBRID_ZIP_NAME = "hybrid_mount_6.2.5.zip"
@@ -137,6 +137,8 @@ object HuijuiBuiltinBundle {
                 append("chmod 644 '$DEVICE_DIR/$HYBRID_ZIP_NAME'; ")
                 append("chmod 644 '$DEVICE_DIR/$HIDE_ZIP_NAME'; ")
                 append("chmod 644 '$DEVICE_DIR/$CHUNQIU_ZIP_NAME'; ")
+                // 清理旧版本的隐藏模块包，避免 /data/adb/huijui 越堆越多
+                append("ls '$DEVICE_DIR'/hide_bundle_v1*.zip 2>/dev/null | grep -v '/$HIDE_ZIP_NAME\\$' | xargs -r rm -f 2>/dev/null; ")
                 append("chmod 755 '$DEVICE_DIR/$EVIL_SH_NAME'; ")
                 append("ls -l $DEVICE_DIR")
             }

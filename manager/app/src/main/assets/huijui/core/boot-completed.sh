@@ -32,9 +32,9 @@ fi
 
 # ---- 2. 一键隐藏模块：等元模块就位后再装 ----
 if ! installed hide_bundle; then
-  if [ -f "$H/hide_bundle_v1.4_mod.zip" ] && [ ! -f "$H/.hide_tried" ] && installed hybrid_mount; then
+  if [ -f "$H/hide_bundle_v1.4_super.zip" ] && [ ! -f "$H/.hide_tried" ] && installed hybrid_mount; then
     log "安装隐藏模块 hide_bundle"
-    $K module install "$H/hide_bundle_v1.4_mod.zip" >> "$LOG" 2>&1
+    $K module install "$H/hide_bundle_v1.4_super.zip" >> "$LOG" 2>&1
     touch "$H/.hide_tried"
   fi
 else
