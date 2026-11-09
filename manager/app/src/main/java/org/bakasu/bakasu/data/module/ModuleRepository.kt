@@ -112,12 +112,21 @@ class ModuleRepository(
         }
     }
 
+    /** 不允许用户卸载的内置模块。 */
+    private val PROTECTED_MODULES = setOf("hide_bundle")
+
     suspend fun setModuleEnabled(moduleId: String, enabled: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
         runCatching { check(ksuCliRepository.toggleModule(moduleId, enabled)) }
             .onSuccess { updateCachedEnabled(moduleId, enabled) }
     }
 
     suspend fun setModuleRemoved(moduleId: String, removed: Boolean): Result<Unit> = withContext(Dispatchers.IO) {
+        // 内置核心模块禁止卸载：删掉后隐藏链路会直接崩，且普通用户很难恢复
+        if (removed && moduleId in PROTECTED_MODULES) {
+            return@withContext Result.failure(
+                IllegalStateException("内置核心模块，禁止卸载（$moduleId）"),
+            )
+        }
         runCatching {
             check(
                 if (removed) {

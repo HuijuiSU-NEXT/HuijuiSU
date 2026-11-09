@@ -24,6 +24,12 @@ object HuijuiBuiltinActions {
             return Result(false, "内置隐藏模块未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
         }
 
+        // 先清掉旧版本（v1.3 等），避免重启后新旧并存
+        HuijuiShellUtils.runAsRoot(
+            "rm -rf /data/adb/modules/hide_bundle /data/adb/modules_update/hide_bundle 2>/dev/null; true",
+            timeoutSeconds = 30,
+        )
+
         val out = HuijuiShellUtils.runAsRoot(
             "/data/adb/ksud module install '${zip.absolutePath}' 2>&1",
             timeoutSeconds = 180,
