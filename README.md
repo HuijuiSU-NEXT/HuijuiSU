@@ -1,22 +1,136 @@
-# HuiJuiSU
+<div align="center">
 
-> 基于 KernelSU 的 Root 管理器，面向隐藏与日常可用性做了大量定制。
+# HuiJuiSU NEXT Ultra
+
+**基于 KernelSU 的 Root 管理器 · 内置隐藏 · 真热刷入 · 开机秒激活**
+
+[![Release](https://img.shields.io/github/v/release/HuijuiSU-NEXT/HuijuiSU?label=release)](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases/latest)
+[![License](https://img.shields.io/github/license/HuijuiSU-NEXT/HuijuiSU)](LICENSE)
+
+[官网](https://huijuisu-next.github.io/) · [下载](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases/latest) · [安装文档](https://huijuisu-next.github.io/install.html) · [FAQ](https://huijuisu-next.github.io/faq.html) · [TG 群](https://t.me/Huijui123) · [TG 频道](https://t.me/HuijuiSU) · [QQ 群](https://qm.qq.com/q/5pS7RgzhJe)
+
+</div>
+
+---
 
 ## 这是什么
 
-HuiJuiSU 是 KernelSU 的下游分支，保留上游的管理器与内核能力，
-额外内置了隐藏模块、检测对抗与一批开箱即用的工具。
+HuiJuiSU 是 **KernelSU 的下游分支**。保留上游的管理器与内核能力，额外把隐藏模块、检测对抗、热刷入与一批实用工具收进管理器。
 
-## 主要能力
+和上游的区别不在于「多了几个开关」，而在于：
+
+- 隐藏所需组件**随 APK 内置**，不用自己找包、导配置
+- 模块安装后可以**免重启热挂载**（纯 VFS 计划）
+- 重启后隐藏配置**自动激活**，不需要手动打开管理器
+
+---
+
+## 核心特性
 
 | 能力 | 说明 |
 |---|---|
-| 模块管理 | 安装 / 启停 / 卸载 / 备份，支持真热刷入 |
-| 超级用户 | 自动列出全部应用，一键授权 / 撤销 |
-| 隐藏能力 | 内置一键隐藏模块，开机自动部署 |
-| 元模块 | 内置 Hybrid Mount，模块挂载更稳 |
-| 工具箱 | boot 备份、SystemUI 重启、缓存清理、Evil Service 自查 |
-| 内核 | 支持 LKM（GKI 2.0）与内核补丁两种方式 |
+| **模块管理** | 安装 / 启停 / 卸载 / 备份还原，支持真热刷入 |
+| **超级用户** | 自动列出全部应用，一键授权 / 撤销，真实应用图标 |
+| **内置一键隐藏** | 隐藏模块随 APK 分发，首次启动自动部署，安装前清理旧版本 |
+| **真·热刷入** | 接入 Hybrid Mount runtime，纯 VFS 模块装完即挂载 |
+| **开机秒激活** | `huijui_core` 在开机过程中完成隐藏配置与依赖安装 |
+| **极客工具箱** | 12 张卡片：boot 备份、SystemUI 重启、缓存清理、Evil 自查、春秋修复等 |
+| **核心防误删** | 内置隐藏模块禁止卸载与停用 |
+| **功耗优化** | 背景模糊限流 30fps 并后台停止；隐藏规则合并为一次 su |
+| **稳定性** | root 调用带超时并串行化，不再无限转圈；崩溃日志落盘 |
+
+---
+
+## 内置资源
+
+随 APK 分发，首次启动自动部署到 `/data/adb/huijui/`：
+
+| 资源 | 用途 |
+|---|---|
+| `hide_bundle_v1.4_super.zip` | 一键隐藏模块（超级定制版，26 MB） |
+| `hybrid_mount_6.2.5.zip` | Hybrid Mount 元模块（热刷入依赖） |
+| `evil_service_check.sh` | Evil Service 自查脚本 |
+| `chunqiu_fix_v1.zip` | 春秋词条修复脚本 |
+
+部署幂等：版本未变且文件齐全时跳过；版本变化自动覆盖，并清理设备上的旧包。
+
+---
+
+## 工具箱
+
+| 卡片 | 作用 |
+|---|---|
+| Root 状态 | 显示真实 UID 与 su 输出，排错第一步 |
+| 备份 boot 分区 | 导出到 `Download/boot_backup_*.img` |
+| 重启 SystemUI | 状态栏卡死时自救 |
+| 清理内存缓存 | `drop_caches` 释放 RAM |
+| 清理临时文件 | `/data/local/tmp` 与模块安装残留 |
+| 模块备份与还原 | 打包 / 恢复已装模块 |
+| 一键隐藏 | 安装内置隐藏模块并尝试热激活 |
+| Evil Service 自查 | 扫描后给出结论 |
+| 元模块状态 | 查询 Hybrid Mount 运行时 |
+| 安装元模块 | 缺失时一键安装 |
+| 春秋词条修复 | 二次确认后执行内置脚本 |
+| 重启设备 | 二次确认 |
+
+每张卡片都有可见执行状态，150 秒超时会明确提示，不会停在「正在…」。
+
+---
+
+## 安装
+
+> 先确认内核类型，选错是「装了却没有 root」的最常见原因。完整步骤见 [安装文档](https://huijuisu-next.github.io/install.html)。
+
+| 内核 | 方式 | 说明 |
+|---|---|---|
+| GKI 2.0（5.10 / 5.15 / 6.1 / 6.6 / 6.12 / 6.18） | **LKM** | 下载对应 `kernelsu.ko` 加载，不用重编内核 |
+| 4.x / 非 GKI 魔改内核 | **内核补丁** | 需要内核源码重新编译 boot |
+
+### 快速开始（GKI）
+
+```bash
+adb push aarch64-android16-6.12_kernelsu.ko /data/local/tmp/
+adb shell su -c "ksud insmod /data/local/tmp/aarch64-android16-6.12_kernelsu.ko"
+adb shell su -c "lsmod | grep -i ksu"
+adb install HuiJuiSU_NEXT_Ultra_arm64-v8a-release.apk
+```
+
+装好后打开 App → 工具箱 → 一键隐藏。
+
+---
+
+## 兼容性
+
+| KMI | Android | LKM | 状态 |
+|---|---|---|---|
+| `android12-5.10` | 12 | ✅ | 支持 |
+| `android13-5.10` | 13 | ✅ | 支持 |
+| `android13-5.15` | 13 | ✅ | 支持 |
+| `android14-5.15` | 14 | ✅ | 支持 |
+| `android14-6.1` | 14 | ✅ | 支持 |
+| `android15-6.6` | 15 | ✅ | 支持 |
+| `android16-6.12` | 16 | ✅ | 支持 |
+| `android17-6.18` | 17 | ✅ | 支持 |
+| 4.x / 非 GKI | 8–13 | ❌ | 内核补丁 |
+
+---
+
+## 版本线
+
+| 版本 | 主题 |
+|---|---|
+| v5.0.0 | 大版本：内置资源、真热刷入、功耗与启动优化 |
+| v5.0.1 – v5.0.2 | libsu 执行修复、root 侧文件判断 |
+| v5.0.3 | 版本号修复、元模块检测 |
+| v5.0.4 | 春秋修复、壁纸稳定 |
+| v5.0.6 | 内置隐藏模块 v1.4 超级定制版 |
+| v5.0.8 | 资源部署改 root 流式写入 |
+| v5.0.10 – v5.0.11 | 清理旧模块、禁止卸载与停用 |
+| **v5.0.12** | **root 调用超时与串行化，修复卡在加载中** |
+
+完整更新见 [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases)。
+
+---
 
 ## 目录结构
 
@@ -24,7 +138,8 @@ HuiJuiSU 是 KernelSU 的下游分支，保留上游的管理器与内核能力�
 kernel/         内核补丁与内核模块
 userspace/      ksud 等用户态程序
 manager/        Android 管理器 App
-docs/           文档
+site/           官网（GitHub Pages）
+docs/           文档与发布说明
 scripts/        构建与工具脚本
 ```
 
@@ -35,75 +150,44 @@ cd manager
 ./gradlew :app:assembleRelease
 ```
 
-内核与 ksud 的构建见 `.github/workflows/` 与 `justfile`。
+内核与 ksud 的构建见 `.github/workflows/`。
 
-## 文档
+---
 
-- 安装路线：[docs/INSTALL_ROUTES.md](docs/INSTALL_ROUTES.md)
-- 验证清单：[docs/VERIFY.md](docs/VERIFY.md)
-- 第三方许可：[docs/THIRD_PARTY_NOTICES.md](docs/THIRD_PARTY_NOTICES.md)
+## 相关仓库
+
+| 仓库 | 说明 |
+|---|---|
+| [Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module) | 一键隐藏模块源码 |
+| [Huijui_Module_Repo](https://github.com/HuijuiSU-NEXT/Huijui_Module_Repo) | 模块仓库源 |
+| [HuiJui-Toolbox](https://github.com/HuijuiSU-NEXT/HuiJui-Toolbox) | 工具箱 |
+
+---
 
 ## 贡献者
-
-<p align="center">
-  <a href="https://github.com/ShirkNeko" title="ShirkNeko"><img src="https://github.com/ShirkNeko.png?size=64" width="40" height="40" alt="ShirkNeko"></a>
-  <a href="https://github.com/tiann" title="tiann"><img src="https://github.com/tiann.png?size=64" width="40" height="40" alt="tiann"></a>
-  <a href="https://github.com/AlexLiuDev233" title="AlexLiuDev233"><img src="https://github.com/AlexLiuDev233.png?size=64" width="40" height="40" alt="AlexLiuDev233"></a>
-  <a href="https://github.com/5ec1cff" title="5ec1cff"><img src="https://github.com/5ec1cff.png?size=64" width="40" height="40" alt="5ec1cff"></a>
-  <a href="https://github.com/Ylarod" title="Ylarod"><img src="https://github.com/Ylarod.png?size=64" width="40" height="40" alt="Ylarod"></a>
-  <a href="https://github.com/luyanci" title="luyanci"><img src="https://github.com/luyanci.png?size=64" width="40" height="40" alt="luyanci"></a>
-  <a href="https://github.com/liankong233" title="liankong233"><img src="https://github.com/liankong233.png?size=64" width="40" height="40" alt="liankong233"></a>
-  <a href="https://github.com/Tools-cx-app" title="Tools-cx-app"><img src="https://github.com/Tools-cx-app.png?size=64" width="40" height="40" alt="Tools-cx-app"></a>
-  <a href="https://github.com/aviraxp" title="aviraxp"><img src="https://github.com/aviraxp.png?size=64" width="40" height="40" alt="aviraxp"></a>
-  <a href="https://github.com/weblate" title="weblate"><img src="https://github.com/weblate.png?size=64" width="40" height="40" alt="weblate"></a>
-  <a href="https://github.com/backslashxx" title="backslashxx"><img src="https://github.com/backslashxx.png?size=64" width="40" height="40" alt="backslashxx"></a>
-  <a href="https://github.com/rsuntk" title="rsuntk"><img src="https://github.com/rsuntk.png?size=64" width="40" height="40" alt="rsuntk"></a>
-  <a href="https://github.com/igormiguell" title="igormiguell"><img src="https://github.com/igormiguell.png?size=64" width="40" height="40" alt="igormiguell"></a>
-  <a href="https://github.com/dabao1955" title="dabao1955"><img src="https://github.com/dabao1955.png?size=64" width="40" height="40" alt="dabao1955"></a>
-  <a href="https://github.com/yujincheng08" title="yujincheng08"><img src="https://github.com/yujincheng08.png?size=64" width="40" height="40" alt="yujincheng08"></a>
-  <a href="https://github.com/hhcdxii-ship-it" title="hhcdxii-ship-it"><img src="https://github.com/hhcdxii-ship-it.png?size=64" width="40" height="40" alt="hhcdxii-ship-it"></a>
-  <a href="https://github.com/WenHao2130" title="WenHao2130"><img src="https://github.com/WenHao2130.png?size=64" width="40" height="40" alt="WenHao2130"></a>
-  <a href="https://github.com/hmtheboy154" title="hmtheboy154"><img src="https://github.com/hmtheboy154.png?size=64" width="40" height="40" alt="hmtheboy154"></a>
-  <a href="https://github.com/Howard20181" title="Howard20181"><img src="https://github.com/Howard20181.png?size=64" width="40" height="40" alt="Howard20181"></a>
-  <a href="https://github.com/MiRinChan" title="MiRinChan"><img src="https://github.com/MiRinChan.png?size=64" width="40" height="40" alt="MiRinChan"></a>
-  <a href="https://github.com/symbuzzer" title="symbuzzer"><img src="https://github.com/symbuzzer.png?size=64" width="40" height="40" alt="symbuzzer"></a>
-  <a href="https://github.com/RooGhz720" title="RooGhz720"><img src="https://github.com/RooGhz720.png?size=64" width="40" height="40" alt="RooGhz720"></a>
-  <a href="https://github.com/TinyHai" title="TinyHai"><img src="https://github.com/TinyHai.png?size=64" width="40" height="40" alt="TinyHai"></a>
-  <a href="https://github.com/SaleOff" title="SaleOff"><img src="https://github.com/SaleOff.png?size=64" width="40" height="40" alt="SaleOff"></a>
-  <a href="https://github.com/natsumerinchan" title="natsumerinchan"><img src="https://github.com/natsumerinchan.png?size=64" width="40" height="40" alt="natsumerinchan"></a>
-  <a href="https://github.com/s1204IT" title="s1204IT"><img src="https://github.com/s1204IT.png?size=64" width="40" height="40" alt="s1204IT"></a>
-  <a href="https://github.com/reindex-ot" title="reindex-ot"><img src="https://github.com/reindex-ot.png?size=64" width="40" height="40" alt="reindex-ot"></a>
-  <a href="https://github.com/u9521" title="u9521"><img src="https://github.com/u9521.png?size=64" width="40" height="40" alt="u9521"></a>
-  <a href="https://github.com/Dr-TSNG" title="Dr-TSNG"><img src="https://github.com/Dr-TSNG.png?size=64" width="40" height="40" alt="Dr-TSNG"></a>
-  <a href="https://github.com/YuKongA" title="YuKongA"><img src="https://github.com/YuKongA.png?size=64" width="40" height="40" alt="YuKongA"></a>
-  <a href="https://github.com/Prslc" title="Prslc"><img src="https://github.com/Prslc.png?size=64" width="40" height="40" alt="Prslc"></a>
-  <a href="https://github.com/whyakari" title="whyakari"><img src="https://github.com/whyakari.png?size=64" width="40" height="40" alt="whyakari"></a>
-  <a href="https://github.com/KOWX712" title="KOWX712"><img src="https://github.com/KOWX712.png?size=64" width="40" height="40" alt="KOWX712"></a>
-  <a href="https://github.com/Aquarius223" title="Aquarius223"><img src="https://github.com/Aquarius223.png?size=64" width="40" height="40" alt="Aquarius223"></a>
-  <a href="https://github.com/rifsxd" title="rifsxd"><img src="https://github.com/rifsxd.png?size=64" width="40" height="40" alt="rifsxd"></a>
-  <a href="https://github.com/skbeh" title="skbeh"><img src="https://github.com/skbeh.png?size=64" width="40" height="40" alt="skbeh"></a>
-  <a href="https://github.com/resuki-workbot" title="resuki-workbot"><img src="https://github.com/resuki-workbot.png?size=64" width="40" height="40" alt="resuki-workbot"></a>
-  <a href="https://github.com/CanerKaraca23" title="CanerKaraca23"><img src="https://github.com/CanerKaraca23.png?size=64" width="40" height="40" alt="CanerKaraca23"></a>
-  <a href="https://github.com/Coconutat" title="Coconutat"><img src="https://github.com/Coconutat.png?size=64" width="40" height="40" alt="Coconutat"></a>
-  <a href="https://github.com/Hikari-no-Tenshi" title="Hikari-no-Tenshi"><img src="https://github.com/Hikari-no-Tenshi.png?size=64" width="40" height="40" alt="Hikari-no-Tenshi"></a>
-  <a href="https://github.com/ygorigor" title="ygorigor"><img src="https://github.com/ygorigor.png?size=64" width="40" height="40" alt="ygorigor"></a>
-  <a href="https://github.com/raystef66" title="raystef66"><img src="https://github.com/raystef66.png?size=64" width="40" height="40" alt="raystef66"></a>
-  <a href="https://github.com/aaaaaaaa-815" title="aaaaaaaa-815"><img src="https://github.com/aaaaaaaa-815.png?size=64" width="40" height="40" alt="aaaaaaaa-815"></a>
-  <a href="https://github.com/ShiinaSaku" title="ShiinaSaku"><img src="https://github.com/ShiinaSaku.png?size=64" width="40" height="40" alt="ShiinaSaku"></a>
-  <a href="https://github.com/diphons" title="diphons"><img src="https://github.com/diphons.png?size=64" width="40" height="40" alt="diphons"></a>
-</p>
 
 - [hhcdxii-ship-it](https://github.com/hhcdxii-ship-it) —— 内核 / 管理器 / 发布
 - [Yuyan9178345](https://github.com/Yuyan9178345) —— 隐藏模块（[Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module)）
 
 完整名单见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
 
+---
+
 ## 交流
 
-- Telegram 群：https://t.me/Huijui123
-- Telegram 频道：https://t.me/HuijuiSU
-- QQ 群：763278354
+| 渠道 | 链接 |
+|---|---|
+| Telegram 群 | https://t.me/Huijui123 |
+| Telegram 频道 | https://t.me/HuijuiSU |
+| QQ 群 | https://qm.qq.com/q/5pS7RgzhJe |
+
+---
+
+## 免责声明
+
+本项目用于**个人设备的环境隔离与隐私保护**，请勿用于规避合法风控。
+刷机有风险，操作前请备份 boot 分区。
 
 ## 许可
 
-见 [LICENSE](LICENSE)。
+[GPL-3.0](LICENSE)。
