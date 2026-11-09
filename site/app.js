@@ -1,7 +1,7 @@
 // 数字滚动
 document.querySelectorAll('[data-count]').forEach(el => {
   const target = parseInt(el.dataset.count, 10);
-  const dur = 1200;
+  const dur = 700;
   const t0 = performance.now();
   function tick(t) {
     const p = Math.min(1, (t - t0) / dur);
@@ -22,9 +22,15 @@ const io = new IntersectionObserver((entries) => {
   });
 }, { threshold: 0.12 });
 document.querySelectorAll('.reveal').forEach((el, i) => {
-  el.style.transitionDelay = (i % 6) * 60 + 'ms';
+  el.style.transitionDelay = (i % 6) * 40 + 'ms';
   io.observe(el);
 });
+
+// 兜底：某些环境（无滚动、截图、JS 被限）不会触发 IntersectionObserver，
+// 300ms 后统一显示，避免内容空白。
+setTimeout(() => {
+  document.querySelectorAll('.reveal:not(.in)').forEach(el => el.classList.add('in'));
+}, 300);
 
 // tabs
 document.querySelectorAll('.tab').forEach(btn => {
