@@ -109,3 +109,78 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
 });
+
+// ===== 卡片详情弹窗 =====
+const FEATURE_DETAIL = {
+  c1t: { zh:"内置一键隐藏", body:`
+    <p><b>模块随 APK 分发</b>，不需要用户自己找包、导文件。</p>
+    <ul>
+      <li>首次启动自动部署到 <code>/data/adb/huijui/</code></li>
+      <li>内置：Zygisk Next、LSPosed、HMA-OSS、OhMyKeymint、PIF-Dates</li>
+      <li>自动导入 HMA 配置与 keybox，自动生成黑白名单</li>
+      <li>安装前清理旧版本，避免新旧并存</li>
+    </ul>` },
+  c2t: { zh:"真·热刷入", body:`
+    <p>接入内置元模块 Hybrid Mount 的运行时接口：</p>
+    <p><code>hybrid-mount runtime load &lt;id&gt;</code></p>
+    <ul>
+      <li>纯 VFS 文件计划的模块：装完立即挂载，<b>不用重启</b></li>
+      <li>Magic / Overlay 后端：明确提示「需重启」</li>
+      <li>元模块未就绪时，提示先安装并重启</li>
+    </ul>` },
+  c3t: { zh:"开机秒激活", body:`
+    <p>内置 <code>huijui_core</code> 模块，开机过程自动完成：</p>
+    <ul>
+      <li><b>post-fs-data</b>：首次应用隐藏默认值（只跑一次）</li>
+      <li><b>boot-completed</b>：自动安装元模块与隐藏模块</li>
+    </ul>
+    <p>安装动作放在开机完成后，避免拖慢启动。</p>` },
+  c4t: { zh:"极客工具箱", body:`
+    <p>一张卡片一件事，每张都有可见执行状态：</p>
+    <ul>
+      <li>备份 boot 分区 / 重启 SystemUI / 清理缓存</li>
+      <li>清理临时文件 / 模块备份与还原</li>
+      <li>一键隐藏 / Evil Service 自查 / 元模块状态</li>
+      <li>安装元模块 / 春秋词条修复 / 重启设备 / Root 状态</li>
+    </ul>` },
+  c5t: { zh:"功耗优化", body:`
+    <ul>
+      <li>背景模糊限流 <b>30fps</b>，退到后台停止刷新</li>
+      <li>隐藏规则合并为<b>一次 su</b>，启动更快</li>
+      <li>release 关闭 Koin 日志，冷启动更快</li>
+      <li>壁纸解码按屏幕封顶，内存占用大幅下降</li>
+      <li>ksud 调用全部加超时，避免界面无限转圈</li>
+    </ul>` },
+  c6t: { zh:"核心防误删", body:`
+    <ul>
+      <li>内置隐藏模块<b>禁止卸载</b></li>
+      <li>同时<b>禁止停用</b>，避免隐藏链路失效</li>
+      <li>部署失败会回传真实错误，不再笼统提示</li>
+      <li>崩溃日志写入 cache/crash，便于排查</li>
+    </ul>` }
+};
+
+const dlg = document.getElementById('featDlg');
+if (dlg) {
+  const dlgTitle = document.getElementById('dlgTitle');
+  const dlgBody = document.getElementById('dlgBody');
+  const close = () => dlg.close();
+
+  document.querySelectorAll('.card[data-feature]').forEach(card => {
+    const open = () => {
+      const key = card.dataset.feature;
+      const data = FEATURE_DETAIL[key];
+      if (!data) return;
+      dlgTitle.textContent = data.zh;
+      dlgBody.innerHTML = data.body;
+      dlg.showModal();
+    };
+    card.addEventListener('click', open);
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); open(); }
+    });
+  });
+
+  dlg.querySelector('.dlg-close').addEventListener('click', close);
+  dlg.addEventListener('click', e => { if (e.target === dlg) close(); });
+}
