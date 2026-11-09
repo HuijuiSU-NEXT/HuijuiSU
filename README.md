@@ -45,10 +45,53 @@ cd manager
 
 ## 贡献者
 
-<a href="https://github.com/HuijuiSU-NEXT/HuijuiSU/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HuijuiSU-NEXT/HuijuiSU&max=100" alt="Contributors" />
-</a>
-
+<p align="center">
+  <a href="https://github.com/ShirkNeko" title="ShirkNeko"><img src="https://github.com/ShirkNeko.png?size=64" width="40" height="40" alt="ShirkNeko"></a>
+  <a href="https://github.com/tiann" title="tiann"><img src="https://github.com/tiann.png?size=64" width="40" height="40" alt="tiann"></a>
+  <a href="https://github.com/AlexLiuDev233" title="AlexLiuDev233"><img src="https://github.com/AlexLiuDev233.png?size=64" width="40" height="40" alt="AlexLiuDev233"></a>
+  <a href="https://github.com/5ec1cff" title="5ec1cff"><img src="https://github.com/5ec1cff.png?size=64" width="40" height="40" alt="5ec1cff"></a>
+  <a href="https://github.com/Ylarod" title="Ylarod"><img src="https://github.com/Ylarod.png?size=64" width="40" height="40" alt="Ylarod"></a>
+  <a href="https://github.com/luyanci" title="luyanci"><img src="https://github.com/luyanci.png?size=64" width="40" height="40" alt="luyanci"></a>
+  <a href="https://github.com/liankong233" title="liankong233"><img src="https://github.com/liankong233.png?size=64" width="40" height="40" alt="liankong233"></a>
+  <a href="https://github.com/Tools-cx-app" title="Tools-cx-app"><img src="https://github.com/Tools-cx-app.png?size=64" width="40" height="40" alt="Tools-cx-app"></a>
+  <a href="https://github.com/aviraxp" title="aviraxp"><img src="https://github.com/aviraxp.png?size=64" width="40" height="40" alt="aviraxp"></a>
+  <a href="https://github.com/weblate" title="weblate"><img src="https://github.com/weblate.png?size=64" width="40" height="40" alt="weblate"></a>
+  <a href="https://github.com/backslashxx" title="backslashxx"><img src="https://github.com/backslashxx.png?size=64" width="40" height="40" alt="backslashxx"></a>
+  <a href="https://github.com/rsuntk" title="rsuntk"><img src="https://github.com/rsuntk.png?size=64" width="40" height="40" alt="rsuntk"></a>
+  <a href="https://github.com/igormiguell" title="igormiguell"><img src="https://github.com/igormiguell.png?size=64" width="40" height="40" alt="igormiguell"></a>
+  <a href="https://github.com/dabao1955" title="dabao1955"><img src="https://github.com/dabao1955.png?size=64" width="40" height="40" alt="dabao1955"></a>
+  <a href="https://github.com/yujincheng08" title="yujincheng08"><img src="https://github.com/yujincheng08.png?size=64" width="40" height="40" alt="yujincheng08"></a>
+  <a href="https://github.com/hhcdxii-ship-it" title="hhcdxii-ship-it"><img src="https://github.com/hhcdxii-ship-it.png?size=64" width="40" height="40" alt="hhcdxii-ship-it"></a>
+  <a href="https://github.com/WenHao2130" title="WenHao2130"><img src="https://github.com/WenHao2130.png?size=64" width="40" height="40" alt="WenHao2130"></a>
+  <a href="https://github.com/hmtheboy154" title="hmtheboy154"><img src="https://github.com/hmtheboy154.png?size=64" width="40" height="40" alt="hmtheboy154"></a>
+  <a href="https://github.com/Howard20181" title="Howard20181"><img src="https://github.com/Howard20181.png?size=64" width="40" height="40" alt="Howard20181"></a>
+  <a href="https://github.com/MiRinChan" title="MiRinChan"><img src="https://github.com/MiRinChan.png?size=64" width="40" height="40" alt="MiRinChan"></a>
+  <a href="https://github.com/symbuzzer" title="symbuzzer"><img src="https://github.com/symbuzzer.png?size=64" width="40" height="40" alt="symbuzzer"></a>
+  <a href="https://github.com/RooGhz720" title="RooGhz720"><img src="https://github.com/RooGhz720.png?size=64" width="40" height="40" alt="RooGhz720"></a>
+  <a href="https://github.com/TinyHai" title="TinyHai"><img src="https://github.com/TinyHai.png?size=64" width="40" height="40" alt="TinyHai"></a>
+  <a href="https://github.com/SaleOff" title="SaleOff"><img src="https://github.com/SaleOff.png?size=64" width="40" height="40" alt="SaleOff"></a>
+  <a href="https://github.com/natsumerinchan" title="natsumerinchan"><img src="https://github.com/natsumerinchan.png?size=64" width="40" height="40" alt="natsumerinchan"></a>
+  <a href="https://github.com/s1204IT" title="s1204IT"><img src="https://github.com/s1204IT.png?size=64" width="40" height="40" alt="s1204IT"></a>
+  <a href="https://github.com/reindex-ot" title="reindex-ot"><img src="https://github.com/reindex-ot.png?size=64" width="40" height="40" alt="reindex-ot"></a>
+  <a href="https://github.com/u9521" title="u9521"><img src="https://github.com/u9521.png?size=64" width="40" height="40" alt="u9521"></a>
+  <a href="https://github.com/Dr-TSNG" title="Dr-TSNG"><img src="https://github.com/Dr-TSNG.png?size=64" width="40" height="40" alt="Dr-TSNG"></a>
+  <a href="https://github.com/YuKongA" title="YuKongA"><img src="https://github.com/YuKongA.png?size=64" width="40" height="40" alt="YuKongA"></a>
+  <a href="https://github.com/Prslc" title="Prslc"><img src="https://github.com/Prslc.png?size=64" width="40" height="40" alt="Prslc"></a>
+  <a href="https://github.com/whyakari" title="whyakari"><img src="https://github.com/whyakari.png?size=64" width="40" height="40" alt="whyakari"></a>
+  <a href="https://github.com/KOWX712" title="KOWX712"><img src="https://github.com/KOWX712.png?size=64" width="40" height="40" alt="KOWX712"></a>
+  <a href="https://github.com/Aquarius223" title="Aquarius223"><img src="https://github.com/Aquarius223.png?size=64" width="40" height="40" alt="Aquarius223"></a>
+  <a href="https://github.com/rifsxd" title="rifsxd"><img src="https://github.com/rifsxd.png?size=64" width="40" height="40" alt="rifsxd"></a>
+  <a href="https://github.com/skbeh" title="skbeh"><img src="https://github.com/skbeh.png?size=64" width="40" height="40" alt="skbeh"></a>
+  <a href="https://github.com/resuki-workbot" title="resuki-workbot"><img src="https://github.com/resuki-workbot.png?size=64" width="40" height="40" alt="resuki-workbot"></a>
+  <a href="https://github.com/CanerKaraca23" title="CanerKaraca23"><img src="https://github.com/CanerKaraca23.png?size=64" width="40" height="40" alt="CanerKaraca23"></a>
+  <a href="https://github.com/Coconutat" title="Coconutat"><img src="https://github.com/Coconutat.png?size=64" width="40" height="40" alt="Coconutat"></a>
+  <a href="https://github.com/Hikari-no-Tenshi" title="Hikari-no-Tenshi"><img src="https://github.com/Hikari-no-Tenshi.png?size=64" width="40" height="40" alt="Hikari-no-Tenshi"></a>
+  <a href="https://github.com/ygorigor" title="ygorigor"><img src="https://github.com/ygorigor.png?size=64" width="40" height="40" alt="ygorigor"></a>
+  <a href="https://github.com/raystef66" title="raystef66"><img src="https://github.com/raystef66.png?size=64" width="40" height="40" alt="raystef66"></a>
+  <a href="https://github.com/aaaaaaaa-815" title="aaaaaaaa-815"><img src="https://github.com/aaaaaaaa-815.png?size=64" width="40" height="40" alt="aaaaaaaa-815"></a>
+  <a href="https://github.com/ShiinaSaku" title="ShiinaSaku"><img src="https://github.com/ShiinaSaku.png?size=64" width="40" height="40" alt="ShiinaSaku"></a>
+  <a href="https://github.com/diphons" title="diphons"><img src="https://github.com/diphons.png?size=64" width="40" height="40" alt="diphons"></a>
+</p>
 
 - [hhcdxii-ship-it](https://github.com/hhcdxii-ship-it) —— 内核 / 管理器 / 发布
 - [Yuyan9178345](https://github.com/Yuyan9178345) —— 隐藏模块（[Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module)）
