@@ -6,55 +6,106 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
 /**
- * HuiJuiSU 公共 Root Shell 执行工具。
+ * HuiJuiSU Root 执行工具。
  *
- * 设计要点（都是踩过坑之后加的）：
+ * 这里是踩坑最多的地方，记录一下结论：
  *
- * 1. 走 libsu 的 [Shell]，不要直接 `ProcessBuilder("su")` —— 应用进程 exec su 会被内核拒绝。
- * 2. **必须带超时**。libsu 的 `exec()` 在内核无响应、su 授权弹窗未处理时会永久阻塞，
- *    表现为界面一直「正在安装…」停不下来。这里用独立线程 + Future 超时兜底。
- * 3. 超时后返回 `TIMEOUT`，调用方据此提示用户，而不是无限等待。
+ * 1. 只走 libsu 的 Shell 会在部分设备上**永久阻塞**（su 授权链路异常时），
+ *    表现为界面一直「正在安装…」。所以必须多条路径 + 硬超时。
+ * 2. 只走 `ProcessBuilder("su")` 在另一些设备上会 EACCES（内核只放行管理器进程）。
+ * 3. 因此这里按顺序尝试：
+ *      A. `su -c`（最快，已授权时直接成功）
+ *      B. `ksud debug su -c`（管理器自带的 root 通道）
+ *      C. libsu Shell（最后兜底）
+ *    每条路径都有独立超时，全部失败返回 TIMEOUT_MARK。
  */
 object HuijuiShellUtils {
 
     const val TIMEOUT_MARK = "__TIMEOUT__"
+    const val NO_ROOT_MARK = "__NO_ROOT__"
 
-    // 单线程执行：KernelSU 对并发 su 请求会排队甚至互相阻塞，
-    // 串行执行 + 超时，才不会出现多个卡片同时卡在「正在…」。
     private val pool = Executors.newSingleThreadExecutor { r ->
         Thread(r, "huijui-su").apply { isDaemon = true }
     }
 
-    /**
-     * 以 Root 权限执行命令，返回 stdout + stderr 合并输出。
-     * 超时返回 [TIMEOUT_MARK]，执行异常返回异常信息。
-     */
-    fun runAsRoot(
-        cmd: String,
-        timeoutSeconds: Long = 30,
-        trim: Boolean = false,
-    ): String {
-        val task = pool.submit<String> {
-            val result = Shell.cmd(cmd).exec()
-            buildString {
-                result.out.forEach { appendLine(it) }
-                result.err.forEach { appendLine(it) }
-            }
+    data class Attempt(val name: String, val output: String)
+
+    private fun execProcess(argv: List<String>, timeoutSeconds: Long): String = try {
+        val p = ProcessBuilder(argv).redirectErrorStream(true).start()
+        val reader = p.inputStream.bufferedReader()
+        val sb = StringBuilder()
+        val done = pool.submit<Boolean> {
+            reader.useLines { lines -> lines.forEach { sb.appendLine(it) } }
+            true
         }
-        val out = try {
+        val finished = try {
+            done.get(timeoutSeconds, TimeUnit.SECONDS)
+        } catch (t: TimeoutException) {
+            done.cancel(true)
+            runCatching { p.destroyForcibly() }
+            false
+        }
+        if (!finished) TIMEOUT_MARK else sb.toString()
+    } catch (t: Throwable) {
+        "EXEC_FAIL:${t.javaClass.simpleName}:${t.message}"
+    }
+
+    private fun execLibsu(cmd: String, timeoutSeconds: Long): String {
+        val task = pool.submit<String> {
+            val r = Shell.cmd(cmd).exec()
+            buildString { r.out.forEach { appendLine(it) }; r.err.forEach { appendLine(it) } }
+        }
+        return try {
             task.get(timeoutSeconds, TimeUnit.SECONDS)
         } catch (t: TimeoutException) {
             task.cancel(true)
             TIMEOUT_MARK
         } catch (t: Throwable) {
-            t.cause?.message ?: t.message ?: ""
+            "EXEC_FAIL:${t.javaClass.simpleName}"
         }
+    }
+
+    private fun looksBad(out: String): Boolean =
+        out.startsWith("EXEC_FAIL") || out.contains("Permission denied") ||
+            out.contains("not found") || out.contains(TIMEOUT_MARK)
+
+    /**
+     * 依次尝试三条路径，返回 [Attempt]。
+     */
+    fun probe(cmd: String, timeoutSeconds: Long = 20): Attempt {
+        val su = execProcess(listOf("su", "-c", cmd), timeoutSeconds)
+        if (!looksBad(su)) return Attempt("su", su)
+
+        val ksud = execProcess(listOf("/data/adb/ksu/bin/ksud", "debug", "su", "-c", cmd), timeoutSeconds)
+        if (!looksBad(ksud)) return Attempt("ksud", ksud)
+
+        val libsu = execLibsu(cmd, timeoutSeconds)
+        if (!looksBad(libsu)) return Attempt("libsu", libsu)
+
+        // 全失败：把最有信息量的结果带回去
+        val best = listOf(su, ksud, libsu).firstOrNull { it != TIMEOUT_MARK } ?: TIMEOUT_MARK
+        return Attempt("none", best)
+    }
+
+    fun runAsRoot(cmd: String, timeoutSeconds: Long = 30, trim: Boolean = false): String {
+        val out = probe(cmd, timeoutSeconds).output
         return if (trim) out.trim() else out
     }
 
-    /** 命令是否执行成功（退出码 0），超时视为失败。 */
     fun runAsRootOk(cmd: String, timeoutSeconds: Long = 30): Boolean {
         val r = runAsRoot(cmd, timeoutSeconds, trim = true)
-        return r.isNotBlank() && r != TIMEOUT_MARK && !r.contains("Permission denied")
+        return r.isNotBlank() && !looksBad(r)
+    }
+
+    /** 给 UI 用的诊断信息：哪条路径可用。 */
+    fun diagnose(): String {
+        val out = StringBuilder()
+        val a = execProcess(listOf("su", "-c", "id"), 8)
+        out.appendLine("su      : " + if (looksBad(a)) a.take(60) else "OK")
+        val b = execProcess(listOf("/data/adb/ksu/bin/ksud", "debug", "su", "-c", "id"), 8)
+        out.appendLine("ksud    : " + if (looksBad(b)) b.take(60) else "OK")
+        val c = execLibsu("id", 8)
+        out.appendLine("libsu   : " + if (looksBad(c)) c.take(60) else "OK")
+        return out.toString().trim()
     }
 }
