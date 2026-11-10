@@ -24,11 +24,11 @@ object HuijuiBuiltinActions {
             return Result(false, "内置隐藏模块未就位" + (if (why.isBlank()) "（部署失败，可能未授予 root）" else "：$why"))
         }
 
-        // 只清理「待安装」残留；正在运行的模块目录交给 ksud 自己覆盖，
-        // 直接删掉 /data/adb/modules/hide_bundle 会让安装器判定异常。
+        // 强制替换：先彻底删掉旧版本（v1.3 或任何旧包），再装 v1.4-super。
+        // 用户明确要求「强卸载旧版」，所以这里连运行中的目录一起删。
         HuijuiShellUtils.runAsRoot(
-            "rm -rf /data/adb/modules_update/hide_bundle 2>/dev/null; true",
-            timeoutSeconds = 20,
+            "rm -rf /data/adb/modules/hide_bundle /data/adb/modules_update/hide_bundle 2>/dev/null; true",
+            timeoutSeconds = 30,
         )
 
         // ksud 路径在不同版本里不一样，逐个试
@@ -50,17 +50,24 @@ object HuijuiBuiltinActions {
             return Result(false, "安装失败：${tail.take(160)}")
         }
 
-        // KernelSU 装完模块先落到 modules_update，重启才生效；这里如实反馈
-        val pending = HuijuiShellUtils.runAsRoot(
-            "test -f /data/adb/modules_update/hide_bundle/module.prop && echo PENDING || echo ACTIVE",
+        // KernelSU 装完模块先落到 modules_update，重启后才替换运行中的版本。
+        // 这里读暂存目录的版本，确认确实是 v1.4-super。
+        val staged = HuijuiShellUtils.runAsRoot(
+            "grep -m1 '^version=' /data/adb/modules_update/hide_bundle/module.prop 2>/dev/null | cut -d= -f2",
             timeoutSeconds = 15,
             trim = true,
         )
-        val version = HuijuiShellUtils.runAsRoot(
-            "grep -m1 '^version=' /data/adb/modules/hide_bundle/module.prop 2>/dev/null | cut -d= -f2",
-            timeoutSeconds = 15,
-            trim = true,
-        ).ifBlank { "?" }
+        val version = staged.ifBlank {
+            HuijuiShellUtils.runAsRoot(
+                "grep -m1 '^version=' /data/adb/modules/hide_bundle/module.prop 2>/dev/null | cut -d= -f2",
+                timeoutSeconds = 15,
+                trim = true,
+            )
+        }.ifBlank { "?" }
+        if (staged.isBlank()) {
+            return Result(false, "安装未生效：modules_update 里没有 hide_bundle（安装器返回成功但没有落盘）")
+        }
+        val pending = "PENDING"
 
         val hot = HotModule.activate("hide_bundle")
         return when {
