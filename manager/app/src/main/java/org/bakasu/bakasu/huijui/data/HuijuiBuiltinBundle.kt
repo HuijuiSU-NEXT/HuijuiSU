@@ -181,6 +181,48 @@ object HuijuiBuiltinBundle {
         }
     }
 
+    /**
+     * 不经过 ksud，直接把模块 zip 解到 /data/adb/modules/<id>。
+     *
+     * 用于「ksud 安装不生效」的兜底：有些内核的 ksud 会把新模块放进 modules_update，
+     * 但重启时没有覆盖运行中的旧模块，结果版本一直停在旧版。
+     * 这里直接替换模块目录，重启后就是新内容。
+     */
+    suspend fun deployModuleDirectly(
+        context: Context,
+        zip: java.io.File,
+        moduleId: String,
+    ): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val root = "/data/adb/modules/$moduleId"
+            HuijuiShellUtils.runAsRoot("rm -rf '$root' /data/adb/modules_update/'$moduleId'; mkdir -p '$root'", 60)
+            var count = 0
+            java.util.zip.ZipInputStream(zip.inputStream().buffered()).use { zin ->
+                var entry = zin.nextEntry
+                while (entry != null) {
+                    val name = entry.name
+                    if (!entry.isDirectory && !name.startsWith("META-INF/")) {
+                        val target = com.topjohnwu.superuser.io.SuFile("$root/$name")
+                        target.parentFile?.mkdirs()
+                        com.topjohnwu.superuser.io.SuFileOutputStream.open(target).use { out ->
+                            zin.copyTo(out, bufferSize = 64 * 1024)
+                        }
+                        count++
+                    }
+                    zin.closeEntry()
+                    entry = zin.nextEntry
+                }
+            }
+            Log.i(TAG, "直接部署模块 $moduleId：写入 $count 个文件")
+            HuijuiShellUtils.runAsRootOk("chmod -R 755 '$root'", 60)
+            val okFile = HuijuiShellUtils.runAsRoot("test -s '$root/module.prop' && echo __OK__", 15, trim = true)
+            okFile.contains("__OK__")
+        } catch (t: Throwable) {
+            Log.w(TAG, "直接部署模块失败：${t.message}")
+            false
+        }
+    }
+
     /** 执行 Evil Service 自查，返回脚本输出。 */
     suspend fun runEvilCheck(context: Context): String = withContext(Dispatchers.IO) {
         deployIfNeeded(context)

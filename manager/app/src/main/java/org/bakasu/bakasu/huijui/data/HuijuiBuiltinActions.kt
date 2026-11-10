@@ -46,6 +46,15 @@ object HuijuiBuiltinActions {
         // 以退出码为准，不再用「输出里没有 error」这种不可靠判断
         val ok = out.contains("__EXIT__0")
         if (!ok) {
+            // 兜底：ksud 不生效时，直接把 zip 解到模块目录
+            val direct = HuijuiBuiltinBundle.deployModuleDirectly(context, zip, "hide_bundle")
+            if (direct) {
+                val v = HuijuiShellUtils.runAsRoot(
+                    "grep -m1 '^version=' /data/adb/modules/hide_bundle/module.prop 2>/dev/null | cut -d= -f2",
+                    15, trim = true,
+                ).ifBlank { "?" }
+                return Result(true, "ksud 未生效，已直接替换模块目录（$v），重启后生效")
+            }
             val tail = out.lineSequence().filter { it.isNotBlank() }.toList().takeLast(3).joinToString(" / ")
             return Result(false, "安装失败：${tail.take(160)}")
         }
