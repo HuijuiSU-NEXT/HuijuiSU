@@ -4,10 +4,10 @@
 
 **基于 KernelSU 的 Root 管理器 · 内置隐藏 · 真热刷入 · 开机秒激活**
 
-[![Release](https://img.shields.io/github/v/release/HuijuiSU-NEXT/HuijuiSU?label=release)](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases/latest)
-[![License](https://img.shields.io/github/license/HuijuiSU-NEXT/HuijuiSU)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/HuiJui-forge/HuijuiSU?label=release)](https://github.com/HuiJui-forge/HuijuiSU/releases/latest)
+[![License](https://img.shields.io/github/license/HuiJui-forge/HuijuiSU)](LICENSE)
 
-[官网](https://huijuisu-next.github.io/) · [下载](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases/latest) · [安装文档](https://huijuisu-next.github.io/install.html) · [FAQ](https://huijuisu-next.github.io/faq.html) · [TG 群](https://t.me/Huijui123) · [TG 频道](https://t.me/HuijuiSU) · [QQ 群](https://qm.qq.com/q/5pS7RgzhJe)
+[官网](https://huijui-forge.github.io/) · [下载](https://github.com/HuiJui-forge/HuijuiSU/releases/latest) · [安装文档](https://huijui-forge.github.io/install.html) · [FAQ](https://huijui-forge.github.io/faq.html) · [TG 群](https://t.me/Huijui123) · [TG 频道](https://t.me/HuijuiSU) · [QQ 群](https://qm.qq.com/q/5pS7RgzhJe)
 
 </div>
 
@@ -79,7 +79,7 @@ HuiJuiSU 是 **KernelSU 的下游分支**。保留上游的管理器与内核能
 
 ## 安装
 
-> 先确认内核类型，选错是「装了却没有 root」的最常见原因。完整步骤见 [安装文档](https://huijuisu-next.github.io/install.html)。
+> 先确认内核类型，选错是「装了却没有 root」的最常见原因。完整步骤见 [安装文档](https://huijui-forge.github.io/install.html)。
 
 | 内核 | 方式 | 说明 |
 |---|---|---|
@@ -128,7 +128,7 @@ adb install HuiJuiSU_NEXT_Ultra_arm64-v8a-release.apk
 | v5.0.10 – v5.0.11 | 清理旧模块、禁止卸载与停用 |
 | **v5.0.12** | **root 调用超时与串行化，修复卡在加载中** |
 
-完整更新见 [Releases](https://github.com/HuijuiSU-NEXT/HuijuiSU/releases)。
+完整更新见 [Releases](https://github.com/HuiJui-forge/HuijuiSU/releases)。
 
 ---
 
@@ -158,16 +158,16 @@ cd manager
 
 | 仓库 | 说明 |
 |---|---|
-| [Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module) | 一键隐藏模块源码 |
-| [Huijui_Module_Repo](https://github.com/HuijuiSU-NEXT/Huijui_Module_Repo) | 模块仓库源 |
-| [HuiJui-Toolbox](https://github.com/HuijuiSU-NEXT/HuiJui-Toolbox) | 工具箱 |
+| [Snow-love-Module](https://github.com/HuiJui-forge/Snow-love-Module) | 一键隐藏模块源码 |
+| [Huijui_Module_Repo](https://github.com/HuiJui-forge/Huijui_Module_Repo) | 模块仓库源 |
+| [HuiJui-Toolbox](https://github.com/HuiJui-forge/HuiJui-Toolbox) | 工具箱 |
 
 ---
 
 ## 贡献者
 
 - [hhcdxii-ship-it](https://github.com/hhcdxii-ship-it) —— 内核 / 管理器 / 发布
-- [Yuyan9178345](https://github.com/Yuyan9178345) —— 隐藏模块（[Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module)）
+- [Yuyan9178345](https://github.com/Yuyan9178345) —— 隐藏模块（[Snow-love-Module](https://github.com/HuiJui-forge/Snow-love-Module)）
 
 完整名单见 [CONTRIBUTORS.md](CONTRIBUTORS.md)。
 

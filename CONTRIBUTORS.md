@@ -13,9 +13,9 @@
 
 | 仓库 | 说明 |
 |---|---|
-| [Snow-love-Module](https://github.com/HuijuiSU-NEXT/Snow-love-Module) | 一键隐藏模块源码 |
-| [Huijui_Module_Repo](https://github.com/HuijuiSU-NEXT/Huijui_Module_Repo) | 模块仓库源 |
-| [HuiJui-Toolbox](https://github.com/HuijuiSU-NEXT/HuiJui-Toolbox) | 工具箱 |
+| [Snow-love-Module](https://github.com/HuiJui-forge/Snow-love-Module) | 一键隐藏模块源码 |
+| [Huijui_Module_Repo](https://github.com/HuiJui-forge/Huijui_Module_Repo) | 模块仓库源 |
+| [HuiJui-Toolbox](https://github.com/HuiJui-forge/HuiJui-Toolbox) | 工具箱 |
 
 ## 如何成为贡献者
 

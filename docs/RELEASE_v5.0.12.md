@@ -8,7 +8,7 @@
 | 基线 | v5.0.11 |
 | 包名 | `com.huijui.sunext.ultra`（覆盖安装） |
 | APK | 5 个架构，38.2 – 50.0 MB |
-| 官网 | https://huijuisu-next.github.io/ |
+| 官网 | https://huijui-forge.github.io/ |
 
 ---
 
